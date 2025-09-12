@@ -13,20 +13,24 @@ default:
     source:
       repoURL: https://github.com/Vikaspogu/home-ops.git
       targetRevision: HEAD
-    syncOptions:
-      - ApplyOutOfSyncOnly=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
-      - ServerSideApply=true
-      - FailOnSharedResource=true
-      - RespectIgnoreDifferences=true
-      - CreateNamespace=false
-    syncPolicyRetry:
-      limit: -1
-      backoff:
-        duration: 5s
-        factor: 2
-        maxDuration: 10m
+    syncPolicy:
+      automated:
+        allowEmpty: true
+        prune: true
+        selfHeal: true
+      retry:
+        limit: 1
+        backoff:
+          duration: 10s
+          factor: 2
+          maxDuration: 3m
+      syncOptions:
+        - CreateNamespace=true
+        - ApplyOutOfSyncOnly=true
+        - ServerSideApply=true
+        - PruneLast=true
+        - RespectIgnoreDifferences=true
+
 
 applications:
   external-secrets-chart:
