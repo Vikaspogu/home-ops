@@ -7,6 +7,5 @@ helmGlobals:
 helmCharts:
   - name: argocd-app-of-app
     valuesFile: ./values.yaml
-    namespace: argo-system
 
 patches: []

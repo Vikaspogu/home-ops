@@ -8,7 +8,6 @@ default:
       app-source: cluster01
       repo: default
     destination:
-      namespace: argo-system
       server: https://kubernetes.default.svc
     source:
       repoURL: https://github.com/Vikaspogu/home-ops.git
