@@ -128,7 +128,7 @@ function sync_helm_releases() {
 function setup_argo_cd() {
     log debug "Setting up Argo CD"
 
-    local -r argo_cd_dir="${ROOT_DIR}/clusters/${CLUSTER_NAME}/apps/argo-system/argo-cd"
+    local -r argo_cd_dir="${ROOT_DIR}/components/argo-system/argo-cd"
 
     # Check if the Argo CD directory exists
     if [[ ! -d "${argo_cd_dir}" ]]; then
@@ -144,7 +144,7 @@ function setup_argo_cd() {
         log info "Secret created successfully" "secret=environment-variables"
     fi
 
-    if ! kustomize build "${argo_cd_dir}" --enable-helm --load-restrictor LoadRestrictionsNone | kubectl apply --filename - &>/dev/null; then
+    if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone | envsubst | kubectl apply -f- &>/dev/null; then
         log error "Failed to apply Argo CD"
     fi
 
@@ -155,31 +155,19 @@ function setup_argo_cd() {
 function sync_argo_apps() {
     log debug "Sync Argo Applications"
 
-    local -r bootstrappingmaps=(
-        "${ROOT_DIR}/kubernetes/components/common/apps.yaml"
-        "${ROOT_DIR}/kubernetes/components/common/repositories.yaml"
-        "${ROOT_DIR}/kubernetes/components/common/settings.yaml"
-    )
+    local -r root_application_dir="${ROOT_DIR}/clusters/${CLUSTER_NAME}/apps/argo-system/root-application"
 
-    for bootstrappingmap in "${bootstrappingmaps[@]}"; do
-        if [ ! -f "${bootstrappingmap}" ]; then
-            log warn "File does not exist" file "${bootstrappingmap}"
-            continue
-        fi
+    # Check if the Argo CD directory exists
+    if [[ ! -d "${root_application_dir}" ]]; then
+        log error "Directory does not exist" "directory=${root_application_dir}"
+        return 1
+    fi
 
-        # Check if the bootstrappingmap resources are up-to-date
-        if kubectl --namespace argo-system diff --filename "${bootstrappingmap}" &>/dev/null; then
-            log info "bootstrappingmap resource is up-to-date" "resource=$(basename "${bootstrappingmap}" ".yaml")"
-            continue
-        fi
+    if ! kustomize build "${root_application_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone | kubectl apply -f- &>/dev/null; then
+        log error "Failed to apply Root Application"
+    fi
 
-        # Apply bootstrappingmap resources
-        if kubectl --namespace argo-system apply --server-side --filename "${bootstrappingmap}" &>/dev/null; then
-            log info "bootstrappingmap resource applied successfully" "resource=$(basename "${bootstrappingmap}" ".yaml")"
-        else
-            log error "Failed to apply bootstrappingmap resource" "resource=$(basename "${bootstrappingmap}" ".yaml")"
-        fi
-    done
+    log info "Root Application applied successfully"
 }
 
 function main() {
@@ -193,7 +181,7 @@ function main() {
     # apply_crds
     # sync_helm_releases
     setup_argo_cd
-    # sync_argo_apps
+    sync_argo_apps
 
     log info "Congrats! The cluster is bootstrapped and Argo is syncing the Git repository"
 }

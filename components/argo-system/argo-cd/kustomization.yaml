@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: argo-system
 resources:
   - ./config
-  - ./setenv-cmp-plugin.yaml
 helmCharts:
   - name: argo-cd
     releaseName: argo-cd

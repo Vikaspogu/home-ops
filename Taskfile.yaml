@@ -13,14 +13,12 @@ vars:
   TALOSCONFIG: '{{.ROOT_DIR}}/clusters/main/bootstrap/talos/clusterconfig/talosconfig'
 
 env:
-  KUBECONFIG: '{{.ROOT_DIR}}/kubeconfig'
-  SOPS_AGE_KEY_FILE: '{{.ROOT_DIR}}/age.key'
+  SOPS_AGE_KEY_FILE: '~/.config/sops/age/keys.txt'
   TALOSCONFIG: '{{.TALOSCONFIG}}'
 
 includes:
   bootstrap: .taskfiles/bootstrap
   talos: .taskfiles/talos
-  volsync: .taskfiles/volsync
 
 tasks:
 
