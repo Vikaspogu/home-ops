@@ -1,3 +1,33 @@
+default:
+  app:
+    enabled: true
+    enableAutoSync: true
+    autoSyncPrune: true
+    project: default
+    labels:
+      app-source: cluster01
+      repo: default
+    destination:
+      namespace: argo-system
+      server: https://kubernetes.default.svc
+    source:
+      repoURL: https://github.com/Vikaspogu/home-ops.git
+      targetRevision: HEAD
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ServerSideApply=true
+      - FailOnSharedResource=true
+      - RespectIgnoreDifferences=true
+      - CreateNamespace=false
+    syncPolicyRetry:
+      limit: -1
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 10m
+
 applications:
   external-secrets-chart:
     annotations:
