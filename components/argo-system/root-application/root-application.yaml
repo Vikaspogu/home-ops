@@ -7,7 +7,6 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
   labels:
     app-source: root
-    repo: cluster-config
   annotations:
     argocd.argoproj.io/sync-options: Delete=false
 spec:

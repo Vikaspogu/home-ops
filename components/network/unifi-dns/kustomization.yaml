@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./externalsecret.yaml
+
+helmCharts:
+  - name: external-dns
+    releaseName: unifi-dns
+    repo: oci://ghcr.io/home-operations/charts-mirror
+    version: 1.18.0
+    valuesFile: values.yaml

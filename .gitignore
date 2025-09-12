@@ -24,5 +24,7 @@ Brewfile.lock.json
 wiki
 # Bootstrap
 /config.yaml
-**/charts/**
+/helm/charts/**/charts
+/**/**/charts
+!/helm/**/charts
 **kubeconfig**
