@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+set: [pipefail]
+shopt: [globstar]
+
+vars:
+  KUBERNETES_DIR: '{{.ROOT_DIR}}/clusters'
+  SCRIPTS_DIR: '{{.ROOT_DIR}}/scripts'
+  TALOS_DIR: '{{.ROOT_DIR}}/clusters/main/bootstrap/talos'
+  PRIVATE_DIR: '{{.ROOT_DIR}}/.private'
+  TALOSCONFIG: '{{.ROOT_DIR}}/clusters/main/bootstrap/talos/clusterconfig/talosconfig'
+
+env:
+  KUBECONFIG: '{{.ROOT_DIR}}/kubeconfig'
+  SOPS_AGE_KEY_FILE: '{{.ROOT_DIR}}/age.key'
+  TALOSCONFIG: '{{.TALOSCONFIG}}'
+
+includes:
+  bootstrap: .taskfiles/bootstrap
+  talos: .taskfiles/talos
+  volsync: .taskfiles/volsync
+
+tasks:
+
+  default: task --list
+
+  reconcile:
+    desc: Force Argo to pull in changes from your Git repository
+    cmd: argocd app list --project kubernetes -o name | xargs -I {} argocd app wait {} --sync --timeout 300
+    preconditions:
+      - test -f {{.KUBECONFIG}}
+      - which argocd
