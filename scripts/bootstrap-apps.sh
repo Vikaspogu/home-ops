@@ -5,6 +5,10 @@ source "$(dirname "${0}")/lib/common.sh"
 
 export LOG_LEVEL="debug"
 export ROOT_DIR="$(git rev-parse --show-toplevel)"
+export CLUSTER_NAME="cluster01"
+export CLUSTER_DOMAIN=$(op read 'op://kubernetes/rancher/add more/CLUSTER_DOMAIN')
+export EXTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/rancher/add more/EXTERNAL_IP_ADDRESS')
+export INTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/rancher/add more/INTERNAL_IP_ADDRESS')
 
 # Talos requires the nodes to be 'Ready=False' before applying resources
 function wait_for_nodes() {
@@ -27,7 +31,7 @@ function wait_for_nodes() {
 function apply_namespaces() {
     log debug "Applying namespaces"
 
-    local -r apps_dir="${ROOT_DIR}/clusters/${CLUSTER_NAME}/apps"
+    local -r apps_dir="${ROOT_DIR}/components"
 
     if [[ ! -d "${apps_dir}" ]]; then
         log error "Directory does not exist" "directory=${apps_dir}"
@@ -147,7 +151,7 @@ function setup_argo_cd() {
     if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone | envsubst | kubectl apply -f- &>/dev/null; then
         log error "Failed to apply Argo CD"
     fi
-
+    kubectl wait --for=condition=Ready pods -l "app.kubernetes.io/name=argocd-repo-server" -n argo-system
     log info "Argo CD applied successfully"
 }
 
@@ -175,11 +179,11 @@ function main() {
     check_cli helmfile kubectl kustomize sops talhelper yq
 
     # Apply resources and Helm releases
-    # wait_for_nodes
-    # apply_namespaces
-    # apply_sops_secrets
-    # apply_crds
-    # sync_helm_releases
+    wait_for_nodes
+    apply_namespaces
+    apply_sops_secrets
+    apply_crds
+    sync_helm_releases
     setup_argo_cd
     sync_argo_apps
 
