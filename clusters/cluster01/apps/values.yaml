@@ -24,11 +24,13 @@ default:
           factor: 2
           maxDuration: 3m
       syncOptions:
-        - CreateNamespace=true
         - ApplyOutOfSyncOnly=true
-        - ServerSideApply=true
+        - PrunePropagationPolicy=foreground
         - PruneLast=true
+        - ServerSideApply=true
+        - FailOnSharedResource=true
         - RespectIgnoreDifferences=true
+        - CreateNamespace=false
 
 
 applications:

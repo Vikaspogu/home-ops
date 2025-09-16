@@ -9,5 +9,4 @@ helmCharts:
     namespace: external-secrets
     repo: https://charts.external-secrets.io
     version: 0.19.2
-    valuesInline:
-      installCRDs: true
+    valuesFile: values.yaml
