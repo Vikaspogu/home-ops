@@ -34,6 +34,14 @@ default:
 
 
 applications:
+  coredns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/coredns/coredns
+
   external-secrets-chart:
     annotations:
       argocd.argoproj.io/sync-wave: "0"
