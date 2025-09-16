@@ -50,50 +50,50 @@ applications:
     source:
       path: clusters/cluster01/apps/kube-system/cilium
 
-  external-secrets-stores:
-    annotations:
-      argocd.argoproj.io/sync-wave: "5"
-    destination:
-      namespace: external-secrets
-    source:
-      path: components/external-secrets/external-secrets-stores
+  # external-secrets-stores:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "5"
+  #   destination:
+  #     namespace: external-secrets
+  #   source:
+  #     path: components/external-secrets/external-secrets-stores
 
-  onepassword-connect:
-    annotations:
-      argocd.argoproj.io/sync-wave: "10"
-    destination:
-      namespace: external-secrets
-    source:
-      path: components/external-secrets/onepassword-connect
+  # onepassword-connect:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "10"
+  #   destination:
+  #     namespace: external-secrets
+  #   source:
+  #     path: components/external-secrets/onepassword-connect
 
-  cert-manager:
-    annotations:
-      argocd.argoproj.io/sync-wave: "15"
-    destination:
-      namespace: cert-manager
-    source:
-      path: components/cert-manager/cert-manager
+  # cert-manager:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "15"
+  #   destination:
+  #     namespace: cert-manager
+  #   source:
+  #     path: components/cert-manager/cert-manager
 
-  unifi-dns:
-    annotations:
-      argocd.argoproj.io/sync-wave: "15"
-    destination:
-      namespace: network
-    source:
-      path: components/network/unifi-dns
+  # unifi-dns:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "15"
+  #   destination:
+  #     namespace: network
+  #   source:
+  #     path: components/network/unifi-dns
 
-  argo-cd:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: argo-system
-    source:
-      path: clusters/cluster01/apps/argo-system/argo-cd
+  # argo-cd:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: argo-system
+  #   source:
+  #     path: clusters/cluster01/apps/argo-system/argo-cd
 
-  root-application:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: argo-system
-    source:
-      path: clusters/cluster01/apps/argo-system/root-application
+  # root-application:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: argo-system
+  #   source:
+  #     path: clusters/cluster01/apps/argo-system/root-application
