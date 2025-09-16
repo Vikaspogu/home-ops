@@ -28,3 +28,4 @@ wiki
 /**/**/charts
 !/helm/**/charts
 **kubeconfig**
+.envrc
