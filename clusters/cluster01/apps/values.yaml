@@ -34,13 +34,6 @@ default:
 
 
 applications:
-  coredns:
-    annotations:
-      argocd.argoproj.io/sync-wave: "0"
-    destination:
-      namespace: kube-system
-    source:
-      path: components/kube-system/coredns
 
   external-secrets-chart:
     annotations:
@@ -58,21 +51,21 @@ applications:
     source:
       path: clusters/cluster01/apps/kube-system/cilium
 
-  # external-secrets-stores:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "5"
-  #   destination:
-  #     namespace: external-secrets
-  #   source:
-  #     path: components/external-secrets/external-secrets-stores
+  external-secrets-stores:
+    annotations:
+      argocd.argoproj.io/sync-wave: "5"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/external-secrets-stores
 
-  # onepassword-connect:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "10"
-  #   destination:
-  #     namespace: external-secrets
-  #   source:
-  #     path: components/external-secrets/onepassword-connect
+  onepassword-connect:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/onepassword-connect
 
   # cert-manager:
   #   annotations:
