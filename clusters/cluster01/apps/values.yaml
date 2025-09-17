@@ -43,21 +43,21 @@ applications:
     source:
       path: components/external-secrets/external-secrets-chart
 
-  external-secrets-stores:
+  onepassword-connect:
     annotations:
-      argocd.argoproj.io/sync-wave: "5"
+      argocd.argoproj.io/sync-wave: "0"
     destination:
       namespace: external-secrets
     source:
-      path: components/external-secrets/external-secrets-stores
+      path: components/external-secrets/onepassword-connect
 
-  onepassword-connect:
+  external-secrets-stores:
     annotations:
       argocd.argoproj.io/sync-wave: "10"
     destination:
       namespace: external-secrets
     source:
-      path: components/external-secrets/onepassword-connect
+      path: components/external-secrets/external-secrets-stores
 
   cert-manager:
     annotations:
