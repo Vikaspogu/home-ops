@@ -153,7 +153,13 @@ function setup_argo_cd() {
     if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone | envsubst | kubectl apply -f- &>/dev/null; then
         log error "Failed to apply Argo CD"
     fi
-    kubectl wait --for=condition=Ready pods -l "app.kubernetes.io/name=argocd-repo-server" -n argo-system
+
+    # Wait for all pods to be 'Ready=True'
+    until kubectl wait --for=condition=Ready pods -l "app.kubernetes.io/name=argocd-repo-server" -n argo-system --timeout=10s &>/dev/null; do
+        log info "Pods are not available, waiting for pods to be available. Retrying in 10 seconds..."
+        sleep 10
+    done
+
     log info "Argo CD applied successfully"
 }
 

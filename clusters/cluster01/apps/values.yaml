@@ -43,14 +43,6 @@ applications:
     source:
       path: components/external-secrets/external-secrets-chart
 
-  cilium:
-    annotations:
-      argocd.argoproj.io/sync-wave: "0"
-    destination:
-      namespace: kube-system
-    source:
-      path: clusters/cluster01/apps/kube-system/cilium
-
   external-secrets-stores:
     annotations:
       argocd.argoproj.io/sync-wave: "5"
@@ -67,13 +59,21 @@ applications:
     source:
       path: components/external-secrets/onepassword-connect
 
-  # cert-manager:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "15"
-  #   destination:
-  #     namespace: cert-manager
-  #   source:
-  #     path: components/cert-manager/cert-manager
+  cert-manager:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: cert-manager
+    source:
+      path: components/cert-manager/cert-manager
+
+  cilium:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: kube-system
+    source:
+      path: clusters/cluster01/apps/kube-system/cilium
 
   # unifi-dns:
   #   annotations:
