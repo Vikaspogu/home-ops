@@ -40,7 +40,7 @@ applications:
     destination:
       namespace: kube-system
     source:
-      path: components/kube-system/coredns/coredns
+      path: components/kube-system/coredns
 
   external-secrets-chart:
     annotations:
