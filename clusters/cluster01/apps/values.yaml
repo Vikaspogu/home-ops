@@ -23,14 +23,14 @@ default:
           duration: 10s
           factor: 2
           maxDuration: 3m
-      syncOptions:
-        - ApplyOutOfSyncOnly=true
-        - PrunePropagationPolicy=foreground
-        - PruneLast=true
-        - ServerSideApply=true
-        - FailOnSharedResource=true
-        - RespectIgnoreDifferences=true
-        - CreateNamespace=false
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ServerSideApply=true
+      - FailOnSharedResource=true
+      - RespectIgnoreDifferences=true
+      - CreateNamespace=false
 
 
 applications:
@@ -45,7 +45,6 @@ applications:
   external-secrets-chart:
     annotations:
       argocd.argoproj.io/sync-wave: "0"
-      argocd.argoproj.io/sync-options: ServerSideApply=true
     destination:
       namespace: external-secrets
     source:
