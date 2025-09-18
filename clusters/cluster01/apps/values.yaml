@@ -65,7 +65,7 @@ applications:
     destination:
       namespace: cert-manager
     source:
-      path: components/cert-manager/cert-manager
+      path: clusters/cluster01/apps/cert-manager/cert-manager
 
   cilium:
     annotations:
