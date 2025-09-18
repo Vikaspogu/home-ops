@@ -75,13 +75,13 @@ applications:
     source:
       path: clusters/cluster01/apps/kube-system/cilium
 
-  # unifi-dns:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "15"
-  #   destination:
-  #     namespace: network
-  #   source:
-  #     path: components/network/unifi-dns
+  unifi-dns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: network
+    source:
+      path: components/network/unifi-dns
 
   # argo-cd:
   #   annotations:
