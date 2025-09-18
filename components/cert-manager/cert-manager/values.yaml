@@ -8,3 +8,6 @@ prometheus:
   enabled: true
   servicemonitor:
     enabled: true
+global:
+  leaderElection:
+    namespace: cert-manager
