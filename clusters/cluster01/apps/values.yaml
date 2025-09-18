@@ -59,6 +59,14 @@ applications:
     source:
       path: components/network/envoy-gateway
 
+  envoy-gateway-crds:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    destination:
+      namespace: network
+    source:
+      path: components/network/envoy-gateway-crds
+
   external-secrets-stores:
     annotations:
       argocd.argoproj.io/sync-wave: "10"
