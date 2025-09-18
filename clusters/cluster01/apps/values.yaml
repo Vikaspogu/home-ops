@@ -67,6 +67,14 @@ applications:
     source:
       path: clusters/cluster01/apps/cert-manager/cert-manager
 
+  envoy-gateway:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: network
+    source:
+      path: components/network/envoy-gateway
+
   cilium:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

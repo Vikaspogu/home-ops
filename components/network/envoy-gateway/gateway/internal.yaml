@@ -1,30 +1,27 @@
-# yaml-language-server: $schema=https://github.com/datreeio/CRDs-catalog/raw/refs/heads/main/gateway.networking.k8s.io/gateway_v1.json
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/gateway_v1.json
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: external
+  name: envoy-internal
   annotations:
-    external-dns.alpha.kubernetes.io/target: external.${CLUSTER_DOMAIN}
+    external-dns.alpha.kubernetes.io/target: &hostname internal.${CLUSTER_DOMAIN}
 spec:
-  gatewayClassName: cilium
-  addresses:
-    - type: IPAddress
-      value: ${EXTERNAL_IP_ADDRESS}
+  gatewayClassName: envoy
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: external.${CLUSTER_DOMAIN}
+      external-dns.alpha.kubernetes.io/hostname: *hostname
+      lbipam.cilium.io/ips: ${INTERNAL_IP_ADDRESS}
   listeners:
     - name: http
       protocol: HTTP
       port: 80
-      hostname: "*.${CLUSTER_DOMAIN}"
       allowedRoutes:
         namespaces:
           from: Same
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "*.${CLUSTER_DOMAIN}"
       allowedRoutes:
         namespaces:
           from: All
