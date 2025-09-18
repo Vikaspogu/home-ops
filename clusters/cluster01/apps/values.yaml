@@ -51,6 +51,14 @@ applications:
     source:
       path: components/external-secrets/onepassword-connect
 
+  envoy-gateway:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    destination:
+      namespace: network
+    source:
+      path: components/network/envoy-gateway
+
   external-secrets-stores:
     annotations:
       argocd.argoproj.io/sync-wave: "10"
@@ -67,13 +75,13 @@ applications:
     source:
       path: clusters/cluster01/apps/cert-manager/cert-manager
 
-  envoy-gateway:
+  envoy-gateway-config:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
     destination:
       namespace: network
     source:
-      path: components/network/envoy-gateway
+      path: components/network/envoy-gateway-config
 
   cilium:
     annotations:
