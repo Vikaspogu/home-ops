@@ -5,6 +5,7 @@ ignore: |
   .private/
   .vscode/
   *.sops.*
+  *helm/charts/*
   ansible/roles/xanmanning.k3s/
 
 extends: default

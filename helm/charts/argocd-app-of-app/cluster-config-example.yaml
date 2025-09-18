@@ -25,7 +25,7 @@ projects:
     description: Project for overall cluster configuration
     namespace: openshift-gitops
     sourceRepos:
-    - https://github.com/gnunn-gitops/cluster-config
+      - https://github.com/gnunn-gitops/cluster-config
     destinations: |
       - namespace: '*'
         server: https://kubernetes.default.svc
@@ -38,7 +38,7 @@ projects:
     description: Project for individual tenant configuration (namespaces, quotas, etc)
     namespace: openshift-gitops
     sourceRepos:
-    - https://github.com/gnunn-gitops/cluster-config
+      - https://github.com/gnunn-gitops/cluster-config
     destinations: |
       - namespace: '*'
         server: https://kubernetes.default.svc
