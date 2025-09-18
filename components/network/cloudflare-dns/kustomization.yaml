@@ -8,6 +8,7 @@ resources:
 helmCharts:
   - name: external-dns
     releaseName: cloudflare-dns
+    namespace: network
     repo: oci://ghcr.io/home-operations/charts-mirror
     version: 1.18.0
     valuesFile: values.yaml

@@ -16,6 +16,7 @@ generatorOptions:
 helmCharts:
   - name: app-template
     releaseName: cloudflare-tunnel
+    namespace: network
     repo: oci://ghcr.io/bjw-s-labs/helm-charts
     version: 4.2.0
     valuesFile: values.yaml

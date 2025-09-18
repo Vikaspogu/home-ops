@@ -8,6 +8,7 @@ resources:
 helmCharts:
   - name: cert-manager
     releaseName: cert-manager
+    namespace: cert-manager
     repo: oci://quay.io/jetstack/charts
     version: v1.18.2
     valuesFile: values.yaml
