@@ -4,8 +4,8 @@ metadata:
   name: argo
 spec:
   parentRefs:
-    - name: envoy-external
-      namespace: network
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
   hostnames: ["argo.${CLUSTER_DOMAIN}"]
   rules:
