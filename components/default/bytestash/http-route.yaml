@@ -20,4 +20,4 @@ spec:
   rules:
     - backendRefs:
         - name: bytestash
-          port: http
+          port: 5000

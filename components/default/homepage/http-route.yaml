@@ -20,4 +20,4 @@ spec:
   rules:
     - backendRefs:
         - name: homepage
-          port: http
+          port: 3000
