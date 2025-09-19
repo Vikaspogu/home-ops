@@ -162,7 +162,6 @@
     },
     {
       "description": "Separate PRs for major updates",
-      "matchUpdateTypes": ["major"],
       "separateMajorMinor": true,
       "separateMultipleMajor": true
     },
