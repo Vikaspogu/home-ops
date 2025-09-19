@@ -13,7 +13,7 @@ spec:
     tlsStore:
       default:
         defaultCertificate:
-          secretName: ${CLUSTER_DOMAIN/./-}-production-tls
+          secretName: ${CLUSTER_DOMAIN}-production-tls
     providers:
       kubernetesGateway:
         enabled: true
