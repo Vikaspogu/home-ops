@@ -101,6 +101,12 @@
       "allowedVersions": ["2.6.3"]
     },
     {
+      description: ["Pin viaductoss/ksops to v4.3.3"],
+      matchDatasources: ["docker"],
+      matchPackageNames: ["viaductoss/ksops"],
+      allowedVersions: ["v4.3.3"],
+    },
+    {
       "description": "Loose versioning for non-semver packages",
       "matchDatasources": ["docker"],
       "versioning": "loose",
