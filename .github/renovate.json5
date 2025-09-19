@@ -162,8 +162,7 @@
     },
     {
       "description": "Separate PRs for major updates",
-      "separateMajorMinor": true,
-      "separateMultipleMajor": true
+      "matchUpdateTypes": ["major","minor", "patch"],
     },
     {
       "description": "Custom versioning for Talos",
