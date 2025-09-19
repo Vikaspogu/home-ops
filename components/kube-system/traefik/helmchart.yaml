@@ -17,6 +17,13 @@ spec:
     providers:
       kubernetesGateway:
         enabled: true
+      listeners:
+        https:
+          port: 8443
+          protocol: HTTPS
+          certificateRefs:
+          - name: ${CLUSTER_DOMAIN}-production-tls
+            namespace: kube-system
     priorityClassName: "system-cluster-critical"
     image:
       repository: "rancher/mirrored-library-traefik"
