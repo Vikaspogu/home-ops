@@ -13,6 +13,8 @@ export EXTERNAL_IP_ADDRESS="${EXTERNAL_IP_ADDRESS:-192.168.1.100}"
 export INTERNAL_IP_ADDRESS="${INTERNAL_IP_ADDRESS:-10.0.0.100}"
 export GATEWAY_NAME="${GATEWAY_NAME:-gateway}"
 export GATEWAY_NAMESPACE="${GATEWAY_NAMESPACE:-gateway-system}"
+export APP="${APP:-app}"
+export PVC_NAME="${PVC_NAME:-pvc}"
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins")
 kustomize_config="kustomization.yaml"
