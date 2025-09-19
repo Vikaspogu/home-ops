@@ -1,0 +1,148 @@
+default:
+  app:
+    enabled: true
+    enableAutoSync: true
+    autoSyncPrune: true
+    project: default
+    labels:
+      app-source: omv
+      repo: default
+    destination:
+      server: https://kubernetes.default.svc
+    source:
+      repoURL: https://github.com/Vikaspogu/home-ops.git
+      targetRevision: HEAD
+    syncPolicy:
+      automated:
+        allowEmpty: true
+        prune: true
+        selfHeal: true
+      retry:
+        limit: 10
+        backoff:
+          duration: 10s
+          factor: 2
+          maxDuration: 3m
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ServerSideApply=true
+      - FailOnSharedResource=true
+      - RespectIgnoreDifferences=true
+      - CreateNamespace=false
+
+
+applications:
+
+  external-secrets-chart:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/external-secrets-chart
+
+  onepassword-connect:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/onepassword-connect
+
+  external-secrets-stores:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/external-secrets-stores
+
+  cert-manager:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: cert-manager
+    source:
+      path: clusters/omv/apps/cert-manager/cert-manager
+
+  traefik:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/traefik
+
+  argo-cd:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/omv/apps/argo-system/argo-cd
+
+  root-application:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/omv/apps/argo-system/root-application
+
+  longhorn:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: longhorn-system
+    source:
+      path: components/longhorn-system/longhorn
+
+  rancher:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: cattle-system
+    source:
+      path: components/cattle-system/rancher
+
+  garage-app:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: default
+    source:
+      path: components/default/garage-app
+
+  bytestash:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: default
+    source:
+      path: components/default/bytestash
+
+  homepage:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: default
+    source:
+      path: components/default/homepage
+
+  syncthing:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: default
+    source:
+      path: components/default/syncthing
+
+  reloader:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/reloader

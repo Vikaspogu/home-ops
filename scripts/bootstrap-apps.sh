@@ -5,10 +5,19 @@ source "$(dirname "${0}")/lib/common.sh"
 
 export LOG_LEVEL="debug"
 export ROOT_DIR="$(git rev-parse --show-toplevel)"
-export CLUSTER_NAME="cluster01"
-export CLUSTER_DOMAIN=$(op read 'op://kubernetes/rancher/add more/CLUSTER_DOMAIN')
-export EXTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/rancher/add more/EXTERNAL_IP_ADDRESS')
-export INTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/rancher/add more/INTERNAL_IP_ADDRESS')
+export CLUSTER_NAME="${1}"
+
+# Validate that CLUSTER_NAME is provided
+if [[ -z "${CLUSTER_NAME}" ]]; then
+    echo "ERROR: CLUSTER_NAME is required as the first argument"
+    echo "Usage: $0 <cluster_name>"
+    exit 1
+fi
+export CLUSTER_DOMAIN=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/CLUSTER_DOMAIN')
+export EXTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/EXTERNAL_IP_ADDRESS')
+export INTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/INTERNAL_IP_ADDRESS')
+export GATEWAY_NAME=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAME')
+export GATEWAY_NAMESPACE=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAMESPACE')
 
 # Talos requires the nodes to be 'Ready=False' before applying resources
 function wait_for_nodes() {
@@ -115,7 +124,8 @@ function sync_helm_releases() {
     local -r helmfile_file="${ROOT_DIR}/clusters/${CLUSTER_NAME}/bootstrap/apps/helmfile.yaml"
 
     if [[ ! -f "${helmfile_file}" ]]; then
-        log error "File does not exist" "file=${helmfile_file}"
+        log info "No need to apply helmfile - file does not exist" "file=${helmfile_file}"
+        return
     fi
 
     if ! helmfile --file "${helmfile_file}" sync --hide-notes --kubeconfig "${KUBECONFIG}"; then
@@ -136,12 +146,18 @@ function setup_argo_cd() {
         return 1
     fi
 
-    # Check if the environment-variables secret already exists
-    if kubectl get secret environment-variables --namespace argo-system &>/dev/null; then
-        log info "Secret already exists, skipping creation" "secret=environment-variables"
+    # Apply the environment-variables secret from YAML file
+    local -r env_vars_file="${ROOT_DIR}/components/common/environment-variables.yaml"
+
+    if [[ ! -f "${env_vars_file}" ]]; then
+        log error "File does not exist" "file=${env_vars_file}"
+        return 1
+    fi
+
+    if envsubst < "${env_vars_file}" | kubectl apply --namespace argo-system -f- &>/dev/null; then
+        log info "Environment variables secret applied successfully" "secret=environment-variables"
     else
-        kubectl create secret generic environment-variables --from-literal CLUSTER_DOMAIN=${CLUSTER_DOMAIN} --from-literal EXTERNAL_IP_ADDRESS=${EXTERNAL_IP_ADDRESS} --from-literal INTERNAL_IP_ADDRESS=${INTERNAL_IP_ADDRESS} --namespace argo-system
-        log info "Secret created successfully" "secret=environment-variables"
+        log error "Failed to apply environment variables secret" "secret=environment-variables"
     fi
 
     if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone | envsubst | kubectl apply -f- &>/dev/null; then
