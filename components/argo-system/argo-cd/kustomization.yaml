@@ -9,7 +9,7 @@ helmCharts:
     releaseName: argo-cd
     namespace: argo-system
     repo: https://argoproj.github.io/argo-helm
-    version: 8.3.5
+    version: 8.5.2
     valuesFile: values.yaml
 configMapGenerator:
   - files:
