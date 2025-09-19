@@ -22,6 +22,7 @@ This repository contains Infrastructure as Code (IaC) for my home Kubernetes clu
 - **📦 Helm + Kustomize**: Flexible application deployment and configuration
 - **🚀 Automated Bootstrap**: Scripts for easy cluster initialization
 - **🔧 Task Automation**: Task-based workflows for common operations
+- **🤖 Dependency Updates**: Automated dependency management with Renovate Bot
 
 ## 🏗️ Architecture
 
@@ -220,6 +221,28 @@ kubectl get nodes,pods --all-namespaces
 2. **Commit and push** changes to the main branch
 3. **ArgoCD automatically detects** changes and syncs applications
 4. **Monitor deployment** via ArgoCD UI or CLI
+
+## 🤖 Automated Dependency Management
+
+This repository uses **Renovate Bot** to automatically update dependencies:
+
+### What Gets Updated
+- **Helm Charts**: Automatically updates chart versions in `kustomization.yaml` files
+- **Container Images**: Updates image tags in Kubernetes manifests
+- **GitHub Releases**: Updates CRD URLs and tool versions in bootstrap scripts
+- **Talos & Kubernetes**: Updates cluster platform versions
+
+### Configuration
+- **Main Config**: [`renovate.json`](renovate.json) - Comprehensive Renovate configuration
+- **GitHub Specific**: [`.github/renovate.json5`](.github/renovate.json5) - Alternative config location
+- **Dependency Dashboard**: Available in GitHub Issues for manual triggering
+
+### Grouped Updates
+Renovate intelligently groups related updates:
+- **Cilium Ecosystem**: CNI, CLI, and related components
+- **ArgoCD Stack**: Server, CLI, and ArgoCD applications
+- **cert-manager**: Controller, webhook, and CRDs
+- **Security Tools**: SOPS, external-secrets, and 1Password components
 
 ## 🤝 Contributing
 

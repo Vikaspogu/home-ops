@@ -1,0 +1,20 @@
+# Global code ownership for home-ops repository
+
+# Default owners for everything
+* @vikaspogu
+
+# Renovate bot configuration
+renovate.json @vikaspogu
+.github/renovate.json5 @vikaspogu
+
+# Critical infrastructure components
+components/argo-system/ @vikaspogu
+components/cert-manager/ @vikaspogu
+components/external-secrets/ @vikaspogu
+
+# Bootstrap scripts
+scripts/ @vikaspogu
+.taskfiles/ @vikaspogu
+
+# Cluster configurations
+clusters/ @vikaspogu

@@ -1,0 +1,35 @@
+---
+name: "Kubeconform"
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "components/**"
+      - "clusters/**"
+
+jobs:
+  kubeconform:
+    name: Kubeconform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Setup Workflow Tools
+        shell: bash
+        run: brew install fluxcd/tap/flux siderolabs/tap/talhelper kubernetes-cli kustomize gettext
+
+      - name: Setup kubeconform
+        shell: bash
+        run: |
+          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+          sudo mv kubeconform /usr/local/bin
+
+      - name: Run kubeconform
+        shell: bash
+        run: bash ./scripts/kubeconform.sh
