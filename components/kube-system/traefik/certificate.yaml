@@ -2,7 +2,7 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: ${CLUSTER_DOMAIN/./-}-production
+  name: ${CLUSTER_DOMAIN}-production
 spec:
   secretName: ${CLUSTER_DOMAIN/./-}-production-tls
   issuerRef:
