@@ -23,7 +23,7 @@ spec:
         https:
           port: 8443
           protocol: HTTPS
-          namespacePolicy: All
+          namespacePolicy: "All"
           certificateRefs:
           - name: ${CLUSTER_DOMAIN}-production-tls
             namespace: kube-system

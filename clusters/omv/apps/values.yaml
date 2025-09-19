@@ -83,14 +83,6 @@ applications:
     source:
       path: clusters/omv/apps/argo-system/argo-cd
 
-  root-application:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: argo-system
-    source:
-      path: clusters/omv/apps/argo-system/root-application
-
   longhorn:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
