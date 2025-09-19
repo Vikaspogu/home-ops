@@ -17,6 +17,8 @@ spec:
     providers:
       kubernetesGateway:
         enabled: true
+    gateway:
+      enabled: true
       listeners:
         https:
           port: 8443
