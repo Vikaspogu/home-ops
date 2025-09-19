@@ -13,11 +13,12 @@ if [[ -z "${CLUSTER_NAME}" ]]; then
     echo "Usage: $0 <cluster_name>"
     exit 1
 fi
-export CLUSTER_DOMAIN=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/CLUSTER_DOMAIN')
-export EXTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/EXTERNAL_IP_ADDRESS')
-export INTERNAL_IP_ADDRESS=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/INTERNAL_IP_ADDRESS')
-export GATEWAY_NAME=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAME')
-export GATEWAY_NAMESPACE=$(op read 'op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAMESPACE')
+
+export CLUSTER_DOMAIN=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/CLUSTER_DOMAIN")
+export EXTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/EXTERNAL_IP_ADDRESS")
+export INTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/INTERNAL_IP_ADDRESS")
+export GATEWAY_NAME=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY")
+export GATEWAY_NAMESPACE=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAMESPACE")
 
 # Talos requires the nodes to be 'Ready=False' before applying resources
 function wait_for_nodes() {
@@ -112,7 +113,7 @@ function apply_crds() {
         if kubectl apply --server-side --filename "${crd}" &>/dev/null; then
             log info "CRDs applied" "crd=${crd}"
         else
-            log error "Failed to apply CRDs" "crd=${crd}"
+            log info "Failed to apply CRDs" "crd=${crd}"
         fi
     done
 }
