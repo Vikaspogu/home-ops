@@ -22,7 +22,7 @@ jobs:
 
       - name: Setup Workflow Tools
         shell: bash
-        run: brew install fluxcd/tap/flux siderolabs/tap/talhelper kubernetes-cli kustomize gettext
+        run: brew install kubernetes-cli kustomize gettext
 
       - name: Setup kubeconform
         shell: bash
