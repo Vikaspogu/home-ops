@@ -76,16 +76,30 @@ configs:
       return hs
     resource.customizations.health.argoproj.io_Application: |
       hs = {}
-      hs.status = "Progressing"
-      hs.message = ""
       if obj.status ~= nil then
-        if obj.status.health ~= nil then
-          hs.status = obj.status.health.status
-          if obj.status.health.message ~= nil then
-            hs.message = obj.status.health.message
-          end
+        if obj.status.health ~= nil and obj.status.health.status == "Healthy" then
+          hs.status = "Healthy"
+          hs.message = obj.status.health.message
+          return hs
+        end
+
+        if obj.status.health ~= nil and obj.status.health.status == "Degraded" then
+          hs.status = "Degraded"
+          hs.message = obj.status.health.message
+          return hs
+        end
+
+        -- 👇 Custom rule: mark Unknown as Degraded
+        if obj.status.health ~= nil and obj.status.health.status == "Unknown" then
+          hs.status = "Degraded"
+          hs.message = "Marked Degraded because health is Unknown"
+          return hs
         end
       end
+
+      -- Default fallback
+      hs.status = "Progressing"
+      hs.message = "Waiting for status..."
       return hs
     resource.customizations.health.certmanager.certmanager.io_Certificate: |
       hs = {}
