@@ -7,5 +7,5 @@ helmCharts:
   - name: spegel
     releaseName: spegel
     repo: oci://ghcr.io/spegel-org/helm-charts
-    version: 0.3.0
+    version: 0.4.0
     valuesFile: values.yaml
