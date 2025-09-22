@@ -4,6 +4,8 @@ default:
     enableAutoSync: true
     autoSyncPrune: true
     project: default
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
     labels:
       app-source: cluster01
       repo: default
@@ -107,13 +109,13 @@ applications:
     source:
       path: components/network/unifi-dns
 
-  # argo-cd:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: argo-system
-  #   source:
-  #     path: clusters/cluster01/apps/argo-system/argo-cd
+  argo-cd:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/cluster01/apps/argo-system/argo-cd
 
   # root-application:
   #   annotations:

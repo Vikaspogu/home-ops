@@ -4,6 +4,8 @@ default:
     enableAutoSync: true
     autoSyncPrune: true
     project: default
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
     labels:
       app-source: omv
       repo: default
@@ -74,6 +76,14 @@ applications:
       namespace: kube-system
     source:
       path: components/kube-system/traefik
+
+  unifi-dns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: network
+    source:
+      path: components/network/unifi-dns
 
   argo-cd:
     annotations:
