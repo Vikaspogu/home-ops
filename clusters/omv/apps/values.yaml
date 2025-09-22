@@ -157,13 +157,13 @@ applications:
     source:
       path: components/kube-system/reloader
 
-  kopia:
-    annotations:
-      argocd.argoproj.io/sync-wave: "25"
-    destination:
-      namespace: volsync-system
-    source:
-      path: components/volsync-system/kopia
+  # kopia:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "25"
+  #   destination:
+  #     namespace: volsync-system
+  #   source:
+  #     path: components/volsync-system/kopia
 
   volsync:
     annotations:
