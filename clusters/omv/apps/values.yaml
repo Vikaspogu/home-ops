@@ -148,3 +148,20 @@ applications:
       namespace: kube-system
     source:
       path: components/kube-system/reloader
+
+
+  system-upgrade-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "45"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/system-upgrade-controller
+
+  system-upgrade-k3s:
+    annotations:
+      argocd.argoproj.io/sync-wave: "45"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/k3s
