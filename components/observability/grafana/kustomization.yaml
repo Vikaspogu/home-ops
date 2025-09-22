@@ -9,5 +9,5 @@ helmCharts:
     releaseName: grafana
     namespace: observability
     repo: oci://ghcr.io/grafana/helm-charts
-    version: 9.4.4
+    version: 10.0.0
     valuesFile: values.yaml
