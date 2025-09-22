@@ -84,6 +84,16 @@
       ],
       "depNameTemplate": "kubernetes/kubernetes",
       "datasourceTemplate": "github-releases"
+    },
+    {
+      "description": "Process k3s versions in environment variables",
+      "fileMatch": ["components/common/environment-variables\\.ya?ml$"],
+      "matchStrings": [
+        "KUBE_VERSION: (?<currentValue>v[0-9\\.]+\\+k3s[0-9]+)"
+      ],
+      "depNameTemplate": "k3s-io/k3s",
+      "datasourceTemplate": "github-releases",
+      "versioning": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\+k3s(?<build>\\d+)$"
     }
   ],
   "packageRules": [
@@ -167,6 +177,12 @@
       "matchDatasources": ["helm"]
     },
     {
+      "description": "Group k3s updates",
+      "groupName": "k3s",
+      "matchPackageNames": ["k3s-io/k3s"],
+      "matchDatasources": ["github-releases"]
+    },
+    {
       "description": "Separate PRs for major updates",
       "matchUpdateTypes": ["major","minor", "patch"],
     },
@@ -174,6 +190,12 @@
       "description": "Custom versioning for Talos",
       "matchPackageNames": ["siderolabs/talos"],
       "versioning": "semver-coerced"
+    },
+    {
+      "description": "Custom versioning for k3s and stable releases only",
+      "matchPackageNames": ["k3s-io/k3s"],
+      "versioning": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)\\+k3s(?<build>\\d+)$",
+      "allowedVersions": "/^v[0-9]+\\.[0-9]+\\.[0-9]+\\+k3s[0-9]+$/"
     },
     {
       "description": "Ignore development and beta versions",
