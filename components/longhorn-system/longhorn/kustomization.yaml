@@ -4,7 +4,9 @@ kind: Kustomization
 namespace: longhorn-system
 resources:
   - namespace.yaml
+  - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd
   - http-route.yaml
+  - ./volumesnapshotclass.yaml
 helmCharts:
   - name: longhorn
     repo: https://charts.longhorn.io

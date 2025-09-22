@@ -12,6 +12,10 @@ csi:
     replicas: 1
   snapshotter:
     replicas: 1
+  attacherReplicaCount: 2
+  provisionerReplicaCount: 2
+  resizerReplicaCount: 2
+  snapshotterReplicaCount: 2
 
 defaultSettings:
   defaultDataPath: "/srv/dev-disk-by-uuid-e486bb32-3762-4f61-bfeb-3d3b626159e8/longhorn"
