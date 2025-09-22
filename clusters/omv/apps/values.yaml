@@ -101,6 +101,14 @@ applications:
     source:
       path: components/longhorn-system/longhorn
 
+  snapshot-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/snapshot-controller
+
   rancher:
     annotations:
       argocd.argoproj.io/sync-wave: "25"
