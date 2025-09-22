@@ -1,0 +1,81 @@
+---
+controllers:
+  prowlarr:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+        envFrom: &envFrom
+          - secretRef:
+              name: prowlarr-secret
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/prowlarr
+          tag: 2.1.0.5180@sha256:5915438f7226ab8390503cc9f7288412b4584fc80e444faa224ccf2055d5f812
+        env:
+          PROWLARR__APP__INSTANCENAME: Prowlarr
+          PROWLARR__APP__THEME: dark
+          PROWLARR__AUTH__METHOD: External
+          PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
+          PROWLARR__LOG__DBENABLED: "False"
+          PROWLARR__LOG__LEVEL: info
+          PROWLARR__SERVER__PORT: &port 80
+          PROWLARR__UPDATE__BRANCH: develop
+          TZ: America/New_York
+        envFrom: *envFrom
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            memory: 1Gi
+service:
+  app:
+    ports:
+      http:
+        port: *port
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: prowlarr.png
+    hosts:
+      - host: "prowlarr.${SECRET_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "prowlarr.${SECRET_DOMAIN}"
+
+persistence:
+  config:
+    type: emptyDir
+  tmp:
+    type: emptyDir

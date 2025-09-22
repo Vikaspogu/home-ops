@@ -1,0 +1,192 @@
+---
+defaultPodOptions:
+  enableServiceLinks: false
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+
+controllers:
+  qbittorrent:
+    annotations:
+      configmap.reloader.stakater.com/reload: qbittorrent-scripts,qbittorrent-dnsdist
+      secret.reloader.stakater.com/reload: qbittorrent-secret
+    pod:
+      securityContext:
+        fsGroup: 2000
+        fsGroupChangePolicy: "OnRootMismatch"
+        supplementalGroups:
+          - 65542
+      terminationGracePeriodSeconds: 120
+
+    initContainers:
+      dnsdist:
+        image:
+          repository: docker.io/powerdns/dnsdist-19
+          tag: 1.9.10@sha256:7495affd85c450050eb2fce1cb99964cb439482ffada22e9d312a761b6bf138d
+        restartPolicy: Always
+      gluetun:
+        dependsOn:
+          - dnsdist
+        image:
+          repository: ghcr.io/qdm12/gluetun
+          tag: v3.40.0@sha256:2b42bfa046757145a5155acece417b65b4443c8033fb88661a8e9dcf7fda5a00
+        env:
+          DOT: "off"
+          DNS_ADDRESS: 127.0.0.2
+          VPN_SERVICE_PROVIDER: custom
+          VPN_TYPE: wireguard
+          VPN_INTERFACE: wg0
+          WIREGUARD_ENDPOINT_PORT: 51820
+          VPN_PORT_FORWARDING: on
+          VPN_PORT_FORWARDING_PROVIDER: protonvpn
+          FIREWALL_INPUT_PORTS: &port 8080
+          FIREWALL_OUTBOUND_SUBNETS: 10.96.0.0/16,10.69.0.0/16
+        envFrom:
+          - secretRef:
+              name: qbittorrent-secret
+        resources:
+          limits:
+            squat.ai/tun: "1"
+        restartPolicy: Always
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+          allowPrivilegeEscalation: false
+    containers:
+      vuetorrent:
+        image:
+          repository: registry.k8s.io/git-sync/git-sync
+          tag: v4.4.3
+        args:
+          - --repo=https://github.com/VueTorrent/VueTorrent
+          - --ref=latest-release
+          - --period=86400s
+          - --root=/addons
+        resources:
+          requests:
+            cpu: 10m
+            memory: 25Mi
+          limits:
+            memory: 50Mi
+      app:
+        image:
+          repository: ghcr.io/home-operations/qbittorrent
+          tag: 5.1.2@sha256:31ac39705e31f7cdcc04dc46c1c0b0cdf8dc6f9865d4894efc097a33adc41524
+        nameOverride: qbittorrent
+        env:
+          UMASK: "022"
+          QBT_WEBUI_PORT: 8080
+          QBT_BitTorrent__Session__Interface: wg0
+          QBT_BitTorrent__Session__InterfaceAddress: 0.0.0.0
+          QBT_BitTorrent__Session__InterfaceName: wg0
+          QBT_Preferences__WebUI__AlternativeUIEnabled: true
+          QBT_Preferences__WebUI__RootFolder: /addons/VueTorrent
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+        resources:
+          requests:
+            cpu: 150m
+            memory: 2048Mi
+          limits:
+            memory: 10Gi
+        securityContext:
+          runAsUser: 2000
+          runAsGroup: 2000
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+      port-forward:
+        image:
+          repository: docker.io/snoringdragon/gluetun-qbittorrent-port-manager
+          tag: "1.3"
+        env:
+          QBITTORRENT_SERVER: localhost
+          QBITTORRENT_PORT: *port
+          PORT_FORWARDED: "/tmp/gluetun/forwarded_port"
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: qbittorrent.png
+    hosts:
+      - host: "qb.${SECRET_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "qb.${SECRET_DOMAIN}"
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: qb-config
+    advancedMounts:
+      qbittorrent:
+        app:
+          - path: /config
+  addons:
+    type: emptyDir
+    globalMounts:
+      - path: /addons
+  empty-config:
+    type: emptyDir
+    advancedMounts:
+      qbittorrent:
+        port-forward:
+          - path: /config
+  media:
+    type: nfs
+    server: ${SECRET_NAS_ADDRESS}
+    path: "/volume1/media"
+    advancedMounts:
+      qbittorrent:
+        app:
+          - path: /nfs-nas-pvc
+  gluetun-data:
+    type: emptyDir
+    advancedMounts:
+      qbittorrent:
+        gluetun:
+          - path: /tmp/gluetun
+        port-forward:
+          - path: /tmp/gluetun
+            readOnly: true
+  dnsdist:
+    type: configMap
+    name: qbittorrent-dnsdist
+    advancedMounts:
+      qbittorrent:
+        dnsdist:
+          - path: /etc/dnsdist/dnsdist.conf
+            subPath: dnsdist.conf
+            readOnly: true

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: observability
+resources:
+  - ./prometheusrule.yaml
+  - ./servicemonitor.yaml
+
+helmCharts:
+  - name: app-template
+    releaseName: speedtest-exporter
+    namespace: observability
+    repo: oci://ghcr.io/bjw-s-labs/helm-charts
+    version: 3.5.4
+    valuesFile: values.yaml

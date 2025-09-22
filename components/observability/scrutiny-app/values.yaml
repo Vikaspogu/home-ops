@@ -1,0 +1,82 @@
+---
+controllers:
+  scrutiny:
+    strategy: Recreate
+    containers:
+      app:
+        image:
+          repository: ghcr.io/analogj/scrutiny
+          tag: master-web
+        envFrom:
+          - secretRef:
+              name: scrutiny-secret
+        env:
+          TZ: "${TIMEZONE}"
+          SCRUTINY_WEB_INFLUXDB_HOST: influxdb.default.svc.cluster.local
+          SCRUTINY_WEB_INFLUXDB_ORG: homelab
+          SCRUTINY_WEB_INFLUXDB_BUCKET: scrutiny
+          SCRUTINY_WEB_INFLUXDB_PORT: 80
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 60
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+              httpGet:
+                path: /api/health
+                port: &port 8080
+          readiness: *probes
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              initialDelaySeconds: 0
+              timeoutSeconds: 1
+              periodSeconds: 5
+              failureThreshold: 30
+              httpGet:
+                path: /api/health
+                port: *port
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+service:
+  app:
+    ports:
+      http:
+        port: *port
+ingress:
+  app:
+    enabled: true
+    className: "internal"
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/scrutiny.png
+    hosts:
+      - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+        paths:
+          - path: /
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - *host
+
+persistence:
+  config:
+    existingClaim: scrutiny-data
+    globalMounts:
+      - path: /opt/scrutiny/config
+        subPath: scrutiny

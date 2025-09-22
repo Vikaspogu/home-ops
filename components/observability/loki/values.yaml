@@ -1,0 +1,95 @@
+---
+deploymentMode: SingleBinary
+loki:
+  auth_enabled: false
+  analytics:
+    reporting_enabled: false
+  server:
+    log_level: info
+  commonConfig:
+    replication_factor: 1
+  compactor:
+    working_directory: /var/loki/compactor/retention
+    delete_request_store: filesystem
+    retention_enabled: true
+  ingester:
+    chunk_encoding: snappy
+  storage:
+    type: filesystem
+  schemaConfig:
+    configs:
+      - from: "2024-04-01" # quote
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: loki_index_
+          period: 24h
+  limits_config:
+    retention_period: 14d
+    reject_old_samples: true
+    reject_old_samples_max_age: 168h
+    max_cache_freshness_per_query: 10m
+    split_queries_by_interval: 15m
+    # for big logs tune
+    per_stream_rate_limit: 512M
+    per_stream_rate_limit_burst: 1024M
+    cardinality_limit: 200000
+    ingestion_burst_size_mb: 1000
+    ingestion_rate_mb: 10000
+    max_entries_limit_per_query: 1000000
+    max_label_value_length: 20480
+    max_label_name_length: 10240
+    max_label_names_per_series: 300
+singleBinary:
+  replicas: 1
+  persistence:
+    enabled: true
+    size: 50Gi
+gateway:
+  replicas: 2
+  image:
+    registry: ghcr.io
+    repository: nginx/nginx-unprivileged
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: loki
+          app.kubernetes.io/component: gateway
+  service:
+    type: LoadBalancer
+    annotations:
+      lbipam.cilium.io/ips: ${SVC_LOKI_ADDR}
+  ingress:
+    enabled: true
+    ingressClassName: internal
+    hosts:
+      - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - *host
+backend:
+  replicas: 0
+read:
+  replicas: 0
+write:
+  replicas: 0
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false
+lokiCanary:
+  enabled: false
+test:
+  enabled: false
+sidecar:
+  image:
+    repository: ghcr.io/kiwigrid/k8s-sidecar
+  rules:
+    searchNamespace: ALL

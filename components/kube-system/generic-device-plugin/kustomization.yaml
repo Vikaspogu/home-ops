@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+configMapGenerator:
+  - name: generic-device-plugin-configmap
+    files:
+      - ./config/config.yaml
+generatorOptions:
+  disableNameSuffixHash: true
+
+helmCharts:
+  - name: app-template
+    releaseName: generic-device-plugin
+    namespace: kube-system
+    repo: oci://ghcr.io/bjw-s-labs/helm-charts
+    version: 4.2.0
+    valuesFile: values.yaml
