@@ -68,19 +68,6 @@ serviceMonitor:
         interval: 1m
         scrapeTimeout: 10s
 
-route:
-  app:
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: kopia.png
-    hostnames:
-      - "kopia.${CLUSTER_DOMAIN}"
-    parentRefs:
-      - name: ${GATEWAY_NAME}
-        namespace: ${GATEWAY_NAMESPACE}
-        sectionName: https
-
 persistence:
   config:
     enabled: true
