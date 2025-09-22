@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: system-upgrade
 
 helmCharts:
-  - name: system-upgrade-controller
+  - name: app-template
     releaseName: system-upgrade-controller
     namespace: system-upgrade
     repo: oci://ghcr.io/bjw-s-labs/helm
