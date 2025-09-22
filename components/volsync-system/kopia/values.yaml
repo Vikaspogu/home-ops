@@ -4,13 +4,6 @@ controllers:
     pod:
       annotations:
         reloader.stakater.com/auto: "true"
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: "OnRootMismatch"
-        supplementalGroups:
-          - 100
     containers:
       app:
         image:
