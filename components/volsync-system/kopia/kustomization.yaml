@@ -20,5 +20,5 @@ helmCharts:
     releaseName: kopia
     namespace: volsync-system
     repo: https://bjw-s-labs.github.io/helm-charts
-    version: "4.2.0"
+    version: "4.3.0"
     valuesFile: values.yaml
