@@ -64,7 +64,7 @@ ingress:
       gethomepage.dev/group: Ingress
       gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/scrutiny.png
     hosts:
-      - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
         paths:
           - path: /
             service:

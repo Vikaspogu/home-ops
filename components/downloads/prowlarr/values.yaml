@@ -63,7 +63,7 @@ ingress:
       gethomepage.dev/group: Ingress
       gethomepage.dev/icon: prowlarr.png
     hosts:
-      - host: "prowlarr.${SECRET_DOMAIN}"
+      - host: "prowlarr.${CLUSTER_DOMAIN}"
         paths:
           - path: /
             pathType: Prefix
@@ -72,7 +72,7 @@ ingress:
               port: http
     tls:
       - hosts:
-          - "prowlarr.${SECRET_DOMAIN}"
+          - "prowlarr.${CLUSTER_DOMAIN}"
 
 persistence:
   config:

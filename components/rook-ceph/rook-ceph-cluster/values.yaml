@@ -10,7 +10,7 @@ ingress:
       gethomepage.dev/group: Ingress
       gethomepage.dev/icon: "si-ceph"
     host:
-      name: &host "rook.${SECRET_DOMAIN}"
+      name: &host "rook.${CLUSTER_DOMAIN}"
       path: "/"
     tls:
       - hosts:

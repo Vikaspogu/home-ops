@@ -9,14 +9,14 @@ env:
   GF_EXPLORE_ENABLED: true
   GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
   GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
-  GF_SERVER_ROOT_URL: https://grafana.${SECRET_DOMAIN}
+  GF_SERVER_ROOT_URL: https://grafana.${CLUSTER_DOMAIN}
   GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
   GF_AUTH_GENERIC_OAUTH_NAME: "authentik"
   GF_AUTH_GENERIC_OAUTH_SCOPES: "openid email profile"
-  GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://id.${SECRET_DOMAIN}/application/o/authorize/"
-  GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://id.${SECRET_DOMAIN}/application/o/token/"
-  GF_AUTH_GENERIC_OAUTH_API_URL: "https://id.${SECRET_DOMAIN}/application/o/userinfo/"
-  GF_AUTH_SIGNOUT_REDIRECT_URL: "https://id.${SECRET_DOMAIN}/application/o/grafana/end-session/"
+  GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://id.${CLUSTER_DOMAIN}/application/o/authorize/"
+  GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://id.${CLUSTER_DOMAIN}/application/o/token/"
+  GF_AUTH_GENERIC_OAUTH_API_URL: "https://id.${CLUSTER_DOMAIN}/application/o/userinfo/"
+  GF_AUTH_SIGNOUT_REDIRECT_URL: "https://id.${CLUSTER_DOMAIN}/application/o/grafana/end-session/"
   GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups, 'admins') && 'Admin' || contains(groups, 'Grafana Editors') && 'Editor' || 'Viewer'"
   DS_PROMETHEUS: "prometheus"
 envFromSecrets:
@@ -228,10 +228,10 @@ ingress:
     gethomepage.dev/group: Ingress
     gethomepage.dev/icon: grafana.png
   hosts:
-    - grafana.${SECRET_DOMAIN}
+    - grafana.${CLUSTER_DOMAIN}
   tls:
     - hosts:
-        - grafana.${SECRET_DOMAIN}
+        - grafana.${CLUSTER_DOMAIN}
 persistence:
   enabled: false
 testFramework:

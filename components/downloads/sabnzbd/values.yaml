@@ -24,7 +24,7 @@ controllers:
             sabnzbd.downloads.svc,
             sabnzbd.downloads.svc.cluster,
             sabnzbd.downloads.svc.cluster.local,
-            sabnzbd.${SECRET_DOMAIN}
+            sabnzbd.${CLUSTER_DOMAIN}
         envFrom:
           - secretRef:
               name: sabnzbd-secret
@@ -62,7 +62,7 @@ ingress:
       gethomepage.dev/group: Ingress
       gethomepage.dev/icon: sabnzbd.png
     hosts:
-      - host: "{{ .Release.Name }}.${SECRET_DOMAIN}"
+      - host: "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
         paths:
           - path: /
             pathType: Prefix
@@ -71,7 +71,7 @@ ingress:
               port: http
     tls:
       - hosts:
-          - "{{ .Release.Name }}.${SECRET_DOMAIN}"
+          - "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
 
 persistence:
   config:

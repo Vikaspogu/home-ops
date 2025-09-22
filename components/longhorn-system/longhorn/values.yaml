@@ -31,7 +31,7 @@ preUpgradeChecker:
   jobEnabled: false
 
 persistence:
-  defaultClass: false
+  defaultClass: true
   defaultClassReplicaCount: 1
   defaultFsType: ext4
   reclaimPolicy: Delete
