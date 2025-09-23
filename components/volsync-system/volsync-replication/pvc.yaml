@@ -12,5 +12,5 @@ spec:
     name: ${ARGOCD_APP_NAME}-dst
   resources:
     requests:
-      storage: ${ARGOCD_ENV_PVC_SIZE}
+      storage: ${ARGOCD_ENV_VOLSYNC_CAPACITY}
   storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}

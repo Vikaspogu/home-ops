@@ -9,9 +9,9 @@ spec:
   kopia:
     accessModes: ["ReadWriteOnce"]
     cacheAccessModes: ["ReadWriteOnce"]
-    cacheCapacity: ${ARGOCD_ENV_CACHE_SIZE}
+    cacheCapacity: ${ARGOCD_ENV_VOLSYNC_CAPACITY}
     cacheStorageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
-    capacity: ${ARGOCD_ENV_CACHE_SIZE}
+    capacity: ${ARGOCD_ENV_VOLSYNC_CAPACITY}
     cleanupCachePVC: true
     cleanupTempPVC: true
     copyMethod: Snapshot

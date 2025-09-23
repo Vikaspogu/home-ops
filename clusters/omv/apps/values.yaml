@@ -210,9 +210,7 @@ applications:
             value: longhorn
           - name: VOLUME_SNAPSHOT_CLASS
             value: longhorn
-          - name: CACHE_SIZE
-            value: 4Gi
-          - name: PVC_SIZE
+          - name: VOLSYNC_CAPACITY
             value: 2Gi
 
   system-upgrade-controller:
