@@ -3,10 +3,11 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: postgres17-omv
+  name: pg17-omv
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: enabled
-    app-source: ${ARGOCD_APP_NAME}
+    app-source: ${ARGOCD_APP_STORAGE_CLASS}
+    dummy: ${ARGOCD_APP_VOLUME_SNAPSHOT_CLASS}
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:17.6-minimal-trixie
@@ -30,27 +31,27 @@ spec:
     enablePodMonitor: true
   bootstrap:
     recovery:
-      source: &recoveryCluster postgres
+      source: &recoveryCluster pg17-omv
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
-        barmanObjectName: postgres17-omv-backup
-        serverName: &currentCluster postgres17-omv
+        barmanObjectName: pg17-omv-backup
+        serverName: &currentCluster pg17-omv
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: *recoveryCluster
       plugin:
         name: barman-cloud.cloudnative-pg.io
         parameters:
-          barmanObjectName: postgres17-omv-backup
+          barmanObjectName: pg17-omv-backup
           serverName: *recoveryCluster
 ---
 # yaml-language-server: $schema=https://github.com/datreeio/CRDs-catalog/raw/refs/heads/main/barmancloud.cnpg.io/objectstore_v1.json
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
-  name: postgres17-omv-backup
+  name: pg17-omv-backup
 spec:
   configuration:
     destinationPath: s3://postgres/
@@ -70,11 +71,11 @@ spec:
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
-  name: postgres17-omv
+  name: pg17-omv
 spec:
   backupOwnerReference: self
   cluster:
-    name: postgres17-omv
+    name: pg17-omv
   schedule: "@daily"
   immediate: true
   method: plugin

@@ -196,12 +196,12 @@ applications:
       namespace: default
     source:
       path: components/default/cloudnative-cluster
-    plugin:
-      parameters:
-        - name: storageClassName
-          string: longhorn
-        - name: volumeSnapshotClassName
-          string: longhorn-snapclass
+      plugin:
+        parameters:
+          - name: STORAGE_CLASS
+            string: longhorn
+          - name: VOLUME_SNAPSHOT_CLASS
+            string: longhorn-snapclass
 
   # rwmarkable:
   #   annotations:
