@@ -12,8 +12,8 @@ spec:
     cacheCapacity: ${ARGOCD_ENV_VOLSYNC_CAPACITY}
     cacheStorageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
     capacity: ${ARGOCD_ENV_VOLSYNC_CAPACITY}
-    cleanupCachePVC: true
-    cleanupTempPVC: true
+    cleanupCachePVC: false # Seems to be better for longhorn
+    cleanupTempPVC: false # Seems to be better for longhorn
     copyMethod: Snapshot
     enableFileDeletion: true
     moverSecurityContext:
