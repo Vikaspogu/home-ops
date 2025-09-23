@@ -197,21 +197,21 @@ applications:
     source:
       path: components/default/cloudnative-cluster
 
-  rwmarkable:
-    annotations:
-      argocd.argoproj.io/sync-wave: "35"
-    destination:
-      namespace: default
-    source:
-      path: components/default/rwmarkable
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: longhorn
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: longhorn
-          - name: VOLSYNC_CAPACITY
-            value: 2Gi
+  # rwmarkable:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "35"
+  #   destination:
+  #     namespace: default
+  #   source:
+  #     path: components/default/rwmarkable
+  #     plugin:
+  #       env:
+  #         - name: STORAGE_CLASS
+  #           value: longhorn
+  #         - name: VOLUME_SNAPSHOT_CLASS
+  #           value: longhorn
+  #         - name: VOLSYNC_CAPACITY
+  #           value: 2Gi
 
   system-upgrade-controller:
     annotations:
