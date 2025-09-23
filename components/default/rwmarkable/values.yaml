@@ -1,5 +1,8 @@
 controllers:
   rwmarkable:
+    pod:
+      securityContext:
+        fsGroup: 2000
     annotations:
       reloader.stakater.com/auto: "true"
     containers:
