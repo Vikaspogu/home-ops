@@ -199,9 +199,9 @@ applications:
       plugin:
         env:
           - name: STORAGE_CLASS
-            string: longhorn
+            value: longhorn
           - name: VOLUME_SNAPSHOT_CLASS
-            string: longhorn-snapclass
+            value: longhorn-snapclass
 
   # rwmarkable:
   #   annotations:
