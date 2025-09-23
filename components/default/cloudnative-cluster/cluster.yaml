@@ -57,13 +57,13 @@ spec:
     endpointURL: http://garage:3900
     s3Credentials:
       accessKeyId:
-        name: garage
+        name: garage-access-keys
         key: ACCESS_KEY_ID
       secretAccessKey:
-        name: garage
+        name: garage-access-keys
         key: ACCESS_SECRET_KEY
       region:
-        name: garage
+        name: garage-access-keys
         key: REGION
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/postgresql.cnpg.io/scheduledbackup_v1.json
