@@ -2,7 +2,7 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: ${APP}
+  name: ${ARGOCD_APP_NAME}
 spec:
   sourcePVC: ${PVC_NAME}
   trigger:
@@ -18,7 +18,7 @@ spec:
       runAsUser: 1000
       runAsGroup: 100
       fsGroup: 100
-    repository: "${APP}-volsync-secret"
+    repository: "${ARGOCD_APP_NAME}-volsync-secret"
     retain:
       hourly: 24
       daily: 7

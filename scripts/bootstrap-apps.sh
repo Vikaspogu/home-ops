@@ -48,7 +48,7 @@ function apply_namespaces() {
     fi
 
     for app in "${apps_dir}"/*/; do
-        namespace=$(basename "${app}")
+        namespace=$(basename "${ARGOCD_APP_NAME}")
 
         # Check if the namespace resources are up-to-date
         if kubectl get namespace "${namespace}" &>/dev/null; then

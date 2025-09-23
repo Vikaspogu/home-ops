@@ -3,7 +3,7 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: "${APP}-dst"
+  name: "${ARGOCD_APP_NAME}-dst"
 spec:
   trigger:
     manual: restore-once
@@ -21,8 +21,8 @@ spec:
       runAsUser: 1000
       runAsGroup: 100
       fsGroup: 100
-    repository: "${APP}-volsync-secret"
+    repository: "${ARGOCD_APP_NAME}-volsync-secret"
     sourceIdentity:
-      sourceName: ${APP}
+      sourceName: ${ARGOCD_APP_NAME}
     storageClassName: "ceph-block"
     volumeSnapshotClassName: "csi-ceph-blockpool"
