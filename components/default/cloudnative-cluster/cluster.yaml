@@ -6,8 +6,8 @@ metadata:
   name: pg17-omv
   annotations:
     cnpg.io/skipEmptyWalArchiveCheck: enabled
-    app-source: ${ARGOCD_STORAGE_CLASS}
-    dummy: ${ARGOCD_VOLUME_SNAPSHOT_CLASS}
+    app-source: ${ARGOCD_ENV_STORAGE_CLASS}
+    dummy: ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS}
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:17.6-minimal-trixie

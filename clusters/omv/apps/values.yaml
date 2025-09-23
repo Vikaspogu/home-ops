@@ -197,7 +197,7 @@ applications:
     source:
       path: components/default/cloudnative-cluster
       plugin:
-        parameters:
+        env:
           - name: STORAGE_CLASS
             string: longhorn
           - name: VOLUME_SNAPSHOT_CLASS
