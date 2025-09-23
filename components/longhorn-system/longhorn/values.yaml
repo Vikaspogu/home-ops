@@ -23,20 +23,13 @@ defaultSettings:
   concurrentAutomaticEngineUpgradePerNodeLimit: 1
   concurrentReplicaRebuildPerNodeLimit: 3
   concurrentVolumeBackupRestorePerNodeLimit: 3
-  createDefaultDiskLabeledNodes: true
   defaultDataLocality: best-effort
   defaultLonghornStaticStorageClass: longhorn
-  defaultReplicaCount: 2 # TODO: Increase this to 2-3 when adding nodes
-  detachManuallyAttachedVolumesWhenCordoned: true
-  #guaranteedEngineManagerCPU: 20
-  #guaranteedReplicaManagerCPU: 20
+  defaultReplicaCount: 1
   node-drain-policy: allow-if-replica-is-stopped
-  #nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
   offlineRelicaRebuilding: true
   orphanAutoDeletion: true
   replicaAutoBalance: best-effort
-  restoreVolumeRecurringJobs: true # Don´t need this if we create a default one and then use localpath for the ones we don´t want to backup
-  # snapshotMaxCount: 10
   storageReservedPercentageForDefaultDisk: 0
   storageMinimalAvailablePercentage: 5
   storageOverProvisioningPercentage: 150
