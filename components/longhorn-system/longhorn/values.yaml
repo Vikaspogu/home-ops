@@ -18,23 +18,12 @@ csi:
   snapshotterReplicaCount: 2
 
 defaultSettings:
-  autoCleanupSnapshotAfterOnDemandBackupCompleted: true
-  autoCleanupSnapshotWhenDeleteBackup: true
-  concurrentAutomaticEngineUpgradePerNodeLimit: 1
-  concurrentReplicaRebuildPerNodeLimit: 3
-  concurrentVolumeBackupRestorePerNodeLimit: 3
-  defaultDataLocality: best-effort
-  defaultLonghornStaticStorageClass: longhorn
-  defaultReplicaCount: 1
-  node-drain-policy: allow-if-replica-is-stopped
-  offlineRelicaRebuilding: true
-  orphanAutoDeletion: true
-  replicaAutoBalance: best-effort
-  storageReservedPercentageForDefaultDisk: 0
-  storageMinimalAvailablePercentage: 5
-  storageOverProvisioningPercentage: 150
   defaultDataPath: "/srv/dev-disk-by-uuid-e486bb32-3762-4f61-bfeb-3d3b626159e8/longhorn"
+  defaultDataLocality: "best-effort"
   defaultClassReplicaCount: 1
+  mkfsExt4Parameters: "-F"
+  guaranteedInstanceManagerCPU: 5
+  taintToleration: "node-role.kubernetes.io/control-plane:NoSchedule"
 
 preUpgradeChecker:
   jobEnabled: false
@@ -42,7 +31,10 @@ preUpgradeChecker:
 persistence:
   defaultClass: true
   defaultClassReplicaCount: 1
+  defaultFsType: ext4
   reclaimPolicy: Delete
+  defaultMkfsParams: "-F"
+  diskSelector: sdf
 
 # Resource limits for small clusters
 longhornManager:
