@@ -157,13 +157,13 @@ applications:
     source:
       path: components/kube-system/reloader
 
-  # kopia:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "25"
-  #   destination:
-  #     namespace: volsync-system
-  #   source:
-  #     path: components/volsync-system/kopia
+  kopia:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: volsync-system
+    source:
+      path: clusters/omv/apps/volsync-system/kopia
 
   volsync:
     annotations:
@@ -171,7 +171,7 @@ applications:
     destination:
       namespace: volsync-system
     source:
-      path: components/volsync-system/volsync
+      path: clusters/omv/apps/volsync-system/volsync
 
   barman-cloud:
     annotations:
@@ -196,12 +196,6 @@ applications:
       namespace: default
     source:
       path: components/default/cloudnative-cluster
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: longhorn
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: longhorn-snapclass
 
   # rwmarkable:
   #   annotations:
@@ -210,6 +204,16 @@ applications:
   #     namespace: default
   #   source:
   #     path: components/default/rwmarkable
+  #     plugin:
+  #       env:
+  #         - name: STORAGE_CLASS
+  #           value: longhorn
+  #         - name: VOLUME_SNAPSHOT_CLASS
+  #           value: longhorn
+  #         - name: CACHE_SIZE
+  #           value: 4Gi
+  #         - name: PVC_SIZE
+  #           value: 2Gi
 
   system-upgrade-controller:
     annotations:

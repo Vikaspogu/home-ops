@@ -1,5 +1,4 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
@@ -10,9 +9,9 @@ spec:
   kopia:
     accessModes: ["ReadWriteOnce"]
     cacheAccessModes: ["ReadWriteOnce"]
-    cacheCapacity: "5Gi"
-    cacheStorageClassName: "ceph-block"
-    capacity: "5Gi"
+    cacheCapacity: ${ARGOCD_ENV_CACHE_SIZE}
+    cacheStorageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
+    capacity: ${ARGOCD_ENV_CACHE_SIZE}
     cleanupCachePVC: true
     cleanupTempPVC: true
     copyMethod: Snapshot
@@ -24,5 +23,5 @@ spec:
     repository: "${ARGOCD_APP_NAME}-volsync-secret"
     sourceIdentity:
       sourceName: ${ARGOCD_APP_NAME}
-    storageClassName: "ceph-block"
-    volumeSnapshotClassName: "csi-ceph-blockpool"
+    storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
+    volumeSnapshotClassName: ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS}

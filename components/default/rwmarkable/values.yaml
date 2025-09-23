@@ -18,7 +18,7 @@ controllers:
             enabled: true
 service:
   main:
-    controller: main
+    controller: rwmarkable
     ports:
       http:
         port: 3000

@@ -117,6 +117,14 @@ applications:
     source:
       path: clusters/cluster01/apps/argo-system/argo-cd
 
+  kopia:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: volsync-system
+    source:
+      path: clusters/cluster01/apps/volsync-system/kopia
+
   # root-application:
   #   annotations:
   #     argocd.argoproj.io/sync-wave: "20"

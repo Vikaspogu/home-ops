@@ -53,15 +53,15 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicyBinding
 metadata:
-  name: volsync-mover-nfs
+  name: volsync-mover
 spec:
-  policyName: volsync-mover-nfs
+  policyName: volsync-mover
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/v1.32.0/mutatingadmissionpolicy-admissionregistration-v1alpha1.json
 apiVersion: admissionregistration.k8s.io/v1alpha1
 kind: MutatingAdmissionPolicy
 metadata:
-  name: volsync-mover-nfs
+  name: volsync-mover
 spec:
   matchConstraints:
     resourceRules:

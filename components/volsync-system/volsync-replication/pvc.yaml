@@ -12,5 +12,5 @@ spec:
     name: ${ARGOCD_APP_NAME}-dst
   resources:
     requests:
-      storage: 5Gi
-  storageClassName: ceph-block
+      storage: ${ARGOCD_ENV_PVC_SIZE}
+  storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}

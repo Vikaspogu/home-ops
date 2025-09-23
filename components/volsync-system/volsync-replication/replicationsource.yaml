@@ -4,14 +4,14 @@ kind: ReplicationSource
 metadata:
   name: ${ARGOCD_APP_NAME}
 spec:
-  sourcePVC: ${PVC_NAME}
+  sourcePVC: ${ARGOCD_APP_NAME}
   trigger:
     schedule: "0 */6 * * *"
   kopia:
     accessModes: ["ReadWriteOnce"]
     cacheAccessModes: ["ReadWriteOnce"]
-    cacheCapacity: "5Gi"
-    cacheStorageClassName: "ceph-block"
+    cacheCapacity: ${ARGOCD_ENV_CACHE_SIZE}
+    cacheStorageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
     compression: zstd-fastest
     copyMethod: Snapshot
     moverSecurityContext:
@@ -22,5 +22,5 @@ spec:
     retain:
       hourly: 24
       daily: 7
-    storageClassName: "ceph-block"
-    volumeSnapshotClassName: "csi-ceph-blockpool"
+    storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
+    volumeSnapshotClassName: ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS}

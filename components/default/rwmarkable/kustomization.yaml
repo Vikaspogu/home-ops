@@ -4,7 +4,7 @@ namespace: default
 resources:
   - ./http-route.yaml
 components:
-  - ../volsync-system/volsync-replication
+  - ../../volsync-system/volsync-replication
 helmCharts:
   - name: app-template
     releaseName: rwmarkable

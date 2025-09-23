@@ -84,9 +84,3 @@ persistence:
         subPath: cache
       - path: /config/logs
         subPath: logs
-  repository:
-    type: nfs
-    server: omv-loki.vikaspogu.internal
-    path: "/storage0/VolsyncKopia"
-    globalMounts:
-      - path: /repository

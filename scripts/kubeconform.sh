@@ -14,7 +14,11 @@ export INTERNAL_IP_ADDRESS="${INTERNAL_IP_ADDRESS:-10.0.0.100}"
 export GATEWAY_NAME="${GATEWAY_NAME:-gateway}"
 export GATEWAY_NAMESPACE="${GATEWAY_NAMESPACE:-gateway-system}"
 export APP="${APP:-app}"
-export PVC_NAME="${PVC_NAME:-pvc}"
+export ARGOCD_APP_NAME="${ARGOCD_APP_NAME:-app}"
+export ARGOCD_ENV_CACHE_SIZE="${ARGOCD_ENV_CACHE_SIZE:-4Gi}"
+export ARGOCD_ENV_PVC_SIZE="${ARGOCD_ENV_PVC_SIZE:-2Gi}"
+export ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS="${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS:-longhorn-snapclass}"
+export ARGOCD_ENV_STORAGE_CLASS="${ARGOCD_ENV_STORAGE_CLASS:-longhorn}"
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins")
 kustomize_config="kustomization.yaml"
