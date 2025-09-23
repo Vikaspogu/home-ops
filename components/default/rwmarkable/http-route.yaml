@@ -1,0 +1,23 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: rwmarkable
+  labels:
+    app.kubernetes.io/instance: rwmarkable
+    app.kubernetes.io/name: rwmarkable
+  annotations:
+    gethomepage.dev/href: "https://notes.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/rwmarkable.png
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["notes.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: rwmarkable
+          port: 3000

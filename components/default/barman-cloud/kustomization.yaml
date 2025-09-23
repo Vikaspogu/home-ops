@@ -1,0 +1,17 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  # renovate: datasource=github-releases depName=cloudnative-pg/plugin-barman-cloud
+  - https://raw.githubusercontent.com/cloudnative-pg/plugin-barman-cloud/refs/tags/v0.6.0/config/crd/bases/barmancloud.cnpg.io_objectstores.yaml
+  - ./certificate.yaml
+  - ./rbac.yaml
+
+helmCharts:
+  - name: app-template
+    releaseName: barman-cloud
+    namespace: default
+    repo: oci://ghcr.io/bjw-s-labs/helm
+    version: "4.3.0"
+    valuesFile: values.yaml

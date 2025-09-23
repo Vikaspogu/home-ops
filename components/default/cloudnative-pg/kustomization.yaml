@@ -1,0 +1,15 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ./externalsecret.yaml
+
+helmCharts:
+  - name: cloudnative-pg
+    releaseName: cloudnative-pg
+    namespace: default
+    repo: https://cloudnative-pg.github.io/charts
+    version: 0.26.0
+    valuesFile: values.yaml

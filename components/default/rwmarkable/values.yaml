@@ -1,0 +1,30 @@
+controllers:
+  rwmarkable:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      main:
+        image:
+          repository: ghcr.io/fccview/rwmarkable
+          tag: 1.4@sha256:655d620cd628c0f3ace2d5bed79d0e14000632043ef883951925266833d911a0
+        env:
+          NODE_ENV: production
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 3000
+
+persistence:
+  data:
+    existingClaim: rwmarkable
+    globalMounts:
+      - path: /app/data
