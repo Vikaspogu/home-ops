@@ -18,18 +18,30 @@ csi:
   snapshotterReplicaCount: 2
 
 defaultSettings:
+  autoCleanupSnapshotAfterOnDemandBackupCompleted: true
+  autoCleanupSnapshotWhenDeleteBackup: true
+  concurrentAutomaticEngineUpgradePerNodeLimit: 1
+  concurrentReplicaRebuildPerNodeLimit: 3
+  concurrentVolumeBackupRestorePerNodeLimit: 3
+  createDefaultDiskLabeledNodes: true
+  defaultDataLocality: best-effort
+  defaultLonghornStaticStorageClass: longhorn
+  defaultReplicaCount: 2 # TODO: Increase this to 2-3 when adding nodes
+  detachManuallyAttachedVolumesWhenCordoned: true
+  #guaranteedEngineManagerCPU: 20
+  #guaranteedReplicaManagerCPU: 20
+  node-drain-policy: allow-if-replica-is-stopped
+  #nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
+  offlineRelicaRebuilding: true
+  orphanAutoDeletion: true
+  replicaAutoBalance: best-effort
+  restoreVolumeRecurringJobs: true # Don´t need this if we create a default one and then use localpath for the ones we don´t want to backup
+  # snapshotMaxCount: 10
+  storageReservedPercentageForDefaultDisk: 0
+  storageMinimalAvailablePercentage: 5
+  storageOverProvisioningPercentage: 150
   defaultDataPath: "/srv/dev-disk-by-uuid-e486bb32-3762-4f61-bfeb-3d3b626159e8/longhorn"
-  # DATA replica count - this is what matters for your question
-  defaultDataLocality: "best-effort"
-  # For 2 nodes: use 1 replica (no redundancy but works)
-  # For 3+ nodes: use 2 replicas (redundancy with failure tolerance)
   defaultClassReplicaCount: 1
-  # Force formatting to fix device busy errors
-  mkfsExt4Parameters: "-F"
-  # Reduce resource usage for small clusters
-  guaranteedInstanceManagerCPU: 5 # Reduce from default 12%
-  # Allow scheduling on nodes with existing workloads
-  taintToleration: "node-role.kubernetes.io/control-plane:NoSchedule"
 
 preUpgradeChecker:
   jobEnabled: false
@@ -37,11 +49,8 @@ preUpgradeChecker:
 persistence:
   defaultClass: true
   defaultClassReplicaCount: 1
-  defaultFsType: ext4
   reclaimPolicy: Delete
-  # Force mkfs to handle device busy issues
-  defaultMkfsParams: "-F"
-  diskSelector: sdf
+  backupTargetName: default
 
 # Resource limits for small clusters
 longhornManager:
@@ -63,6 +72,7 @@ longhornDriver:
       memory: 128Mi
 longhornUI:
   replicas: 1
-
+annotations:
+  configmap.reloader.stakater.com/reload: longhorn-default-setting
 ingress:
   enabled: false
