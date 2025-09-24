@@ -47,7 +47,7 @@ service:
 persistence:
   config:
     enabled: true
-    existingClaim: jellyfin-config
+    existingClaim: jellyfin
     globalMounts:
       - path: /config
   transcode:
