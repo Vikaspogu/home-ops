@@ -9,6 +9,6 @@ helmCharts:
   - name: app-template
     releaseName: speedtest-exporter
     namespace: observability
-    repo: oci://ghcr.io/bjw-s-labs/helm-charts
+    repo: oci://ghcr.io/bjw-s-labs/helm
     version: 3.5.4
     valuesFile: values.yaml

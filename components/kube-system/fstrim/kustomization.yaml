@@ -6,6 +6,6 @@ helmCharts:
   - name: fstrim
     releaseName: fstrim
     namespace: kube-system
-    repo: oci://ghcr.io/bjw-s-labs/helm-charts
+    repo: oci://ghcr.io/bjw-s-labs/helm
     version: 4.2.0
     valuesFile: values.yaml

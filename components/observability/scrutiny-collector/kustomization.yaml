@@ -8,6 +8,6 @@ helmCharts:
   - name: app-template
     releaseName: scrutiny-collector
     namespace: observability
-    repo: oci://ghcr.io/bjw-s-labs/helm-charts
+    repo: oci://ghcr.io/bjw-s-labs/helm
     version: 4.2.0
     valuesFile: values.yaml
