@@ -2,15 +2,15 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: rwmarkable
+  name: blinko
   labels:
-    app.kubernetes.io/instance: rwmarkable
-    app.kubernetes.io/name: rwmarkable
+    app.kubernetes.io/instance: blinko
+    app.kubernetes.io/name: blinko
   annotations:
     gethomepage.dev/href: "https://notes.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Ingress
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/rwmarkable.png
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/blinko.png
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
@@ -19,5 +19,5 @@ spec:
   hostnames: ["notes.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: rwmarkable
-          port: 3000
+        - name: blinko
+          port: 1111

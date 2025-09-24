@@ -1,0 +1,47 @@
+controllers:
+  blinko:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+        envFrom: &envFrom
+          - secretRef:
+              name: blinko-secret
+    containers:
+      main:
+        image:
+          repository: blinkospace/blinko
+          tag: 1.6.2@sha256:9e90b4e615d8009f83b84afcf1c4020e97ec31cb6906b06014d02ef5cc850d97
+        env:
+          TZ: America/New_York
+          NODE_ENV: production
+          NEXTAUTH_URL: https://notes.${CLUSTER_DOMAIN}
+          NEXTAUTH_URL_INTERNAL: http://blinko.default.svc.cluster.local:1111
+          NEXT_PUBLIC_BASE_URL: https://notes.${CLUSTER_DOMAIN}
+          NEXT_PRIVATE_STANDALONE: true
+        envFrom: *envFrom
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+service:
+  main:
+    controller: blinko
+    ports:
+      http:
+        port: 1111
+
+persistence:
+  data:
+    existingClaim: blinko
+    globalMounts:
+      - path: /app/.blinko
+  tmp:
+    type: emptyDir
+    medium: Memory
