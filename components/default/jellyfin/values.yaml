@@ -1,0 +1,62 @@
+---
+defaultPodOptions:
+  enableServiceLinks: false
+controllers:
+  jellyfin:
+    strategy: Recreate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: jellyfin/jellyfin
+          tag: 10.10.7@sha256:7ae36aab93ef9b6aaff02b37f8bb23df84bb2d7a3f6054ec8fc466072a648ce2
+        env:
+          DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
+          JELLYFIN_FFmpeg__probesize: 50000000
+          JELLYFIN_FFmpeg__analyzeduration: 50000000
+          TZ: America/New_York
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+          limits:
+            memory: 6Gi
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: &port 8096
+              initialDelaySeconds: 0
+              periodSeconds: 30
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+          startup:
+            enabled: false
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: jellyfin-config
+    globalMounts:
+      - path: /config
+  transcode:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /transcode
+  media:
+    type: hostPath
+    hostPath: /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/media
+    globalMounts:
+      - path: /nfs-nas-pvc
