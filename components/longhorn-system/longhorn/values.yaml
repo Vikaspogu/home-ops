@@ -29,12 +29,7 @@ preUpgradeChecker:
   jobEnabled: false
 
 persistence:
-  defaultClass: true
-  defaultClassReplicaCount: 1
-  defaultFsType: ext4
-  reclaimPolicy: Delete
-  defaultMkfsParams: "-F"
-  diskSelector: sdf
+  defaultClass: false
 
 # Resource limits for small clusters
 longhornManager:

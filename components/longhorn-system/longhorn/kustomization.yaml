@@ -3,10 +3,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: longhorn-system
 resources:
-  - namespace.yaml
+  - ./namespace.yaml
   - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd
   - ./external-secret.yaml
-  - http-route.yaml
+  - ./http-route.yaml
+  - ./storageclass.yaml
   - ./volumesnapshotclass.yaml
 helmCharts:
   - name: longhorn
