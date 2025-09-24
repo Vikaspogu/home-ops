@@ -205,21 +205,21 @@ applications:
     source:
       path: components/default/memos
 
-  # jellyfin:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "35"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/jellyfin
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: longhorn
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: longhorn
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 10Gi
+  jellyfin:
+    annotations:
+      argocd.argoproj.io/sync-wave: "35"
+    destination:
+      namespace: default
+    source:
+      path: components/default/jellyfin
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: longhorn-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: longhorn
+          - name: VOLSYNC_CAPACITY
+            value: 10Gi
 
   system-upgrade-controller:
     annotations:
