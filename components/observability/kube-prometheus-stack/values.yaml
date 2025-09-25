@@ -24,7 +24,7 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: ceph-block
+          storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
           resources:
             requests:
               storage: 1Gi
@@ -70,7 +70,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: ceph-block
+          storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
           resources:
             requests:
               storage: 40Gi

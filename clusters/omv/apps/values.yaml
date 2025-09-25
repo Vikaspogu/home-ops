@@ -244,6 +244,10 @@ applications:
       namespace: observability
     source:
       path: components/observability/kube-prometheus-stack
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: longhorn-volsync
 
   system-upgrade-controller:
     annotations:
