@@ -26,6 +26,9 @@ data:
         style: row
         columns: 3
         icon: mdi-chart-line
+    providers:
+      longhorn:
+        url: http://longhorn-frontend.longhorn-system.svc.cluster.local:80
   widgets.yaml: |
     - resources:
         backend: kubernetes
