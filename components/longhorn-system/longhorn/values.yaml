@@ -22,7 +22,7 @@ defaultSettings:
   defaultDataLocality: "best-effort"
   defaultClassReplicaCount: 1
   mkfsExt4Parameters: "-F"
-  guaranteedInstanceManagerCPU: 5
+  guaranteedInstanceManagerCPU: "5"
   taintToleration: "node-role.kubernetes.io/control-plane:NoSchedule"
 
 preUpgradeChecker:
