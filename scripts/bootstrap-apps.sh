@@ -48,7 +48,7 @@ function apply_namespaces() {
     fi
 
     for app in "${apps_dir}"/*/; do
-        namespace=$(basename "${ARGOCD_APP_NAME}")
+        namespace=$(basename "${app}")
 
         # Check if the namespace resources are up-to-date
         if kubectl get namespace "${namespace}" &>/dev/null; then
@@ -200,11 +200,11 @@ function main() {
     # Apply resources and Helm releases
     wait_for_nodes
     apply_namespaces
-    apply_sops_secrets
-    apply_crds
-    sync_helm_releases
-    setup_argo_cd
-    sync_argo_apps
+    # apply_sops_secrets
+    # apply_crds
+    # sync_helm_releases
+    # setup_argo_cd
+    # sync_argo_apps
 
     log info "Congrats! The cluster is bootstrapped and Argo is syncing the Git repository"
 }

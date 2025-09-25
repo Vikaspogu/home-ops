@@ -237,6 +237,14 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 10Gi
 
+  kube-prometheus-stack:
+    annotations:
+      argocd.argoproj.io/sync-wave: "35"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/kube-prometheus-stack
+
   system-upgrade-controller:
     annotations:
       argocd.argoproj.io/sync-wave: "45"

@@ -70,9 +70,8 @@ spec:
           sendResolved: true
           sound: gamelan
           title: >-
-            [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}]
-            {{ .CommonLabels.alertname }}
-          ttl: 3600s
+            [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
+          ttl: 86400s
           token:
             name: &secret alertmanager-secret
             key: ALERTMANAGER_PUSHOVER_TOKEN
