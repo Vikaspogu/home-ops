@@ -1,0 +1,72 @@
+# Labels to apply to all resources created by this Helm chart
+argocd:
+  namespace: argo-system
+
+commonLabels: {}
+
+configMap:
+  create: true
+  env:
+    KUBECHECKS_ADDITIONAL_APPS_NAMESPACES: "*"
+    KUBECHECKS_ARGOCD_API_INSECURE: "true"
+    KUBECHECKS_ARGOCD_API_NAMESPACE: argo-system
+    KUBECHECKS_ARGOCD_REPOSITORY_ENDPOINT: argocd-repo-server.argo-system:8081
+    KUBECHECKS_ARGOCD_REPOSITORY_INSECURE: "true"
+    KUBECHECKS_FALLBACK_K8S_VERSION: "1.23.0"
+    KUBECHECKS_LOG_LEVEL: debug
+    KUBECHECKS_NAMESPACE: kubechecks
+    KUBECHECKS_WEBHOOK_URL_BASE: https://kubechecks.apps.${PLATFORM_BASE_DOMAIN}
+    ARGOCD_EXEC_TIMEOUT: 600s
+    KUBECHECKS_OTEL_ENABLED: "false"
+    KUBECHECKS_VCS_TYPE: "github"
+    KUBECHECKS_VCS_USERNAME: "vikaspogu"
+    KUBECHECKS_VCS_EMAIL: "vikaspoguadf@gmail.com"
+    KUBECHECKS_TIDY_OUTDATED_COMMENTS_MODE: "hide" # other options delete
+    GRPC_ENFORCE_ALPN_ENABLED: "false"
+
+deployment:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  # Default values for kubechecks.
+  resources:
+    limits:
+      memory: 512Mi
+    requests:
+      memory: 256Mi
+      cpu: 200m
+  replicaCount: 1
+  image:
+    pullPolicy: Always
+    name: "ghcr.io/zapier/kubechecks"
+    tag: "v2.5.2"
+  env: []
+  envFrom:
+    - secretRef:
+        name: kubechecks
+  startupProbe:
+    failureThreshold: 30
+    periodSeconds: 10
+  livenessProbe:
+    failureThreshold: 30
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    failureThreshold: 30
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+
+serviceAccount:
+  create: true
+  enabled: true
+  name: '{{ include "kubechecks.fullname" . }}'
+service:
+  create: true
+  type: ClusterIP
+  port: 8080
+  name: http
+ingress:
+  create: false

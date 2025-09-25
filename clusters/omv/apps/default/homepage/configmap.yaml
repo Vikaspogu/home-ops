@@ -10,7 +10,7 @@ data:
     mode: cluster
     gateway: true
   settings.yaml: |
-    title: OMV Host Dashboard
+    title: OMV K3S Cluster
     background:
       image: https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapercave.com%2Fwp%2Fwp5320845.jpg&f=1&nofb=1&ipt=53f7d5e1c810478d338de39a54e3cf32484354d092fc05e9b0aea3216f428c53
       blur: sm
@@ -45,6 +45,11 @@ data:
           dateStyle: long
           timeStyle: short
           hourCycle: h23
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: true
     - openmeteo:
         label: Home
         latitude: {{HOMEPAGE_VAR_LATITUDE}}

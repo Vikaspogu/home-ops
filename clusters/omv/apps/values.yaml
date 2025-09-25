@@ -139,7 +139,7 @@ applications:
     destination:
       namespace: default
     source:
-      path: components/default/homepage
+      path: clusters/omv/apps/default/homepage
 
   syncthing:
     annotations:
