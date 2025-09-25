@@ -5,7 +5,6 @@ namespace: longhorn-system
 resources:
   - ./namespace.yaml
   - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd
-  - ./external-secret.yaml
   - ./http-route.yaml
   - ./storageclass.yaml
   - ./volumesnapshotclass.yaml

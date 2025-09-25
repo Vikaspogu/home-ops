@@ -93,13 +93,13 @@ applications:
     source:
       path: clusters/omv/apps/argo-system/argo-cd
 
-  # longhorn:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: longhorn-system
-  #   source:
-  #     path: components/longhorn-system/longhorn
+  longhorn:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: longhorn-system
+    source:
+      path: components/longhorn-system/longhorn
 
   snapshot-controller:
     annotations:

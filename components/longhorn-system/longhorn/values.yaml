@@ -53,9 +53,6 @@ longhornDriver:
     requests:
       cpu: 100m
       memory: 128Mi
-defaultBackupStore:
-  backupTarget: "s3://longhorn-backup@garage/"
-  backupTargetCredentialSecret: garage-longhorn-keys
 longhornUI:
   replicas: 1
 annotations:
