@@ -153,6 +153,32 @@ configs:
   secret:
     argocdServerAdminPassword: $2a$10$GRTeAT.0uRW2HUk59OJn6OjYtWPROWimrka/EGkgDUsiNvmyep05e
     argocdServerAdminPasswordMtime: 2025-08-26T18:15:18
+controller:
+  metrics:
+    enabled: true
+    applicationLabels:
+      enabled: true
+    serviceMonitor: &service-monitor
+      enabled: true
+      additionalLabels:
+        release: kube-prometheus-stack
+dex:
+  metrics:
+    enabled: true
+    serviceMonitor: *service-monitor
+redis:
+  metrics:
+    enabled: true
+    serviceMonitor: *service-monitor
+server:
+  allowAnyNamespace: true
+  metrics:
+    enabled: true
+    serviceMonitor: *service-monitor
+notifications:
+  metrics:
+    enabled: true
+    serviceMonitor: *service-monitor
 repoServer:
   deploymentAnnotations:
     reloader.stakater.com/auto: "true"
