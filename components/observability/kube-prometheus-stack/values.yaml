@@ -11,10 +11,10 @@ alertmanager:
         - name: ${GATEWAY_NAME}
           namespace: ${GATEWAY_NAMESPACE}
           sectionName: https
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/prometheus.png"
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Ingress
+        gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/pushover.png"
   alertmanagerSpec:
     alertmanagerConfiguration:
       name: alertmanager
@@ -44,6 +44,10 @@ prometheus:
         - name: ${GATEWAY_NAME}
           namespace: ${GATEWAY_NAMESPACE}
           sectionName: https
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Ingress
+        gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/prometheus.png"
   prometheusSpec:
     externalUrl: https://prometheus.${CLUSTER_DOMAIN}
     image:
