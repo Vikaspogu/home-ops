@@ -27,23 +27,23 @@ spec:
       memory: 2Gi
   monitoring:
     enablePodMonitor: true
-  # bootstrap:
-  #   recovery:
-  #     source: &recoveryCluster pg17-omv
+  bootstrap:
+    recovery:
+      source: &recoveryCluster pg17-omv
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
         barmanObjectName: pg17-omv-backup
-        serverName: &currentCluster pg17-omv
+        serverName: &currentCluster pg17-omv-01
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
-  # externalClusters:
-  #   - name: *recoveryCluster
-  #     plugin:
-  #       name: barman-cloud.cloudnative-pg.io
-  #       parameters:
-  #         barmanObjectName: pg17-omv-backup
-  #         serverName: *recoveryCluster
+  externalClusters:
+    - name: *recoveryCluster
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: pg17-omv-backup
+          serverName: *recoveryCluster
 ---
 # yaml-language-server: $schema=https://github.com/datreeio/CRDs-catalog/raw/refs/heads/main/barmancloud.cnpg.io/objectstore_v1.json
 apiVersion: barmancloud.cnpg.io/v1

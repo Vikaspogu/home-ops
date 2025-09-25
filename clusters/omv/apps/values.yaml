@@ -189,13 +189,13 @@ applications:
     source:
       path: components/default/cloudnative-pg
 
-  # cloudnative-cluster:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "30"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/cloudnative-cluster
+  cloudnative-cluster:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: default
+    source:
+      path: components/default/cloudnative-cluster
 
   # memos:
   #   annotations:
