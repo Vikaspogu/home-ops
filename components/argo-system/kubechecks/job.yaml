@@ -12,7 +12,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: token-generator
-          image: argoproj/argocd:v2.12.3 # use your Argo CD version
+          image: quay.io/argoproj/argocd:v3.1.7
           command: ["/bin/sh", "-c"]
           args:
             - |
