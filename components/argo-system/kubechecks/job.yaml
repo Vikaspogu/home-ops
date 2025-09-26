@@ -21,10 +21,9 @@ spec:
               PASSWORD=$(cat /creds/admin.password)
 
               echo "🔑 Logging into ArgoCD"
-              argocd login argocd-server.argo-system.svc.cluster.local:443 \
+              argocd login --plaintext argocd-server.argo-system.svc.cluster.local \
                 --username $USERNAME \
-                --password $PASSWORD \
-                --insecure --grpc-web --skip-test-tls
+                --password $PASSWORD
 
               echo "⚙️ Generating token..."
               TOKEN=$(argocd account generate-token --account $USERNAME)
