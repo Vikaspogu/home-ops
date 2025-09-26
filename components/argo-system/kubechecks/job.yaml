@@ -21,6 +21,7 @@ spec:
               PASSWORD=$(cat /creds/admin.password)
 
               echo "🔑 Logging into ArgoCD"
+              cat /creds
               argocd login --plaintext argocd-server.argo-system.svc.cluster.local \
                 --username $USERNAME \
                 --password $PASSWORD
