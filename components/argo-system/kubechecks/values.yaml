@@ -43,8 +43,6 @@ deployment:
   envFrom:
     - secretRef:
         name: kubechecks
-    - secretRef:
-        name: argocd-token
   startupProbe:
     failureThreshold: 30
     periodSeconds: 10
