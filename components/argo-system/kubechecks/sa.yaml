@@ -3,6 +3,8 @@ kind: ServiceAccount
 metadata:
   name: automation-job
   annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
     argocd.argoproj.io/sync-wave: '-1'
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -10,6 +12,8 @@ kind: Role
 metadata:
   name: secret-writer
   annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
     argocd.argoproj.io/sync-wave: '-1'
 rules:
   - apiGroups: [""]
@@ -21,6 +25,8 @@ kind: RoleBinding
 metadata:
   name: secret-writer-binding
   annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
     argocd.argoproj.io/sync-wave: '-1'
 roleRef:
   apiGroup: rbac.authorization.k8s.io
