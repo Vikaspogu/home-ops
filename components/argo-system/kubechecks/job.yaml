@@ -21,7 +21,7 @@ spec:
               PASSWORD=$(cat /creds/admin.password)
 
               echo "🔑 Logging into ArgoCD"
-              argocd login argocd-server.argo-system.svc.cluster.local:80 \
+              argocd login argocd-server.argo-system.svc.cluster.local:443 \
                 --username $USERNAME \
                 --password $PASSWORD \
                 --insecure --grpc-web --skip-test-tls
