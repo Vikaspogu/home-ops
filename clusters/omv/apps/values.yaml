@@ -195,7 +195,7 @@ applications:
     destination:
       namespace: default
     source:
-      path: components/default/cloudnative-cluster
+      path: clusters/omv/apps/default/cloudnative-cluster
 
   # memos:
   #   annotations:
@@ -204,22 +204,6 @@ applications:
   #     namespace: default
   #   source:
   #     path: components/default/memos
-
-  # blinko:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "35"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/blinko
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: longhorn-volsync
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: longhorn
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 1Gi
 
   jellyfin:
     annotations:
@@ -248,6 +232,10 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: longhorn-volsync
+          - name: ETCD_ENABLED
+            value: false
+          - name: ETCD_RULES_ENABLED
+            value: false
 
   system-upgrade-controller:
     annotations:

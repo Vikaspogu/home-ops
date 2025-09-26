@@ -29,9 +29,13 @@ alertmanager:
             requests:
               storage: 1Gi
 kubeEtcd:
+  enabled: ${ARGOCD_ENV_ETCD_ENABLED}
   service:
     selector:
       component: kube-apiserver # etcd runs on control plane nodes
+defaultRules:
+  rules:
+    etcd: ${ARGOCD_ENV_ETCD_RULES_ENABLED}
 kubeProxy:
   enabled: false
 prometheus:
