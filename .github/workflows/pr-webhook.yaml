@@ -29,8 +29,8 @@ jobs:
         id: send-cluster-webhooks
         env:
           # Webhook URLs from secrets
-          CLUSTER01_WEBHOOK_URL: ${{ secrets.CLUSTER01_WEBHOOK_URL }}
-          OMV_WEBHOOK_URL: ${{ secrets.OMV_WEBHOOK_URL }}
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
 
           # Changed files information
           CLUSTER01_CHANGED_FILES: ${{ steps.changed-files.outputs.cluster01_all_changed_files }}

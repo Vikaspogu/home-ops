@@ -14,7 +14,6 @@ source "${SCRIPT_DIR}/lib/common.sh"
 readonly VERSION="1.0.0"
 
 # Default values
-declare -A WEBHOOK_URLS=()
 declare -A CHANGED_FILES=()
 declare -A CLUSTER_CHANGED=()
 RESULTS_FILE=""
@@ -41,8 +40,8 @@ OPTIONS:
     -v, --verbose          Enable debug logging
 
 ENVIRONMENT VARIABLES:
-    CLUSTER01_WEBHOOK_URL      Webhook URL for cluster01
-    OMV_WEBHOOK_URL           Webhook URL for omv cluster
+    WEBHOOK_URL               Webhook URL to send notifications to
+    WEBHOOK_SECRET           Secret token for webhook authentication (optional)
     CLUSTER01_CHANGED_FILES   Space-separated list of changed files for cluster01
     OMV_CHANGED_FILES         Space-separated list of changed files for omv
     CLUSTER01_ANY_CHANGED     'true' if cluster01 has changes
@@ -125,10 +124,6 @@ parse_args() {
 load_config() {
     log info "Loading configuration from environment"
 
-    # Load webhook URLs
-    WEBHOOK_URLS[cluster01]="${CLUSTER01_WEBHOOK_URL:-}"
-    WEBHOOK_URLS[omv]="${OMV_WEBHOOK_URL:-}"
-
     # Load changed files
     CHANGED_FILES[cluster01]="${CLUSTER01_CHANGED_FILES:-}"
     CHANGED_FILES[omv]="${OMV_CHANGED_FILES:-}"
@@ -138,8 +133,8 @@ load_config() {
     CLUSTER_CHANGED[omv]="${OMV_ANY_CHANGED:-false}"
 
     log debug "Configuration loaded" \
-        "cluster01_url=${WEBHOOK_URLS[cluster01]:0:20}..." \
-        "omv_url=${WEBHOOK_URLS[omv]:0:20}..." \
+        "webhook_url=${WEBHOOK_URL:0:30}..." \
+        "webhook_secret_set=$([[ -n "${WEBHOOK_SECRET:-}" ]] && echo "true" || echo "false")" \
         "cluster01_changed=${CLUSTER_CHANGED[cluster01]}" \
         "omv_changed=${CLUSTER_CHANGED[omv]}"
 }
@@ -207,9 +202,19 @@ send_webhook() {
 
     # Send the webhook
     local http_status
+    local curl_headers=(
+        -H "Content-Type: application/json"
+        -H "User-Agent: GitHub-Actions-Webhook/v${VERSION}"
+    )
+
+    # Add webhook secret header if provided
+    if [[ -n "${WEBHOOK_SECRET:-}" ]]; then
+        curl_headers+=(-H "X-Webhook-Secret: $WEBHOOK_SECRET")
+        log debug "Adding webhook secret header" "cluster=$cluster"
+    fi
+
     http_status=$(curl -X POST \
-        -H "Content-Type: application/json" \
-        -H "User-Agent: GitHub-Actions-Webhook/v${VERSION}" \
+        "${curl_headers[@]}" \
         -d "$payload" \
         "$webhook_url" \
         --silent \
@@ -316,14 +321,13 @@ process_webhooks() {
 
     for cluster in cluster01 omv; do
         local changed="${CLUSTER_CHANGED[$cluster]}"
-        local webhook_url="${WEBHOOK_URLS[$cluster]}"
         local changed_files="${CHANGED_FILES[$cluster]}"
 
         if [[ "$changed" == "true" ]]; then
             log info "Changes detected for $cluster" "cluster=$cluster" "files=$changed_files"
 
             local status
-            if send_webhook "$cluster" "$webhook_url" "$changed_files"; then
+            if send_webhook "$cluster" "${WEBHOOK_URL}" "$changed_files"; then
                 results+=("$cluster:success")
                 log info "✅ Webhook sent successfully" "cluster=$cluster"
             elif [[ $? -eq 2 ]]; then
