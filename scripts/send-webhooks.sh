@@ -42,9 +42,7 @@ OPTIONS:
 ENVIRONMENT VARIABLES:
     WEBHOOK_URL               Webhook URL to send notifications to
     WEBHOOK_SECRET           Secret token for webhook authentication (optional)
-    CLUSTER01_CHANGED_FILES   Space-separated list of changed files for cluster01
     OMV_CHANGED_FILES         Space-separated list of changed files for omv
-    CLUSTER01_ANY_CHANGED     'true' if cluster01 has changes
     OMV_ANY_CHANGED          'true' if omv has changes
 
     # GitHub Action Environment Variables (automatically available)
@@ -133,17 +131,14 @@ load_config() {
     log info "Loading configuration from environment"
 
     # Load changed files
-    CHANGED_FILES[cluster01]="${CLUSTER01_CHANGED_FILES:-}"
     CHANGED_FILES[omv]="${OMV_CHANGED_FILES:-}"
 
     # Load change indicators
-    CLUSTER_CHANGED[cluster01]="${CLUSTER01_ANY_CHANGED:-false}"
     CLUSTER_CHANGED[omv]="${OMV_ANY_CHANGED:-false}"
 
     log debug "Configuration loaded" \
         "webhook_url=${WEBHOOK_URL:0:30}..." \
         "webhook_secret_set=$([[ -n "${WEBHOOK_SECRET:-}" ]] && echo "true" || echo "false")" \
-        "cluster01_changed=${CLUSTER_CHANGED[cluster01]}" \
         "omv_changed=${CLUSTER_CHANGED[omv]}"
 }
 
@@ -306,15 +301,6 @@ generate_summary() {
         echo "### Changed Files Overview"
         echo ""
 
-        # Show cluster01 files if changed
-        if [[ "${CLUSTER01_ANY_CHANGED:-false}" == "true" ]]; then
-            echo "**cluster01 affected files:**"
-            echo '```'
-            echo "${CLUSTER01_CHANGED_FILES:-}" | tr ' ' '\n'
-            echo '```'
-            echo ""
-        fi
-
         # Show omv files if changed
         if [[ "${OMV_ANY_CHANGED:-false}" == "true" ]]; then
             echo "**omv affected files:**"
@@ -335,7 +321,7 @@ process_webhooks() {
 
     log info "Processing webhooks for all clusters"
 
-    for cluster in cluster01 omv; do
+    for cluster in omv; do
         local changed="${CLUSTER_CHANGED[$cluster]}"
         local changed_files="${CHANGED_FILES[$cluster]}"
 
