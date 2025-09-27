@@ -192,6 +192,7 @@ create_payload() {
   }
 }
 EOF
+}
 
 # Send webhook to a cluster
 send_webhook() {
