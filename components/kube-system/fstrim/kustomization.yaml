@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: kube-system
 
 helmCharts:
-  - name: fstrim
+  - name: app-template
     releaseName: fstrim
     namespace: kube-system
     repo: oci://ghcr.io/bjw-s-labs/helm
