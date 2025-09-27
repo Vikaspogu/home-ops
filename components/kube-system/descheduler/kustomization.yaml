@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: kube-system
 
 helmCharts:
-  - name: descheduler
+  - name: app-template
     releaseName: descheduler
     namespace: kube-system
     repo: oci://ghcr.io/bjw-s-labs/helm
