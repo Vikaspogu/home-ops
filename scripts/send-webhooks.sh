@@ -168,18 +168,15 @@ EOF
         echo "$base_payload" | jq \
             --argjson pr "${PR:-null}" \
             --argjson repo "${REPO:-null}" \
-            --argjson sender "${SENDER:-null}" \
             '. + {
                 "pull_request": $pr,
-                "repository": $repo,
-                "sender": $sender
+                "repository": $repo
             }'
     else
         # Fallback without jq - create minimal structure
         echo "$base_payload" | sed 's/}$/,
   "pull_request": null,
-  "repository": null,
-  "sender": null
+  "repository": null
 }/'
     fi
 }

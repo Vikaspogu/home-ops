@@ -1,4 +1,4 @@
-name: PR Webhook Notifications
+name: Send Webhook
 
 on:
   pull_request:
@@ -40,9 +40,6 @@ jobs:
 
           # Pull Request information (only what's used in payload)
           PR: ${{ github.event.pull_request }}
-
-          # Sender information (used in pull_request.user and sender)
-          SENDER: ${{ github.event.sender}}
 
           # Repository information (used in repository and pull_request.head.repo)
           REPO: ${{ github.event.repository }}
