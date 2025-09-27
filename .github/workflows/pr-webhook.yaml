@@ -39,51 +39,13 @@ jobs:
           GITHUB_EVENT_NUMBER: ${{ github.event.number }}
 
           # Pull Request information (only what's used in payload)
-          PR_ID: ${{ github.event.pull_request.id }}
-          PR_NODE_ID: ${{ github.event.pull_request.node_id }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_HTML_URL: ${{ github.event.pull_request.html_url }}
-          PR_STATE: ${{ github.event.pull_request.state }}
-          PR_LOCKED: ${{ github.event.pull_request.locked }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          PR_CREATED_AT: ${{ github.event.pull_request.created_at }}
-          PR_UPDATED_AT: ${{ github.event.pull_request.updated_at }}
-          PR_CLOSED_AT: ${{ github.event.pull_request.closed_at }}
-          PR_MERGED_AT: ${{ github.event.pull_request.merged_at }}
-          PR_MERGE_COMMIT_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          PR_ASSIGNEE: ${{ github.event.pull_request.assignee }}
-          PR_MILESTONE: ${{ github.event.pull_request.milestone }}
-          PR_DRAFT: ${{ github.event.pull_request.draft }}
-          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_HEAD_LABEL: ${{ github.event.pull_request.head.label }}
+          PR: ${{ github.event.pull_request }}
 
           # Sender information (used in pull_request.user and sender)
-          SENDER_LOGIN: ${{ github.event.sender.login }}
-          SENDER_ID: ${{ github.event.sender.id }}
-          SENDER_NODE_ID: ${{ github.event.sender.node_id }}
-          SENDER_AVATAR_URL: ${{ github.event.sender.avatar_url }}
-          SENDER_GRAVATAR_ID: ${{ github.event.sender.gravatar_id }}
-          SENDER_HTML_URL: ${{ github.event.sender.html_url }}
-          SENDER_TYPE: ${{ github.event.sender.type }}
-          SENDER_SITE_ADMIN: ${{ github.event.sender.site_admin }}
+          SENDER: ${{ github.event.sender}}
 
           # Repository information (used in repository and pull_request.head.repo)
-          REPO_ID: ${{ github.event.repository.id }}
-          REPO_NODE_ID: ${{ github.event.repository.node_id }}
-          REPO_NAME: ${{ github.event.repository.name }}
-          REPO_HTML_URL: ${{ github.event.repository.html_url }}
-          REPO_PRIVATE: ${{ github.event.repository.private }}
-
-          # Repository owner information (used in repository.owner and pull_request.head.repo.owner)
-          REPO_OWNER_LOGIN: ${{ github.event.repository.owner.login }}
-          REPO_OWNER_ID: ${{ github.event.repository.owner.id }}
-          REPO_OWNER_NODE_ID: ${{ github.event.repository.owner.node_id }}
-          REPO_OWNER_AVATAR_URL: ${{ github.event.repository.owner.avatar_url }}
-          REPO_OWNER_GRAVATAR_ID: ${{ github.event.repository.owner.gravatar_id }}
-          REPO_OWNER_HTML_URL: ${{ github.event.repository.owner.html_url }}
-          REPO_OWNER_TYPE: ${{ github.event.repository.owner.type }}
-          REPO_OWNER_SITE_ADMIN: ${{ github.event.repository.owner.site_admin }}
+          REPO: ${{ github.event.repository }}
 
           # GitHub webhook headers
           X_GITHUB_EVENT: ${{ github.event_name }}

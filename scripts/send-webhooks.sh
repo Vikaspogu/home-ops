@@ -49,16 +49,9 @@ ENVIRONMENT VARIABLES:
     GITHUB_EVENT_ACTION       GitHub event action (opened, synchronize, etc.)
     GITHUB_REPOSITORY         Repository name
     GITHUB_EVENT_NUMBER       PR number
-    PR_TITLE                  PR title
-    PR_HTML_URL               PR URL
-    PR_STATE                  PR state
-    PR_HEAD_REF               PR head reference
-    PR_HEAD_SHA               PR head SHA
-    PR_BASE_REF               PR base reference
-    PR_BASE_SHA               PR base SHA
-    SENDER_LOGIN              PR sender login
-    SENDER_HTML_URL           PR sender URL
-    REPO_HTML_URL             Repository HTML URL
+    PR                        Pull request
+    REPO                      Repository
+    SENDER                    Sender
 
     # GitHub Webhook Headers
     X_GITHUB_EVENT            Event type (push, pull_request, etc.)
@@ -147,8 +140,9 @@ create_payload() {
     local cluster="$1"
     local changed_files="$2"
 
-    # Use GitHub's standard webhook format
-    cat << EOF
+    # Create base payload structure
+    local base_payload
+    base_payload=$(cat << EOF
 {
   "cluster": "${cluster}",
   "action": "${GITHUB_EVENT_ACTION:-opened}",
@@ -161,160 +155,35 @@ create_payload() {
     "x_github_hook_installation_target_id": "${X_GITHUB_HOOK_INSTALLATION_TARGET_ID:-}",
     "x_github_hook_installation_target_type": "${X_GITHUB_HOOK_INSTALLATION_TARGET_TYPE:-}"
   },
-  "pull_request": {
-    "url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}/pulls/${GITHUB_EVENT_NUMBER:-0}",
-    "id": ${PR_ID:-0},
-    "node_id": "${PR_NODE_ID:-}",
-    "html_url": "${PR_HTML_URL:-}",
-    "diff_url": "${PR_HTML_URL:-}.diff",
-    "patch_url": "${PR_HTML_URL:-}.patch",
-    "issue_url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}/issues/${GITHUB_EVENT_NUMBER:-0}",
-    "number": ${GITHUB_EVENT_NUMBER:-0},
-    "state": "${PR_STATE:-open}",
-    "locked": ${PR_LOCKED:-false},
-    "title": "${PR_TITLE:-}",
-    "user": {
-      "login": "${SENDER_LOGIN:-}",
-      "id": ${SENDER_ID:-0},
-      "node_id": "${SENDER_NODE_ID:-}",
-      "avatar_url": "${SENDER_AVATAR_URL:-}",
-      "gravatar_id": "${SENDER_GRAVATAR_ID:-}",
-      "url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}",
-      "html_url": "${SENDER_HTML_URL:-}",
-      "followers_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/followers",
-      "following_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/following{/other_user}",
-      "gists_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/subscriptions",
-      "organizations_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/orgs",
-      "repos_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/repos",
-      "events_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}/received_events",
-      "type": "${SENDER_TYPE:-User}",
-      "user_view_type": "public",
-      "site_admin": ${SENDER_SITE_ADMIN:-false}
-    },
-    "body": "${PR_BODY:-}",
-    "created_at": "${PR_CREATED_AT:-}",
-    "updated_at": "${PR_UPDATED_AT:-}",
-    "closed_at": ${PR_CLOSED_AT:-null},
-    "merged_at": ${PR_MERGED_AT:-null},
-    "merge_commit_sha": "${PR_MERGE_COMMIT_SHA:-null}",
-    "assignee": ${PR_ASSIGNEE:-null},
-    "assignees": [],
-    "requested_reviewers": [],
-    "requested_teams": [],
-    "labels": [],
-    "milestone": ${PR_MILESTONE:-null},
-    "draft": ${PR_DRAFT:-false},
-    "commits_url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}/pulls/${GITHUB_EVENT_NUMBER:-0}/commits",
-    "review_comments_url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}/pulls/${GITHUB_EVENT_NUMBER:-0}/comments",
-    "review_comment_url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}/pulls/comments{/number}",
-    "comments_url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}/issues/${GITHUB_EVENT_NUMBER:-0}/comments",
-    "statuses_url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}/statuses/${PR_HEAD_SHA:-}",
-    "head": {
-      "label": "${PR_HEAD_LABEL:-}",
-      "ref": "${PR_HEAD_REF:-}",
-      "sha": "${PR_HEAD_SHA:-}",
-      "user": {
-        "login": "${SENDER_LOGIN:-}",
-        "id": ${SENDER_ID:-0},
-        "node_id": "${SENDER_NODE_ID:-}",
-        "avatar_url": "${SENDER_AVATAR_URL:-}",
-        "gravatar_id": "${SENDER_GRAVATAR_ID:-}",
-        "url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}",
-        "html_url": "${SENDER_HTML_URL:-}",
-        "type": "${SENDER_TYPE:-User}",
-        "user_view_type": "public",
-        "site_admin": ${SENDER_SITE_ADMIN:-false}
-      },
-      "repo": {
-        "id": ${REPO_ID:-0},
-        "node_id": "${REPO_NODE_ID:-}",
-        "name": "${REPO_NAME:-}",
-        "full_name": "${GITHUB_REPOSITORY:-unknown}",
-        "private": ${REPO_PRIVATE:-false},
-        "owner": {
-          "login": "${REPO_OWNER_LOGIN:-}",
-          "id": ${REPO_OWNER_ID:-0},
-          "node_id": "${REPO_OWNER_NODE_ID:-}",
-          "avatar_url": "${REPO_OWNER_AVATAR_URL:-}",
-          "gravatar_id": "${REPO_OWNER_GRAVATAR_ID:-}",
-          "url": "https://api.github.com/users/${REPO_OWNER_LOGIN:-unknown}",
-          "html_url": "${REPO_OWNER_HTML_URL:-}",
-          "type": "${REPO_OWNER_TYPE:-User}",
-          "user_view_type": "public",
-          "site_admin": ${REPO_OWNER_SITE_ADMIN:-false}
-        },
-        "html_url": "${REPO_HTML_URL:-}",
-        "description": "${REPO_DESCRIPTION:-}",
-        "fork": ${REPO_FORK:-false},
-        "url": "https://api.github.com/repos/${GITHUB_REPOSITORY:-unknown}",
-        "created_at": "${REPO_CREATED_AT:-}",
-        "updated_at": "${REPO_UPDATED_AT:-}",
-        "pushed_at": "${REPO_PUSHED_AT:-}",
-        "git_url": "git://github.com/${GITHUB_REPOSITORY:-unknown}.git",
-        "ssh_url": "git@github.com:${GITHUB_REPOSITORY:-unknown}.git",
-        "clone_url": "https://github.com/${GITHUB_REPOSITORY:-unknown}.git",
-        "svn_url": "https://github.com/${GITHUB_REPOSITORY:-unknown}",
-        "homepage": "${REPO_HOMEPAGE:-}",
-        "size": ${REPO_SIZE:-0},
-        "stargazers_count": ${REPO_STARGAZERS_COUNT:-0},
-        "watchers_count": ${REPO_WATCHERS_COUNT:-0},
-        "language": "${REPO_LANGUAGE:-}",
-        "has_issues": ${REPO_HAS_ISSUES:-true},
-        "has_projects": ${REPO_HAS_PROJECTS:-true},
-        "has_wiki": ${REPO_HAS_WIKI:-true},
-        "has_pages": ${REPO_HAS_PAGES:-false},
-        "has_downloads": ${REPO_HAS_DOWNLOADS:-true},
-        "archived": ${REPO_ARCHIVED:-false},
-        "disabled": ${REPO_DISABLED:-false},
-        "open_issues_count": ${REPO_OPEN_ISSUES_COUNT:-0},
-        "license": ${REPO_LICENSE:-null},
-        "allow_forking": ${REPO_ALLOW_FORKING:-true},
-        "is_template": ${REPO_IS_TEMPLATE:-false},
-        "web_commit_signoff_required": ${REPO_WEB_COMMIT_SIGNOFF_REQUIRED:-false},
-        "topics": [],
-        "visibility": "${REPO_VISIBILITY:-public}",
-        "forks": ${REPO_FORKS:-0},
-        "open_issues": ${REPO_OPEN_ISSUES:-0},
-        "watchers": ${REPO_WATCHERS:-0},
-        "default_branch": "${REPO_DEFAULT_BRANCH:-main}"
-      }
-    },
-  "repository": {
-    "id": ${REPO_ID:-0},
-    "node_id": "${REPO_NODE_ID:-}",
-    "name": "${REPO_NAME:-}",
-    "full_name": "${GITHUB_REPOSITORY:-unknown}",
-    "private": ${REPO_PRIVATE:-false},
-    "owner": {
-      "login": "${REPO_OWNER_LOGIN:-}",
-      "id": ${REPO_OWNER_ID:-0},
-      "node_id": "${REPO_OWNER_NODE_ID:-}",
-      "avatar_url": "${REPO_OWNER_AVATAR_URL:-}",
-      "gravatar_id": "${REPO_OWNER_GRAVATAR_ID:-}",
-      "url": "https://api.github.com/users/${REPO_OWNER_LOGIN:-unknown}",
-      "html_url": "${REPO_OWNER_HTML_URL:-}",
-      "type": "${REPO_OWNER_TYPE:-User}",
-      "user_view_type": "public",
-      "site_admin": ${REPO_OWNER_SITE_ADMIN:-false}
-    }
-  },
-  "sender": {
-    "login": "${SENDER_LOGIN:-}",
-    "id": ${SENDER_ID:-0},
-    "node_id": "${SENDER_NODE_ID:-}",
-    "avatar_url": "${SENDER_AVATAR_URL:-}",
-    "gravatar_id": "${SENDER_GRAVATAR_ID:-}",
-    "url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}"
-  },
   "changed_files": {
-    "$cluster": "$changed_files"
+    "${cluster}": "${changed_files}"
   }
 }
 EOF
+)
+
+    # Use jq to merge GitHub objects if available, otherwise create fallback
+    if command -v jq >/dev/null 2>&1; then
+        # Parse and merge the GitHub objects
+        echo "$base_payload" | jq \
+            --argjson pr "${PR:-null}" \
+            --argjson repo "${REPO:-null}" \
+            --argjson sender "${SENDER:-null}" \
+            '. + {
+                "pull_request": $pr,
+                "repository": $repo,
+                "sender": $sender
+            }'
+    else
+        # Fallback without jq - create minimal structure
+        echo "$base_payload" | sed 's/}$/,
+  "pull_request": null,
+  "repository": null,
+  "sender": null
+}/'
+    fi
 }
+
 
 # Send webhook to a cluster
 send_webhook() {
@@ -494,7 +363,7 @@ main() {
     log info "Starting GitHub PR Webhook Sender" "version=$VERSION"
 
     # Check required dependencies
-    check_cli curl
+    check_cli curl jq
 
     # Parse arguments
     parse_args "$@"
