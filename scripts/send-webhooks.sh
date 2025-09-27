@@ -307,7 +307,7 @@ create_payload() {
     "node_id": "${SENDER_NODE_ID:-}",
     "avatar_url": "${SENDER_AVATAR_URL:-}",
     "gravatar_id": "${SENDER_GRAVATAR_ID:-}",
-    "url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}",
+    "url": "https://api.github.com/users/${SENDER_LOGIN:-unknown}"
   },
   "changed_files": {
     "$cluster": "$changed_files"
