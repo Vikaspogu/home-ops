@@ -42,16 +42,90 @@ jobs:
           GITHUB_EVENT_ACTION: ${{ github.event.action }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_EVENT_NUMBER: ${{ github.event.number }}
+
+          # Pull Request information
+          PR_ID: ${{ github.event.pull_request.id }}
+          PR_NODE_ID: ${{ github.event.pull_request.node_id }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_HTML_URL: ${{ github.event.pull_request.html_url }}
           PR_STATE: ${{ github.event.pull_request.state }}
+          PR_LOCKED: ${{ github.event.pull_request.locked }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_CREATED_AT: ${{ github.event.pull_request.created_at }}
+          PR_UPDATED_AT: ${{ github.event.pull_request.updated_at }}
+          PR_CLOSED_AT: ${{ github.event.pull_request.closed_at }}
+          PR_MERGED_AT: ${{ github.event.pull_request.merged_at }}
+          PR_MERGE_COMMIT_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_ASSIGNEE: ${{ github.event.pull_request.assignee }}
+          PR_MILESTONE: ${{ github.event.pull_request.milestone }}
+          PR_DRAFT: ${{ github.event.pull_request.draft }}
           PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_HEAD_LABEL: ${{ github.event.pull_request.head.label }}
           PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_BASE_LABEL: ${{ github.event.pull_request.base.label }}
+          PR_AUTHOR_ASSOCIATION: ${{ github.event.pull_request.author_association }}
+          PR_AUTO_MERGE: ${{ github.event.pull_request.auto_merge }}
+          PR_ACTIVE_LOCK_REASON: ${{ github.event.pull_request.active_lock_reason }}
+
+          # Sender information
           SENDER_LOGIN: ${{ github.event.sender.login }}
+          SENDER_ID: ${{ github.event.sender.id }}
+          SENDER_NODE_ID: ${{ github.event.sender.node_id }}
+          SENDER_AVATAR_URL: ${{ github.event.sender.avatar_url }}
+          SENDER_GRAVATAR_ID: ${{ github.event.sender.gravatar_id }}
           SENDER_HTML_URL: ${{ github.event.sender.html_url }}
+          SENDER_TYPE: ${{ github.event.sender.type }}
+          SENDER_SITE_ADMIN: ${{ github.event.sender.site_admin }}
+
+          # Repository information
+          REPO_ID: ${{ github.event.repository.id }}
+          REPO_NODE_ID: ${{ github.event.repository.node_id }}
+          REPO_NAME: ${{ github.event.repository.name }}
           REPO_HTML_URL: ${{ github.event.repository.html_url }}
+          REPO_DESCRIPTION: ${{ github.event.repository.description }}
+          REPO_PRIVATE: ${{ github.event.repository.private }}
+          REPO_FORK: ${{ github.event.repository.fork }}
+          REPO_CREATED_AT: ${{ github.event.repository.created_at }}
+          REPO_UPDATED_AT: ${{ github.event.repository.updated_at }}
+          REPO_PUSHED_AT: ${{ github.event.repository.pushed_at }}
+          REPO_HOMEPAGE: ${{ github.event.repository.homepage }}
+          REPO_SIZE: ${{ github.event.repository.size }}
+          REPO_STARGAZERS_COUNT: ${{ github.event.repository.stargazers_count }}
+          REPO_WATCHERS_COUNT: ${{ github.event.repository.watchers_count }}
+          REPO_LANGUAGE: ${{ github.event.repository.language }}
+          REPO_HAS_ISSUES: ${{ github.event.repository.has_issues }}
+          REPO_HAS_PROJECTS: ${{ github.event.repository.has_projects }}
+          REPO_HAS_WIKI: ${{ github.event.repository.has_wiki }}
+          REPO_HAS_PAGES: ${{ github.event.repository.has_pages }}
+          REPO_HAS_DOWNLOADS: ${{ github.event.repository.has_downloads }}
+          REPO_ARCHIVED: ${{ github.event.repository.archived }}
+          REPO_DISABLED: ${{ github.event.repository.disabled }}
+          REPO_OPEN_ISSUES_COUNT: ${{ github.event.repository.open_issues_count }}
+          REPO_LICENSE: ${{ github.event.repository.license }}
+          REPO_ALLOW_FORKING: ${{ github.event.repository.allow_forking }}
+          REPO_IS_TEMPLATE: ${{ github.event.repository.is_template }}
+          REPO_WEB_COMMIT_SIGNOFF_REQUIRED: ${{ github.event.repository.web_commit_signoff_required }}
+          REPO_VISIBILITY: ${{ github.event.repository.visibility }}
+          REPO_FORKS: ${{ github.event.repository.forks }}
+          REPO_OPEN_ISSUES: ${{ github.event.repository.open_issues }}
+          REPO_WATCHERS: ${{ github.event.repository.watchers }}
+          REPO_DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+
+          # Repository owner information
+          REPO_OWNER_LOGIN: ${{ github.event.repository.owner.login }}
+          REPO_OWNER_ID: ${{ github.event.repository.owner.id }}
+          REPO_OWNER_NODE_ID: ${{ github.event.repository.owner.node_id }}
+          REPO_OWNER_AVATAR_URL: ${{ github.event.repository.owner.avatar_url }}
+          REPO_OWNER_GRAVATAR_ID: ${{ github.event.repository.owner.gravatar_id }}
+          REPO_OWNER_HTML_URL: ${{ github.event.repository.owner.html_url }}
+          REPO_OWNER_TYPE: ${{ github.event.repository.owner.type }}
+          REPO_OWNER_SITE_ADMIN: ${{ github.event.repository.owner.site_admin }}
+
+          # Installation information
+          INSTALLATION_ID: ${{ github.event.installation.id }}
+          INSTALLATION_NODE_ID: ${{ github.event.installation.node_id }}
 
           # GitHub webhook headers
           X_GITHUB_EVENT: ${{ github.event_name }}
@@ -61,8 +135,16 @@ jobs:
           X_GITHUB_HOOK_INSTALLATION_TARGET_ID: ${{ github.event.installation.id }}
           X_GITHUB_HOOK_INSTALLATION_TARGET_TYPE: ${{ github.event.installation.target_type }}
         run: |
+          # Debug: Show critical GitHub context
+          echo "🔍 GitHub Event Debug Info:"
+          echo "  Event Name: ${{ github.event_name }}"
+          echo "  Event Action: '${{ github.event.action }}'"
+          echo "  Repository: ${{ github.repository }}"
+          echo "  PR Number: ${{ github.event.number }}"
+          echo "  Run ID: ${{ github.run_id }}"
+
           # Use the webhook script from the scripts directory with summary generation
-          ./scripts/send-webhooks.sh --results-file /tmp/webhook-results.txt --summary
+          ./scripts/send-webhooks.sh --results-file /tmp/webhook-results.txt --summary --verbose
 
           # Read results for the next step if needed
           if [[ -f /tmp/webhook-results.txt ]]; then

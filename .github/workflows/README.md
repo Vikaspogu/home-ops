@@ -23,24 +23,50 @@ The workflow detects changes to:
 ### Setup
 
 1. **Configure Repository Secrets**: Add the following secrets in your GitHub repository settings:
-   - `CLUSTER01_WEBHOOK_URL`: The webhook URL for cluster01 notifications
-   - `OMV_WEBHOOK_URL`: The webhook URL for omv cluster notifications
+   - `WEBHOOK_URL`: The webhook URL to send notifications to
+   - `WEBHOOK_SECRET`: (Optional) Secret token for webhook authentication
 
-2. **Webhook Payload Structure**: Each webhook receives a JSON payload containing:
+2. **Webhook Payload Structure**: Each webhook receives a JSON payload in **standard GitHub webhook format**:
 
    ```json
    {
-     "cluster": "cluster01|omv",
-     "event_type": "opened|synchronize",
-     "github_event": { ... }, // Full GitHub event payload
+     "action": "opened",
+     "number": 543,
+     "pull_request": {
+       "url": "https://api.github.com/repos/owner/repo/pulls/543",
+       "id": 2865612490,
+       "node_id": "PR_kwDOHjVq7s6qzcbK",
+       "html_url": "https://github.com/owner/repo/pull/543",
+       "diff_url": "https://github.com/owner/repo/pull/543.diff",
+       "patch_url": "https://github.com/owner/repo/pull/543.patch",
+       "number": 543,
+       "state": "open",
+       "title": "fix(helm): update chart reflector to 9.1.32",
+       "user": { "login": "renovate[bot]", "id": 29139614, ... },
+       "body": "...",
+       "head": { "ref": "...", "sha": "...", "repo": { ... } },
+       "base": { "ref": "...", "sha": "...", "repo": { ... } },
+       "_links": { ... }
+     },
      "repository": { ... },
-     "pull_request": { ... },
      "sender": { ... },
+     "installation": { ... },
      "changed_files": {
-       "cluster_name": "space-separated list of changed files"
+       "omv": "space-separated list of changed files"
      }
    }
    ```
+
+   **Key Changes**: The payload now matches GitHub's standard webhook format exactly, making it compatible with webhook receivers that expect authentic GitHub webhooks.
+
+### Recent Improvements
+
+- **✅ Fixed GitHub Webhook Compatibility**: Updated payload structure to match GitHub's exact webhook format
+- **✅ Added Standard Headers**: Includes `X-GitHub-Event`, `X-GitHub-Delivery`, and `X-Webhook-Secret` headers
+- **✅ Comprehensive GitHub Data**: Full repository, pull request, and sender information
+- **✅ Simplified Configuration**: Single webhook URL instead of cluster-specific URLs
+- **✅ Enhanced Debugging**: Added debug output for GitHub event information
+- **✅ Proper Event Handling**: Now supports `opened`, `synchronize`, and `reopened` PR events
 
 ### Security
 
