@@ -272,7 +272,7 @@ generate_summary() {
         echo ""
 
         # Process each cluster
-        for cluster in cluster01 omv; do
+        for cluster in omv; do
             local status="${results[$cluster]:-unknown}"
             local changed_env_var="${cluster^^}_ANY_CHANGED"
             local files_env_var="${cluster^^}_CHANGED_FILES"
