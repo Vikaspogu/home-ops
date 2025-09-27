@@ -52,6 +52,14 @@ jobs:
           SENDER_LOGIN: ${{ github.event.sender.login }}
           SENDER_HTML_URL: ${{ github.event.sender.html_url }}
           REPO_HTML_URL: ${{ github.event.repository.html_url }}
+
+          # GitHub webhook headers
+          X_GITHUB_EVENT: ${{ github.event_name }}
+          X_GITHUB_DELIVERY: ${{ github.run_id }}
+          X_HUB_SIGNATURE_256: ${{ github.event.head_commit.id }}
+          X_GITHUB_HOOK_ID: ${{ github.event.repository.hooks_url }}
+          X_GITHUB_HOOK_INSTALLATION_TARGET_ID: ${{ github.event.installation.id }}
+          X_GITHUB_HOOK_INSTALLATION_TARGET_TYPE: ${{ github.event.installation.target_type }}
         run: |
           # Use the webhook script from the scripts directory with summary generation
           ./scripts/send-webhooks.sh --results-file /tmp/webhook-results.txt --summary

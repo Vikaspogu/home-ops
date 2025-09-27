@@ -62,6 +62,14 @@ ENVIRONMENT VARIABLES:
     SENDER_HTML_URL           PR sender URL
     REPO_HTML_URL             Repository HTML URL
 
+    # GitHub Webhook Headers
+    X_GITHUB_EVENT            Event type (push, pull_request, etc.)
+    X_GITHUB_DELIVERY         Unique delivery ID
+    X_HUB_SIGNATURE_256       HMAC signature for verification
+    X_GITHUB_HOOK_ID          Hook ID
+    X_GITHUB_HOOK_INSTALLATION_TARGET_ID    Hook installation target ID
+    X_GITHUB_HOOK_INSTALLATION_TARGET_TYPE  Hook installation target type
+
 EXAMPLES:
     # Send webhooks for detected changes
     $(basename "$0")
@@ -173,6 +181,14 @@ create_payload() {
   },
   "changed_files": {
     "$cluster": "$changed_files"
+  },
+  "github_webhook_headers": {
+    "x_github_event": "${X_GITHUB_EVENT:-}",
+    "x_github_delivery": "${X_GITHUB_DELIVERY:-}",
+    "x_hub_signature_256": "${X_HUB_SIGNATURE_256:-}",
+    "x_github_hook_id": "${X_GITHUB_HOOK_ID:-}",
+    "x_github_hook_installation_target_id": "${X_GITHUB_HOOK_INSTALLATION_TARGET_ID:-}",
+    "x_github_hook_installation_target_type": "${X_GITHUB_HOOK_INSTALLATION_TARGET_TYPE:-}"
   }
 }
 EOF
