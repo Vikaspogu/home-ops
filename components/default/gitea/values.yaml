@@ -18,6 +18,10 @@ resources:
 
 valkey:
   enabled: true
+  image:
+    registry: docker.io
+    repository: valkey/valkey
+    tag: 9.0.0-rc2-alpine3.22
   primary:
     resources:
       requests:
