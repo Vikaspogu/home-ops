@@ -53,7 +53,7 @@ jobs:
             echo "✅ OMV files changed, preparing webhook..."
 
             # Add cluster information to GitHub context
-            echo "$GITHUB_CONTEXT" | jq '. + {"cluster": "omv", "X_GITHUB_EVENT": "issues"}' > github_context_with_cluster.json
+            echo "$GITHUB_CONTEXT" | jq '. + {"cluster": "omv", "X_GITHUB_EVENT": "pull_request"}' > github_context_with_cluster.json
 
             # Send webhook with cluster information
             curl -X POST "$WEBHOOK_URL" \
