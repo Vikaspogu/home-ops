@@ -41,7 +41,7 @@ jobs:
           OMV_CHANGED_FILES: ${{ steps.changed-files.outputs.omv_all_changed_files }}
           OMV_ANY_CHANGED: ${{ steps.changed-files.outputs.omv_any_changed }}
 
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_CONTEXT: ${{ toJson(github.event) }}
         run: |
           # Debug: Show critical GitHub context
           echo "🔍 GitHub Event Debug Info:"
@@ -53,7 +53,7 @@ jobs:
             echo "✅ OMV files changed, preparing webhook..."
 
             # Add cluster information to GitHub context
-            echo "$GITHUB_CONTEXT" | jq '. + {"cluster": "omv", "X_GITHUB_EVENT": "pull_request"}' > github_context_with_cluster.json
+            echo "$GITHUB_CONTEXT" | jq '. + {"cluster": "omv"}' > github_context_with_cluster.json
 
             # Send webhook with cluster information
             curl -X POST "$WEBHOOK_URL" \
