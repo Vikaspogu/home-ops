@@ -59,7 +59,8 @@ jobs:
             curl -X POST "$WEBHOOK_URL" \
               -H "Content-Type: application/json" \
               -H "X-Webhook-Secret: $WEBHOOK_SECRET" \
-              -d @github_context_with_cluster.json
+              -d @github_context_with_cluster.json \
+              -s -o /dev/null
 
             echo "📤 Webhook sent successfully for OMV cluster"
           else
