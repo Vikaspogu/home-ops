@@ -1,47 +1,65 @@
-image:
-  repository: gitea
-  tag: 1.23.7
+fullnameOverride: &name gitea
+controllers:
+  gitea:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+        envFrom: &envFrom
+          - secretRef:
+              name: gitea-secret
+    containers:
+      gitea:
+        image:
+          repository: ghcr.io/go-gitea/gitea
+          tag: 1.24.6-rootless
+        env:
+          TZ: "${TIMEZONE}"
+          USER_UID: 1000
+          USER_GID: 1000
+          GITEA__ACTIONS__ENABLED: "True"
+          GITEA__database__DB_TYPE: "postgres"
+          GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
+          GITEA__REPOSITORY__DEFAULT_BRANCH: "main"
+          GITEA__SECURITY__INSTALL_LOCK: "True"
+          GITEA__SERVER__DOMAIN: "gitea.${CLUSTER_DOMAIN}"
+          GITEA__SERVER__ROOT_URL: "https://gitea.${CLUSTER_DOMAIN}"
+          GITEA__SERVER__SSH_DOMAIN: "ssh.${CLUSTER_DOMAIN}"
+          GITEA__SERVER__SSH_PORT: 22
+        securityContext:
+          allowPrivilegeEscalation: false
+          # mkdir: can't create directory '/tmp/gitea': Read-only file system
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 10m
+            memory: 300Mi
+          limits:
+            memory: 600Mi
+service:
+  gitea:
+    controller: *name
+    ports:
+      http:
+        port: 3000
+  ssh:
+    enabled: true
+    controller: *name
+    ports:
+      ssh:
+        enabled: true
+        port: 22
+        targetPort: 2222
+        protocol: TCP
+
 persistence:
-  create: false
-  claimName: "gitea"
-valkey-cluster:
-  enabled: false
-postgresql-ha:
-  enabled: false
-resources:
-  requests:
-    memory: "200Mi"
-    cpu: "50m"
-  limits:
-    memory: "500Mi"
-    cpu: "600m"
-
-valkey:
-  enabled: true
-  global:
-    security:
-      allowInsecureImages: true
-  image:
-    registry: docker.io
-    repository: valkey/valkey
-    tag: 9.0.0-rc2-alpine3.22
-  primary:
-    resources:
-      requests:
-        cpu: 100m
-        memory: 64Mi
-      limits:
-        cpu: 250m
-        memory: 256Mi
-
-preExtraInitContainers:
-  - name: init-db
-    image: ghcr.io/home-operations/postgres-init:17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
-    envFrom:
-      - secretRef:
-          name: gitea-secret
-
-gitea:
-  admin:
-    email: "gitea@local.domain"
-    existingSecret: gitea-secret
+  config:
+    enabled: true
+    existingClaim: gitea
+    globalMounts:
+      - path: /var/lib/gitea

@@ -8,9 +8,9 @@ resources:
   - ./http-route.yaml
 
 helmCharts:
-  - name: gitea
+  - name: app-template
     releaseName: gitea
     namespace: default
-    repo: https://dl.gitea.io/charts
-    version: "12.3.0"
+    repo: oci://ghcr.io/bjw-s-labs/helm
+    version: "4.3.0"
     valuesFile: values.yaml
