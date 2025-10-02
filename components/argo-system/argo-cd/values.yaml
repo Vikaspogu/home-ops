@@ -8,6 +8,7 @@ configs:
     server.insecure: true
     controller.diff.server.side: true
   cm:
+    accounts.admin: apiKey
     accounts.readonly: apiKey
     rbac:
       policy.csv: |
