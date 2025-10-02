@@ -9,5 +9,5 @@ helmCharts:
     releaseName: descheduler
     namespace: kube-system
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: 4.2.0
+    version: 4.3.0
     valuesFile: values.yaml
