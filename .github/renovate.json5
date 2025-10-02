@@ -22,7 +22,6 @@
   "commitMessageExtra": "to {{newVersion}}",
   "commitMessageSuffix": "",
   "timezone": "America/New_York",
-  "schedule": ["after 12:00am and before 1:00am"],
   "ignorePaths": ["**/*.sops.*"],
   "helm-values": {
     "fileMatch": ["components/.+/values\\.ya?ml$"]
