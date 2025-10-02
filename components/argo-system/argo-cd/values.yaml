@@ -10,7 +10,8 @@ configs:
   cm:
     accounts.readonly: apiKey
     rbac:
-      policy.csv: "g, readonly, role:readonly"
+      policy.csv: |
+        g, readonly, role:readonly
     statusbadge.enabled: true
     kustomize.buildOptions: "--enable-alpha-plugins --enable-exec  --load-restrictor LoadRestrictionsNone"
     # Custom health check

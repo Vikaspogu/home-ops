@@ -13,10 +13,3 @@ helmCharts:
     repo: https://zapier.github.io/kubechecks/
     version: "0.5.6"
     valuesFile: values.yaml
-  - name: kubechecks-rbac
-    releaseName: kubechecks-rbac
-    namespace: argo-system
-    repo: https://zapier.github.io/kubechecks/
-    version: "0.4.5"
-    valuesInline:
-      namespace: "argo-system"
