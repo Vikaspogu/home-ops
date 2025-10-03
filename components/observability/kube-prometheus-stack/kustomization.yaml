@@ -16,9 +16,6 @@ helmCharts:
     valuesInline:
       kubeEtcd:
         enabled: ${ARGOCD_ENV_ETCD_ENABLED:-false}
-        service:
-          selector:
-            component: kube-apiserver # etcd runs on control plane nodes
       defaultRules:
         rules:
           etcd: ${ARGOCD_ENV_ETCD_RULES_ENABLED:-false}
