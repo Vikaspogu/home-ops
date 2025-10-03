@@ -6,7 +6,6 @@ resources:
   - ./mutatingadmissionpolicy.yaml
   - ./prometheusrule.yaml
 
-
 helmCharts:
   - name: volsync
     releaseName: volsync
@@ -14,5 +13,3 @@ helmCharts:
     repo: https://perfectra1n.github.io/volsync/charts
     version: 0.17.11
     valuesFile: values.yaml
-    apiVersions:
-      - monitoring.coreos.com/v1
