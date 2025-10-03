@@ -243,7 +243,7 @@ applications:
     destination:
       namespace: observability
     source:
-      path: components/observability/kube-prometheus-stack
+      path: clusters/omv/apps/observability/kube-prometheus-stack
       plugin:
         env:
           - name: STORAGE_CLASS
