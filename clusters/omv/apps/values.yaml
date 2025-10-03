@@ -249,9 +249,9 @@ applications:
           - name: STORAGE_CLASS
             value: longhorn-volsync
           - name: ETCD_ENABLED
-            value: false
+            value: 'false'
           - name: ETCD_RULES_ENABLED
-            value: false
+            value: 'false'
 
   kubechecks:
     annotations:
