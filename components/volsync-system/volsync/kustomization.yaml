@@ -5,6 +5,7 @@ namespace: volsync-system
 resources:
   - ./mutatingadmissionpolicy.yaml
   - ./prometheusrule.yaml
+  - ./servicemonitor.yaml
 
 helmCharts:
   - name: volsync
