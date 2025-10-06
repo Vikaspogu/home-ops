@@ -43,7 +43,3 @@ persistence:
     existingClaim: onstar2mqtt-config
     globalMounts:
       - path: "/data"
-
-ingress:
-  app:
-    enabled: false

@@ -40,26 +40,6 @@ service:
       websocket:
         port: 3000
 
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: mdi-z-wave
-    hosts:
-      - host: "zwave.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - "zwave.${CLUSTER_DOMAIN}"
-
 persistence:
   config:
     enabled: true

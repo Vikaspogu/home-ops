@@ -72,23 +72,3 @@ service:
     annotations:
       io.cilium/lb-ipam-ips: ${SVC_RESUME_ADDR}
     externalTrafficPolicy: Cluster
-
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/reactive-resume.png
-      gethomepage.dev/siteMonitor: http://reactive-resume.default:8080
-    hosts:
-      - host: &host reactive-resume.${CLUSTER_DOMAIN}
-        paths:
-          - path: /
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host

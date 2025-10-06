@@ -2,10 +2,10 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: jellyfin
+  name: &app jellyfin
   labels:
-    app.kubernetes.io/instance: jellyfin
-    app.kubernetes.io/name: jellyfin
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
   annotations:
     gethomepage.dev/href: "https://jellyfin.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
@@ -19,5 +19,5 @@ spec:
   hostnames: ["jellyfin.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: jellyfin
+        - name: *app
           port: 8096

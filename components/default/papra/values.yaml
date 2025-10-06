@@ -61,23 +61,3 @@ persistence:
     type: nfs
     server: ${SECRET_NAS_ADDRESS}
     path: "/volume1/media/k8s-data/papra"
-
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: papra.png
-    hosts:
-      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host

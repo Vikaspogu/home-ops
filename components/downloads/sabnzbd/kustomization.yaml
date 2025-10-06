@@ -6,8 +6,8 @@ namespace: downloads
 components:
   - ../../../components/volsync
 resources:
-  - ./config-pvc.yaml
   - ./externalsecret.yaml
+  - ./http-route.yaml
 helmCharts:
   - name: app-template
     releaseName: sabnzbd

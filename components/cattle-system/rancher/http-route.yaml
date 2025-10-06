@@ -2,7 +2,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: rancher
+  name: &app rancher
   labels:
     app.kubernetes.io/instance: rancher
     app.kubernetes.io/name: rancher
@@ -19,5 +19,5 @@ spec:
   hostnames: ["rancher.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: rancher
+        - name: *app
           port: 80

@@ -46,26 +46,6 @@ service:
       http:
         port: 8080
 
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: zigbee2mqtt.png
-    hosts:
-      - host: "zigbee2mqtt.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - "zigbee2mqtt.${CLUSTER_DOMAIN}"
-
 persistence:
   config:
     enabled: true

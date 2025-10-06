@@ -61,25 +61,6 @@ serviceMonitor:
         path: /metrics
         interval: 1m
         scrapeTimeout: 10s
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/atuin.png
-      gethomepage.dev/siteMonitor: http://atuin.default:80
-    hosts:
-      - host: &host sh.${CLUSTER_DOMAIN}
-        paths:
-          - path: /
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host
 persistence:
   config:
     enabled: true

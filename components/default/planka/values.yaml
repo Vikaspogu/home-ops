@@ -66,22 +66,3 @@ persistence:
             subPath: background-images
           - path: /app/private/attachments
             subPath: attachments
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: planka.png
-    hosts:
-      - host: &host "planka.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host

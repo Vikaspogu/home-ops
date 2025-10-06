@@ -126,30 +126,10 @@ service:
       http:
         port: *port
 
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: qbittorrent.png
-    hosts:
-      - host: "qb.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - "qb.${CLUSTER_DOMAIN}"
-
 persistence:
   config:
     enabled: true
-    existingClaim: qb-config
+    existingClaim: qbittorrent
     advancedMounts:
       qbittorrent:
         app:

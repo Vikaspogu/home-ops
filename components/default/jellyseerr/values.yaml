@@ -76,23 +76,3 @@ persistence:
             subPath: logs
           - path: /tmp
             subPath: tmp
-
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: jellyseerr.png
-    hosts:
-      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host

@@ -55,22 +55,3 @@ persistence:
       - path: "/config/selfhosted.yaml"
         subPath: selfhosted.yaml
         readOnly: true
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: donetick.png
-    hosts:
-      - host: &host "donetick.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host

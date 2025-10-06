@@ -32,24 +32,6 @@ service:
     ports:
       http:
         port: 80
-ingress:
-  app:
-    enabled: true
-    className: "internal"
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: pgadmin.png
-    hosts:
-      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host
 persistence:
   config:
     enabled: true

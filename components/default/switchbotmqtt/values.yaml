@@ -28,27 +28,6 @@ service:
       http:
         port: 8099
 
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/name: Switchbot MQTT
-      gethomepage.dev/icon: si-mqtt
-    hosts:
-      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host
-
 persistence:
   data:
     enabled: true

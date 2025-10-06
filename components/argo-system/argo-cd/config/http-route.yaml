@@ -1,7 +1,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: argo
+  name: &app argo
   annotations:
     gethomepage.dev/href: "https://argo.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
@@ -15,5 +15,5 @@ spec:
   hostnames: ["argo.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: argocd-server
+        - name: *app
           port: 80

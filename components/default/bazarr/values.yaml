@@ -40,26 +40,6 @@ service:
       http:
         port: 6767
 
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: bazarr.png
-    hosts:
-      - host: "bazarr.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - "bazarr.${CLUSTER_DOMAIN}"
-
 persistence:
   config:
     enabled: true

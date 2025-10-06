@@ -44,26 +44,6 @@ service:
       http:
         port: 80
 
-ingress:
-  app:
-    enabled: true
-    className: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: radarr.png
-    hosts:
-      - host: "radarr.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            pathType: Prefix
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - "radarr.${CLUSTER_DOMAIN}"
-
 persistence:
   config:
     enabled: true

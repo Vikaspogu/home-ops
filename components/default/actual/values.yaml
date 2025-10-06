@@ -46,23 +46,3 @@ persistence:
       actual:
         app:
           - path: /data
-
-ingress:
-  app:
-    enabled: true
-    className: "internal"
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: actual-budget.png
-      gethomepage.dev/siteMonitor: http://actual.default:5006
-    hosts:
-      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host
