@@ -11,7 +11,7 @@ controllers:
           - secretRef:
               name: scrutiny-secret
         env:
-          TZ: "${TIMEZONE}"
+          TZ: "America/New_York"
           SCRUTINY_WEB_INFLUXDB_HOST: influxdb.default.svc.cluster.local
           SCRUTINY_WEB_INFLUXDB_ORG: homelab
           SCRUTINY_WEB_INFLUXDB_BUCKET: scrutiny

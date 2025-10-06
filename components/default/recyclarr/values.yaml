@@ -1,0 +1,44 @@
+---
+controllers:
+  app:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/recyclarr/recyclarr
+          tag: 7.4.1
+        env:
+          TZ: America/New_York
+        envFrom:
+          - secretRef:
+              name: recyclarr-secret
+        resources:
+          requests:
+            cpu: 15m
+            memory: 64M
+          limits:
+            memory: 200Mi
+
+service:
+  app:
+    enabled: false
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: recyclarr
+  config-file:
+    enabled: true
+    type: configMap
+    name: recyclarr-configmap
+    globalMounts:
+      - path: /config/recyclarr.yml
+        subPath: recyclarr.yml
+        readOnly: true

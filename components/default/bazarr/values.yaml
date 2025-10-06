@@ -1,0 +1,84 @@
+---
+controllers:
+  app:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+        supplementalGroups:
+          - 100
+    containers:
+      subcleaner:
+        image:
+          repository: registry.k8s.io/git-sync/git-sync
+          tag: v4.5.0
+          pullPolicy: IfNotPresent
+        args:
+          - --repo=https://github.com/KBlixt/subcleaner.git
+          - --branch=master
+          - --wait=86400 # 1 day
+          - --root=/add-ons/
+      app:
+        image:
+          repository: ghcr.io/home-operations/bazarr
+          tag: 1.5.3@sha256:2f1c32cb1420b2e56f60cfdf7823737eb501fdb2c13669429d23ab3a02e9ad90
+        env:
+          TZ: "America/New_York"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 250Mi
+          limits:
+            memory: 4Gi
+service:
+  app:
+    ports:
+      http:
+        port: 6767
+
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: bazarr.png
+    hosts:
+      - host: "bazarr.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "bazarr.${CLUSTER_DOMAIN}"
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: bazarr
+    globalMounts:
+      - path: /config
+  media:
+    type: nfs
+    server: omv-loki.vikaspogu.internal
+    path: "/storage0/media"
+    globalMounts:
+      - path: /nfs-nas-pvc
+  add-ons:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /add-ons
+  scripts:
+    enabled: true
+    type: configMap
+    name: bazarr-scripts # overriden by kustomizeconfig
+    defaultMode: 0775

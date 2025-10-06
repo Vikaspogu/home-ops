@@ -1,0 +1,69 @@
+---
+controllers:
+  app:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/advplyr/audiobookshelf
+          tag: 2.29.0
+        env:
+          TZ: "America/New_York"
+          PORT: &port 80
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthcheck
+                port: *port
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 100m
+            memory: 250Mi
+          limits:
+            memory: 750Mi
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+ingress:
+  app:
+    enabled: true
+    className: external
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: audiobookshelf.png
+      nginx.ingress.kubernetes.io/proxy-body-size: "2G"
+      nginx.ingress.kubernetes.io/proxy-buffering: "off"
+      nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+      external-dns.alpha.kubernetes.io/target: "external.${CLUSTER_DOMAIN}"
+      gethomepage.dev/siteMonitor: http://audiobookshelf.default:80
+    hosts:
+      - host: &host "ab.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - *host
+
+persistence:
+  config:
+    enabled: true
+    globalMounts:
+      - path: /config
+    existingClaim: audiobookshelf
+  media:
+    type: nfs
+    server: ${SECRET_NAS_ADDRESS}
+    path: "/volume1/media/audiobookshelf"
+    globalMounts:
+      - path: /audiobooks

@@ -17,7 +17,7 @@ controllers:
           repository: ghcr.io/go-gitea/gitea
           tag: 1.24.6-rootless
         env:
-          TZ: "${TIMEZONE}"
+          TZ: "America/New_York"
           USER_UID: 1000
           USER_GID: 1000
           GITEA__ACTIONS__ENABLED: "True"

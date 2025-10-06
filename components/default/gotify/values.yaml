@@ -1,0 +1,54 @@
+---
+controllers:
+  app:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/gotify/server
+          tag: 2.6.3
+        env:
+          GOTIFY_DATABASE_CONNECTION: data/gotify.db
+          GOTIFY_PLUGINSDIR: data/plugins
+          GOTIFY_UPLOADEDIMAGESDIR: data/images
+        resources:
+          requests:
+            cpu: 10m
+            memory: 250Mi
+          limits:
+            memory: 500Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+service:
+  app:
+    ports:
+      http:
+        port: 80
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: gotify
+    globalMounts:
+      - path: /app/data
+
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: gotify.png
+    hosts:
+      - host: "gotify.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "gotify.${CLUSTER_DOMAIN}"

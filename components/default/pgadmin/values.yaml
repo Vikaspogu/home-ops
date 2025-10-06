@@ -1,0 +1,64 @@
+---
+controllers:
+  app:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      volume-permissions:
+        image:
+          repository: dpage/pgadmin4
+          tag: "9.8@sha256:d115bcd737940a6cfb61a54439d50de8b850e0782e2363102c9fa761f4022f49"
+        command: ["/bin/chown", "-R", "5050:5050", "/var/lib/pgadmin"]
+        securityContext:
+          runAsUser: 0
+    containers:
+      app:
+        image:
+          repository: dpage/pgadmin4
+          tag: "9.8@sha256:d115bcd737940a6cfb61a54439d50de8b850e0782e2363102c9fa761f4022f49"
+        env:
+          PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+        envFrom:
+          - secretRef:
+              name: pgadmin-secret
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            memory: 500Mi
+service:
+  app:
+    ports:
+      http:
+        port: 80
+ingress:
+  app:
+    enabled: true
+    className: "internal"
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: pgadmin.png
+    hosts:
+      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - *host
+persistence:
+  config:
+    enabled: true
+    existingClaim: pgadmin
+    globalMounts:
+      - path: /var/lib/pgadmin
+  oauthconfig:
+    type: secret
+    name: pgadmin-oauth-secret
+    globalMounts:
+      - path: /pgadmin4/config_local.py
+        subPath: config_local.py

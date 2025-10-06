@@ -10,7 +10,7 @@ controllers:
           repository: ghcr.io/miguelndecarvalho/speedtest-exporter
           tag: v3.5.4
         env:
-          TZ: ${TIMEZONE}
+          TZ: America/New_York
         resources:
           requests:
             cpu: 15m

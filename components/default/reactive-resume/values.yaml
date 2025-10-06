@@ -1,0 +1,94 @@
+---
+controllers:
+  app:
+    replicas: 1
+    strategy: RollingUpdate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+        envFrom: &envFrom
+          - secretRef:
+              name: reactive-resume-secret
+    containers:
+      chrome:
+        image:
+          repository: ghcr.io/browserless/chromium
+          tag: v2.18.0 # Upgrading to newer versions causes issues
+        env:
+          TIMEOUT: 10000
+          CONCURRENT: 10
+          TOKEN: chrome_token
+          EXIT_ON_HEALTH_FAILURE: "true"
+          PRE_REQUEST_HEALTH_CHECK: "true"
+      app:
+        image:
+          repository: amruthpillai/reactive-resume
+          tag: v4.5.0@sha256:46999abe24b0d41fb8b3c32e479f06035fa755db8c3243d03335e74fa6a2e74f
+        env:
+          PORT: &port 8080
+          NODE_ENV: production
+
+          # -- URLs --
+          PUBLIC_URL: http://${SVC_RESUME_ADDR}:8080
+
+          # -- Printer (Chrome) --
+          CHROME_TOKEN: chrome_token
+          CHROME_URL: ws://localhost:3000
+          STORAGE_ENDPOINT: s3.omv.v3socp.boo
+          STORAGE_PORT: 443
+          STORAGE_REGION: garage # Optional
+          STORAGE_BUCKET: reactive-resume
+          STORAGE_USE_SSL: "true"
+          STORAGE_SKIP_BUCKET_CHECK: "false"
+          DISABLE_SIGNUPS: "true"
+          DISABLE_EMAIL_AUTH: "false"
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            memory: 750Mi
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+            spec:
+              failureThreshold: 30
+              periodSeconds: 5
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+    type: LoadBalancer
+    annotations:
+      io.cilium/lb-ipam-ips: ${SVC_RESUME_ADDR}
+    externalTrafficPolicy: Cluster
+
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/reactive-resume.png
+      gethomepage.dev/siteMonitor: http://reactive-resume.default:8080
+    hosts:
+      - host: &host reactive-resume.${CLUSTER_DOMAIN}
+        paths:
+          - path: /
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - *host

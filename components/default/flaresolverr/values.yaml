@@ -1,0 +1,22 @@
+---
+controllers:
+  app:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/flaresolverr/flaresolverr
+          tag: v3.4.1
+        env:
+          TZ: America/New_York
+          LOG_LEVEL: info
+        resources:
+          requests:
+            memory: 100Mi
+            cpu: 100m
+          limits:
+            memory: 512Mi
+service:
+  app:
+    ports:
+      http:
+        port: 8191

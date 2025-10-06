@@ -1,0 +1,75 @@
+---
+controllers:
+  app:
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+        supplementalGroups:
+          - 100
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/sonarr
+          tag: 4.0.15.2940@sha256:ca6c735014bdfb04ce043bf1323a068ab1d1228eea5bab8305ca0722df7baf78
+        env:
+          TZ: "America/New_York"
+          SONARR__INSTANCE_NAME: Sonarr
+          SONARR__PORT: &port 80
+          SONARR__LOG_LEVEL: info
+        resources:
+          requests:
+            cpu: 15m
+            memory: 381M
+          limits:
+            memory: 2000Mi
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: sonarr.png
+    hosts:
+      - host: "sonarr.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "sonarr.${CLUSTER_DOMAIN}"
+persistence:
+  config:
+    enabled: true
+    existingClaim: sonarr
+  media:
+    type: nfs
+    server: omv-loki.vikaspogu.internal
+    path: "/storage0/media"
+    globalMounts:
+      - path: /nfs-nas-pvc

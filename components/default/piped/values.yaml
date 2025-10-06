@@ -1,0 +1,80 @@
+---
+postgresql:
+  enabled: false
+frontend:
+  env:
+    BACKEND_HOSTNAME: &api_host papi.${CLUSTER_DOMAIN}
+    TZ: America/New_York
+
+backend:
+  podAnnotations:
+    configmap.reloader.stakater.com/reload: "piped-backend-config"
+  initContainers:
+    01-init-db:
+      image: ghcr.io/home-operations/postgres-init:17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+      imagePullPolicy: IfNotPresent
+      envFrom:
+        - secretRef:
+            name: &secret piped-db-creds
+  env:
+    TZ: America/New_York
+  config:
+    PORT: 8080
+    HTTP_WORKERS: 4
+    PROXY_PART: https://pproxy.${CLUSTER_DOMAIN}
+    # BG_HELPER_URL: http://piped-bg-helper:3000
+    API_URL: https://papi.${CLUSTER_DOMAIN}
+    FRONTEND_URL: https://yt.${CLUSTER_DOMAIN}
+    # HTTP_PROXY: 127.0.0.1:8888
+    DISABLE_REGISTRATION: "true"
+    FEED_RETENTION: "5"
+    database:
+      connection_url: jdbc:postgresql://postgres17-rw.default.svc.cluster.local/piped
+      secret:
+        name: *secret
+        username: DB_USERNAME
+        password: DB_PASSWORD
+ingress:
+  main:
+    enabled: true
+    ingressClassName: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/piped.png
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://yt.${CLUSTER_DOMAIN}, https://pproxy.${CLUSTER_DOMAIN}, https://papi.${CLUSTER_DOMAIN}"
+    hosts:
+      - host: &host yt.${CLUSTER_DOMAIN}
+        paths:
+          - path: "/"
+    tls:
+      - hosts:
+          - *host
+  backend:
+    enabled: true
+    ingressClassName: internal
+    annotations:
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS HEAD"
+      nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    hosts:
+      - host: *api_host
+        paths:
+          - path: "/"
+    tls:
+      - hosts:
+          - *api_host
+  ytproxy:
+    enabled: true
+    ingressClassName: internal
+    annotations:
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/cors-allow-origin: "https://yt.${CLUSTER_DOMAIN}, https://pproxy.${CLUSTER_DOMAIN}, https://papi.${CLUSTER_DOMAIN}"
+    hosts:
+      - host: &proxy pproxy.${CLUSTER_DOMAIN}
+        paths:
+          - path: "/"
+    tls:
+      - hosts:
+          - *proxy

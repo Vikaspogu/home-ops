@@ -1,0 +1,26 @@
+---
+controllers:
+  ab-cleanup-util:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    type: cronjob
+    cronjob:
+      schedule: "@weekly"
+      timeZone: "America/New_York"
+    containers:
+      app:
+        image:
+          repository: registry.vikaspogu.com/vikas/ab-cleanup-util
+          tag: 0537c4a9
+        envFrom:
+          - secretRef:
+              name: ab-cleanup-util
+        env:
+          TZ: "America/New_York"
+          AB_URL: "http://audiobookshelf.default.svc.cluster.local:80"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            memory: 1000Mi

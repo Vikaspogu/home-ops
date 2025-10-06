@@ -1,0 +1,65 @@
+---
+controllers:
+  valetudopng:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/erkexzcx/valetudopng
+          tag: v1.0.17
+        env:
+          TZ: America/New_York
+          PORT: &port 3000
+        probes:
+          liveness: &probes
+            enabled: false
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            memory: 512Mi
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+ingress:
+  app:
+    enabled: false
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: valetudopng.png
+    hosts:
+      - host: "valetudopng.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "valetudopng.${CLUSTER_DOMAIN}"
+
+persistence:
+  config:
+    enabled: true
+    type: secret
+    name: valetudopng-secret
+    globalMounts:
+      - subPath: config.yml
+        path: /config.yml

@@ -1,0 +1,56 @@
+---
+controllers:
+  mosquitto:
+    containers:
+      app:
+        image:
+          repository: public.ecr.aws/docker/library/eclipse-mosquitto
+          tag: 2.0.22
+        env:
+          TZ: America/New_York
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: {drop: ["ALL"]}
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            memory: 100Mi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+service:
+  app:
+    type: LoadBalancer
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: mosquitto.${CLUSTER_DOMAIN}
+      lbipam.cilium.io/ips: ${SVC_MOSQUITTO_ADDR}
+    externalTrafficPolicy: Local
+    ports:
+      http:
+        port: 1883
+configMaps:
+  config:
+    data:
+      mosquitto.conf: |-
+        allow_anonymous true
+        autosave_interval 60
+        connection_messages false
+        listener 1883
+        per_listener_settings false
+        persistence true
+        persistence_location /config
+persistence:
+  config:
+    existingClaim: "{{ .Release.Name }}"
+  config-file:
+    type: configMap
+    identifier: config
+    globalMounts:
+      - path: /mosquitto/config/mosquitto.conf
+        subPath: mosquitto.conf

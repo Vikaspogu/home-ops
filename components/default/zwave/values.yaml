@@ -1,0 +1,75 @@
+---
+defaultPodOptions:
+  nodeSelector:
+    zwave.feature.node.kubernetes.io/device: "true"
+controllers:
+  zwave:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/zwave-js/zwave-js-ui
+          tag: 11.3.1@sha256:0191a3fb96ff88cbc4c7f12e28a10de118def0ea343c39ddc6ce046b6ef78503
+        env:
+          TZ: America/New_York
+          PORT: &port 80
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            cpu: 10m
+service:
+  app:
+    ports:
+      http:
+        port: *port
+      websocket:
+        port: 3000
+
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: mdi-z-wave
+    hosts:
+      - host: "zwave.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "zwave.${CLUSTER_DOMAIN}"
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: zwave
+    globalMounts:
+      - path: /usr/src/app/store
+  usb:
+    enabled: true
+    type: hostPath
+    hostPath: /dev/serial/by-id/usb-Zooz_800_Z-Wave_Stick_533D004242-if00
+    hostPathType: CharDevice
+    globalMounts:
+      - path: /dev/ttyUSB0

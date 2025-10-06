@@ -1,0 +1,158 @@
+default:
+  app:
+    enabled: true
+    enableAutoSync: true
+    autoSyncPrune: true
+    project: default
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    labels:
+      app-source: talos
+      repo: default
+    destination:
+      server: https://kubernetes.default.svc
+    source:
+      repoURL: https://github.com/Vikaspogu/home-ops.git
+      targetRevision: HEAD
+    syncPolicy:
+      automated:
+        allowEmpty: true
+        prune: true
+        selfHeal: true
+      retry:
+        limit: 10
+        backoff:
+          duration: 10s
+          factor: 2
+          maxDuration: 3m
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ServerSideApply=true
+      - FailOnSharedResource=true
+      - RespectIgnoreDifferences=true
+      - CreateNamespace=false
+
+
+applications:
+
+  external-secrets-chart:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/external-secrets-chart
+
+  onepassword-connect:
+    annotations:
+      argocd.argoproj.io/sync-wave: "0"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/onepassword-connect
+
+  external-secrets-stores:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: external-secrets
+    source:
+      path: components/external-secrets/external-secrets-stores
+
+  cert-manager:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: cert-manager
+    source:
+      path: clusters/talos/apps/cert-manager/cert-manager
+
+  unifi-dns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: network
+    source:
+      path: components/network/unifi-dns
+
+  argo-cd:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/talos/apps/argo-system/argo-cd
+
+  snapshot-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/snapshot-controller
+
+  homepage:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: default
+    source:
+      path: clusters/talos/apps/default/homepage
+
+  kopia:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: volsync-system
+    source:
+      path: clusters/talos/apps/volsync-system/kopia
+
+  volsync:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: volsync-system
+    source:
+      path: clusters/talos/apps/volsync-system/volsync
+
+  barman-cloud:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: default
+    source:
+      path: components/default/barman-cloud
+
+  cloudnative-pg:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: default
+    source:
+      path: components/default/cloudnative-pg
+
+  cloudnative-cluster:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: default
+    source:
+      path: clusters/talos/apps/default/cloudnative-cluster
+
+  kubechecks:
+    annotations:
+      argocd.argoproj.io/sync-wave: "35"
+    destination:
+      namespace: argo-system
+    source:
+      path: components/argo-system/kubechecks
+
+  system-upgrade-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "45"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/system-upgrade-controller

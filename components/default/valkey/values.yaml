@@ -1,0 +1,31 @@
+---
+controllers:
+  valkey:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: valkey/valkey
+          tag: 8.1.4-alpine@sha256:e706d1213aaba6896c162bb6a3a9e1894e1a435f28f8f856d14fab2e10aa098b
+        env:
+          VALKEY_PASSWORD_FILE: /secret/valkey-password
+          VALKEY_PORT: &port 6379
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  data:
+    type: emptyDir
+  secret:
+    type: secret
+    name: valkey-secret
+    advancedMounts:
+      valkey:
+        app:
+          - path: /secret/valkey-password
+            subPath: valkey-password
+            readOnly: true

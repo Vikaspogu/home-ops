@@ -1,0 +1,33 @@
+---
+controllers:
+  app:
+    containers:
+      app:
+        image:
+          repository: ghcr.io/frooodle/s-pdf
+          tag: 0.18.1
+service:
+  app:
+    ports:
+      http:
+        port: 8080
+
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: stirling-pdf.png
+    hosts:
+      - host: "pdf.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "pdf.${CLUSTER_DOMAIN}"

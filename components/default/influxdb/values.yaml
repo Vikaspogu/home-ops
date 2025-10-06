@@ -1,0 +1,43 @@
+---
+fullnameOverride: influxdb
+image:
+  repository: docker.io/library/influxdb
+  tag: 2.7.12
+  pullPolicy: IfNotPresent
+adminUser:
+  create: true
+  organization: homelab
+  bucket: scrutiny
+  user: "admin"
+  retention_policy: "0s"
+  existingSecret: influxdb-secret
+pdb:
+  create: false
+env:
+  - name: TZ
+    value: "America/New_York"
+ingress:
+  enabled: true
+  className: internal
+  path: /
+  hostname: influxdb.${CLUSTER_DOMAIN}
+  tls: true
+  annotations:
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: si-influxdb
+
+service:
+  type: LoadBalancer
+  annotations:
+    lbipam.cilium.io/ips: "${SVC_INFLUXDB_ADDR}"
+
+persistence:
+  enabled: true
+  useExisting: true
+  name: influxdb
+
+resources:
+  requests:
+    cpu: 30m
+    memory: 500M

@@ -1,0 +1,43 @@
+---
+controllers:
+  it-tools:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/corentinth/it-tools
+          tag: 2023.12.21-5ed3693
+        env:
+          TZ: America/New_York
+        probes:
+          liveness:
+            enabled: false
+          readiness:
+            enabled: false
+        resources:
+          requests:
+            cpu: 100m
+          limits:
+            memory: 500Mi
+service:
+  app:
+    ports:
+      http:
+        port: 80
+ingress:
+  app:
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/name: IT Tools
+      gethomepage.dev/icon: https://cdn-icons-png.flaticon.com/512/868/868784.png
+      gethomepage.dev/siteMonitor: http://it-tools.default:80
+    hosts:
+      - host: "it-tools.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            service:
+              identifier: app
+              port: http

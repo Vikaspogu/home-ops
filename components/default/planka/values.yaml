@@ -1,0 +1,87 @@
+---
+controllers:
+  app:
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+        envFrom: &envFrom
+          - secretRef:
+              name: planka-secret
+    pod:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    containers:
+      planka:
+        image:
+          repository: ghcr.io/plankanban/planka
+          tag: 2.0.0-rc.4@sha256:1cb538e1a3476126e582e705b32a55adc940306d4ea09cca52dc4342803c11a7
+        env:
+          TZ: America/New_York
+          BASE_URL: 'https://planka.${CLUSTER_DOMAIN}'
+          REACT_APP_SERVER_BASE_URL: 'https://planka.${CLUSTER_DOMAIN}'
+          OIDC_IGNORE_ROLES: 'true'
+          TRUST_PROXY: '1'
+          # OIDC_ENFORCED: 'true'
+        envFrom: *envFrom
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: &port 1337
+              initialDelaySeconds: 10
+              periodSeconds: 60
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 50m
+            memory: 512Mi
+          limits:
+            memory: 1Gi
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    existingClaim: planka
+    advancedMounts:
+      app:
+        planka:
+          - path: /app/public/favicons
+            subPath: favicons
+          - path: /app/public/user-avatars
+            subPath: user-avatars
+          - path: /app/public/background-images
+            subPath: background-images
+          - path: /app/private/attachments
+            subPath: attachments
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: planka.png
+    hosts:
+      - host: &host "planka.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - *host

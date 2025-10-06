@@ -1,0 +1,43 @@
+---
+controllers:
+  webhook-relay:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: docker.io/vikaspogu/webhook-relay
+          tag: latest@sha256:d09e4efdc19e6d73f4796a27da42c957d37225c8d7c24987ad5e29bc26ae09e5
+        envFrom:
+          - secretRef:
+              name: webhook-relay
+        env:
+          TZ: "America/New_York"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            memory: 1000Mi
+service:
+  app:
+    ports:
+      http:
+        port: 8080
+ingress:
+  app:
+    enabled: true
+    className: external
+    annotations:
+      external-dns.alpha.kubernetes.io/target: "external.${CLUSTER_DOMAIN}"
+    hosts:
+      - host: "webhook-relay.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - "webhook-relay.${CLUSTER_DOMAIN}"

@@ -1,0 +1,98 @@
+---
+controllers:
+  jellyseerr:
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+        envFrom: &envFrom
+          - secretRef:
+              name: jellyseerr-secret
+    pod:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/fallenbagel/jellyseerr
+          tag: 2.7.3@sha256:9cc9e9ee6cd5cf5a23feb45c37742ba34cfd6314d81d259cddb373a97ac92cdd
+        env:
+          TZ: America/New_York
+          LOG_LEVEL: "info"
+          PORT: &port 80
+        envFrom: *envFrom
+        probes:
+          liveness: &probes
+            enabled: false
+            custom: true
+            spec:
+              httpGet:
+                path: /api/v1/status
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            memory: 2Gi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+service:
+  app:
+    ports:
+      http:
+        port: &port 80
+
+persistence:
+  config:
+    existingClaim: "jellyseerr"
+    globalMounts:
+      - path: /app/config
+  config-cache:
+    existingClaim: "jellyseerr-cache"
+    globalMounts:
+      - path: /app/config/cache
+  tmpfs:
+    type: emptyDir
+    advancedMounts:
+      jellyseerr:
+        app:
+          - path: /app/config/logs
+            subPath: logs
+          - path: /tmp
+            subPath: tmp
+
+ingress:
+  app:
+    enabled: true
+    className: internal
+    annotations:
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: jellyseerr.png
+    hosts:
+      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
+        paths:
+          - path: /
+            pathType: Prefix
+            service:
+              identifier: app
+              port: http
+    tls:
+      - hosts:
+          - *host
