@@ -15,5 +15,5 @@ spec:
   hostnames: ["argo.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: *app
+        - name: argocd-server
           port: 80
