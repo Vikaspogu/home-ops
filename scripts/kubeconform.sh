@@ -12,6 +12,7 @@ export CLUSTER_DOMAIN="${CLUSTER_DOMAIN:-example.local}"
 export EXTERNAL_IP_ADDRESS="${EXTERNAL_IP_ADDRESS:-192.168.1.100}"
 export INTERNAL_IP_ADDRESS="${INTERNAL_IP_ADDRESS:-10.0.0.100}"
 export GATEWAY_NAME="${GATEWAY_NAME:-gateway}"
+export GATEWAY_EXTERNAL_NAME="${GATEWAY_EXTERNAL_NAME:-gateway-external}"
 export GATEWAY_NAMESPACE="${GATEWAY_NAMESPACE:-gateway-system}"
 export ARGOCD_APP_NAME="${ARGOCD_APP_NAME:-app}"
 export ARGOCD_ENV_VOLSYNC_CAPACITY="${ARGOCD_ENV_VOLSYNC_CAPACITY:-4Gi}"
@@ -57,6 +58,22 @@ validate_kustomization() {
     return 0
 }
 
+# Function to check if a file is referenced in configMapGenerator
+is_configmap_generator_file() {
+    local file="$1"
+    local dir="${file%/*}"
+    local filename="${file##*/}"
+    local kustomization_file="${dir}/kustomization.yaml"
+
+    # Check if kustomization.yaml exists and contains configMapGenerator referencing this file
+    if [[ -f "${kustomization_file}" ]]; then
+        if grep -q "configMapGenerator:" "${kustomization_file}" && grep -A 20 "configMapGenerator:" "${kustomization_file}" | grep -q "files:" && grep -A 20 "configMapGenerator:" "${kustomization_file}" | grep -A 10 "files:" | grep -q "${filename}"; then
+            return 0  # File is referenced in configMapGenerator
+        fi
+    fi
+    return 1  # File is not referenced in configMapGenerator
+}
+
 # Function to validate standalone YAML files
 validate_standalone_files() {
     local search_dir="$1"
@@ -76,6 +93,12 @@ validate_standalone_files() {
         -print0 | while IFS= read -r -d $'\0' file; do
 
         local file_relative="${file#${ROOT_DIR}/}"
+
+        # Skip files that are referenced in configMapGenerator
+        if is_configmap_generator_file "${file}"; then
+            echo "Skipping ${file_relative} - referenced in configMapGenerator"
+            continue
+        fi
 
         echo "Validating ${file_relative}"
         if ! envsubst < "${file}" | kubeconform "${kubeconform_args[@]}"; then

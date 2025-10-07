@@ -2,19 +2,6 @@
 monitoring:
   enabled: true
   createPrometheusRules: true
-ingress:
-  dashboard:
-    ingressClassName: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: "si-ceph"
-    host:
-      name: &host "rook.${CLUSTER_DOMAIN}"
-      path: "/"
-    tls:
-      - hosts:
-          - *host
 toolbox:
   enabled: true
 configOverride: |

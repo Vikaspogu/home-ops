@@ -10,9 +10,9 @@ spec:
     spec:
       volumes:
         - name: repository
-          type: nfs
-          server: omv-loki.vikaspogu.internal
-          path: "/storage0/VolsyncKopia"
+          nfs:
+            server: omv-loki.vikaspogu.internal
+            path: "/storage0/VolsyncKopia"
       containers:
         - name: app
           volumeMounts:

@@ -1,0 +1,40 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: &app piped
+  labels:
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
+  annotations:
+    gethomepage.dev/href: "https://yt.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/piped.png
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["yt.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: piped-frontend
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: piped-backend
+  labels:
+    app.kubernetes.io/instance: piped-backend
+    app.kubernetes.io/name: piped-backend
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["papi.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: piped-backend
+          port: 8080

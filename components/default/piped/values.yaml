@@ -36,45 +36,8 @@ backend:
         password: DB_PASSWORD
 ingress:
   main:
-    enabled: true
-    ingressClassName: internal
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/piped.png
-      nginx.ingress.kubernetes.io/enable-cors: "true"
-      nginx.ingress.kubernetes.io/cors-allow-origin: "https://yt.${CLUSTER_DOMAIN}, https://pproxy.${CLUSTER_DOMAIN}, https://papi.${CLUSTER_DOMAIN}"
-    hosts:
-      - host: &host yt.${CLUSTER_DOMAIN}
-        paths:
-          - path: "/"
-    tls:
-      - hosts:
-          - *host
+    enabled: false
   backend:
-    enabled: true
-    ingressClassName: internal
-    annotations:
-      nginx.ingress.kubernetes.io/enable-cors: "true"
-      nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, OPTIONS HEAD"
-      nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    hosts:
-      - host: *api_host
-        paths:
-          - path: "/"
-    tls:
-      - hosts:
-          - *api_host
+    enabled: false
   ytproxy:
-    enabled: true
-    ingressClassName: internal
-    annotations:
-      nginx.ingress.kubernetes.io/enable-cors: "true"
-      nginx.ingress.kubernetes.io/cors-allow-origin: "https://yt.${CLUSTER_DOMAIN}, https://pproxy.${CLUSTER_DOMAIN}, https://papi.${CLUSTER_DOMAIN}"
-    hosts:
-      - host: &proxy pproxy.${CLUSTER_DOMAIN}
-        paths:
-          - path: "/"
-    tls:
-      - hosts:
-          - *proxy
+    enabled: false

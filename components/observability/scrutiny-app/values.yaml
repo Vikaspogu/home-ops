@@ -55,28 +55,10 @@ service:
     ports:
       http:
         port: *port
-ingress:
-  app:
-    enabled: true
-    className: "internal"
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/scrutiny.png
-    hosts:
-      - host: &host "{{ .Release.Name }}.${CLUSTER_DOMAIN}"
-        paths:
-          - path: /
-            service:
-              identifier: app
-              port: http
-    tls:
-      - hosts:
-          - *host
 
 persistence:
   config:
-    existingClaim: scrutiny-data
+    existingClaim: scrutiny
     globalMounts:
       - path: /opt/scrutiny/config
         subPath: scrutiny

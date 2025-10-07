@@ -2,8 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: scrutiny-data
-  namespace: observability
+  name: scrutiny
   labels:
     app.kubernetes.io/instance: scrutiny
     app.kubernetes.io/name: scrutiny

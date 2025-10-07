@@ -34,21 +34,7 @@ server:
     serviceMonitor:
       enabled: true
   ingress:
-    enabled: true
-    ingressClassName: external
-    annotations:
-      gethomepage.dev/enabled: "true"
-      gethomepage.dev/group: Ingress
-      gethomepage.dev/icon: authentik.png
-      external-dns.alpha.kubernetes.io/target: "external.${CLUSTER_DOMAIN}"
-      gethomepage.dev/siteMonitor: http://authentik-server.default:80
-    hosts:
-      - &host id.${CLUSTER_DOMAIN}
-    paths:
-      - /
-    tls:
-      - hosts:
-          - *host
+    enabled: false
 geoip:
   enabled: false
   existingSecret:
