@@ -7,5 +7,5 @@ helmCharts:
     releaseName: envoy-gateway
     namespace: network
     repo: oci://docker.io/envoyproxy
-    version: 1.5.2
+    version: 1.5.3
     valuesFile: values.yaml
