@@ -102,7 +102,7 @@ function apply_crds() {
         # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
         https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.86.0/stripped-down-crds.yaml
         # renovate: datasource=github-releases depName=external-secrets/external-secrets
-        https://raw.githubusercontent.com/external-secrets/external-secrets/v0.20.2/deploy/crds/bundle.yaml
+        https://raw.githubusercontent.com/external-secrets/external-secrets/v0.20.3/deploy/crds/bundle.yaml
     )
 
     for crd in "${crds[@]}"; do
