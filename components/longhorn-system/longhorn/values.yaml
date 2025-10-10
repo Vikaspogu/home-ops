@@ -24,7 +24,7 @@ csi:
   snapshotterReplicaCount: 2
 
 defaultSettings:
-  defaultDataPath: "/srv/dev-disk-by-uuid-e486bb32-3762-4f61-bfeb-3d3b626159e8/longhorn"
+  defaultDataPath: "/srv/dev-disk-by-uuid-fa718509-497e-4bd6-844a-13fffd38aa6a/longhorn"
   defaultDataLocality: "best-effort"
   defaultClassReplicaCount: 1
   mkfsExt4Parameters: "-F"
