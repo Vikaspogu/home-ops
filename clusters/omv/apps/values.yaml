@@ -109,6 +109,22 @@ applications:
     source:
       path: components/kube-system/snapshot-controller
 
+  system-upgrade-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/system-upgrade-controller
+
+  system-upgrade-k3s:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/k3s
+
   rancher:
     annotations:
       argocd.argoproj.io/sync-wave: "25"
@@ -256,19 +272,3 @@ applications:
       namespace: argo-system
     source:
       path: components/argo-system/kubechecks
-
-  system-upgrade-controller:
-    annotations:
-      argocd.argoproj.io/sync-wave: "45"
-    destination:
-      namespace: system-upgrade
-    source:
-      path: components/system-upgrade/system-upgrade-controller
-
-  system-upgrade-k3s:
-    annotations:
-      argocd.argoproj.io/sync-wave: "45"
-    destination:
-      namespace: system-upgrade
-    source:
-      path: components/system-upgrade/k3s
