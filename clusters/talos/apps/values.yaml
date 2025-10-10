@@ -1,39 +1,37 @@
-default:
-  app:
-    enabled: true
-    enableAutoSync: true
-    autoSyncPrune: true
-    project: default
-    finalizers:
-      - resources-finalizer.argocd.argoproj.io
-    labels:
-      app-source: talos
-      repo: default
-    destination:
-      server: https://kubernetes.default.svc
-    source:
-      repoURL: https://github.com/Vikaspogu/home-ops.git
-      targetRevision: HEAD
-    syncPolicy:
-      automated:
-        allowEmpty: true
-        prune: true
-        selfHeal: true
-      retry:
-        limit: 10
-        backoff:
-          duration: 10s
-          factor: 2
-          maxDuration: 3m
-    syncOptions:
-      - ApplyOutOfSyncOnly=true
-      - PrunePropagationPolicy=foreground
-      - PruneLast=true
-      - ServerSideApply=true
-      - FailOnSharedResource=true
-      - RespectIgnoreDifferences=true
-      - CreateNamespace=false
-
+app:
+  enabled: true
+  enableAutoSync: true
+  autoSyncPrune: true
+  project: default
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    app-source: talos
+    repo: default
+  destination:
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/Vikaspogu/home-ops.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
+  syncOptions:
+    - ApplyOutOfSyncOnly=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - ServerSideApply=true
+    - FailOnSharedResource=true
+    - RespectIgnoreDifferences=true
+    - CreateNamespace=false
 
 applications:
 
@@ -61,37 +59,125 @@ applications:
     source:
       path: components/external-secrets/external-secrets-stores
 
-  cert-manager:
+  envoy-gateway:
     annotations:
-      argocd.argoproj.io/sync-wave: "15"
+      argocd.argoproj.io/sync-wave: "10"
     destination:
-      namespace: cert-manager
+      namespace: network
     source:
-      path: clusters/talos/apps/cert-manager/cert-manager
+      path: components/network/envoy-gateway
+
+  envoy-gateway-crds:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/envoy-gateway-crds
 
   unifi-dns:
     annotations:
-      argocd.argoproj.io/sync-wave: "20"
+      argocd.argoproj.io/sync-wave: "10"
     destination:
       namespace: network
     source:
       path: components/network/unifi-dns
 
-  argo-cd:
+  envoy-gateway-config:
     annotations:
-      argocd.argoproj.io/sync-wave: "20"
+      argocd.argoproj.io/sync-wave: "10"
     destination:
-      namespace: argo-system
+      namespace: network
     source:
-      path: clusters/talos/apps/argo-system/argo-cd
+      path: components/network/envoy-gateway-config
+
+  cloudflare-dns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/cloudflare-dns
+
+  cloudflare-tunnel:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/cloudflare-tunnel
+
+  coredns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/coredns
+
+  spegel:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/spegel
 
   snapshot-controller:
     annotations:
-      argocd.argoproj.io/sync-wave: "20"
+      argocd.argoproj.io/sync-wave: "15"
     destination:
       namespace: kube-system
     source:
       path: components/kube-system/snapshot-controller
+
+  kubechecks:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: argo-system
+    source:
+      path: components/argo-system/kubechecks
+
+  rook-ceph:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: rook-ceph
+    source:
+      path: components/rook-ceph/rook-ceph-app
+
+  rook-ceph-cluster:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: rook-ceph
+    source:
+      path: components/rook-ceph/rook-ceph-cluster
+
+  cert-manager:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: cert-manager
+    source:
+      path: clusters/talos/apps/cert-manager/cert-manager
+
+  cilium:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: kube-system
+    source:
+      path: clusters/talos/apps/kube-system/cilium
+
+  argo-cd:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/talos/apps/argo-system/argo-cd
 
   homepage:
     annotations:
@@ -135,23 +221,15 @@ applications:
 
   cloudnative-cluster:
     annotations:
-      argocd.argoproj.io/sync-wave: "30"
+      argocd.argoproj.io/sync-wave: "25"
     destination:
       namespace: default
     source:
       path: clusters/talos/apps/default/cloudnative-cluster
 
-  kubechecks:
-    annotations:
-      argocd.argoproj.io/sync-wave: "35"
-    destination:
-      namespace: argo-system
-    source:
-      path: components/argo-system/kubechecks
-
   system-upgrade-controller:
     annotations:
-      argocd.argoproj.io/sync-wave: "45"
+      argocd.argoproj.io/sync-wave: "35"
     destination:
       namespace: system-upgrade
     source:
