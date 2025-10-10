@@ -9,7 +9,7 @@ helmCharts:
     releaseName: kube-prometheus-stack
     namespace: observability
     repo: oci://ghcr.io/prometheus-community/charts
-    version: 77.14.0
+    version: 78.1.0
     valuesInline:
       kubeEtcd:
         enabled: false
