@@ -29,13 +29,13 @@ spec:
     enablePodMonitor: true
   bootstrap:
     recovery:
-      source: &recoveryCluster pg17-omv
+      source: &recoveryCluster pg17-omv-01
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
         barmanObjectName: pg17-omv-backup
-        serverName: &currentCluster pg17-omv-01
+        serverName: &currentCluster pg17-omv-02
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
   externalClusters:
     - name: *recoveryCluster
