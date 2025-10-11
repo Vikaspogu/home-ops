@@ -117,9 +117,17 @@ applications:
     source:
       path: components/cattle-system/rancher
 
+  system-upgrade-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/system-upgrade-controller
+
   system-upgrade-k3s:
     annotations:
-      argocd.argoproj.io/sync-wave: "25"
+      argocd.argoproj.io/sync-wave: "20"
     destination:
       namespace: system-upgrade
     source:
