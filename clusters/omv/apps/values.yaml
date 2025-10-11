@@ -109,21 +109,21 @@ applications:
     source:
       path: components/kube-system/snapshot-controller
 
-  system-upgrade-k3s:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: system-upgrade
-    source:
-      path: components/system-upgrade/k3s
-
   rancher:
     annotations:
-      argocd.argoproj.io/sync-wave: "25"
+      argocd.argoproj.io/sync-wave: "20"
     destination:
       namespace: cattle-system
     source:
       path: components/cattle-system/rancher
+
+  system-upgrade-k3s:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/k3s
 
   garage-app:
     annotations:
