@@ -4,7 +4,7 @@ kind: Plan
 metadata:
   name: controllers
 spec:
-  version: "v1.33.4+k3s1"
+  version: "v1.34.1+k3s1"
   upgrade:
     image: rancher/k3s-upgrade
   serviceAccountName: system-upgrade-controller
