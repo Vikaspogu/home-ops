@@ -109,13 +109,13 @@ applications:
     source:
       path: components/kube-system/snapshot-controller
 
-  rancher:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: cattle-system
-    source:
-      path: components/cattle-system/rancher
+  # rancher:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: cattle-system
+  #   source:
+  #     path: components/cattle-system/rancher
 
   system-upgrade-controller:
     annotations:
