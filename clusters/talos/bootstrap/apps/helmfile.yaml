@@ -17,14 +17,14 @@ releases:
     namespace: kube-system
     atomic: true
     chart: cilium/cilium
-    version: 1.18.1
+    version: 1.18.2
     values: ['../../apps/kube-system/cilium/values.yaml']
 
   - name: coredns
     namespace: kube-system
     atomic: true
     chart: oci://ghcr.io/coredns/charts/coredns
-    version: 1.43.2
+    version: 1.44.3
     values: ['../../../../components/kube-system/coredns/values.yaml']
     needs: ['kube-system/cilium']
 
@@ -32,6 +32,6 @@ releases:
     namespace: kube-system
     atomic: true
     chart: oci://ghcr.io/spegel-org/helm-charts/spegel
-    version: 0.3.0
+    version: 0.4.0
     values: ['../../../../components/kube-system/spegel/values.yaml']
     needs: ['kube-system/coredns']
