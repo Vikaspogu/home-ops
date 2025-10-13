@@ -4,8 +4,22 @@ namespace: network
 
 helmCharts:
   - name: gateway-helm
-    releaseName: envoy-gateway
+    releaseName: gateway-helm
     namespace: network
-    repo: oci://docker.io/envoyproxy
+    repo: oci://mirror.gcr.io/envoyproxy
     version: 1.5.3
-    valuesFile: values.yaml
+    includeCRDs: true
+    valuesInline:
+      crds:
+        gatewayAPI:
+          enabled: true
+          channel: experimental   # Available options: standard, experimental
+      global:
+        imageRegistry: mirror.gcr.io
+      config:
+        envoyGateway:
+          provider:
+            type: Kubernetes
+            kubernetes:
+              deploy:
+                type: GatewayNamespace

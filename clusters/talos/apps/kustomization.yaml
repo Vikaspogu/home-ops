@@ -8,7 +8,7 @@ helmCharts:
   - name: argocd-app-of-app
     valuesFile: ./common-values.yaml
     additionalValuesFiles:
-      - ./00-crds-and-secrets.yaml
+      - ./00-secrets.yaml
       - ./02-secret-stores.yaml
       - ./05-storage-and-certificate.yaml
       - ./10-networking.yaml
