@@ -2,10 +2,11 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
+namespace: kube-system
 helmCharts:
   - name: spegel
     releaseName: spegel
+    namespace: kube-system
     repo: oci://ghcr.io/spegel-org/helm-charts
     version: 0.4.0
     valuesFile: values.yaml
