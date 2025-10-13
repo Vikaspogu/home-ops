@@ -4,12 +4,6 @@ monitoring:
   createPrometheusRules: true
 toolbox:
   enabled: true
-configOverride: |
-  [global]
-  bdev_enable_discard = true
-  bdev_async_discard_threads = 1
-  osd_class_update_on_start = false
-  device_failure_prediction_mode = local
 cephClusterSpec:
   cephConfig:
     global:
@@ -21,6 +15,9 @@ cephClusterSpec:
     wipeDevicesFromOtherClusters: true
   crashCollector:
     disable: false
+  csi:
+    readAffinity:
+      enabled: true
   dashboard:
     enabled: true
     urlPrefix: /
@@ -36,12 +33,6 @@ cephClusterSpec:
         enabled: true
       - name: rook
         enabled: true
-    limits:
-      cpu: "2"
-      memory: "1024Mi"
-    requests:
-      cpu: "750m"
-      memory: "1024Mi"
   network:
     provider: host
     connections:
@@ -52,13 +43,13 @@ cephClusterSpec:
     config:
       osdsPerDevice: "1"
     nodes:
-      - name: "k8s-0-nab9"
+      - name: "k8s-1-nab9"
         devices:
           - name: "nvme0n1"
-      - name: "k8s-1-ser"
+      - name: "k8s-2-ser"
         devices:
           - name: "nvme0n1"
-      - name: "k8s-2-pxm"
+      - name: "k8s-3-pxm"
         devices:
           - name: "sdb"
 cephBlockPools:
@@ -73,6 +64,9 @@ cephBlockPools:
       isDefault: true
       reclaimPolicy: Delete
       allowVolumeExpansion: true
+      volumeBindingMode: Immediate
+      mountOptions:
+        - discard
       parameters:
         compression_mode: aggressive
         compression_algorithm: zstd
