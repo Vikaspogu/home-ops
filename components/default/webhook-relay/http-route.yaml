@@ -14,7 +14,7 @@ metadata:
     external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
 spec:
   parentRefs:
-    - name: ${GATEWAY_EXTERNAL_NAME}
+    - name: ${GATEWAY_EXTERNAL}
       namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
   hostnames: ["webhook-relay.${CLUSTER_DOMAIN}"]
