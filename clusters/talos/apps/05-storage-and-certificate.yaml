@@ -46,4 +46,4 @@ applications:
     destination:
       namespace: cert-manager
     source:
-      path: clusters/talos/apps/cert-manager/cert-manager
+      path: components/cert-manager/cert-manager
