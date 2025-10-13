@@ -1,0 +1,17 @@
+applications:
+
+  cloudnative-pg:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: default
+    source:
+      path: components/default/cloudnative-pg
+
+  barman-cloud:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: default
+    source:
+      path: components/default/barman-cloud

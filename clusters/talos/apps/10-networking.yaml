@@ -1,0 +1,57 @@
+applications:
+
+  cilium:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: clusters/talos/apps/kube-system/cilium
+
+  coredns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/coredns
+
+  spegel:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/spegel
+
+  envoy-gateway:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/envoy-gateway
+
+  envoy-gateway-config:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/envoy-gateway-config
+
+  unifi-dns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/unifi-dns
+
+  cloudflare-dns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/cloudflare-dns

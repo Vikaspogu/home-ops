@@ -1,0 +1,41 @@
+applications:
+
+  cloudflare-tunnel:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: network
+    source:
+      path: components/network/cloudflare-tunnel
+
+  argo-cd:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/talos/apps/argo-system/argo-cd
+
+  homepage:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: clusters/talos/apps/default/homepage
+
+  system-upgrade-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/system-upgrade-controller
+
+  kubechecks:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: components/argo-system/kubechecks

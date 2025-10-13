@@ -1,0 +1,9 @@
+applications:
+
+  cloudnative-cluster:
+    annotations:
+      argocd.argoproj.io/sync-wave: "16"
+    destination:
+      namespace: default
+    source:
+      path: clusters/talos/apps/default/cloudnative-cluster

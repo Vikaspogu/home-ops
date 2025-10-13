@@ -59,7 +59,7 @@ nodes:
     installDiskSelector:
       model: "QEMU HARDDISK"
     talosImageURL: factory.talos.dev/installer/a31d81eceab05afdc2c59b0002701173e117a5fb81bdc1f64062d27655145848
-    controlPlane: false
+    controlPlane: true
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "52:50:56:11:33:11"
