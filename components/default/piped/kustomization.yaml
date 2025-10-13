@@ -9,5 +9,5 @@ helmCharts:
     releaseName: piped
     namespace: default
     repo: https://helm.piped.video
-    version: "8.0.16"
+    version: "8.0.17"
     valuesFile: values.yaml
