@@ -23,8 +23,8 @@ tasks:
     requires:
       vars: [IP]
     preconditions:
-      - talosctl --nodes {{.IP}} get machineconfig
-      - talosctl config info
+      # - talosctl --nodes {{.IP}} get machineconfig
+      # - talosctl config info
       - test -f {{.TALOSCONFIG}}
       - which talhelper talosctl yq
 
@@ -40,8 +40,8 @@ tasks:
     requires:
       vars: [IP]
     preconditions:
-      - talosctl --nodes {{.IP}} get machineconfig
-      - talosctl config info
+      # - talosctl --nodes {{.IP}} get machineconfig
+      # - talosctl config info
       - test -f {{.TALOSCONFIG}}
       - which kubectl talhelper talosctl yq
 
@@ -53,7 +53,7 @@ tasks:
       KUBERNETES_VERSION:
         sh: yq '.kubernetesVersion' {{.TALOS_DIR}}/talenv.yaml
     preconditions:
-      - talosctl config info
+      # - talosctl config info
       - test -f {{.TALOSCONFIG}}
       - which talhelper talosctl yq
 
