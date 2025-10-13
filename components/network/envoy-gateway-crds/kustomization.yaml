@@ -3,11 +3,12 @@ kind: Kustomization
 namespace: network
 
 helmCharts:
-  - name: gateway-crds-helm
-    releaseName: envoy-gateway
+  - name: gateway-helm
+    releaseName: gateway-helm
     namespace: network
-    repo: oci://docker.io/envoyproxy
-    version: v0.0.0-latest
+    repo: oci://mirror.gcr.io/envoyproxy
+    version: 1.5.3
+    includeCRDs: true
     valuesInline:
       crds:
         gatewayAPI:
