@@ -6,6 +6,7 @@ helmCharts:
   - name: snapshot-controller
     releaseName: snapshot-controller
     namespace: kube-system
+    includeCRDs: true
     repo: oci://ghcr.io/piraeusdatastore/helm-charts
     version: 4.1.0
     valuesFile: values.yaml
