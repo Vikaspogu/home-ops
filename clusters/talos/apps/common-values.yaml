@@ -1,34 +1,35 @@
-app:
-  enabled: true
-  enableAutoSync: true
-  autoSyncPrune: true
-  project: default
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-  labels:
-    app-source: talos
-    repo: default
-  destination:
-    server: https://kubernetes.default.svc
-  source:
-    repoURL: https://github.com/Vikaspogu/home-ops.git
-    targetRevision: HEAD
-  syncPolicy:
-    automated:
-      allowEmpty: true
-      prune: true
-      selfHeal: true
-    retry:
-      limit: 10
-      backoff:
-        duration: 10s
-        factor: 2
-        maxDuration: 3m
-  syncOptions:
-    - ApplyOutOfSyncOnly=true
-    - PrunePropagationPolicy=foreground
-    - PruneLast=true
-    - ServerSideApply=true
-    - FailOnSharedResource=true
-    - RespectIgnoreDifferences=true
-    - CreateNamespace=false
+default:
+  app:
+    enabled: true
+    enableAutoSync: true
+    autoSyncPrune: true
+    project: default
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    labels:
+      app-source: omv
+      repo: default
+    destination:
+      server: https://kubernetes.default.svc
+    source:
+      repoURL: https://github.com/Vikaspogu/home-ops.git
+      targetRevision: HEAD
+    syncPolicy:
+      automated:
+        allowEmpty: true
+        prune: true
+        selfHeal: true
+      retry:
+        limit: 10
+        backoff:
+          duration: 10s
+          factor: 2
+          maxDuration: 3m
+    syncOptions:
+      - ApplyOutOfSyncOnly=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - ServerSideApply=true
+      - FailOnSharedResource=true
+      - RespectIgnoreDifferences=true
+      - CreateNamespace=false

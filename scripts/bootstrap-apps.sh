@@ -14,11 +14,34 @@ if [[ -z "${CLUSTER_NAME}" ]]; then
     exit 1
 fi
 
-export CLUSTER_DOMAIN=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/CLUSTER_DOMAIN")
-export EXTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/EXTERNAL_IP_ADDRESS")
-export INTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/INTERNAL_IP_ADDRESS")
-export GATEWAY_NAME=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY")
-export GATEWAY_NAMESPACE=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAMESPACE")
+if [[ "${CLUSTER_NAME}" == "talos" ]]; then
+    # Prompt for variables when cluster is talos
+    read -p "Enter CLUSTER_DOMAIN: " CLUSTER_DOMAIN
+    export CLUSTER_DOMAIN
+
+    read -p "Enter EXTERNAL_IP_ADDRESS: " EXTERNAL_IP_ADDRESS
+    export EXTERNAL_IP_ADDRESS
+
+    read -p "Enter INTERNAL_IP_ADDRESS: " INTERNAL_IP_ADDRESS
+    export INTERNAL_IP_ADDRESS
+
+    read -p "Enter GATEWAY_NAME: " GATEWAY_NAME
+    export GATEWAY_NAME
+
+    read -p "Enter GATEWAY_NAMESPACE: " GATEWAY_NAMESPACE
+    export GATEWAY_NAMESPACE
+
+    read -p "Enter GATEWAY_EXTERNAL: " GATEWAY_EXTERNAL
+    export GATEWAY_EXTERNAL
+else
+    # Read from 1Password for non-talos clusters
+    export CLUSTER_DOMAIN=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/CLUSTER_DOMAIN")
+    export EXTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/EXTERNAL_IP_ADDRESS")
+    export INTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/INTERNAL_IP_ADDRESS")
+    export GATEWAY_NAME=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY")
+    export GATEWAY_NAMESPACE=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAMESPACE")
+    export GATEWAY_EXTERNAL=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_EXTERNAL")
+fi
 
 # Talos requires the nodes to be 'Ready=False' before applying resources
 function wait_for_nodes() {
