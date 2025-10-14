@@ -465,50 +465,50 @@ applications:
   #           value: 2Gi
 
   # # Downloads namespace apps
-  # prowlarr:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: downloads
-  #   source:
-  #     path: components/downloads/prowlarr
+  prowlarr:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: downloads
+    source:
+      path: components/downloads/prowlarr
 
-  # qbitorrent-tools:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: downloads
-  #   source:
-  #     path: components/downloads/qbitorrent-tools
+  qbitorrent-tools:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: downloads
+    source:
+      path: components/downloads/qbitorrent-tools
 
-  # qbittorrent:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: downloads
-  #   source:
-  #     path: components/downloads/qbittorrent
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 20Gi
+  qbittorrent:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: downloads
+    source:
+      path: components/downloads/qbittorrent
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 20Gi
 
-  # sabnzbd:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: downloads
-  #   source:
-  #     path: components/downloads/sabnzbd
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 2Gi
+  sabnzbd:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: downloads
+    source:
+      path: components/downloads/sabnzbd
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 2Gi

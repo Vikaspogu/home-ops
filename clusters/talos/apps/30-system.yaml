@@ -2,24 +2,24 @@ applications:
 
   cloudflare-tunnel:
     annotations:
-      argocd.argoproj.io/sync-wave: "20"
+      argocd.argoproj.io/sync-wave: "30"
     destination:
       namespace: network
     source:
       path: components/network/cloudflare-tunnel
 
-  system-upgrade-controller:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: system-upgrade
-    source:
-      path: components/system-upgrade/system-upgrade-controller
+  # system-upgrade-controller:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "30"
+  #   destination:
+  #     namespace: system-upgrade
+  #   source:
+  #     path: components/system-upgrade/system-upgrade-controller
 
-  kubechecks:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: argo-system
-    source:
-      path: components/argo-system/kubechecks
+  # kubechecks:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "30"
+  #   destination:
+  #     namespace: argo-system
+  #   source:
+  #     path: components/argo-system/kubechecks
