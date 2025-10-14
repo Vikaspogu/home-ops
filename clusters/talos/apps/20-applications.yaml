@@ -136,6 +136,14 @@ applications:
       namespace: default
     source:
       path: components/default/gotify
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 1Gi
 
   # govee2mqtt:
   #   annotations:
@@ -224,6 +232,14 @@ applications:
       namespace: default
     source:
       path: components/default/mosquitto
+
+  node-feature-discovery-rules:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/node-feature-discovery-rules
 
   # node-red:
   #   annotations:

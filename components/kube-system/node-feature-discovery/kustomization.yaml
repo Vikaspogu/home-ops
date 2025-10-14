@@ -8,6 +8,6 @@ helmCharts:
   - name: node-feature-discovery
     releaseName: node-feature-discovery
     namespace: kube-system
-    repo: oci://ghcr.io/home-operations/charts-mirror
-    version: 1.3.0
+    repo: oci://registry.k8s.io/nfd/charts
+    version: 0.18.1
     valuesFile: values.yaml

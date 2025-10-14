@@ -96,14 +96,6 @@ applications:
     source:
       path: components/kube-system/node-feature-discovery
 
-  node-feature-discovery-rules:
-    annotations:
-      argocd.argoproj.io/sync-wave: "10"
-    destination:
-      namespace: kube-system
-    source:
-      path: components/kube-system/node-feature-discovery-rules
-
   reloader:
     annotations:
       argocd.argoproj.io/sync-wave: "10"
