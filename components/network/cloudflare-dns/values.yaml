@@ -6,18 +6,24 @@ env:
     valueFrom:
       secretKeyRef:
         name: cloudflare-dns
-        key: email
+        key: EMAIL
   - name: CF_API_KEY
     valueFrom:
       secretKeyRef:
         name: cloudflare-dns
-        key: api-key
+        key: API_KEY
+  - name: CF_ZONE_ID
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-dns
+        key: CF_ZONE_ID
 extraArgs:
   - --cloudflare-dns-records-per-page=1000
   - --cloudflare-proxied
   - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
   - --crd-source-kind=DNSEndpoint
   - --gateway-name=envoy-external
+  - --zone-id-filter=$(CF_ZONE_ID)
 triggerLoopOnEvent: true
 policy: sync
 sources: ["crd", "gateway-httproute"]
