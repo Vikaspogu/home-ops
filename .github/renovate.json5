@@ -15,16 +15,31 @@
   "rebaseWhen": "conflicted",
   "ignorePaths": ["**/*.sops.*"],
   "helm-values": {
-    "fileMatch": ["(^|/)clusters/.+\\.ya?ml(?:\\.j2)?$"]
+    "fileMatch": [
+      "(^|/)clusters/.+\\.ya?ml(?:\\.j2)?$",
+      "(^|/)components/.+/values\\.ya?ml(?:\\.j2)?$"
+    ]
   },
   "helmfile": {
     "fileMatch": ["(^|/)helmfile\\.ya?ml(?:\\.j2)?$"]
   },
   "kubernetes": {
-    "fileMatch": ["(^|/)clusters/.+\\.ya?ml(?:\\.j2)?$"]
+    "fileMatch": [
+      "(^|/)clusters/.+\\.ya?ml(?:\\.j2)?$",
+      "(^|/)components/.+\\.ya?ml(?:\\.j2)?$"
+    ]
   },
   "kustomize": {
     "fileMatch": ["(^|/)kustomization\\.ya?ml(?:\\.j2)?$"]
+  },
+  "mise": {
+    "fileMatch": ["(^|/)\\.mise\\.toml$"]
+  },
+  "regex": {
+    "fileMatch": ["(^|/)Taskfile\\.ya?ml$"],
+    "matchStrings": [
+      "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s+version:\\s*['\"]?(?<currentValue>[^'\"\\s]+)['\"]?"
+    ]
   },
   // commit message topics
   "commitMessageTopic": "{{depName}}",
@@ -175,6 +190,28 @@
     {
       "matchManagers": ["github-actions"],
       "addLabels": ["renovate/github-action"]
+    },
+    // mise/asdf tool updates
+    {
+      "matchManagers": ["mise", "asdf"],
+      "matchUpdateTypes": ["major"],
+      "commitMessagePrefix": "feat(tools)!: "
+    },
+    {
+      "matchManagers": ["mise", "asdf"],
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitType": "feat",
+      "semanticCommitScope": "tools"
+    },
+    {
+      "matchManagers": ["mise", "asdf"],
+      "matchUpdateTypes": ["patch"],
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "tools"
+    },
+    {
+      "matchManagers": ["mise", "asdf"],
+      "addLabels": ["renovate/tools"]
     }
   ],
   "assignees": ["@vikaspogu"],
