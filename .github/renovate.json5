@@ -53,6 +53,19 @@
       matchPackageNames: ["viaductoss/ksops"],
       allowedVersions: ["v4.3.3"],
     },
+    {
+      "description": ["Talos Group"],
+      "groupName": "Talos",
+      "matchPackagePatterns": [
+        "siderolabs/talosctl",
+        "siderolabs/installer"
+      ],
+      "matchDatasources": ["docker"],
+      "group": {
+        "commitMessageTopic": "{{{groupName}}} group"
+      },
+      "separateMinorPatch": true
+    },
     // commit message topics
     {
       "matchDatasources": ["helm"],
@@ -69,87 +82,39 @@
       "commitMessagePrefix": "feat(container)!: "
     },
     {
-      "description": ["Talos Group"],
-      "groupName": "Talos",
-      "matchPackagePatterns": [
-        "siderolabs/talosctl",
-        "siderolabs/installer"
-      ],
       "matchDatasources": ["docker"],
-      "group": {
-        "commitMessageTopic": "{{{groupName}}} group"
-      },
-      "separateMinorPatch": true
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitType": "feat",
+      "semanticCommitScope": "container"
     },
     {
-      "description": "Loose versioning for non-semver packages",
       "matchDatasources": ["docker"],
-      "versioning": "loose",
-      "matchPackagePatterns": ["ghcr.io/bjw-s-labs/helm"]
+      "matchUpdateTypes": ["patch"],
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "container"
     },
     {
-      "description": "Group Cilium updates",
-      "groupName": "Cilium",
-      "matchPackagePatterns": ["cilium"],
-      "matchDatasources": ["docker", "helm"]
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["digest"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "container"
     },
     {
-      "description": "Group ArgoCD updates",
-      "groupName": "ArgoCD",
-      "matchPackagePatterns": ["argo.*cd", "argoproj"],
-      "matchDatasources": ["docker", "helm"]
+      "matchDatasources": ["helm"],
+      "matchUpdateTypes": ["major"],
+      "commitMessagePrefix": "feat(helm)!: "
     },
     {
-      "description": "Group cert-manager updates",
-      "groupName": "cert-manager",
-      "matchPackagePatterns": ["cert-manager"],
-      "matchDatasources": ["docker", "helm"]
+      "matchDatasources": ["helm"],
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitType": "feat",
+      "semanticCommitScope": "helm"
     },
     {
-      "description": "Group external-secrets updates",
-      "groupName": "external-secrets",
-      "matchPackagePatterns": ["external-secrets"],
-      "matchDatasources": ["docker", "helm"]
-    },
-    {
-      "description": "Group Longhorn updates",
-      "groupName": "Longhorn",
-      "matchPackagePatterns": ["longhorn"],
-      "matchDatasources": ["docker", "helm"]
-    },
-    {
-      "description": "Group Traefik updates",
-      "groupName": "Traefik",
-      "matchPackagePatterns": ["traefik"],
-      "matchDatasources": ["docker", "helm"]
-    },
-    {
-      "description": "Group Envoy Gateway updates",
-      "groupName": "Envoy Gateway",
-      "matchPackagePatterns": ["envoy.*gateway", "gateway.*helm"],
-      "matchDatasources": ["docker", "helm"]
-    },
-    {
-      "description": "Group 1Password Connect updates",
-      "groupName": "1Password Connect",
-      "matchPackagePatterns": ["1password", "onepassword"],
-      "matchDatasources": ["docker", "helm"]
-    },
-    {
-      "description": "Group app-template updates",
-      "groupName": "app-template",
-      "matchPackagePatterns": ["app-template", "bjw-s-labs"],
-      "matchDatasources": ["helm"]
-    },
-    {
-      "description": "Group k3s updates",
-      "groupName": "k3s",
-      "matchPackageNames": ["k3s-io/k3s"],
-      "matchDatasources": ["github-releases"]
-    },
-    {
-      "description": "Separate PRs for major updates",
-      "matchUpdateTypes": ["major","minor", "patch"],
+      "matchDatasources": ["helm"],
+      "matchUpdateTypes": ["patch"],
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "helm"
     },
     {
       "matchDatasources": ["github-releases", "github-tags"],
@@ -184,12 +149,6 @@
       "matchUpdateTypes": ["patch"],
       "semanticCommitType": "fix",
       "semanticCommitScope": "github-action"
-    },
-    {
-      "description": "Custom versioning for k3s",
-      "matchDatasources": ["github-releases"],
-      "versioning": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<compatibility>\\+k3s)(?<build>\\d+)$",
-      "matchPackagePatterns": ["k3s"]
     },
     // labels
     {
