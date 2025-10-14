@@ -44,4 +44,4 @@ spec:
   rules:
     - backendRefs:
         - name: home-assistant-codeserver
-          port: 8123
+          port: 12321

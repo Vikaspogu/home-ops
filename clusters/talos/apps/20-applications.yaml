@@ -1,13 +1,5 @@
 applications:
 
-  # cloudflare-tunnel:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: network
-  #   source:
-  #     path: components/network/cloudflare-tunnel
-
   argo-cd:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -16,7 +8,6 @@ applications:
     source:
       path: clusters/talos/apps/argo-system/argo-cd
 
-  # Default namespace apps
   ab-cleanup-util:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -65,13 +56,13 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 5Gi
 
-  # authentik:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/authentik
+  authentik:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/authentik
 
   bazarr:
     annotations:
@@ -113,21 +104,21 @@ applications:
     source:
       path: components/default/flaresolverr
 
-  # freshrss:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/freshrss
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 4Gi
+  freshrss:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/freshrss
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 4Gi
 
   gotify:
     annotations:
@@ -209,21 +200,21 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 4Gi
 
-  kavita:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: default
-    source:
-      path: components/default/kavita
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: ceph-block
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: csi-ceph-blockpool
-          - name: VOLSYNC_CAPACITY
-            value: 4Gi
+  # kavita:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: default
+  #   source:
+  #     path: components/default/kavita
+  #     plugin:
+  #       env:
+  #         - name: STORAGE_CLASS
+  #           value: ceph-block
+  #         - name: VOLUME_SNAPSHOT_CLASS
+  #           value: csi-ceph-blockpool
+  #         - name: VOLSYNC_CAPACITY
+  #           value: 4Gi
 
   mosquitto:
     annotations:
@@ -241,21 +232,21 @@ applications:
     source:
       path: components/kube-system/node-feature-discovery-rules
 
-  # node-red:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/node-red
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 4Gi
+  node-red:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/node-red
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 4Gi
 
   onstar2mqtt:
     annotations:

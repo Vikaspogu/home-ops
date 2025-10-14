@@ -1,5 +1,13 @@
 applications:
 
+  cloudflare-tunnel:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: network
+    source:
+      path: components/network/cloudflare-tunnel
+
   system-upgrade-controller:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
