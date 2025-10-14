@@ -5,6 +5,7 @@ components:
   - ../../volsync-system/volsync-replication
 resources:
   - ./externalsecret.yaml
+  - ./http-route.yaml
 helmCharts:
   - name: app-template
     releaseName: planka

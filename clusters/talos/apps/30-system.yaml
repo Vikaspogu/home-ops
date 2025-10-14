@@ -1,0 +1,17 @@
+applications:
+
+  system-upgrade-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/system-upgrade-controller
+
+  kubechecks:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: components/argo-system/kubechecks

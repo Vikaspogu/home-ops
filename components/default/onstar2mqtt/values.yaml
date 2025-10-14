@@ -40,6 +40,6 @@ service:
 persistence:
   config:
     enabled: true
-    existingClaim: onstar2mqtt-config
+    existingClaim: onstar2mqtt
     globalMounts:
       - path: "/data"

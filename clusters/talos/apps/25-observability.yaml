@@ -1,0 +1,57 @@
+applications:
+
+  grafana:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/grafana
+
+  kube-prometheus-stack:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/kube-prometheus-stack
+
+  loki:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/loki
+
+  promtail:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/promtail
+
+  scrutiny-app:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/scrutiny-app
+
+  scrutiny-collector:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/scrutiny-collector
+
+  speedtest-exporter:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/speedtest-exporter

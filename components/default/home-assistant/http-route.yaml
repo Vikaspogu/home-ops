@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/instance: *app
     app.kubernetes.io/name: *app
   annotations:
-    gethomepage.dev/href: "https://home-assistant.${CLUSTER_DOMAIN}"
+    gethomepage.dev/href: "https://hass.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Ingress
     gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/home-assistant.png
@@ -17,7 +17,7 @@ spec:
     - name: ${GATEWAY_EXTERNAL}
       namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
-  hostnames: ["home-assistant.${CLUSTER_DOMAIN}"]
+  hostnames: ["hass.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
         - name: home-assistant-app

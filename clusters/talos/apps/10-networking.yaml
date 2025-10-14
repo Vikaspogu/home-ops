@@ -55,3 +55,59 @@ applications:
       namespace: network
     source:
       path: components/network/cloudflare-dns
+
+  descheduler:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/descheduler
+
+  fstrim:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/fstrim
+
+  generic-device-plugin:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/generic-device-plugin
+
+  metrics-server:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/metrics-server
+
+  node-feature-discovery:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/node-feature-discovery
+
+  node-feature-discovery-rules:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/node-feature-discovery-rules
+
+  reloader:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/reloader

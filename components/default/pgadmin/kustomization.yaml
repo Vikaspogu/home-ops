@@ -5,6 +5,7 @@ namespace: default
 resources:
   - ./externalsecret.yaml
   - ./externalsecret-oauth.yaml
+  - ./http-route.yaml
 components:
   - ../../volsync-system/volsync-replication
 helmCharts:

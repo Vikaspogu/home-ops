@@ -14,6 +14,6 @@ helmCharts:
       - ./10-networking.yaml
       - ./15-database-operator.yaml
       - ./16-database-clusters.yaml
-      # - ./20-applications.yaml
+      - ./20-applications.yaml
 
 patches: []
