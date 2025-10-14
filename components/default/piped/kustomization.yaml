@@ -2,12 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./externalsecret.yaml
-  - ./http-route.yaml
 
 helmCharts:
-  - name: piped
+  - name: app-template
     releaseName: piped
     namespace: default
-    repo: https://helm.piped.video
-    version: "8.0.16"
+    repo: https://bjw-s-labs.github.io/helm-charts
+    version: "4.3.0"
     valuesFile: values.yaml

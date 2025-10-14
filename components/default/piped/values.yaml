@@ -1,43 +1,160 @@
 ---
-postgresql:
-  enabled: false
-frontend:
-  env:
-    BACKEND_HOSTNAME: papi.${CLUSTER_DOMAIN}
-    TZ: America/New_York
-
-backend:
-  podAnnotations:
-    configmap.reloader.stakater.com/reload: "piped-backend-config"
-  initContainers:
-    01-init-db:
-      image: ghcr.io/home-operations/postgres-init:17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
-      imagePullPolicy: IfNotPresent
-      envFrom:
-        - secretRef:
-            name: piped-db-creds
-  env:
-    TZ: America/New_York
-  config:
-    PORT: 8080
-    HTTP_WORKERS: 4
-    PROXY_PART: https://pproxy.${CLUSTER_DOMAIN}
-    # BG_HELPER_URL: http://piped-bg-helper:3000
-    API_URL: https://papi.${CLUSTER_DOMAIN}
-    FRONTEND_URL: https://yt.${CLUSTER_DOMAIN}
-    # HTTP_PROXY: 127.0.0.1:8888
-    DISABLE_REGISTRATION: "true"
-    FEED_RETENTION: "5"
-    database:
-      connection_url: jdbc:postgresql://postgres17-rw.default.svc.cluster.local/piped
-      secret:
-        name: piped-db-creds
-        username: DB_USERNAME
-        password: DB_PASSWORD
-ingress:
-  main:
-    enabled: false
+defaultPodOptions:
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: "OnRootMismatch"
+controllers:
   backend:
-    enabled: false
+    strategy: RollingUpdate
+    annotations:
+      secret.reloader.stakater.com/reload: piped-secret, piped-db-creds
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 17.6.0@sha256:86a1992d46273c58fd4ad95b626081dfaabfe16bd56944675169e406d1a660dd
+        envFrom: &envFrom
+          - secretRef:
+              name: piped-db-creds
+    containers:
+      app:
+        image:
+          repository: 1337kavin/piped
+          tag: latest@sha256:1f38b992ce02a50afddbbf68be1ac11cff6953d36fd8fa2b98c08a19f8ef06e7
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 500Mi
+          limits:
+            memory: 2000Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+  frontend:
+    strategy: RollingUpdate
+    containers:
+      app:
+        image:
+          repository: ghcr.io/bjw-s-labs/piped-frontend
+          tag: 2025.3.17@sha256:8ed05c7df0bc8899e54a3952a99b63d55cdc7669d759beeb9370fbb32330468b
+        env:
+          BACKEND_HOSTNAME: piped-api.${CLUSTER_DOMAIN}
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          # readOnlyRootFilesystem: true
   ytproxy:
-    enabled: false
+    strategy: RollingUpdate
+    containers:
+      app:
+        image:
+          repository: 1337kavin/piped-proxy
+          tag: latest@sha256:284bb03d7fff2210d2f851630d36463a69f806d781c475a6cd6771af98ae760c
+        command:
+          - /app/piped-proxy
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+        resources:
+          requests:
+            cpu: 10m
+            memory: 500Mi
+          limits:
+            memory: 2000Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+
+service:
+  backend:
+    controller: backend
+    ports:
+      http:
+        port: &port 8080
+  frontend:
+    controller: frontend
+    ports:
+      http:
+        port: 8080
+  ytproxy:
+    controller: ytproxy
+    ports:
+      http:
+        port: 8080
+
+route:
+  backend:
+    hostnames:
+      - "papi.${CLUSTER_DOMAIN}"
+    parentRefs:
+      - name: ${GATEWAY_NAME}
+        namespace: ${GATEWAY_NAMESPACE}
+        sectionName: https
+    rules:
+      - backendRefs:
+          - name: backend
+            port: *port
+  frontend:
+    annotations:
+      gethomepage.dev/href: "https://yt.${CLUSTER_DOMAIN}"
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/group: Ingress
+      gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/piped.png
+    hostnames:
+      - "yt.${CLUSTER_DOMAIN}"
+    parentRefs:
+      - name: ${GATEWAY_NAME}
+        namespace: ${GATEWAY_NAMESPACE}
+        sectionName: https
+    rules:
+      - backendRefs:
+          - name: frontend
+            port: *port
+  ytproxy:
+    hostnames:
+      - "pproxy.${CLUSTER_DOMAIN}"
+    parentRefs:
+      - name: ${GATEWAY_NAME}
+        namespace: ${GATEWAY_NAMESPACE}
+        sectionName: https
+    rules:
+      - backendRefs:
+          - name: ytproxy
+            port: *port
+
+persistence:
+  config:
+    type: secret
+    name: piped-secret
+    advancedMounts:
+      backend:
+        app:
+          - path: /app/config.properties
+            subPath: config.properties
+            readOnly: true
