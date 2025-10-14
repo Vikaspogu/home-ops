@@ -1,7 +1,6 @@
 ---
 controllers:
   app:
-    replicas: 0
     pod:
       annotations:
         reloader.stakater.com/auto: "true"
