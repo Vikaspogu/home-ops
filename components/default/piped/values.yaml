@@ -32,8 +32,6 @@ backend:
       connection_url: jdbc:postgresql://postgres17-rw.default.svc.cluster.local/piped
       secret:
         name: piped-db-creds
-        username: DB_USERNAME
-        password: DB_PASSWORD
 ingress:
   main:
     enabled: false
