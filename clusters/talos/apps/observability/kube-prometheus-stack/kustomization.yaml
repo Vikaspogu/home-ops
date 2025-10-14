@@ -9,5 +9,6 @@ helmCharts:
     releaseName: kube-prometheus-stack
     namespace: observability
     repo: oci://ghcr.io/prometheus-community/charts
+    includeCRDs: true
     version: 78.2.1
     valuesFile: ../../../../../components/observability/kube-prometheus-stack/values.yaml
