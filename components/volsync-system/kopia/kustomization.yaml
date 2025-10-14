@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: volsync-system
 resources:
   - external-secret.yaml
+  - http-route.yaml
 
 configMapGenerator:
   - name: kopia-repository-configmap
