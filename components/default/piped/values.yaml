@@ -3,7 +3,7 @@ postgresql:
   enabled: false
 frontend:
   env:
-    BACKEND_HOSTNAME: &api_host papi.${CLUSTER_DOMAIN}
+    BACKEND_HOSTNAME: papi.${CLUSTER_DOMAIN}
     TZ: America/New_York
 
 backend:
@@ -15,7 +15,7 @@ backend:
       imagePullPolicy: IfNotPresent
       envFrom:
         - secretRef:
-            name: &secret piped-db-creds
+            name: piped-db-creds
   env:
     TZ: America/New_York
   config:
@@ -31,7 +31,7 @@ backend:
     database:
       connection_url: jdbc:postgresql://postgres17-rw.default.svc.cluster.local/piped
       secret:
-        name: *secret
+        name: piped-db-creds
         username: DB_USERNAME
         password: DB_PASSWORD
 ingress:
