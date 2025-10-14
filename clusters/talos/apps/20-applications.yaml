@@ -296,13 +296,13 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 1Gi
 
-  # piped:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/piped
+  piped:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/piped
 
   planka:
     annotations:
