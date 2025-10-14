@@ -2,16 +2,11 @@
 fullnameOverride: cloudflare-dns
 provider: cloudflare
 env:
-  - name: CF_API_EMAIL
+  - name: CF_API_TOKEN
     valueFrom:
       secretKeyRef:
         name: cloudflare-dns
-        key: EMAIL
-  - name: CF_API_KEY
-    valueFrom:
-      secretKeyRef:
-        name: cloudflare-dns
-        key: API_KEY
+        key: CF_API_TOKEN
   - name: CF_ZONE_ID
     valueFrom:
       secretKeyRef:
