@@ -5,7 +5,7 @@ resources:
   - ./externalsecret.yaml
   - ./http-route.yaml
 components:
-  - ../../../components/volsync
+  - ../../volsync-system/volsync-replication
 configMapGenerator:
   - name: qbittorrent-dnsdist
     files:
