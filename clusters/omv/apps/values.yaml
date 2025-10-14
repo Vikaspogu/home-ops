@@ -271,4 +271,4 @@ applications:
     destination:
       namespace: argo-system
     source:
-      path: components/argo-system/kubechecks
+      path: clusters/omv/apps/argo-system/kubechecks

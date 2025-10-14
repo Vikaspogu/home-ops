@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argo-system
+resources:
+  - ../../../../../components/argo-system/kubechecks
+
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/target/template/data/KUBECHECKS_ARGOCD_API_TOKEN
+        value: "{{ .ARGOCD_TALOS_TOKEN }}"
+    target:
+      kind: ExternalSecret

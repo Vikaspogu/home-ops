@@ -16,5 +16,6 @@ helmCharts:
       - ./16-database-clusters.yaml
       - ./20-applications.yaml
       - ./25-observability.yaml
+      - ./30-system.yaml
 
 patches: []
