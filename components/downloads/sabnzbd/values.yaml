@@ -61,7 +61,7 @@ persistence:
     type: emptyDir
   media:
     type: nfs
-    server: ${SECRET_NAS_ADDRESS}
+    server: synology.a113.internal
     path: "/volume1/media"
     globalMounts:
       - path: /nfs-nas-pvc

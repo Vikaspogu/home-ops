@@ -38,7 +38,7 @@ persistence:
     existingClaim: audiobookshelf
   media:
     type: nfs
-    server: ${SECRET_NAS_ADDRESS}
+    server: synology.a113.internal
     path: "/volume1/media/audiobookshelf"
     globalMounts:
       - path: /audiobooks
