@@ -473,14 +473,6 @@ applications:
     source:
       path: components/downloads/prowlarr
 
-  qbitorrent-tools:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: downloads
-    source:
-      path: components/downloads/qbitorrent-tools
-
   qbittorrent:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
