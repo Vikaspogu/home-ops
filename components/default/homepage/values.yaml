@@ -4,7 +4,7 @@ controllers:
   app:
     annotations:
       configmap.reloader.stakater.com/reload: homepage-config
-      secret.reloader.stakater.com/reload: homepage
+      secret.reloader.stakater.com/reload: homepage-secret
     serviceAccount:
       identifier: homepage
     containers:
