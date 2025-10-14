@@ -118,7 +118,7 @@ data:
               password: {{HOMEPAGE_VAR_FRESHRSS_PASSWORD}}
     - Media:
       - qBittorrent:
-          href: https://qb.${SECRET_DOMAIN}
+          href: https://qb.${CLUSTER_DOMAIN}
           icon: qbittorrent.png
           widget:
             type: qbittorrent
@@ -126,21 +126,21 @@ data:
             username: {{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}
             password: {{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}
       - Sabnzbd:
-          href: https://sabnzbd.${SECRET_DOMAIN}
+          href: https://sabnzbd.${CLUSTER_DOMAIN}
           icon: sabnzbd.png
           widget:
             type: sabnzbd
             url: http://sabnzbd.downloads.svc.cluster.local
             key: {{HOMEPAGE_VAR_SABNZBD_API_KEY}}
       - Radarr:
-          href: https://radarr.${SECRET_DOMAIN}
+          href: https://radarr.${CLUSTER_DOMAIN}
           icon: radarr.png
           widget:
             type: radarr
             url: http://radarr.default.svc.cluster.local
             key: {{HOMEPAGE_VAR_RADARR_API_KEY}}
       - Sonarr:
-          href: https://sonarr.${SECRET_DOMAIN}
+          href: https://sonarr.${CLUSTER_DOMAIN}
           icon: sonarr.png
           widget:
             type: sonarr

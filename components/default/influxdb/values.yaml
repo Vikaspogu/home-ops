@@ -30,7 +30,7 @@ ingress:
 service:
   type: LoadBalancer
   annotations:
-    lbipam.cilium.io/ips: "${SVC_INFLUXDB_ADDR}"
+    lbipam.cilium.io/ips: "10.30.30.159"
 
 persistence:
   enabled: true

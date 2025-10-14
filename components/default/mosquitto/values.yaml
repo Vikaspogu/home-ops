@@ -29,7 +29,7 @@ service:
     type: LoadBalancer
     annotations:
       external-dns.alpha.kubernetes.io/hostname: mosquitto.${CLUSTER_DOMAIN}
-      lbipam.cilium.io/ips: ${SVC_MOSQUITTO_ADDR}
+      lbipam.cilium.io/ips: 10.30.30.162
     externalTrafficPolicy: Local
     ports:
       http:

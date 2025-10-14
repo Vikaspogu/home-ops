@@ -33,7 +33,7 @@ controllers:
           NODE_ENV: production
 
           # -- URLs --
-          PUBLIC_URL: http://${SVC_RESUME_ADDR}:8080
+          PUBLIC_URL: http://localhost:8080
 
           # -- Printer (Chrome) --
           CHROME_TOKEN: chrome_token
@@ -68,7 +68,3 @@ service:
     ports:
       http:
         port: *port
-    type: LoadBalancer
-    annotations:
-      io.cilium/lb-ipam-ips: ${SVC_RESUME_ADDR}
-    externalTrafficPolicy: Cluster

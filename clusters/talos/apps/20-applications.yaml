@@ -129,101 +129,101 @@ applications:
   #         - name: VOLSYNC_CAPACITY
   #           value: 4Gi
 
-  # gotify:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/gotify
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 1Gi
+  gotify:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/gotify
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 1Gi
 
-  # govee2mqtt:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/govee2mqtt
+  govee2mqtt:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/govee2mqtt
 
-  # home-assistant:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/home-assistant
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 5Gi
+  home-assistant:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/home-assistant
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 5Gi
 
-  # homepage:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: clusters/talos/apps/default/homepage
+  homepage:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: clusters/talos/apps/default/homepage
 
-  # influxdb:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/influxdb
+  influxdb:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/influxdb
 
-  # it-tools:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/it-tools
+  it-tools:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/it-tools
 
-  # jellyseerr:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/jellyseerr
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 4Gi
+  jellyseerr:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/jellyseerr
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 4Gi
 
-  # kavita:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/kavita
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 4Gi
+  kavita:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/kavita
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 4Gi
 
   mosquitto:
     annotations:
@@ -257,181 +257,181 @@ applications:
   #         - name: VOLSYNC_CAPACITY
   #           value: 4Gi
 
-  # onstar2mqtt:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/onstar2mqtt
+  onstar2mqtt:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/onstar2mqtt
 
-  # papra:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/papra
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 4Gi
+  papra:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/papra
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 4Gi
 
-  # pgadmin:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/pgadmin
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 1Gi
+  pgadmin:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/pgadmin
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 1Gi
 
-  # piped:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/piped
+  piped:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/piped
 
-  # planka:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/planka
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 4Gi
+  planka:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/planka
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 4Gi
 
-  # radarr:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/radarr
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 5Gi
+  radarr:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/radarr
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 5Gi
 
-  # reactive-resume:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/reactive-resume
+  reactive-resume:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/reactive-resume
 
-  # recyclarr:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/recyclarr
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 2Gi
+  recyclarr:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/recyclarr
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 2Gi
 
-  # redlib:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/redlib
+  redlib:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/redlib
 
-  # sonarr:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/sonarr
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 5Gi
+  sonarr:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/sonarr
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 5Gi
 
-  # stirling-pdf:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/stirling-pdf
+  stirling-pdf:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/stirling-pdf
 
-  # switchbotmqtt:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/switchbotmqtt
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 1Gi
+  switchbotmqtt:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/switchbotmqtt
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 1Gi
 
-  # valetudopng:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/valetudopng
+  valetudopng:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/valetudopng
 
-  # valkey:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/valkey
+  valkey:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/valkey
 
-  # webhook-relay:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/webhook-relay
+  webhook-relay:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/webhook-relay
 
   # zigbee2mqtt:
   #   annotations:
