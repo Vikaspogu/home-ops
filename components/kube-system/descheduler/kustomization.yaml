@@ -5,9 +5,9 @@ kind: Kustomization
 namespace: kube-system
 
 helmCharts:
-  - name: app-template
+  - name: descheduler
     releaseName: descheduler
     namespace: kube-system
-    repo: oci://ghcr.io/bjw-s-labs/helm
-    version: 4.3.0
+    repo: oci://ghcr.io/home-operations/charts-mirror
+    version: 0.33.0
     valuesFile: values.yaml
