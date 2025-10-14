@@ -221,17 +221,7 @@ plugins:
 serviceMonitor:
   enabled: true
 ingress:
-  enabled: true
-  ingressClassName: internal
-  annotations:
-    gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: Ingress
-    gethomepage.dev/icon: grafana.png
-  hosts:
-    - grafana.${CLUSTER_DOMAIN}
-  tls:
-    - hosts:
-        - grafana.${CLUSTER_DOMAIN}
+  enabled: false
 persistence:
   enabled: false
 testFramework:

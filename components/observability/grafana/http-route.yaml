@@ -1,0 +1,24 @@
+apiVersion: networking.x-k8s.io/v1alpha1
+kind: HTTPRoute
+metadata:
+  name: grafana
+  namespace: observability
+  labels:
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/name: grafana
+  annotations:
+    gethomepage.dev/href: "https://grafana.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: grafana.png
+spec:
+  hostnames:
+    - grafana.${CLUSTER_DOMAIN}
+  rules:
+    - backendRefs:
+        - name: grafana
+          port: 80
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https

@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: observability
 resources:
   - ./externalsecret.yaml
+  - ./http-route.yaml
 
 helmCharts:
   - name: grafana
