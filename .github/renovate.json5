@@ -33,59 +33,6 @@
       "components/external-secrets/onepassword-connect/secrets.sops.yaml"
     ]
   },
-  "regexManagers": [
-    {
-      "description": "Process CRD dependencies in bootstrap script",
-      "fileMatch": ["scripts/bootstrap-apps\\.sh$"],
-      "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+.*?/(?<currentValue>v?[0-9\\.]+)/"
-      ],
-      "datasourceTemplate": "{{datasource}}"
-    },
-    {
-      "description": "Process Helm chart dependencies in kustomization files",
-      "fileMatch": ["components/.+/kustomization\\.ya?ml$"],
-      "matchStrings": [
-        "- name: (?<depName>.*)\\s+repo: (?<registryUrl>.*)\\s+version: [\"']?(?<currentValue>.*?)[\"']?"
-      ],
-      "datasourceTemplate": "helm"
-    },
-    {
-      "description": "Process Helm chart versions in helmfile",
-      "fileMatch": ["clusters/.+/helmfile\\.ya?ml$"],
-      "matchStrings": [
-        "- name: (?<depName>.*)\\s+.*?chart: (?<packageName>.*)\\s+version: (?<currentValue>.*)"
-      ],
-      "registryUrlTemplate": "{{#if registryUrl}}{{registryUrl}}{{else}}https://charts.helm.sh/stable{{/if}}",
-      "datasourceTemplate": "helm"
-    },
-    {
-      "description": "Process container images in YAML files",
-      "fileMatch": ["components/.+\\.ya?ml$", "clusters/.+\\.ya?ml$"],
-      "matchStrings": [
-        "image: [\"']?(?<depName>.*?):(?<currentValue>.*?)[\"']?\\s"
-      ],
-      "datasourceTemplate": "docker"
-    },
-    {
-      "description": "Process Talos versions",
-      "fileMatch": ["clusters/.+/talconfig\\.ya?ml$"],
-      "matchStrings": [
-        "talosVersion: [\"']?(?<currentValue>v[0-9\\.]+)[\"']?"
-      ],
-      "depNameTemplate": "siderolabs/talos",
-      "datasourceTemplate": "github-releases"
-    },
-    {
-      "description": "Process Kubernetes versions",
-      "fileMatch": ["clusters/.+/talconfig\\.ya?ml$"],
-      "matchStrings": [
-        "kubernetesVersion: [\"']?(?<currentValue>v[0-9\\.]+)[\"']?"
-      ],
-      "depNameTemplate": "kubernetes/kubernetes",
-      "datasourceTemplate": "github-releases"
-    }
-  ],
   "packageRules": [
     // version pinning
     {
@@ -105,6 +52,34 @@
       matchDatasources: ["docker"],
       matchPackageNames: ["viaductoss/ksops"],
       allowedVersions: ["v4.3.3"],
+    },
+    // commit message topics
+    {
+      "matchDatasources": ["helm"],
+      "commitMessageTopic": "chart {{depName}}"
+    },
+    {
+      "matchDatasources": ["docker"],
+      "commitMessageTopic": "image {{depName}}"
+    },
+    // commit messages
+    {
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["major"],
+      "commitMessagePrefix": "feat(container)!: "
+    },
+    {
+      "description": ["Talos Group"],
+      "groupName": "Talos",
+      "matchPackagePatterns": [
+        "siderolabs/talosctl",
+        "siderolabs/installer"
+      ],
+      "matchDatasources": ["docker"],
+      "group": {
+        "commitMessageTopic": "{{{groupName}}} group"
+      },
+      "separateMinorPatch": true
     },
     {
       "description": "Loose versioning for non-semver packages",
@@ -177,19 +152,38 @@
       "matchUpdateTypes": ["major","minor", "patch"],
     },
     {
-      "description": "Custom versioning for Talos",
-      "matchPackageNames": ["siderolabs/talos"],
-      "versioning": "semver-coerced"
+      "matchDatasources": ["github-releases", "github-tags"],
+      "matchUpdateTypes": ["major"],
+      "commitMessagePrefix": "feat(github-release)!: "
     },
     {
-      "description": "Ignore development and beta versions",
-      "matchPackagePatterns": [".*"],
-      "allowedVersions": "!/.*[-\\.]?(alpha|beta|rc|dev|unstable)/"
+      "matchDatasources": ["github-releases", "github-tags"],
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitType": "feat",
+      "semanticCommitScope": "github-release"
     },
     {
-      "description": "Pin GitHub Actions to exact versions",
+      "matchDatasources": ["github-releases", "github-tags"],
+      "matchUpdateTypes": ["patch"],
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "github-release"
+    },
+    {
       "matchManagers": ["github-actions"],
-      "pinDigests": true
+      "matchUpdateTypes": ["major"],
+      "commitMessagePrefix": "feat(github-action)!: "
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor"],
+      "semanticCommitType": "feat",
+      "semanticCommitScope": "github-action"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["patch"],
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "github-action"
     },
     {
       "description": "Custom versioning for k3s",
@@ -197,6 +191,35 @@
       "versioning": "regex:^v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<compatibility>\\+k3s)(?<build>\\d+)$",
       "matchPackagePatterns": ["k3s"]
     },
+    // labels
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["type/major"]
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "labels": ["type/minor"]
+    },
+    {
+      "matchUpdateTypes": ["patch"],
+      "labels": ["type/patch"]
+    },
+    {
+      "matchDatasources": ["docker"],
+      "addLabels": ["renovate/container"]
+    },
+    {
+      "matchDatasources": ["helm"],
+      "addLabels": ["renovate/helm"]
+    },
+    {
+      "matchDatasources": ["github-releases", "github-tags"],
+      "addLabels": ["renovate/github-release"]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "addLabels": ["renovate/github-action"]
+    }
   ],
   "assignees": ["@vikaspogu"],
   "reviewers": ["@vikaspogu"]
