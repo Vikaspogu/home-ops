@@ -35,12 +35,6 @@
   "mise": {
     "fileMatch": ["(^|/)\\.mise\\.toml$"]
   },
-  "regex": {
-    "fileMatch": ["(^|/)Taskfile\\.ya?ml$"],
-    "matchStrings": [
-      "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s+version:\\s*['\"]?(?<currentValue>[^'\"\\s]+)['\"]?"
-    ]
-  },
   // commit message topics
   "commitMessageTopic": "{{depName}}",
   "commitMessageExtra": "to {{newVersion}}",
