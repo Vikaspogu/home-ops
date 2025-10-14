@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: influxdb
+  labels:
+    app.kubernetes.io/instance: influxdb
+    app.kubernetes.io/name: influxdb
+  annotations:
+    gethomepage.dev/href: "https://influxdb.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: si-influxdb
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["influxdb.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: influxdb
+          port: 80

@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: default
 resources:
   - ./externalsecret.yaml
-
+  - ./http-route.yaml
 components:
   - ../../volsync-system/volsync-replication
 helmCharts:

@@ -17,15 +17,8 @@ env:
   - name: TZ
     value: "America/New_York"
 ingress:
-  enabled: true
+  enabled: false
   className: internal
-  path: /
-  hostname: influxdb.${CLUSTER_DOMAIN}
-  tls: true
-  annotations:
-    gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: Ingress
-    gethomepage.dev/icon: si-influxdb
 
 service:
   type: LoadBalancer
