@@ -28,10 +28,20 @@ alertmanager:
           resources:
             requests:
               storage: 1Gi
-kubeEtcd:
+kubeApiServer:
+  serviceMonitor:
+    selector:
+      k8s-app: kube-apiserver
+kubeScheduler:
   service:
     selector:
-      component: kube-apiserver # etcd runs on control plane nodes
+      k8s-app: kube-scheduler
+kubeControllerManager: &kubeControllerManager
+  service:
+    selector:
+      k8s-app: kube-controller-manager
+kubeEtcd:
+  <<: *kubeControllerManager # etcd runs on control plane nodes
 kubeProxy:
   enabled: false
 prometheus:
