@@ -42,5 +42,5 @@ spec:
   hostnames: ["syncthing.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: *app
+        - name: reverse-proxy-syncthing
           port: 8384

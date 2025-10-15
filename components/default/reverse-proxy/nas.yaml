@@ -44,5 +44,5 @@ spec:
   hostnames: ["nas.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: *app
+        - name: reverse-proxy-nas
           port: 5000
