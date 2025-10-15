@@ -34,14 +34,6 @@ kubeEtcd:
       component: kube-apiserver # etcd runs on control plane nodes
 kubeProxy:
   enabled: false
-kubeScheduler:
-  service:
-    selector:
-      jobLabel: kube-scheduler
-kubeControllerManager:
-  service:
-    selector:
-      jobLabel: kube-controller-manager
 prometheus:
   route:
     main:
