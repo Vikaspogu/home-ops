@@ -37,8 +37,7 @@ configs:
       hs.status = "Progressing"
       hs.message = "Waiting for certificate"
       return hs
-    resource.customizations.health.certmanager.external-secrets.io_ExternalSecret:
-      |
+    resource.customizations.health.certmanager.external-secrets.io_ExternalSecret: |
       hs = {}
       if obj.status ~= nil then
         if obj.status.conditions ~= nil then
@@ -156,9 +155,9 @@ configs:
       hs.status = "Progressing"
       hs.message = "Initializing issuer"
       return hs
-    resource.exclusions:
+    resource.exclusions: |
       - apiGroups:
-          - ""
+          - ''
           - discovery.k8s.io
         kinds:
           - EndpointSlice
