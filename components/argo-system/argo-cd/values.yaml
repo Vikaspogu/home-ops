@@ -228,10 +228,6 @@ server:
   metrics:
     enabled: true
     serviceMonitor: *service-monitor
-notifications:
-  metrics:
-    enabled: true
-    serviceMonitor: *service-monitor
 repoServer:
   deploymentAnnotations:
     reloader.stakater.com/auto: "true"
@@ -315,3 +311,50 @@ repoServer:
       volumeMounts:
         - mountPath: /ksops-generator
           name: ksops-generator
+notifications:
+  metrics:
+    enabled: true
+    serviceMonitor: *service-monitor
+  argocdUrl: "https://argocd.${CLUSTER_DOMAIN}"
+  secret:
+    create: false
+  templates:
+    template.app-health-degraded: |
+      message: |
+        {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} has degraded.
+        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
+    template.app-sync-failed: |
+      message: |
+        {{if eq .serviceType "slack"}}:exclamation:{{end}}  The sync operation of application {{.app.metadata.name}} has failed at {{.app.status.operationState.finishedAt}} with the following error: {{.app.status.operationState.message}}
+        Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+    template.app-sync-status-unknown: |
+      message: |
+        {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} sync is 'Unknown'.
+        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+        {{if ne .serviceType "slack"}}
+        {{range $c := .app.status.conditions}}
+            * {{$c.message}}
+        {{end}}
+        {{end}}
+
+  triggers:
+    trigger.on-health-degraded: |
+      - description: Application has degraded
+        send:
+        - app-health-degraded
+        when: app.status.health.status == 'Degraded'
+    trigger.on-sync-failed: |
+      - description: Application syncing has failed
+        send:
+        - app-sync-failed
+        when: app.status.operationState.phase in ['Error', 'Failed']
+    trigger.on-sync-status-unknown: |
+      - description: Application status is 'Unknown'
+        send:
+        - app-sync-status-unknown
+        when: app.status.sync.status == 'Unknown'
+
+  defaultTriggers: |
+    - on-sync-status-unknown
+    - on-sync-failed
+    - on-health-degraded
