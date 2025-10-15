@@ -318,6 +318,9 @@ notifications:
   argocdUrl: "https://argocd.${CLUSTER_DOMAIN}"
   secret:
     create: false
+  notifiers:
+    service.pushover: |
+      token: $pushover-token
   templates:
     template.app-health-degraded: |
       message: |
