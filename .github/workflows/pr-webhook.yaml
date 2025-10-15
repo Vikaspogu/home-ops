@@ -78,7 +78,6 @@ jobs:
           curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -H "X-Webhook-Secret: $WEBHOOK_SECRET" \
-            -d @github_context_with_cluster.json \
-            -s -o /dev/null
+            -d @github_context_with_cluster.json
 
-          echo "📤 Webhook sent successfully for $CLUSTER cluster"
+          echo "📤 Webhook sent successfully for cluster"
