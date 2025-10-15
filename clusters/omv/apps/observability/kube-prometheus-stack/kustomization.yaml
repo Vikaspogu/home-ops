@@ -15,10 +15,6 @@ helmCharts:
       kubeEtcd:
         enabled: false
       defaultRules:
-        disabled:
-          KubeControllerManagerDown: true
-          KubeProxyDown: true
-          KubeSchedulerDown: true
         rules:
           etcd: false
     valuesFile: ../../../../../components/observability/kube-prometheus-stack/values.yaml
