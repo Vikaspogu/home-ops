@@ -75,9 +75,13 @@ jobs:
           fi
 
           # Send webhook with cluster information
-          curl -X POST "$WEBHOOK_URL" \
+          if curl -X POST "$WEBHOOK_URL" \
             -H "Content-Type: application/json" \
             -H "X-Webhook-Secret: $WEBHOOK_SECRET" \
-            -d @github_context_with_cluster.json
-
-          echo "📤 Webhook sent successfully for cluster"
+            -d @github_context_with_cluster.json \
+            -f -s -S -o /dev/null; then
+            echo "📤 Webhook sent successfully for cluster"
+          else
+            echo "❌ Failed to send webhook (HTTP error or connection failed)"
+            exit 1
+          fi
