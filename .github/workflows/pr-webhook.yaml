@@ -28,6 +28,9 @@ jobs:
           files_yaml: |
             omv:
               - 'clusters/omv/**'
+            talos:
+              - 'clusters/talos/**'
+            common:
               - 'components/**'
 
       - name: Send cluster webhooks
@@ -40,6 +43,10 @@ jobs:
           # Changed files information
           OMV_CHANGED_FILES: ${{ steps.changed-files.outputs.omv_all_changed_files }}
           OMV_ANY_CHANGED: ${{ steps.changed-files.outputs.omv_any_changed }}
+          TALOS_CHANGED_FILES: ${{ steps.changed-files.outputs.talos_all_changed_files }}
+          TALOS_ANY_CHANGED: ${{ steps.changed-files.outputs.talos_any_changed }}
+          COMMON_CHANGED_FILES: ${{ steps.changed-files.outputs.common_all_changed_files }}
+          COMMON_ANY_CHANGED: ${{ steps.changed-files.outputs.common_any_changed }}
 
           GITHUB_CONTEXT: ${{ toJson(github.event) }}
         run: |
@@ -47,22 +54,31 @@ jobs:
           echo "🔍 GitHub Event Debug Info:"
           echo "OMV_ANY_CHANGED: $OMV_ANY_CHANGED"
           echo "OMV_CHANGED_FILES: $OMV_CHANGED_FILES"
+          echo "TALOS_ANY_CHANGED: $TALOS_ANY_CHANGED"
+          echo "TALOS_CHANGED_FILES: $TALOS_CHANGED_FILES"
+          echo "COMMON_ANY_CHANGED: $COMMON_ANY_CHANGED"
+          echo "COMMON_CHANGED_FILES: $COMMON_CHANGED_FILES"
 
           # Check if OMV files were changed
           if [ "$OMV_ANY_CHANGED" = "true" ]; then
             echo "✅ OMV files changed, preparing webhook..."
-
-            # Add cluster information to GitHub context
             echo "$GITHUB_CONTEXT" | jq '. + {"cluster": "omv", "event_name": "pull_request"}' > github_context_with_cluster.json
-
-            # Send webhook with cluster information
-            curl -X POST "$WEBHOOK_URL" \
-              -H "Content-Type: application/json" \
-              -H "X-Webhook-Secret: $WEBHOOK_SECRET" \
-              -d @github_context_with_cluster.json \
-              -s -o /dev/null
-
-            echo "📤 Webhook sent successfully for OMV cluster"
+          elif [ "$TALOS_ANY_CHANGED" = "true" ]; then
+            echo "✅ TALOS files changed, preparing webhook..."
+            echo "$GITHUB_CONTEXT" | jq '. + {"cluster": "talos", "event_name": "pull_request"}' > github_context_with_cluster.json
+          elif [ "$COMMON_ANY_CHANGED" = "true" ]; then
+            echo "✅ COMMON files changed, preparing webhook..."
+            echo "$GITHUB_CONTEXT" | jq '. + {"cluster": "common", "event_name": "pull_request"}' > github_context_with_cluster.json
           else
-            echo "⏭️ No OMV files changed, skipping webhook"
+            echo "⏭️ No files changed for any cluster, skipping webhook"
+            exit 0
           fi
+
+          # Send webhook with cluster information
+          curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -H "X-Webhook-Secret: $WEBHOOK_SECRET" \
+            -d @github_context_with_cluster.json \
+            -s -o /dev/null
+
+          echo "📤 Webhook sent successfully for $CLUSTER cluster"
