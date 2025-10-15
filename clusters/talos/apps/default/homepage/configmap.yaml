@@ -74,7 +74,7 @@ data:
               password: {{HOMEPAGE_VAR_OMV_PASSWORD}}
               method: services.getStatus
         - Proxmox:
-            href: https://pxm-loki.vikaspogu.internal:8006/
+            href: https://pxm-baymx.a113.internal:8006/
             icon: proxmox.png
             widget:
               type: proxmox
