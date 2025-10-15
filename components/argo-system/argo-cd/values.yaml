@@ -37,7 +37,8 @@ configs:
       hs.status = "Progressing"
       hs.message = "Waiting for certificate"
       return hs
-    resource.customizations.health.certmanager.external-secrets.io_ExternalSecret: |
+    resource.customizations.health.certmanager.external-secrets.io_ExternalSecret:
+      |
       hs = {}
       if obj.status ~= nil then
         if obj.status.conditions ~= nil then
@@ -155,6 +156,54 @@ configs:
       hs.status = "Progressing"
       hs.message = "Initializing issuer"
       return hs
+    resource.exclusions:
+      - apiGroups:
+          - ""
+          - discovery.k8s.io
+        kinds:
+          - EndpointSlice
+      - apiGroups:
+          - coordination.k8s.io
+        kinds:
+          - Lease
+      - apiGroups:
+          - authentication.k8s.io
+          - authorization.k8s.io
+        kinds:
+          - SelfSubjectReview
+          - TokenReview
+          - LocalSubjectAccessReview
+          - SelfSubjectAccessReview
+          - SelfSubjectRulesReview
+          - SubjectAccessReview
+      - apiGroups:
+          - certificates.k8s.io
+        kinds:
+          - CertificateSigningRequest
+      - apiGroups:
+          - cert-manager.io
+        kinds:
+          - CertificateRequest
+      - apiGroups:
+          - cilium.io
+        kinds:
+          - CiliumIdentity
+          - CiliumEndpoint
+          - CiliumEndpointSlice
+      - apiGroups:
+          - kyverno.io
+          - reports.kyverno.io
+          - wgpolicyk8s.io
+        kinds:
+          - PolicyReport
+          - ClusterPolicyReport
+          - EphemeralReport
+          - ClusterEphemeralReport
+          - AdmissionReport
+          - ClusterAdmissionReport
+          - BackgroundScanReport
+          - ClusterBackgroundScanReport
+          - UpdateRequest
   secret:
     argocdServerAdminPassword: $2a$10$GRTeAT.0uRW2HUk59OJn6OjYtWPROWimrka/EGkgDUsiNvmyep05e
     argocdServerAdminPasswordMtime: 2025-08-26T18:15:18
