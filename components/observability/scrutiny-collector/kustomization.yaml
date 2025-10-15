@@ -9,5 +9,5 @@ helmCharts:
     releaseName: scrutiny-collector
     namespace: observability
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: 4.3.0
+    version: 4.4.0
     valuesFile: values.yaml
