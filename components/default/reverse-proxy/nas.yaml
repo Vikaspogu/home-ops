@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  labels:
+    app.kubernetes.io/instance: reverse-proxy-nas
+  name: reverse-proxy-nas
+subsets:
+  - addresses:
+      - ip: ${NAS_IP_ADDRESS}
+    ports:
+      - port: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/instance: reverse-proxy-nas
+  name: reverse-proxy-nas
+spec:
+  ports:
+    - port: 5000
+      protocol: TCP
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: &app nas
+  labels:
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
+  annotations:
+    gethomepage.dev/href: "https://nas.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: synology-dsm.png
+    gethomepage.dev/name: Synology NAS
+    external-dns.alpha.kubernetes.io/target: "external.${CLUSTER_DOMAIN}"
+spec:
+  parentRefs:
+    - name: ${GATEWAY_EXTERNAL}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["nas.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: *app
+          port: 5000

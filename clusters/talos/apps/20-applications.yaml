@@ -368,6 +368,14 @@ applications:
     source:
       path: components/default/redlib
 
+  reverse-proxy:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/reverse-proxy
+
   sonarr:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
