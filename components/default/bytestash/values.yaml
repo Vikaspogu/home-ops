@@ -16,7 +16,6 @@ controllers:
           DISABLE_INTERNAL_ACCOUNTS: "true"
           OIDC_ENABLED: "true"
           OIDC_DISPLAY_NAME: "Authentik"
-          OIDC_ISSUER_URL: "https://id.vikaspogu.com/application/o/bytestash/"
           OIDC_SCOPES: "openid profile email"
         envFrom:
           - secretRef:
