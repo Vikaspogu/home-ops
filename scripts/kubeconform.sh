@@ -18,6 +18,7 @@ export ARGOCD_APP_NAME="${ARGOCD_APP_NAME:-app}"
 export ARGOCD_ENV_VOLSYNC_CAPACITY="${ARGOCD_ENV_VOLSYNC_CAPACITY:-4Gi}"
 export ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS="${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS:-longhorn-snapclass}"
 export ARGOCD_ENV_STORAGE_CLASS="${ARGOCD_ENV_STORAGE_CLASS:-longhorn}"
+export NAS_IP_ADDRESS="${NAS_IP_ADDRESS:-192.168.1.100}"
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins")
 kustomize_config="kustomization.yaml"
