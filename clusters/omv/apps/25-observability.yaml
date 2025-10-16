@@ -1,0 +1,13 @@
+applications:
+
+  kube-prometheus-stack:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: observability
+    source:
+      path: clusters/omv/apps/observability/kube-prometheus-stack
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: longhorn-volsync

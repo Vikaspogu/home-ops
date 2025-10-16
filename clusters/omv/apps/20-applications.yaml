@@ -1,0 +1,96 @@
+applications:
+
+  argo-cd:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/omv/apps/argo-system/argo-cd
+
+  garage-app:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/garage-app
+
+  bytestash:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/bytestash
+
+  homepage:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: clusters/omv/apps/default/homepage
+
+  syncthing:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/syncthing
+
+  jellyfin:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/jellyfin
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: longhorn-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: longhorn
+          - name: VOLSYNC_CAPACITY
+            value: 10Gi
+
+  gitea:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/gitea
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: longhorn-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: longhorn
+          - name: VOLSYNC_CAPACITY
+            value: 10Gi
+  valkey:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/valkey
+
+  zot:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/zot
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: longhorn-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: longhorn
+          - name: VOLSYNC_CAPACITY
+            value: 10Gi

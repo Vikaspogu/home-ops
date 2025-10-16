@@ -1,0 +1,41 @@
+applications:
+
+  cert-manager:
+    annotations:
+      argocd.argoproj.io/sync-wave: "15"
+    destination:
+      namespace: cert-manager
+    source:
+      path: components/cert-manager/cert-manager
+
+  snapshot-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/snapshot-controller
+
+  longhorn:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: longhorn-system
+    source:
+      path: components/longhorn-system/longhorn
+
+  kopia:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: volsync-system
+    source:
+      path: clusters/omv/apps/volsync-system/kopia
+
+  volsync:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: volsync-system
+    source:
+      path: clusters/omv/apps/volsync-system/volsync

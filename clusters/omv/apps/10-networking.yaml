@@ -1,0 +1,25 @@
+applications:
+
+  traefik:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/traefik
+
+  unifi-dns:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: network
+    source:
+      path: components/network/unifi-dns
+
+  reloader:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/reloader

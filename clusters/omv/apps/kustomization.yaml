@@ -6,6 +6,16 @@ helmGlobals:
 
 helmCharts:
   - name: argocd-app-of-app
-    valuesFile: ./values.yaml
+    valuesFile: ./common-values.yaml
+    additionalValuesFiles:
+      - ./00-secrets.yaml
+      - ./02-secret-stores.yaml
+      - ./05-storage-and-certificate.yaml
+      - ./10-networking.yaml
+      - ./15-database-operator.yaml
+      - ./16-database-clusters.yaml
+      - ./20-applications.yaml
+      - ./25-observability.yaml
+      - ./30-system.yaml
 
 patches: []

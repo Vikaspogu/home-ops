@@ -1,0 +1,25 @@
+applications:
+
+  system-upgrade-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/system-upgrade-controller
+
+  system-upgrade-k3s:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/k3s
+
+  kubechecks:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: argo-system
+    source:
+      path: clusters/omv/apps/argo-system/kubechecks
