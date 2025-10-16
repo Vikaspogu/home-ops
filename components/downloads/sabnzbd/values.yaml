@@ -61,7 +61,7 @@ persistence:
     type: emptyDir
   media:
     type: nfs
-    server: synology.a113.internal
-    path: "/volume1/media"
+    server: omv-baymx.a113.internal
+    path: "/storage0/media"
     globalMounts:
       - path: /nfs-nas-pvc
