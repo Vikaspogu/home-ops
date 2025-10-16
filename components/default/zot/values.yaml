@@ -1,0 +1,62 @@
+---
+controllers:
+  main:
+    annotations:
+      reloader.stakater.com/auto: "true"
+
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups:
+          - 568
+
+    containers:
+      main:
+        image:
+          repository: ghcr.io/project-zot/zot
+          tag: v2.1.8@sha256:cd2aea942f428630bcb4190542be6abd35e14177aab84fc7ccad0dca8ecb363d
+          pullPolicy: IfNotPresent
+        args:
+          - serve
+          - /etc/zot/config.yaml
+        probes:
+          liveness: &probe
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /v2/
+                port: 5000
+              initialDelaySeconds: 5
+          readiness: *probe
+          startup:
+            enabled: false
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: &port 5000
+
+persistence:
+  config:
+    enabled: true
+    type: secret
+    name: zot
+    globalMounts:
+      - path: /etc/zot/config.yaml
+        subPath: config.yaml
+  registry:
+    existingClaim: zot
+    globalMounts:
+      - path: /var/lib/registry
+  tmp-zot:
+    enabled: true
+    type: emptyDir
+    sizeLimit: 1Gi
+    globalMounts:
+      - path: /tmp
