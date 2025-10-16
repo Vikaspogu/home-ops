@@ -108,14 +108,6 @@ data:
             widget:
               type: scrutiny
               url: http://scrutiny.observability.svc.cluster.local:8080
-        - FreshRSS:
-            href: https://rss.{{HOMEPAGE_VAR_DOMAIN_NAME}}
-            icon: freshrss.png
-            widget:
-              type: freshrss
-              url: http://freshrss-app.default:80
-              username: {{HOMEPAGE_VAR_FRESHRSS_USERNAME}}
-              password: {{HOMEPAGE_VAR_FRESHRSS_PASSWORD}}
     - Media:
       - qBittorrent:
           href: https://qb.${CLUSTER_DOMAIN}
