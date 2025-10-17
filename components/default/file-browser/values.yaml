@@ -21,7 +21,7 @@ controllers:
             spec:
               httpGet:
                 path: /
-                port: &port 8095
+                port: &port 80
               initialDelaySeconds: 10
               periodSeconds: 60
               timeoutSeconds: 10
