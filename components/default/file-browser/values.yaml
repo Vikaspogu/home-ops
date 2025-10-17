@@ -1,0 +1,54 @@
+---
+controllers:
+  app:
+    pod:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    containers:
+      filebrowser:
+        image:
+          repository: ghcr.io/gtsteffaniak/filebrowser
+          tag: 0.8.3-beta
+        env:
+          TZ: America/New_York
+        envFrom:
+          - secretRef:
+              name: file-browser
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: &port 8095
+              initialDelaySeconds: 10
+              periodSeconds: 60
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            memory: 200Mi
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    existingClaim: file-browser
+    globalMounts:
+      - path: "/home/filebrowser/database"
+
+  data:
+    type: hostPath
+    hostPath: /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0
+    globalMounts:
+      - path: /storage0

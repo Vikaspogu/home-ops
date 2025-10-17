@@ -56,6 +56,22 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 10Gi
 
+  file-browser:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/file-browser
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: longhorn-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: longhorn
+          - name: VOLSYNC_CAPACITY
+            value: 1Gi
+
   gitea:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
