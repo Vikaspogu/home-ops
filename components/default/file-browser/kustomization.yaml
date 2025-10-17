@@ -12,3 +12,9 @@ helmCharts:
     repo: https://bjw-s-labs.github.io/helm-charts
     version: "4.4.0"
     valuesFile: values.yaml
+configMapGenerator:
+  - name: file-browser-config
+    files:
+      - config.yaml=./config.yaml
+generatorOptions:
+  disableNameSuffixHash: true

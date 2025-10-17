@@ -42,12 +42,19 @@ service:
         port: *port
 
 persistence:
-  config:
+  data:
     existingClaim: file-browser
     globalMounts:
       - path: "/home/filebrowser/database"
-
-  data:
+  config:
+    enabled: true
+    type: configMap
+    name: file-browser-config
+    globalMounts:
+      - path: "/home/filebrowser/config.yaml"
+        subPath: config.yaml
+        readOnly: true
+  storage:
     type: hostPath
     hostPath: /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0
     globalMounts:
