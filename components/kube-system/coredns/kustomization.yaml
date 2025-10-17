@@ -8,5 +8,5 @@ helmCharts:
     releaseName: coredns
     namespace: kube-system
     repo: oci://ghcr.io/coredns/charts
-    version: 1.44.3
+    version: 1.45.0
     valuesFile: values.yaml
