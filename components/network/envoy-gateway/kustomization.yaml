@@ -7,7 +7,7 @@ helmCharts:
     releaseName: gateway-helm
     namespace: network
     repo: oci://mirror.gcr.io/envoyproxy
-    version: 1.5.3
+    version: v1.5.4
     includeCRDs: true
     valuesInline:
       crds:
