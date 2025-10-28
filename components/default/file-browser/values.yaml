@@ -8,7 +8,7 @@ controllers:
       filebrowser:
         image:
           repository: ghcr.io/gtsteffaniak/filebrowser
-          tag: 0.8.10-beta
+          tag: 0.8.11-beta
         env:
           TZ: America/New_York
         envFrom:
