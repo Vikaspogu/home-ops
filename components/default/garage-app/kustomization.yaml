@@ -8,7 +8,7 @@ resources:
 helmCharts:
   - name: app-template
     releaseName: garage
-    repo: https://bjw-s-labs.github.io/helm-charts
+    repo: oci://ghcr.io/bjw-s-labs/helm
     version: "4.4.0"
     valuesFile: values.yaml
 
