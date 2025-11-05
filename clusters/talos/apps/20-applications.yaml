@@ -208,21 +208,13 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 4Gi
 
-  # kavita:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/kavita
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 4Gi
+  kite:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/kite
 
   mosquitto:
     annotations:

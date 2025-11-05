@@ -1,0 +1,13 @@
+apiVersion: v2
+description: A Helm chart for managing Kite
+name: kite
+version: 1.0.0
+kubeVersion: ">=1.22.0-0"
+
+maintainers:
+  - name: Vikas Pogu
+
+dependencies:
+  - name: app-template
+    version: "4.4.0"
+    repository: "https://bjw-s-labs.github.io/helm-charts"
