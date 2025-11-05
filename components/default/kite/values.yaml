@@ -70,6 +70,6 @@ persistence:
     enabled: true
     type: nfs
     server: synology.a113.internal
-    path: "/volume1/media/k8s-data/kubeconfig"
+    path: "/volume1/media/k8s-data/kite"
     globalMounts:
       - path: /config
