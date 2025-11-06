@@ -8,5 +8,5 @@ helmCharts:
     releaseName: spegel
     namespace: kube-system
     repo: oci://ghcr.io/spegel-org/helm-charts
-    version: 0.5.0
+    version: 0.5.1
     valuesFile: values.yaml
