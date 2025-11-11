@@ -52,7 +52,7 @@ controllers:
       fivefilters-full-text-rss:
         image:
           repository: heussd/fivefilters-full-text-rss
-          tag: latest@sha256:5fbf7724b3e3d825069d478a43a7ecc1ff16efccf07c9f7b6050a41f014819a3
+          tag: latest@sha256:bbdc1b5dcb3c8fb9834ef81f3f0eb74b19506d6aed37116a5e133e28593f8972
           pullPolicy: IfNotPresent
         envFrom: *envFrom
 
