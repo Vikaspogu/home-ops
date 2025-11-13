@@ -29,3 +29,4 @@ wiki
 !/helm/**/charts
 **kubeconfig**
 .envrc
+.vscode
