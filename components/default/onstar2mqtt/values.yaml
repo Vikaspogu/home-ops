@@ -8,7 +8,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/bigthundersr/onstar2mqtt
-          tag: 2.4.0@sha256:a6e1e3f187c4490b46a6fb6a4d9c6916efbe25a4c14b5f2c5dbeaffba02e8ae8
+          tag: 2.4.1@sha256:8b1d2ef44f121e56c2dfd03248878d4ccb9ec4934c68eb2fe475c237c5612046
         envFrom:
           - secretRef:
               name: onstar2mqtt
