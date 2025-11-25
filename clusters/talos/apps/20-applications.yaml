@@ -134,7 +134,7 @@ applications:
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
-            value: 1Gi
+            value: 2Gi
 
   govee2mqtt:
     annotations:
@@ -286,7 +286,7 @@ applications:
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
-            value: 1Gi
+            value: 2Gi
 
   piped:
     annotations:
@@ -406,7 +406,7 @@ applications:
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
-            value: 1Gi
+            value: 2Gi
 
   valetudopng:
     annotations:
