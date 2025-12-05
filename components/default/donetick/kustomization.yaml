@@ -17,5 +17,5 @@ helmCharts:
     releaseName: donetick
     namespace: default
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "4.4.0"
+    version: "4.5.0"
     valuesFile: values.yaml
