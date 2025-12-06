@@ -8,6 +8,14 @@ applications:
     source:
       path: clusters/omv/apps/argo-system/argo-cd
 
+  airflow:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/airflow
+
   garage-app:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

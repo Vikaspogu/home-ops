@@ -1,0 +1,127 @@
+useStandardNaming: true
+
+securityContexts:
+  pod:
+    fsGroup: 1001
+    fsGroupChangePolicy: "OnRootMismatch"
+
+airflowPodAnnotations:
+  reloader.stakater.com/auto: "true"
+
+executor: "CeleryExecutor"
+
+volumes:
+  - name: airflow-data
+    persistentVolumeClaim:
+      claimName: airflow-data-platform
+
+volumeMounts:
+  - name: airflow-data
+    readOnly: true
+    mountPath: "/data/tera"
+
+extraEnv: |
+  - name: AIRFLOW__CORE__LOAD_EXAMPLES
+    value: 'False'
+  - name: AIRFLOW__CORE__HIDE_SENSITIVE_VAR_CONN_FIELDS
+    value: 'False'
+  - name: AIRFLOW__CORE__DEFAULT_TIMEZONE
+    value: Australia/Perth
+  - name: AIRFLOW__WEBSERVER__BASE_URL
+    value: 'https://airflow.${CLUSTER_DOMAIN}'
+  - name: AIRFLOW__WEBSERVER__DEFAULT_WRAP
+    value: 'True'
+  - name: AIRFLOW__WEBSERVER__EXPOSE_CONFIG
+    value: 'True'
+  - name: TZ
+    value: America/New_York
+
+extraEnvFrom: |
+  - secretRef:
+      name: airflow-secret
+
+data:
+  metadataSecretName: &secrets airflow-secret
+  brokerUrl: "redis://valkey:6379"
+
+webserverSecretKeySecretName: *secrets
+
+kerberos:
+  enabled: false
+
+workers:
+  args:
+    - "bash"
+    - "-c"
+    - |-
+      exec \
+      airflow celery worker --without-mingle --without-gossip
+  securityContext:
+    fsGroup: 1001
+    fsGroupChangePolicy: "OnRootMismatch"
+  persistence:
+    enabled: false
+
+scheduler:
+  enabled: true
+
+createUserJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+
+migrateDatabaseJob:
+  useHelmHooks: false
+  applyCustomEnv: false
+
+webserver:
+  enabled: true
+
+triggerer:
+    enabled: true
+    persistence:
+      enabled: false
+
+dagProcessor:
+  enabled: false
+
+flower:
+  enabled: false
+
+statsd:
+  enabled: true
+
+pgbouncer:
+  enabled: true
+
+redis:
+  enabled: false
+
+elasticsearch:
+  enabled: false
+
+cleanup:
+  enabled: false
+
+postgresql:
+  enabled: false
+
+config:
+  logging:
+    colored_console_log: 'True'
+
+dags:
+  persistence:
+    enabled: true
+    existingClaim: airflow-dags
+    subPath: airflow/dags
+  gitSync:
+    enabled: false
+    # repo: git@github.com:GwynHannay/airflow-pipelines.git
+    # branch: "main"
+    # ref: "main"
+    # subPath: ""
+    # sshKeySecret: repo-ssh-secret
+
+logs:
+  persistence:
+    enabled: false
