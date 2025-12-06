@@ -9,6 +9,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: longhorn-volsync
   resources:
     requests:
       storage: 2Gi
@@ -23,6 +24,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: longhorn-volsync
   resources:
     requests:
       storage: 2Gi
