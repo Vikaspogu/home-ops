@@ -44,7 +44,7 @@ data:
   # metadataSecretName: &secrets airflow-secret
   brokerUrl: "redis://valkey:6379"
 
-webserverSecretKeySecretName: *secrets
+webserverSecretKeySecretName: airflow-secret
 
 kerberos:
   enabled: false
