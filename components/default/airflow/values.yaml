@@ -41,7 +41,7 @@ extraEnvFrom: |
       name: airflow-secret
 
 data:
-  metadataSecretName: &secrets airflow-secret
+  # metadataSecretName: &secrets airflow-secret
   brokerUrl: "redis://valkey:6379"
 
 webserverSecretKeySecretName: *secrets
