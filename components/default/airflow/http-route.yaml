@@ -19,5 +19,5 @@ spec:
   hostnames: ["airflow.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: airflow-webserver
+        - name: airflow-api-server
           port: 8080
