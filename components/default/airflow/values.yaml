@@ -103,7 +103,7 @@ cleanup:
   enabled: false
 
 postgresql:
-  enabled: false
+  enabled: true
 
 config:
   logging:
