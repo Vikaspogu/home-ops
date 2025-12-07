@@ -8,7 +8,7 @@ securityContexts:
 airflowPodAnnotations:
   reloader.stakater.com/auto: "true"
 
-executor: "CeleryKubernetesExecutor"
+executor: "KubernetesExecutor"
 
 volumes:
   - name: airflow-data
