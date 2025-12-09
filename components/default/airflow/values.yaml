@@ -87,6 +87,7 @@ createUserJob:
   applyCustomEnv: false
 
 migrateDatabaseJob:
+  enabled: false
   useHelmHooks: false
   applyCustomEnv: false
 
@@ -115,4 +116,8 @@ dags:
 
 logs:
   persistence:
+    enabled: false
+
+webserver:
+  defaultUser:
     enabled: false
