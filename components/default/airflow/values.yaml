@@ -52,13 +52,13 @@ apiServer:
           "icon": "fa-circle-o",
           "token_key": "access_token",
           "remote_app": {
-            "api_base_url": "https://{OAUTH_DOMAIN}/application/o/",
+            "api_base_url": f"https://{OAUTH_DOMAIN}/application/o/",
             "client_kwargs": {"scope": "openid profile email"},
             "client_id": os.environ.get("CLIENT_ID"),
             "client_secret": os.environ.get("CLIENT_SECRET"),
-            'server_metadata_rul': 'https://{OAUTH_DOMAIN}/application/o/airflow/.well-known/openid-configuration',
+            'server_metadata_rul': f'https://{OAUTH_DOMAIN}/application/o/airflow/.well-known/openid-configuration',
             "authorize_url": (
-                "https://{OAUTH_DOMAIN}/application/o/authorize/"
+                f"https://{OAUTH_DOMAIN}/application/o/authorize/"
             ),
           },
       },
