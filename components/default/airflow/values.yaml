@@ -35,10 +35,7 @@ kerberos:
 apiServer:
   apiServerConfig: |
     import os
-    from flask_appbuilder.security.manager import AUTH_OAUTH, AUTH_DB, AUTH_REMOTE_USER
-    from flask import current_app
-    from airflow.configuration import conf
-    from werkzeug.middleware.proxy_fix import ProxyFix
+    from flask_appbuilder.security.manager import AUTH_OAUTH
 
     AUTH_TYPE = AUTH_OAUTH
 
@@ -57,7 +54,7 @@ apiServer:
           "remote_app": {
             "api_base_url": f"https://{OAUTH_DOMAIN}/application/o/",
             "client_kwargs": {
-                "scope": "email profile",
+                "scope": "email profile groups",
                 "verify_signature": True,
             },
             "client_id": os.environ.get("CLIENT_ID"),
@@ -84,16 +81,6 @@ apiServer:
 
     # force users to re-auth after 30min of inactivity (to keep roles in sync)
     PERMANENT_SESSION_LIFETIME = 1800
-
-    if conf.getboolean("fab", "ENABLE_PROXY_FIX"):
-      current_app.wsgi_app = ProxyFix(  # type: ignore
-          current_app.wsgi_app,
-          x_for=conf.getint("fab", "PROXY_FIX_X_FOR", fallback=1),
-          x_proto=conf.getint("fab", "PROXY_FIX_X_PROTO", fallback=1),
-          x_host=conf.getint("fab", "PROXY_FIX_X_HOST", fallback=1),
-          x_port=conf.getint("fab", "PROXY_FIX_X_PORT", fallback=1),
-          x_prefix=conf.getint("fab", "PROXY_FIX_X_PREFIX", fallback=1),
-      )
 
 createUserJob:
   useHelmHooks: false
