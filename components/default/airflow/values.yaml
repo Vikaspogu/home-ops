@@ -48,7 +48,7 @@ apiServer:
     # the list of providers which the user can choose from
     OAUTH_PROVIDERS = [
       {
-          "name": "Authentik",
+          "name": "authentik",
           "icon": "fa-circle-o",
           "token_key": "access_token",
           "remote_app": {
