@@ -59,7 +59,6 @@ apiServer:
             },
             "client_id": os.environ.get("CLIENT_ID"),
             "client_secret": os.environ.get("CLIENT_SECRET"),
-            'server_metadata_rul': f'https://{OAUTH_DOMAIN}/application/o/airflow/.well-known/openid-configuration',
             "authorize_url": (
                 f"https://{OAUTH_DOMAIN}/application/o/authorize/"
             ),
@@ -117,5 +116,3 @@ dags:
 logs:
   persistence:
     enabled: false
-
-
