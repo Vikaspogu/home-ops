@@ -43,7 +43,7 @@ apiServer:
     AUTH_TYPE = AUTH_OAUTH
 
     # registration configs
-    AUTH_USER_REGISTRATION = False  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
     AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
 
     OAUTH_DOMAIN = os.environ.get("OAUTH_DOMAIN")
