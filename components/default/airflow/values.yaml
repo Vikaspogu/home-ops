@@ -3,7 +3,7 @@ useStandardNaming: true
 airflowPodAnnotations:
   reloader.stakater.com/auto: "true"
 
-executor: "KubernetesExecutor, CeleryExecutor"
+executor: "KubernetesExecutor|CeleryExecutor"
 
 extraEnv: |
   - name: AIRFLOW__CORE__LOAD_EXAMPLES
