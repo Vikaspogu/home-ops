@@ -53,13 +53,17 @@ apiServer:
           "token_key": "access_token",
           "remote_app": {
             "api_base_url": f"https://{OAUTH_DOMAIN}/application/o/",
-            "client_kwargs": {"scope": "openid profile email"},
+            "client_kwargs": {
+                "scope": "email profile",
+                "verify_signature": True,
+            },
             "client_id": os.environ.get("CLIENT_ID"),
             "client_secret": os.environ.get("CLIENT_SECRET"),
             'server_metadata_rul': f'https://{OAUTH_DOMAIN}/application/o/airflow/.well-known/openid-configuration',
             "authorize_url": (
                 f"https://{OAUTH_DOMAIN}/application/o/authorize/"
             ),
+            "request_token_url": None,
           },
       },
     ]
@@ -111,3 +115,5 @@ dags:
 logs:
   persistence:
     enabled: false
+
+
