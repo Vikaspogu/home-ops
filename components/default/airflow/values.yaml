@@ -67,7 +67,7 @@ apiServer:
                 f"https://{OAUTH_DOMAIN}/application/o/token/"
             ),
             "request_token_url": None,
-            jwks_uri': 'https://authentik.mydomain.com/application/o/APPLICATION_NAME/jwks/',
+            "jwks_uri": f"https://{OAUTH_DOMAIN}/application/o/airflow/jwks/",
           },
       },
     ]
