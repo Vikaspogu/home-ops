@@ -63,7 +63,11 @@ apiServer:
             "authorize_url": (
                 f"https://{OAUTH_DOMAIN}/application/o/authorize/"
             ),
+            "access_token_url": (
+                f"https://{OAUTH_DOMAIN}/application/o/token/"
+            ),
             "request_token_url": None,
+            jwks_uri': 'https://authentik.mydomain.com/application/o/APPLICATION_NAME/jwks/',
           },
       },
     ]
@@ -86,8 +90,6 @@ createUserJob:
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
-  jobAnnotations:
-    "argocd.argoproj.io/hook": Sync
 
 redis:
   enabled: false
