@@ -87,7 +87,6 @@ createUserJob:
   applyCustomEnv: false
 
 migrateDatabaseJob:
-  enabled: false
   useHelmHooks: false
   applyCustomEnv: false
 
