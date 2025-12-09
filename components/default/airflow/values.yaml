@@ -35,7 +35,8 @@ kerberos:
 apiServer:
   apiServerConfig: |
     import os
-    from flask_appbuilder.security.manager import AUTH_OAUTH
+    from flask_appbuilder.security.manager import AUTH_OAUTH, AUTH_DB, AUTH_REMOTE_USER
+    from flask import current_app
     from airflow.configuration import conf
     from werkzeug.middleware.proxy_fix import ProxyFix
 
