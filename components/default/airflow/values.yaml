@@ -52,21 +52,11 @@ apiServer:
           "icon": "fa-circle-o",
           "token_key": "access_token",
           "remote_app": {
-            "api_base_url": "https://{OAUTH_DOMAIN}",
-            "client_kwargs": {
-                "scope": "email profile",
-                "verify_signature": True,
-            },
-            "access_token_url": (
-                "https://{OAUTH_DOMAIN}/application/o/token/"
-            ),
-            "authorize_url": (
-                f"https://{OAUTH_DOMAIN}/application/o/authorize/"
-            ),
-            "request_token_url": None,
+            "api_base_url": "https://{OAUTH_DOMAIN}/application/o/",
+            "client_kwargs": {"scope": "openid profile email"},
             "client_id": os.environ.get("CLIENT_ID"),
             "client_secret": os.environ.get("CLIENT_SECRET"),
-            'jwks_uri': 'https://{OAUTH_DOMAIN}/application/o/airflow/jwks/',
+            'server_metadata_rul': 'https://{OAUTH_DOMAIN}/application/o/airflow/.well-known/openid-configuration',
           },
       },
     ]
@@ -89,6 +79,8 @@ createUserJob:
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
+  jobAnnotations:
+    "argocd.argoproj.io/hook": Sync
 
 redis:
   enabled: false
