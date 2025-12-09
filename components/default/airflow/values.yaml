@@ -1,24 +1,9 @@
 useStandardNaming: true
 
-securityContexts:
-  pod:
-    fsGroup: 1001
-    fsGroupChangePolicy: "OnRootMismatch"
-
 airflowPodAnnotations:
   reloader.stakater.com/auto: "true"
 
-executor: "KubernetesExecutor"
-
-volumes:
-  - name: airflow-data
-    persistentVolumeClaim:
-      claimName: airflow-data-platform
-
-volumeMounts:
-  - name: airflow-data
-    readOnly: true
-    mountPath: "/data/tera"
+executor: "KubernetesExecutor, CeleryExecutor"
 
 extraEnv: |
   - name: AIRFLOW__CORE__LOAD_EXAMPLES
@@ -26,15 +11,13 @@ extraEnv: |
   - name: AIRFLOW__CORE__HIDE_SENSITIVE_VAR_CONN_FIELDS
     value: 'False'
   - name: AIRFLOW__CORE__DEFAULT_TIMEZONE
-    value: Australia/Perth
-  - name: AIRFLOW__WEBSERVER__BASE_URL
-    value: 'https://airflow.${CLUSTER_DOMAIN}'
-  - name: AIRFLOW__WEBSERVER__DEFAULT_WRAP
-    value: 'True'
-  - name: AIRFLOW__WEBSERVER__EXPOSE_CONFIG
-    value: 'True'
-  - name: TZ
     value: America/New_York
+  - name: AIRFLOW__API__BASE_URL
+    value: 'https://airflow.${CLUSTER_DOMAIN}'
+  - name: AIRFLOW__API__DEFAULT_WRAP
+    value: 'True'
+  - name: AIRFLOW__API__EXPOSE_CONFIG
+    value: 'True'
 
 extraEnvFrom: |
   - secretRef:
@@ -49,21 +32,54 @@ webserverSecretKeySecretName: airflow-secret
 kerberos:
   enabled: false
 
-workers:
-  args:
-    - "bash"
-    - "-c"
-    - |-
-      exec \
-      airflow celery worker --without-mingle --without-gossip
-  securityContext:
-    fsGroup: 1001
-    fsGroupChangePolicy: "OnRootMismatch"
-  persistence:
-    enabled: false
+apiServer:
+  apiServerConfig: |
+    from flask_appbuilder.security.manager import AUTH_OAUTH
 
-scheduler:
-  enabled: true
+    AUTH_TYPE = AUTH_OAUTH
+
+    # registration configs
+    AUTH_USER_REGISTRATION = False  # allow users who are not already in the FAB DB
+    AUTH_USER_REGISTRATION_ROLE = "Public"  # this role will be given in addition to any AUTH_ROLES_MAPPING
+
+    OAUTH_DOMAIN = os.environ.get("OAUTH_DOMAIN")
+
+    # the list of providers which the user can choose from
+    OAUTH_PROVIDERS = [
+      {
+          "name": "Authentik",
+          "icon": "fa-circle-o",
+          "token_key": "access_token",
+          "remote_app": {
+            "api_base_url": "https://{OAUTH_DOMAIN}",
+            "client_kwargs": {
+                "scope": "email profile",
+                "verify_signature": True,
+            },
+            "access_token_url": (
+                "https://{OAUTH_DOMAIN}/application/o/token/"
+            ),
+            "authorize_url": (
+                f"https://{OAUTH_DOMAIN}/application/o/authorize/"
+            ),
+            "request_token_url": None,
+            "client_id": os.environ.get("CLIENT_ID"),
+            "client_secret": os.environ.get("CLIENT_SECRET"),
+            'jwks_uri': 'https://{OAUTH_DOMAIN}/application/o/airflow/jwks/',
+          },
+      },
+    ]
+
+    # a mapping from the values of `userinfo["role_keys"]` to a list of FAB roles
+    AUTH_ROLES_MAPPING = {
+        "admins": ["Admin"],
+    }
+
+    # if we should replace ALL the user's roles each login, or only on registration
+    AUTH_ROLES_SYNC_AT_LOGIN = True
+
+    # force users to re-auth after 30min of inactivity (to keep roles in sync)
+    PERMANENT_SESSION_LIFETIME = 1800
 
 createUserJob:
   useHelmHooks: false
@@ -73,37 +89,10 @@ migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
 
-webserver:
-  enabled: true
-
-triggerer:
-    enabled: true
-    persistence:
-      enabled: false
-
-dagProcessor:
-  enabled: false
-
-flower:
-  enabled: false
-
-statsd:
-  enabled: true
-
-pgbouncer:
-  enabled: true
-
-redis:
-  enabled: false
-
-elasticsearch:
-  enabled: false
-
-cleanup:
-  enabled: false
-
 postgresql:
   enabled: true
+  image:
+    tag: latest
 
 config:
   logging:
@@ -111,9 +100,7 @@ config:
 
 dags:
   persistence:
-    enabled: true
-    existingClaim: airflow-dags
-    subPath: airflow/dags
+    enabled: false
   gitSync:
     enabled: false
     # repo: git@github.com:GwynHannay/airflow-pipelines.git
