@@ -57,6 +57,9 @@ apiServer:
             "client_id": os.environ.get("CLIENT_ID"),
             "client_secret": os.environ.get("CLIENT_SECRET"),
             'server_metadata_rul': 'https://{OAUTH_DOMAIN}/application/o/airflow/.well-known/openid-configuration',
+            "authorize_url": (
+                "https://{OAUTH_DOMAIN}/application/o/authorize/"
+            ),
           },
       },
     ]
