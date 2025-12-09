@@ -34,6 +34,7 @@ kerberos:
 
 apiServer:
   apiServerConfig: |
+    import os
     from flask_appbuilder.security.manager import AUTH_OAUTH
 
     AUTH_TYPE = AUTH_OAUTH
@@ -88,6 +89,9 @@ createUserJob:
 migrateDatabaseJob:
   useHelmHooks: false
   applyCustomEnv: false
+
+redis:
+  enabled: false
 
 postgresql:
   enabled: true
