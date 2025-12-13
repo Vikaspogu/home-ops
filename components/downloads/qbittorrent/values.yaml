@@ -18,8 +18,8 @@ controllers:
     initContainers:
       dnsdist:
         image:
-          repository: docker pull powerdns/dnsdist-20
-          tag: 2.0.2
+          repository: docker.io/powerdns/dnsdist-20
+          tag: 2.0.2@sha256:ba8c86d9585fe88e987ea19b21d4850547db0fa658d1a819db9541ff2c499629
         restartPolicy: Always
       gluetun:
         dependsOn:
