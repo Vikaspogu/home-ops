@@ -2,7 +2,7 @@
 fullnameOverride: influxdb
 image:
   repository: docker.io/library/influxdb
-  tag: 2.7.12
+  tag: 2.8.0
   pullPolicy: IfNotPresent
 adminUser:
   create: true
