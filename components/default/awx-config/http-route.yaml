@@ -19,5 +19,5 @@ spec:
   hostnames: ["awx.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: awx
-          port: 8080
+        - name: awx-service
+          port: 80
