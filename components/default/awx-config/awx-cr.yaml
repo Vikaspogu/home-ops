@@ -5,3 +5,4 @@ metadata:
   name: awx
 spec:
   service_type: ClusterIP
+  postgres_configuration_secret: awx-db-connection
