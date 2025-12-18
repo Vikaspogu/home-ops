@@ -8,13 +8,13 @@ applications:
     source:
       path: clusters/talos/apps/argo-system/argo-cd
 
-  # ab-cleanup-util:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/ab-cleanup-util
+  awx:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/awx-config
 
   actual:
     annotations:
@@ -80,21 +80,21 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 2Gi
 
-  donetick:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: default
-    source:
-      path: components/default/donetick
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: ceph-block
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: csi-ceph-blockpool
-          - name: VOLSYNC_CAPACITY
-            value: 4Gi
+  # donetick:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: default
+  #   source:
+  #     path: components/default/donetick
+  #     plugin:
+  #       env:
+  #         - name: STORAGE_CLASS
+  #           value: ceph-block
+  #         - name: VOLUME_SNAPSHOT_CLASS
+  #           value: csi-ceph-blockpool
+  #         - name: VOLSYNC_CAPACITY
+  #           value: 4Gi
 
   flaresolverr:
     annotations:
@@ -296,21 +296,21 @@ applications:
     source:
       path: components/default/piped
 
-  planka:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: default
-    source:
-      path: components/default/planka
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: ceph-block
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: csi-ceph-blockpool
-          - name: VOLSYNC_CAPACITY
-            value: 4Gi
+  # planka:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: default
+  #   source:
+  #     path: components/default/planka
+  #     plugin:
+  #       env:
+  #         - name: STORAGE_CLASS
+  #           value: ceph-block
+  #         - name: VOLUME_SNAPSHOT_CLASS
+  #           value: csi-ceph-blockpool
+  #         - name: VOLSYNC_CAPACITY
+  #           value: 4Gi
 
   radarr:
     annotations:
