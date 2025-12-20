@@ -1,45 +1,44 @@
+---
 autoDirectNodeRoutes: true
-bandwidthManager:
-  enabled: true
-  bbr: true
 bpf:
-  datapathMode: netkit
   masquerade: true
-  preallocateMaps: true
-  tproxy: true
-bpfClockProbe: true
-bgpControlPlane:
-  enabled: true
+  # Ref: https://github.com/siderolabs/talos/issues/10002
+  hostLegacyRouting: true
+cni:
+  # Required for pairing with Multus CNI
+  exclusive: false
 cgroup:
   automount:
     enabled: false
   hostRoot: /sys/fs/cgroup
-cni:
-  exclusive: false
+# NOTE: devices might need to be set if you have more than one active NIC on your hosts
+# devices: eno+ eth+
 dashboards:
   enabled: true
-devices: bond+
-enableIPv4BIGTCP: true
 endpointRoutes:
   enabled: true
 envoy:
-  enabled: false
+  rollOutPods: true
+  prometheus:
+    serviceMonitor:
+      enabled: true
+gatewayAPI:
+  enabled: true
 hubble:
   enabled: false
 ipam:
   mode: kubernetes
 ipv4NativeRoutingCIDR: "10.69.0.0/16"
 k8sServiceHost: 127.0.0.1
-k8sServicePort: 7445
+k8sServicePort: 6443
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
 l2announcements:
-  enabled: false
+  enabled: true
 loadBalancer:
   algorithm: maglev
-  mode: dsr
-localRedirectPolicies:
-  enabled: true
+  mode: "dsr"
+localRedirectPolicy: true
 operator:
   dashboards:
     enabled: true
@@ -47,10 +46,8 @@ operator:
     enabled: true
     serviceMonitor:
       enabled: true
-  replicas: 2
+  replicas: 1
   rollOutPods: true
-pmtuDiscovery:
-  enabled: true
 prometheus:
   enabled: true
   serviceMonitor:
@@ -79,5 +76,4 @@ securityContext:
       - SYS_ADMIN
       - SYS_RESOURCE
 socketLB:
-  enabled: true
   hostNamespaceOnly: true

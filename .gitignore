@@ -30,4 +30,3 @@ wiki
 **kubeconfig**
 .envrc
 .vscode
-bgp.conf
