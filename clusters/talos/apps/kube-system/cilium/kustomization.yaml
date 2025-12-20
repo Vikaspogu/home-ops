@@ -2,12 +2,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./networking.yaml
+  - ../../../../../components/kube-system/cilium
 
 helmCharts:
   - name: cilium
     releaseName: cilium
     namespace: kube-system
-    repo: oci://ghcr.io/home-operations/charts-mirror
+    repo: https://helm.cilium.io
     version: 1.18.5
     valuesFile: values.yaml
