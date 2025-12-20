@@ -8,6 +8,6 @@ helmCharts:
   - name: cilium
     releaseName: cilium
     namespace: kube-system
-    repo: https://helm.cilium.io
+    repo: oci://ghcr.io/home-operations/charts-mirror/cilium
     version: 1.18.5
     valuesFile: values.yaml
