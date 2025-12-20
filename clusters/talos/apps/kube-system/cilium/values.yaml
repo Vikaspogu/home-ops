@@ -18,7 +18,6 @@ cni:
   exclusive: false
 dashboards:
   enabled: true
-devices: en+
 enableIPv4BIGTCP: true
 endpointRoutes:
   enabled: true
