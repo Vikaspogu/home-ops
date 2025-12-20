@@ -11,3 +11,4 @@ helmCharts:
     repo: oci://ghcr.io/home-operations/charts-mirror
     version: 1.18.5
     valuesFile: values.yaml
+    includeCRDs: true
