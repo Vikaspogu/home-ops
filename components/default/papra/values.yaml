@@ -14,7 +14,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/papra-hq/papra
-          tag: 25.11.0-rootless
+          tag: 25.12.0-rootless
         env:
           TZ: America/New_York
           TRUSTED_ORIGINS: 'https://papra.${CLUSTER_DOMAIN}/'
