@@ -3,7 +3,7 @@ creation_rules:
   - path_regex: (components|clusters)/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData)$"
     age: >-
-      age1ulfhs490lug3kres5qm5kfdmpqmcrwsfsc03eln0s3xffndnrcwq5u86tt
+      age16ycyj229cr26sk80dxukkpwp9h64rtqdfqj4v9gy8h2dphljus3qphckza
 stores:
   yaml:
     indent: 2
