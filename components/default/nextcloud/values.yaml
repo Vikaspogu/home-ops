@@ -58,7 +58,7 @@ persistence:
   nextcloudData:
     enabled: true
     existingClaim: nextcloud
-    accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
 # this seems to be required for nextcloud initialization which takes a long time
 startupProbe:
   enabled: true
