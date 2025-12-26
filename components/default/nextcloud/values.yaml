@@ -54,7 +54,7 @@ ingress:
   enabled: false
 persistence:
   enabled: true
-  existingClaim: nextcloud-data
+  existingClaim: nextcloud
 # this seems to be required for nextcloud initialization which takes a long time
 startupProbe:
   enabled: true
