@@ -54,10 +54,11 @@ ingress:
   enabled: false
 persistence:
   enabled: true
-  existingClaim: nextcloud-config
+  existingClaim: nextcloud
   nextcloudData:
     enabled: true
     existingClaim: nextcloud
+    subPath: /var/www/html/nextcloud-data
     accessMode: ReadWriteOnce
 # this seems to be required for nextcloud initialization which takes a long time
 startupProbe:
