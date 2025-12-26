@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./externalsecret.yaml
+  - ./http-route.yaml
+components:
+  - ../../volsync-system/volsync-replication
+helmCharts:
+  - name: nextcloud
+    releaseName: nextcloud
+    namespace: default
+    repo: oci://ghcr.io/nextcloud/helm
+    version: "8.7.0"
+    valuesFile: values.yaml
