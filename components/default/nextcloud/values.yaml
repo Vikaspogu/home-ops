@@ -22,10 +22,6 @@ nextcloud:
   host: &host nextcloud.${CLUSTER_DOMAIN}
   mail:
     enabled: false
-  securityContext:
-    runAsUser: 1022
-    runAsGroup: 1022
-    runAsNonRoot: true
   configs:
     proxy.config.php: |-
       <?php
