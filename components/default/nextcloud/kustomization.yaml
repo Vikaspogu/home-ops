@@ -3,8 +3,8 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./http-route.yaml
-components:
-  - ../../volsync-system/volsync-replication
+  - ./pvc.yaml
+
 helmCharts:
   - name: nextcloud
     releaseName: nextcloud
