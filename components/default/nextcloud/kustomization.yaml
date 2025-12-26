@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./http-route.yaml
+  - ./pvc.yaml
 components:
   - ../../volsync-system/volsync-replication
 helmCharts:
