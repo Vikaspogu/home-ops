@@ -57,7 +57,6 @@ persistence:
   existingClaim: nextcloud
   nextcloudData:
     enabled: true
-    existingClaim: nextcloud
     subPath: nextcloud-data
     accessMode: ReadWriteOnce
 # this seems to be required for nextcloud initialization which takes a long time
