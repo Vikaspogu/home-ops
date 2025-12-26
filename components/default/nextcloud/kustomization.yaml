@@ -3,12 +3,12 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./http-route.yaml
-components:
-  - ../../volsync-system/volsync-replication
+  - ./pvc.yaml
+
 helmCharts:
   - name: nextcloud
     releaseName: nextcloud
     namespace: default
     repo: oci://ghcr.io/nextcloud/helm
-    version: "8.6.0"
+    version: "8.7.0"
     valuesFile: values.yaml
