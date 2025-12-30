@@ -1,0 +1,87 @@
+controllers:
+  romm:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18@sha256:866f15038ed5185a2b8118821f470bb7ca0df8c4231b8e277446e681ebb1ed84
+        envFrom: &envFrom
+          - secretRef:
+              name: romm-secret
+    containers:
+      app:
+        image:
+          repository: ghcr.io/rommapp/romm
+          tag: 4.5.0@sha256:79d2ab75ce6bdb8f0c7b1d8bb33a456566de5470d5d0e451fbc0919cc84679e8
+        env:
+          TZ: ${TIMEZONE}
+          DISABLE_DOWNLOAD_ENDPOINT_AUTH: true
+          ENABLE_SCHEDULED_RESCAN: true
+          SCHEDULED_RESCAN_CRON: "0 3 * * *"
+          ROMM_DB_DRIVER: postgresql
+          ROMM_PORT: &port 8080
+          REDIS_HOST: valkey.default.svc.cluster.local.
+          REDIS_PORT: 6379
+          REDIS_DB: 11
+          OIDC_ENABLED: true
+          OIDC_PROVIDER: Authentik
+          OIDC_REDIRECT_URI: https://romm.${CLUSTER_DOMAIN}/api/oauth/openid
+          OIDC_SERVER_APPLICATION_URL: https://id.${CLUSTER_DOMAIN}
+        envFrom: *envFrom
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 10m
+          limits:
+            memory: 3500Mi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+service:
+  app:
+    ports:
+      http:
+        port: *port
+persistence:
+  config:
+    type: configMap
+    name: romm-configmap
+    globalMounts:
+      - path: /romm/config/config.yml
+        subPath: config.yml
+        readOnly: true
+  data:
+    existingClaim: *app
+    advancedMounts:
+      romm:
+        app:
+          - path: /romm/resources
+            subPath: resources
+          - path: /romm/assets
+            subPath: assets
+  games:
+    type: nfs
+    server: omv-baymx.a113.internal
+    path: "/storage0/roms"
+    globalMounts:
+      - path: /romm/library
+  tmpfs:
+    type: emptyDir
+    advancedMounts:
+      romm:
+        app:
+          - path: /redis-data
+            subPath: redis-data
+          - path: /romm/config
+            subPath: config
+          - path: /tmp
+            subPath: tmp
