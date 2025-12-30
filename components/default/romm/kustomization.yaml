@@ -6,10 +6,12 @@ components:
 resources:
   - ./external-secret.yaml
   - ./http-route.yaml
+
 configMapGenerator:
   - files:
-      - resources/config.yaml=config.yml
+      - config.yml=./resources/config.yaml
     name: romm-configmap
+
 helmCharts:
   - name: app-template
     releaseName: romm

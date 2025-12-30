@@ -60,7 +60,7 @@ persistence:
         subPath: config.yml
         readOnly: true
   data:
-    existingClaim: *app
+    existingClaim: romm
     advancedMounts:
       romm:
         app:
