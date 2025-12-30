@@ -73,7 +73,7 @@ persistence:
     server: omv-baymx.a113.internal
     path: "/storage0/roms"
     globalMounts:
-      - path: /romm/library
+      - path: /romm/library/roms
   tmpfs:
     type: emptyDir
     advancedMounts:
