@@ -10,5 +10,5 @@ helmCharts:
     releaseName: kavita
     namespace: default
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "4.5.0"
+    version: "4.6.0"
     valuesFile: values.yaml
