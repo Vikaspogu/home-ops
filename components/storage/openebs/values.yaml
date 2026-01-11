@@ -1,18 +1,16 @@
 localpv-provisioner:
+  localpv:
+    image:
+      registry: quay.io/
   analytics:
     enabled: false
 
 openebs-crds:
   csi:
     volumeSnapshots:
-      enabled: false
+      enabled: true
 
 engines:
-  # Enabled engine by default: https://github.com/openebs/dynamic-localpv-provisioner
-  # Disable the following engines:
-  # lvm: https://github.com/openebs/lvm-localpv
-  # zfs: https://github.com/openebs/zfs-localpv
-  # mayastor: https://github.com/openebs/mayastor
   local:
     lvm:
       enabled: false
@@ -21,9 +19,21 @@ engines:
   replicated:
     mayastor:
       enabled: true
-      etcd:
+
+mayastor:
+  enabled: true
+  etcd:
+    replicaCount: 2
+  csi:
+    node:
+      initContainers:
         enabled: false
-      loki-stack:
-        enabled: false
-        promtail:
-          enabled: false
+  loki-stack:
+    enabled: false
+  obs:
+    callhome:
+      enabled: false
+
+preUpgradeHook:
+  image:
+    repo: openebs/kubectl

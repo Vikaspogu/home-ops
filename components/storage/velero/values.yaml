@@ -19,15 +19,15 @@ configuration:
     - name: default
       provider: aws
       bucket: "velero-backups"
-      prefix: "<<patch_me>>"
+      prefix: "cloudstack"
       config:
-        region: "us-east-1"
-        s3Url: ""
+        region: "garage"
+        s3Url: "https://s3.omv.a113.casa"
         s3ForcePathStyle: "true"
   volumeSnapshotLocation:
     - provider: aws
       config:
-        region: "us-east-1"
+        region: "garage"
 credentials:
     useSecret: true
     existingSecret: velero

@@ -10,3 +10,16 @@ helmCharts:
     repo: https://openebs.github.io/openebs
     version: 4.0.1
     valuesFile: values.yaml
+
+
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: "openebs/etcd:3.5.6-debian-11-r10"
+      - op: replace
+        path: /spec/template/spec/initContainers/0/image
+        value: "bitnamitest/bitnami-shell:11-debian-11-r118"
+    target:
+      kind: StatefulSet
+      name: openebs-etcd
