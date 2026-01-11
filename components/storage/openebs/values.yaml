@@ -20,4 +20,10 @@ engines:
       enabled: false
   replicated:
     mayastor:
-      enabled: false
+      enabled: true
+      etcd:
+        enabled: false
+      loki-stack:
+        enabled: false
+        promtail:
+          enabled: false
