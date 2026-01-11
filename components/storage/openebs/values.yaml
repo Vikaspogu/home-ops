@@ -1,10 +1,18 @@
-loki:
-  enabled: false
-minio:
-  enabled: false
-alloy:
-  enabled: false
+localpv-provisioner:
+  analytics:
+    enabled: false
+
+openebs-crds:
+  csi:
+    volumeSnapshots:
+      enabled: false
+
 engines:
+  # Enabled engine by default: https://github.com/openebs/dynamic-localpv-provisioner
+  # Disable the following engines:
+  # lvm: https://github.com/openebs/lvm-localpv
+  # zfs: https://github.com/openebs/zfs-localpv
+  # mayastor: https://github.com/openebs/mayastor
   local:
     lvm:
       enabled: false
@@ -13,16 +21,3 @@ engines:
   replicated:
     mayastor:
       enabled: false
-openebs-crds:
-  csi:
-    volumeSnapshots:
-      enabled: true
-localpv-provisioner:
-  localpv:
-    image:
-      registry: quay.io/
-  hostpathClass:
-    enabled: true
-    name: openebs-hostpath
-    isDefaultClass: false
-    basePath: /var/openebs/local
