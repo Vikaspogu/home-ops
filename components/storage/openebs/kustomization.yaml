@@ -6,6 +6,7 @@ namespace: storage
 resources:
   - diskpools.yaml
   - storageclass-replicated.yaml
+  - volumesnapshotclass.yaml
 
 helmCharts:
   - name: openebs
