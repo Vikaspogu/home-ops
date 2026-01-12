@@ -2,6 +2,19 @@ kubectl:
   image:
     repository: docker.io/bitnamilegacy/kubectl
 cleanUpCRDs: true
+
+# Enable Node Agent for File System Backup (required for PVC data backup)
+deployNodeAgent: true
+nodeAgent:
+  podVolumePath: /var/lib/kubelet/pods
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
 schedules:
   full-cluster-backup:
       disabled: false
@@ -14,6 +27,8 @@ schedules:
           storageLocation: default
           includedNamespaces:
           - "*"
+          # Enable file system backup for all volumes by default
+          defaultVolumesToFsBackup: true
 configuration:
   backupStorageLocation:
     - name: default

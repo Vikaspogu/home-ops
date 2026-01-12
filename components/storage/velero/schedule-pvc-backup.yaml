@@ -17,5 +17,7 @@ spec:
     includedResources:
     - persistentvolumeclaims
     - persistentvolumes
-    snapshotVolumes: true
-
+    - pods  # Required for FSB to identify volume mounts
+    # Enable File System Backup to capture actual PVC data
+    defaultVolumesToFsBackup: true
+    snapshotVolumes: false  # Use FSB instead of snapshots
