@@ -1,0 +1,51 @@
+---
+# Restore specific PVC(s) by name from a backup
+# Usage: kubectl apply -f restore-pvc-by-name.yaml
+# Modify: backupName, includedNamespaces, and labelSelectors as needed
+apiVersion: velero.io/v1
+kind: Restore
+metadata:
+  name: restore-pvc-by-name
+  namespace: storage
+spec:
+  # Name of the backup to restore from (required)
+  # Find backups: kubectl get backups -n storage
+  backupName: pvc-backup-YYYYMMDDHHMMSS
+  
+  # Namespace(s) to restore to
+  includedNamespaces:
+  - default
+  
+  # Only restore PVC resources
+  includedResources:
+  - persistentvolumeclaims
+  - persistentvolumes
+  
+  # Restore specific PVC(s) by name using label selector
+  # Option 1: Use orLabelSelectors to match specific PVC names
+  # Add label to your PVCs: kubectl label pvc <pvc-name> velero.io/restore-target=true
+  orLabelSelectors:
+  - matchLabels:
+      velero.io/restore-target: "true"
+  
+  # Option 2: Use resourceSelector for exact PVC name matching (Velero 1.12+)
+  # Uncomment below and comment out orLabelSelectors above
+  # itemOperationTimeout: 4h
+  # resourceSelector:
+  #   includedResources:
+  #   - persistentvolumeclaims
+  #   resourceFilters:
+  #   - name: my-specific-pvc
+  #     namespace: default
+  
+  # Preserve original node affinity
+  restorePVs: true
+  
+  # Policy for handling existing resources
+  # - none: skip if exists
+  # - update: patch existing
+  existingResourcePolicy: none
+  
+  # Preserve the original storage class
+  preserveNodePorts: true
+
