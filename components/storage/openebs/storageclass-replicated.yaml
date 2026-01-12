@@ -1,0 +1,23 @@
+---
+# Replicated StorageClass for Mayastor
+# Replication factor 2 = data replicated across both worker nodes
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mayastor-replicated
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: io.openebs.csi-mayastor
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  # Number of replicas (max = number of DiskPools/nodes)
+  repl: "2"
+  # Thin provisioning
+  thin: "true"
+  # Protocol: nvmf (NVMe over Fabrics) for best performance
+  protocol: nvmf
+  # Optional: specify disk pool topology
+  # ioTimeout: "30"
+  # fsType: ext4
+

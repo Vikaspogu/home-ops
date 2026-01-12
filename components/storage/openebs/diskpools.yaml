@@ -1,0 +1,31 @@
+---
+# DiskPool for Worker Node 1
+# Prerequisite: Identify the block device on each node using:
+#   lsblk -o NAME,SIZE,MODEL,SERIAL,WWN
+#   ls -la /dev/disk/by-id/
+apiVersion: openebs.io/v1beta2
+kind: DiskPool
+metadata:
+  name: pool-worker-1
+  namespace: storage
+spec:
+  # Replace with your actual worker node name
+  node: worker-1
+  # Use persistent device path (recommended)
+  # Example: /dev/disk/by-id/scsi-SATA_Samsung_SSD_xxx
+  disks:
+    - /dev/disk/by-id/<device-id-worker-1>
+---
+# DiskPool for Worker Node 2
+apiVersion: openebs.io/v1beta2
+kind: DiskPool
+metadata:
+  name: pool-worker-2
+  namespace: storage
+spec:
+  # Replace with your actual worker node name
+  node: worker-2
+  # Use persistent device path (recommended)
+  disks:
+    - /dev/disk/by-id/<device-id-worker-2>
+

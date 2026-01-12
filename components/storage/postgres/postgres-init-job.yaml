@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-init-db
+spec:
+  template:
+    spec:
+      containers:
+      - name: postgres-client
+        image: docker.io/bitnami/postgresql:latest
+        command:
+        - /bin/bash
+        - -c
+        - |
+          export PGPASSWORD="${POSTGRES_PASSWORD}"
+          psql -h ${POSTGRES_HOST} -U postgres -d postgres -f /scripts/init-db.sql
+        env:
+        - name: POSTGRES_HOST
+          value: "my-postgres-postgresql"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-postgres-postgresql
+              key: postgres-password
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+      volumes:
+      - name: scripts
+        configMap:
+          name: postgres-init-script
+      restartPolicy: OnFailure
