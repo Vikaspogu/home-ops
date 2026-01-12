@@ -2,18 +2,18 @@
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
-  name: pvc-backup
+  name: storage-namespace-pvc
   namespace: storage
   labels:
     backup_type: pvc_only
 spec:
-  schedule: "0 */6 * * *"  # Every 6 hours
+  schedule: "*/30 * * * *"  # Every 30min
   useOwnerReferencesInBackup: false
   template:
-    ttl: 720h  # 30 days retention
+    ttl: 24h  # 30 days retention
     storageLocation: default
     includedNamespaces:
-    - default
+      - storage
     includedResources:
     - persistentvolumeclaims
     - persistentvolumes
