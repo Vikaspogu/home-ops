@@ -50,7 +50,6 @@ configuration:
   volumeSnapshotLocation:
     - name: default
       provider: csi
-  # Enable CSI snapshot feature
   features: EnableCSI
 credentials:
   useSecret: true

@@ -1,41 +1,16 @@
 ---
-# Restore all PVCs from a specific namespace backup
-# Usage: kubectl apply -f restore-pvc-namespace.yaml
-#
-# IMPORTANT: For data to be restored, the backup must have been created with
-# File System Backup (FSB) enabled (defaultVolumesToFsBackup: true)
-#
-# If restoring to the SAME namespace where PVCs already exist:
-#   1. Delete the existing PVCs first, OR
-#   2. Restore to a different namespace using namespaceMapping
 apiVersion: velero.io/v1
 kind: Restore
 metadata:
-  name: restore-pvc-namespace
-  namespace: storage
+  name: restore-default-pvcs
+  namespace: default
 spec:
-  # Name of the backup to restore from (required)
-  # Find backups: kubectl get backups -n storage
-  backupName: pvc-backup-YYYYMMDDHHMMSS
-
-  # Namespace(s) to restore
+  backupName: default-namespace-pvc-20260112203021
   includedNamespaces:
   - default
-
-  # Resources to restore (pods needed for FSB data restore)
   includedResources:
   - persistentvolumeclaims
   - persistentvolumes
   - pods
-
-  # Restore the actual volume data from FSB
   restorePVs: true
-
-  # Policy for handling existing resources
-  # Options: none (skip existing), update (patch existing)
   existingResourcePolicy: none
-
-  # Optional: Restore to a different namespace
-  # namespaceMapping:
-  #   default: default-restored
-

@@ -2,8 +2,8 @@
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
-  name: storage-namespace-pvc
-  namespace: storage
+  name: default-namespace-pvc
+  namespace: default
   labels:
     backup_type: pvc_only
 spec:
@@ -13,7 +13,7 @@ spec:
     ttl: 24h  # 30 days retention
     storageLocation: default
     includedNamespaces:
-      - storage
+      - default
     includedResources:
     - persistentvolumeclaims
     - persistentvolumes
