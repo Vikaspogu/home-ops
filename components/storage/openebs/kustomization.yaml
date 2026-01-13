@@ -13,7 +13,7 @@ helmCharts:
     releaseName: openebs
     namespace: storage
     repo: https://openebs.github.io/openebs
-    version: 4.0.1
+    version: 4.4.0
     valuesFile: values.yaml
 
 
