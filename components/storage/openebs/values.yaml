@@ -8,7 +8,7 @@ localpv-provisioner:
 openebs-crds:
   csi:
     volumeSnapshots:
-      enabled: true
+      enabled: false
 
 engines:
   local:
@@ -18,10 +18,10 @@ engines:
       enabled: false
   replicated:
     mayastor:
-      enabled: true
+      enabled: false
 
 mayastor:
-  enabled: true
+  enabled: false
   etcd:
     replicaCount: 2
   csi:

@@ -1,0 +1,106 @@
+---
+# CRDs installed separately with server-side apply due to size limits
+crds:
+  install: false
+
+serviceMonitor:
+  enabled: false
+
+# Disable PodDisruptionBudget (uses deprecated policy/v1beta1 in older charts)
+podDisruptionBudget:
+  enabled: false
+
+backgroundController:
+  podDisruptionBudget:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+  rbac:
+    clusterRole:
+      extraResources:
+        - apiGroups:
+            - ""
+          resources:
+            - pods
+            - ingresses
+            - services
+            - namespaces
+            - configmaps
+            - jobs
+          verbs:
+            - create
+            - update
+            - patch
+            - delete
+            - get
+            - list
+        - apiGroups:
+            - "batch/v1"
+          resources:
+            - cronjobs
+          verbs:
+            - create
+            - update
+            - patch
+            - delete
+            - get
+            - list
+cleanupController:
+  podDisruptionBudget:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+reportsController:
+  podDisruptionBudget:
+    enabled: false
+  serviceMonitor:
+    enabled: false
+admissionController:
+  podDisruptionBudget:
+    enabled: false
+  metricsService:
+    create: false
+  rbac:
+    clusterRole:
+      extraResources:
+        - apiGroups:
+            - ""
+          resources:
+            - pods
+            - namespaces
+            - services
+            - ingresses
+          verbs:
+            - create
+            - update
+            - delete
+  replicas: 3
+  serviceMonitor:
+    enabled: false
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/instance: kyverno
+          app.kubernetes.io/component: kyverno
+resources:
+  requests:
+    cpu: 92m
+    memory: 246M
+
+# Cleanup cronjobs to prevent internal resources from stacking up in the cluster
+cleanupJobs:
+
+  admissionReports:
+    enabled: true
+    threshold: 5000 # Default is 10k
+
+  clusterAdmissionReports:
+    enabled: true
+    threshold: 5000 # Default is 10k

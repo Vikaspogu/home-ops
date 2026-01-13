@@ -6,7 +6,7 @@ metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
 provisioner: io.openebs.csi-mayastor
-volumeBindingMode: WaitForFirstConsumer
+volumeBindingMode: Immediate
 allowVolumeExpansion: true
 parameters:
   repl: "2"

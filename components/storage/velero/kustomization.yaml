@@ -10,3 +10,17 @@ helmCharts:
     repo: https://vmware-tanzu.github.io/helm-charts/
     version: v8.3.0
     valuesFile: values.yaml
+
+patches:
+  - patch: |
+      - op: replace
+        path: /spec/template/spec/dnsPolicy
+        value: "None"
+      - op: replace
+        path: /spec/template/spec/dnsConfig
+        value:
+          nameservers:
+            - 10.30.0.1
+    target:
+      kind: DaemonSet
+      name: node-agent

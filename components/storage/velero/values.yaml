@@ -1,6 +1,7 @@
 kubectl:
   image:
     repository: docker.io/bitnamilegacy/kubectl
+    tag: 1.33.4-debian-12-r0
 cleanUpCRDs: true
 
 # Enable Node Agent for File System Backup (required for PVC data backup)
@@ -14,11 +15,6 @@ nodeAgent:
     limits:
       cpu: 1000m
       memory: 1Gi
-  # DNS config for node-agent to resolve S3 endpoint
-  dnsPolicy: "None"
-  dnsConfig:
-    nameservers:
-      - 10.30.0.1
 
 schedules:
   full-cluster-backup:
@@ -33,10 +29,12 @@ schedules:
           includedNamespaces:
           - "*"
           defaultVolumesToFsBackup: true
+
 dnsPolicy: "None"
 dnsConfig:
   nameservers:
     - 10.30.0.1
+
 configuration:
   backupStorageLocation:
     - name: default
@@ -47,13 +45,13 @@ configuration:
         region: "garage"
         s3Url: "https://s3.omv.a113.casa"
         s3ForcePathStyle: "true"
-  volumeSnapshotLocation:
-    - name: default
-      provider: csi
-  features: EnableCSI
+  volumeSnapshotLocation: []
+  defaultVolumesToFsBackup: false
+
 credentials:
   useSecret: true
   existingSecret: velero
+
 initContainers:
   - name: velero-plugin-for-aws
     image: velero/velero-plugin-for-aws:v1.9.0
