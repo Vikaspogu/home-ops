@@ -1,23 +1,26 @@
 ---
+# Example Velero Schedule for PVC backups
+# This matches the settings from velero-backup-pvcs.sh script
+# Note: Kyverno policy auto-generates these for namespaces with label velero-backup-pvc=true
 apiVersion: velero.io/v1
 kind: Schedule
 metadata:
   name: default-namespace-pvc
-  namespace: default
+  namespace: storage
   labels:
-    backup_type: pvc_only
+    backup_type: pvc_fsb
 spec:
-  schedule: "*/30 * * * *"  # Every 30min
+  # Run backup every 6 hours
+  schedule: "0 */6 * * *"
   useOwnerReferencesInBackup: false
   template:
-    ttl: 24h  # 30 days retention
+    # 2 days retention
+    ttl: 48h
+    # Storage location (matches velero-backup-pvcs.sh default: BACKUP_STORAGE_LOCATION=default)
     storageLocation: default
+    # Backup all resources in the namespace
     includedNamespaces:
       - default
-    includedResources:
-    - persistentvolumeclaims
-    - persistentvolumes
-    - pods  # Required for FSB to identify volume mounts
     # Enable File System Backup to capture actual PVC data
+    # This is the key setting from: --default-volumes-to-fs-backup=true
     defaultVolumesToFsBackup: true
-    snapshotVolumes: false  # Use FSB instead of snapshots

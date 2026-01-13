@@ -1,0 +1,56 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: generate-velero-pvc-backup-schedule
+  annotations:
+    policies.kyverno.io/title: Generate Velero PVC Backup Schedule
+    policies.kyverno.io/category: Velero
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: PersistentVolumeClaim, Schedule
+    kyverno.io/kyverno-version: 1.9.2
+    kyverno.io/kubernetes-version: "1.25"
+    policies.kyverno.io/description: >-
+      Automatically creates a Velero Schedule to backup all resources in a namespace
+      when a PVC is created in a namespace with the label `velero-backup-pvc=true`.
+      Uses File System Backup (FSB) to capture actual volume data.
+      Creates one Schedule per namespace. When the PVC is deleted, the Schedule is also deleted.
+spec:
+  rules:
+  - name: create-velero-schedule-for-namespace
+    match:
+      any:
+      - resources:
+          kinds:
+          - PersistentVolumeClaim
+          namespaceSelector:
+            matchLabels:
+              velero-backup-pvc: "true"
+    generate:
+      generateExisting: true
+      apiVersion: velero.io/v1
+      kind: Schedule
+      name: "pvc-backup-{{request.namespace}}"
+      namespace: storage
+      # Synchronize ensures the Schedule is deleted when the triggering PVC is deleted
+      synchronize: true
+      data:
+        metadata:
+          labels:
+            backup_type: pvc_fsb
+            source-namespace: "{{request.namespace}}"
+            managed-by: kyverno
+        spec:
+          # Run backup every 6 hours
+          schedule: "0 */6 * * *"
+          useOwnerReferencesInBackup: false
+          template:
+            # 2 days retention
+            ttl: 48h
+            storageLocation: default
+            # Backup all resources in the namespace (matches script behavior)
+            includedNamespaces:
+            - "{{request.namespace}}"
+            # Enable File System Backup to capture actual PVC data
+            # This is the key setting from: --default-volumes-to-fs-backup=true
+            defaultVolumesToFsBackup: true

@@ -4,3 +4,4 @@ kind: Kustomization
 namespace: kyverno
 resources:
   - velero-backup-policy.yaml
+  - velero-pvc-schedule-policy.yaml
