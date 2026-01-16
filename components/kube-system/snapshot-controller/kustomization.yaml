@@ -8,5 +8,5 @@ helmCharts:
     namespace: kube-system
     includeCRDs: true
     repo: oci://ghcr.io/piraeusdatastore/helm-charts
-    version: 4.2.0
+    version: 5.0.1
     valuesFile: values.yaml
