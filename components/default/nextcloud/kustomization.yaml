@@ -11,5 +11,5 @@ helmCharts:
     releaseName: nextcloud
     namespace: default
     repo: oci://ghcr.io/nextcloud/helm
-    version: "8.8.1"
+    version: "8.8.2"
     valuesFile: values.yaml
