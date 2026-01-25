@@ -4,6 +4,8 @@ monitoring:
   createPrometheusRules: true
 toolbox:
   enabled: true
+cephImage:
+  imagePullPolicy: IfNotPresent
 cephClusterSpec:
   cephConfig:
     global:
