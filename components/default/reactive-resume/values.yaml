@@ -27,7 +27,7 @@ controllers:
       app:
         image:
           repository: amruthpillai/reactive-resume
-          tag: v5.0.5@sha256:a45d52250cc1d754cfbf56bae6e3be1ac0c045bea852aa29bfe47023178f1e9a
+          tag: v5.0.5@sha256:c92a23eb45ce6813260c5f24501e793ed04d2a9fade3ad0b2801dfc86b786c32
         env:
           PORT: &port 8080
           NODE_ENV: production
