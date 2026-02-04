@@ -14,7 +14,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/jordan-dalby/bytestash
-          tag: 1.5.10
+          tag: 1.5.11
         env:
           TZ: "America/New_York"
           TOKEN_EXPIRY: 24h
