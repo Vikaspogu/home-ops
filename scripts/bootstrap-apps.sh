@@ -184,7 +184,7 @@ function setup_argo_cd() {
         log error "Failed to apply environment variables secret" "secret=environment-variables"
     fi
 
-    if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone  --helm-command /opt/homebrew/opt/helm@3/bin/helm | envsubst | kubectl apply -f- &>/dev/null; then
+    if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone  --helm-command /opt/homebrew/opt/helm@3/bin/helm | envsubst | kubectl apply -f- --server-side --force-conflicts &>/dev/null; then
         log error "Failed to apply Argo CD"
     fi
 
