@@ -19,10 +19,8 @@ spec:
       enabled: false
     tls: external
     agentTLSMode: "system-store"
-    global:
-      cattle:
-        systemUpgradeController:
-          enabled: false
-    fleet: |-
-      gitops:
-        enabled: false
+    extraEnv:
+      - name: CATTLE_FEATURES
+        value: "fleet=false"
+      - name: CATTLE_SYSTEM_UPGRADE_CONTROLLER_ENABLED
+        value: "false"
