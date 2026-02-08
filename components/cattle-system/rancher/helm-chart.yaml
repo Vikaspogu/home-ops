@@ -22,7 +22,7 @@ spec:
     global:
       cattle:
         systemUpgradeController:
-          enabled; false
-    fleet:
+          enabled: false
+    fleet: |-
       gitops:
         enabled: false
