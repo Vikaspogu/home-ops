@@ -95,6 +95,15 @@ applications:
             value: longhorn
           - name: VOLSYNC_CAPACITY
             value: 10Gi
+
+  rancher:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: cattle-system
+    source:
+      path: components/cattle-system/rancher
+
   valkey:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
