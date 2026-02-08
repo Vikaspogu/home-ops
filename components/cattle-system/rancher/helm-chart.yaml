@@ -19,3 +19,10 @@ spec:
       enabled: false
     tls: external
     agentTLSMode: "system-store"
+    global:
+      cattle:
+        systemUpgradeController:
+          enabled; false
+    fleet:
+      gitops:
+        enabled: false
