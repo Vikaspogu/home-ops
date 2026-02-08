@@ -21,6 +21,4 @@ spec:
     agentTLSMode: "system-store"
     extraEnv:
       - name: CATTLE_FEATURES
-        value: "fleet=false"
-      - name: CATTLE_SYSTEM_UPGRADE_CONTROLLER_ENABLED
-        value: "false"
+        value: "fleet=false,managed-system-upgrade-controller=false"
