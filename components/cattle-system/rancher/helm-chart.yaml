@@ -14,7 +14,7 @@ spec:
   valuesContent: |-
     hostname: "rancher.${CLUSTER_DOMAIN}"
     replicas: 1
-    rancherImageTag: v2.12-head@sha256:55d6e2fe1fb13408398dc03028693b62f7c3e885433e656edc70611fa7e302c8
+    rancherImageTag: v2.13-head@sha256:91fdf32dd742b0a400fc5198811beb4ac8aa32c84d52f89a40a8d52a497e93e7
     ingress:
       enabled: false
     tls: external
