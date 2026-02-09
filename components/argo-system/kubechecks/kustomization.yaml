@@ -11,5 +11,5 @@ helmCharts:
     releaseName: kubechecks
     namespace: argo-system
     repo: https://zapier.github.io/kubechecks/
-    version: "0.5.6"
+    version: "3.0.0"
     valuesFile: values.yaml
