@@ -39,7 +39,7 @@ deployment:
   image:
     pullPolicy: Always
     name: "ghcr.io/zapier/kubechecks"
-    tag: "v2.5.2"
+    tag: "v3.0.0-rc1"
   env: []
   envFrom:
     - secretRef:
