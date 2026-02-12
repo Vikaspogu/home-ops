@@ -16,9 +16,9 @@ data:
       fetch_timeout: 5s
       fetch_interval: 2s
       labels:
-        - "ubuntu-latest:docker://node:20-bookworm"
-        - "ubuntu-22.04:docker://node:20-bookworm"
-        - "ubuntu-24.04:docker://ubuntu:24.04"
+        - "ubuntu-latest:docker://catthehacker/ubuntu:act-latest"
+        - "ubuntu-22.04:docker://catthehacker/ubuntu:act-22.04"
+        - "ubuntu-24.04:docker://catthehacker/ubuntu:act-24.04"
 
     cache:
       enabled: true

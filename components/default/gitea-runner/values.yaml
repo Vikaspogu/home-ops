@@ -22,7 +22,7 @@ controllers:
         env:
           DOCKER_HOST: tcp://localhost:2375
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
-          GITEA_RUNNER_LABELS: "ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm"
+          GITEA_RUNNER_LABELS: "ubuntu-latest:docker://catthehacker/ubuntu:act-latest,ubuntu-22.04:docker://catthehacker/ubuntu:act-22.04"
           CONFIG_FILE: /config/config.yaml
         envFrom:
           - secretRef:
