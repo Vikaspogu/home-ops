@@ -15,6 +15,10 @@ data:
       insecure: false
       fetch_timeout: 5s
       fetch_interval: 2s
+      labels:
+        - "ubuntu-latest:docker://node:20-bookworm"
+        - "ubuntu-22.04:docker://node:20-bookworm"
+        - "ubuntu-24.04:docker://ubuntu:24.04"
 
     cache:
       enabled: true

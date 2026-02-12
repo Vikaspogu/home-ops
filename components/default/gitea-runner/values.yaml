@@ -29,6 +29,7 @@ controllers:
           DOCKER_TLS_VERIFY: "1"
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
           GITEA_RUNNER_LABELS: "ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm"
+          CONFIG_FILE: /config/config.yaml
         envFrom:
           - secretRef:
               name: gitea-runner-secret
@@ -59,6 +60,13 @@ persistence:
     type: emptyDir
     globalMounts:
       - path: /certs
+  config:
+    enabled: true
+    type: configMap
+    name: gitea-runner-config
+    globalMounts:
+      - path: /config
+        readOnly: true
   data:
     enabled: true
     existingClaim: gitea-runner
