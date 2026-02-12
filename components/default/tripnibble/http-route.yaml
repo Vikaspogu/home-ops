@@ -12,5 +12,5 @@ spec:
     - "tripnibble.${CLUSTER_DOMAIN}"
   rules:
     - backendRefs:
-        - name: tripnibble-app
-          port: 3000
+        - name: tripnibble-chainlit
+          port: 7001
