@@ -25,7 +25,10 @@ data:
       dir: /data/cache
 
     container:
-      network: ""
+      network: host
       privileged: false
-      docker_host: ""
+      docker_host: tcp://localhost:2375
       force_pull: false
+      options: --init
+      valid_volumes:
+        - /var/run/docker.sock
