@@ -13,17 +13,24 @@ controllers:
         command:
           - sh
           - -c
-          - "while ! nc -z localhost 2376 </dev/null; do echo 'waiting for docker daemon...'; sleep 5; done; /sbin/tini -- run.sh"
+          - |
+            while ! test -f /certs/client/ca.pem; do
+              echo 'waiting for docker certs...'
+              sleep 5
+            done
+            while ! nc -z localhost 2376 </dev/null; do
+              echo 'waiting for docker daemon...'
+              sleep 5
+            done
+            /sbin/tini -- run.sh
         env:
           DOCKER_HOST: tcp://localhost:2376
           DOCKER_CERT_PATH: /certs/client
           DOCKER_TLS_VERIFY: "1"
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
-          GITEA_RUNNER_REGISTRATION_TOKEN:
-            valueFrom:
-              secretKeyRef:
-                name: gitea-runner-secret
-                key: GITEA_RUNNER_REGISTRATION_TOKEN
+        envFrom:
+          - secretRef:
+              name: gitea-runner-secret
         resources:
           requests:
             cpu: 10m
