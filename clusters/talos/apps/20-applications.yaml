@@ -368,6 +368,14 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 4Gi
 
+  tripnibble:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/tripnibble
+
   valetudopng:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
