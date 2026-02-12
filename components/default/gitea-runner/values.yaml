@@ -5,6 +5,8 @@ controllers:
     strategy: RollingUpdate
     annotations:
       reloader.stakater.com/auto: "true"
+    serviceAccount:
+      identifier: gitea-runner
     containers:
       app:
         image:
@@ -37,8 +39,7 @@ controllers:
         fsGroupChangePolicy: OnRootMismatch
 
 serviceAccount:
-  create: true
-  name: gitea-runner
+  gitea-runner: {}
 
 persistence:
   config:
