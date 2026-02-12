@@ -1,0 +1,28 @@
+---
+controllers:
+  app:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/tripnibble
+          tag: 4a54f1187475b95f3ae0aac4b4c7c1d7c3bbd59d
+        env:
+          TZ: America/New_York
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+    pod:
+      imagePullSecrets:
+        - name: tripnibble-registry-secret
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: 3000
