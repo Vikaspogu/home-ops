@@ -15,7 +15,7 @@ controllers:
         env:
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
           GITEA_RUNNER_NAME: "k8s-runner"
-          GITEA_RUNNER_LABELS: "kubernetes:docker://node:20-bookworm,ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm"
+          GITEA_RUNNER_LABELS: "kubernetes:kubernetes,ubuntu-latest:kubernetes"
           CONFIG_FILE: /config/config.yaml
         envFrom:
           - secretRef:

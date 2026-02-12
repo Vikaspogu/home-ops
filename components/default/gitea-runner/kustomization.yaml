@@ -6,6 +6,7 @@ components:
 resources:
   - ./external-secret.yaml
   - ./configmap.yaml
+  - ./rbac.yaml
 
 helmCharts:
   - name: app-template

@@ -15,16 +15,19 @@ data:
       insecure: false
       fetch_timeout: 5s
       fetch_interval: 2s
+      labels:
+        - "kubernetes:kubernetes"
+        - "ubuntu-latest:kubernetes"
 
     cache:
-      enabled: true
-      dir: /data/cache
+      enabled: false
 
     container:
-      network: ""
-      privileged: false
-      options:
-      workdir_parent:
-      valid_volumes: []
-      docker_host: ""
-      force_pull: false
+      backend: kubernetes
+      kubernetes:
+        namespace: default
+        container_spec:
+          securityContext:
+            runAsNonRoot: false
+        volumes: []
+        pull_policy: IfNotPresent
