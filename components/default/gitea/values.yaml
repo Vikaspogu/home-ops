@@ -21,6 +21,7 @@ controllers:
           USER_UID: 1000
           USER_GID: 1000
           GITEA__ACTIONS__ENABLED: "True"
+          GITEA__PACKAGES__ENABLED: "True"
           GITEA__database__DB_TYPE: "postgres"
           GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
           GITEA__REPOSITORY__DEFAULT_BRANCH: "main"
