@@ -5,50 +5,52 @@ controllers:
     strategy: RollingUpdate
     annotations:
       reloader.stakater.com/auto: "true"
-    serviceAccount:
-      identifier: gitea-runner
     containers:
-      app:
+      runner:
         image:
           repository: gitea/act_runner
-          tag: 0.2.11
+          tag: nightly
+        command:
+          - sh
+          - -c
+          - "while ! nc -z localhost 2376 </dev/null; do echo 'waiting for docker daemon...'; sleep 5; done; /sbin/tini -- run.sh"
         env:
+          DOCKER_HOST: tcp://localhost:2376
+          DOCKER_CERT_PATH: /certs/client
+          DOCKER_TLS_VERIFY: "1"
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
-          GITEA_RUNNER_NAME: "k8s-runner"
-          GITEA_RUNNER_LABELS: "kubernetes:kubernetes,ubuntu-latest:kubernetes"
-          CONFIG_FILE: /config/config.yaml
-        envFrom:
-          - secretRef:
-              name: gitea-runner-secret
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          capabilities: { drop: ["ALL"] }
+          GITEA_RUNNER_REGISTRATION_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: gitea-runner-secret
+                key: GITEA_RUNNER_REGISTRATION_TOKEN
         resources:
           requests:
             cpu: 10m
             memory: 128Mi
           limits:
             memory: 512Mi
-    pod:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        runAsNonRoot: true
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
-
-serviceAccount:
-  gitea-runner: {}
+      daemon:
+        image:
+          repository: docker
+          tag: 27-dind
+        env:
+          DOCKER_TLS_CERTDIR: /certs
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 2Gi
 
 persistence:
-  config:
+  docker-certs:
     enabled: true
-    type: configMap
-    name: gitea-runner-config
+    type: emptyDir
     globalMounts:
-      - path: /config
-        readOnly: true
+      - path: /certs
   data:
     enabled: true
     existingClaim: gitea-runner
