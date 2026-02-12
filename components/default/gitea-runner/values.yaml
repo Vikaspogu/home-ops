@@ -9,7 +9,7 @@ controllers:
       app:
         image:
           repository: gitea/act_runner
-          tag: 0.2.11
+          tag: 0.2.13
         env:
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
           GITEA_RUNNER_NAME: "k8s-runner"
