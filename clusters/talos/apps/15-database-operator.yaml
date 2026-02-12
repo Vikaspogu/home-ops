@@ -16,10 +16,4 @@ applications:
     source:
       path: components/default/barman-cloud
 
-  awx-operator:
-    annotations:
-      argocd.argoproj.io/sync-wave: "15"
-    destination:
-      namespace: default
-    source:
-      path: components/default/awx
+

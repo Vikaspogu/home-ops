@@ -1,14 +1,15 @@
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources:
-  - ./http-route.yaml
-  - ./external-secret.yaml
 components:
   - ../../volsync-system/volsync-replication
+resources:
+  - ./external-secret.yaml
+  - ./configmap.yaml
 
 helmCharts:
   - name: app-template
-    releaseName: zot
+    releaseName: gitea-runner
     namespace: default
     repo: oci://ghcr.io/bjw-s-labs/helm
     version: "4.6.2"
