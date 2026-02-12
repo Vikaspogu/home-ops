@@ -28,6 +28,7 @@ controllers:
           DOCKER_CERT_PATH: /certs/client
           DOCKER_TLS_VERIFY: "1"
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
+          GITEA_RUNNER_LABELS: "ubuntu-latest:docker://node:20-bookworm,ubuntu-22.04:docker://node:20-bookworm"
         envFrom:
           - secretRef:
               name: gitea-runner-secret
