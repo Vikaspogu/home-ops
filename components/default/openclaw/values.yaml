@@ -1,0 +1,80 @@
+---
+controllers:
+  app:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/openclaw/openclaw
+          tag: 2026.2.12
+        env:
+          TZ: "America/New_York"
+          # Skills environment variables from secret
+        envFrom:
+          - secretRef:
+              name: openclaw-secret
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 18789
+              initialDelaySeconds: 30
+              periodSeconds: 10
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 18789
+              initialDelaySeconds: 10
+              periodSeconds: 5
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 18789
+              initialDelaySeconds: 5
+              failureThreshold: 30
+              periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+
+service:
+  app:
+    ports:
+      http:
+        port: 18789
+
+persistence:
+  # Main data directory (~/.openclaw)
+  data:
+    enabled: true
+    existingClaim: openclaw
+    globalMounts:
+      - path: /home/openclaw/.openclaw
+  # Mount config.json from secret
+  config:
+    enabled: true
+    type: secret
+    name: openclaw-config-json
+    globalMounts:
+      - path: /home/openclaw/.openclaw/config.json
+        subPath: config.json
+        readOnly: true
