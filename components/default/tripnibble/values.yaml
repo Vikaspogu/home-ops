@@ -1,10 +1,10 @@
 ---
 controllers:
-  app:
+  nat:
     annotations:
       reloader.stakater.com/auto: "true"
     containers:
-      nat:
+      main:
         image:
           repository: gitea.omv.a113.casa/vpogu/tripnibble
           tag: 4a54f1187475b95f3ae0aac4b4c7c1d7c3bbd59d
@@ -19,7 +19,14 @@ controllers:
             memory: 512Mi
           limits:
             memory: 2Gi
-      chainlit:
+    pod:
+      imagePullSecrets:
+        - name: tripnibble-registry-secret
+  chainlit:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      main:
         image:
           repository: gitea.omv.a113.casa/vpogu/tripnibble
           tag: 4a54f1187475b95f3ae0aac4b4c7c1d7c3bbd59d
@@ -33,6 +40,7 @@ controllers:
           - "7001"
         env:
           TZ: America/New_York
+          NAT_API_URL: http://tripnibble-nat.default.svc.local:8000
         resources:
           requests:
             cpu: 100m
@@ -44,10 +52,13 @@ controllers:
         - name: tripnibble-registry-secret
 
 service:
-  app:
-    controller: app
+  nat:
+    controller: nat
     ports:
-      nat:
+      http:
         port: 8000
-      chainlit:
+  chainlit:
+    controller: chainlit
+    ports:
+      http:
         port: 7001
