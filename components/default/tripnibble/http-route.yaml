@@ -10,10 +10,11 @@ metadata:
     gethomepage.dev/href: "https://tripnibble.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/typebot.svg
 spec:
   parentRefs:
-    - name: internal
-      namespace: network
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
   hostnames:
     - "tripnibble.${CLUSTER_DOMAIN}"
