@@ -26,7 +26,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /health
+                path: /
                 port: 18789
               initialDelaySeconds: 30
               periodSeconds: 10
@@ -35,7 +35,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /health
+                path: /
                 port: 18789
               initialDelaySeconds: 10
               periodSeconds: 5
@@ -44,7 +44,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /health
+                path: /
                 port: 18789
               initialDelaySeconds: 5
               failureThreshold: 30
