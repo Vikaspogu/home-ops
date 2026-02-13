@@ -1,0 +1,34 @@
+---
+cluster:
+  enabled: false
+
+standalone:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 4Gi
+  persistence:
+    enabled: true
+    storageClass: "${STORAGE_CLASS}"
+    size: 10Gi
+
+etcd:
+  enabled: true
+  replicaCount: 1
+  persistence:
+    enabled: true
+    storageClass: "${STORAGE_CLASS}"
+    size: 5Gi
+
+minio:
+  enabled: true
+  mode: standalone
+  persistence:
+    enabled: true
+    storageClass: "${STORAGE_CLASS}"
+    size: 10Gi
+
+pulsar:
+  enabled: false
