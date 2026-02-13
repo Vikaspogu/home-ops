@@ -23,32 +23,10 @@ controllers:
         probes:
           liveness:
             enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /
-                port: 18789
-              initialDelaySeconds: 30
-              periodSeconds: 10
           readiness:
             enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /
-                port: 18789
-              initialDelaySeconds: 10
-              periodSeconds: 5
           startup:
             enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /
-                port: 18789
-              initialDelaySeconds: 5
-              failureThreshold: 30
-              periodSeconds: 5
         resources:
           requests:
             cpu: 100m
