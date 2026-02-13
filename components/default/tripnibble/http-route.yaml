@@ -19,5 +19,5 @@ spec:
     - "tripnibble.${CLUSTER_DOMAIN}"
   rules:
     - backendRefs:
-        - name: tripnibble-app
+        - name: tripnibble
           port: 7001
