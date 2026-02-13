@@ -383,10 +383,6 @@ applications:
       namespace: default
     source:
       path: components/default/milvusdb
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: ceph-block
 
   valetudopng:
     annotations:
