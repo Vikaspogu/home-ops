@@ -21,9 +21,28 @@ controllers:
               name: openclaw-secret
         probes:
           liveness: &probes
-            enabled: false
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 18789
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 5
           readiness: *probes
-          startup: *probes
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 18789
+              initialDelaySeconds: 10
+              periodSeconds: 5
+              timeoutSeconds: 10
+              failureThreshold: 30
         resources:
           requests:
             cpu: 100m
@@ -44,12 +63,12 @@ persistence:
     existingClaim: openclaw
     globalMounts:
       - path: /home/node/.openclaw
-  # Mount config.json from secret
+  # Mount openclaw.json from secret
   config:
     enabled: true
     type: secret
     name: openclaw-config-json
     globalMounts:
-      - path: /home/node/.openclaw/config.json
-        subPath: config.json
+      - path: /home/node/.openclaw/openclaw.json
+        subPath: openclaw.json
         readOnly: true
