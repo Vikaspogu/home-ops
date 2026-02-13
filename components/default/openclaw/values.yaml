@@ -14,21 +14,8 @@ controllers:
         image:
           repository: ghcr.io/openclaw/openclaw
           tag: 2026.2.12
-        command:
-          - node
-          - dist/index.js
-          - gateway
-          - --bind
-          - lan
-          - --port
-          - "18789"
         env:
           TZ: "America/New_York"
-          HOME: /home/node
-          TERM: xterm-256color
-          PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/node/.openclaw/bin/bin"
-          npm_config_prefix: home/node/.openclaw/npm
-          # Skills environment variables from secret
         envFrom:
           - secretRef:
               name: openclaw-secret
