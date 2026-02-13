@@ -20,30 +20,10 @@ controllers:
           - secretRef:
               name: openclaw-secret
         probes:
-          liveness:
-            enabled: true
-            custom: true
-            spec:
-              tcpSocket:
-                port: 18789
-              initialDelaySeconds: 30
-              periodSeconds: 30
-          readiness:
-            enabled: true
-            custom: true
-            spec:
-              tcpSocket:
-                port: 18789
-              initialDelaySeconds: 10
-              periodSeconds: 10
-          startup:
-            enabled: true
-            custom: true
-            spec:
-              tcpSocket:
-                port: 18789
-              periodSeconds: 5
-              failureThreshold: 30
+          liveness: &probes
+            enabled: false
+          readiness: *probes
+          startup: *probes
         resources:
           requests:
             cpu: 100m
