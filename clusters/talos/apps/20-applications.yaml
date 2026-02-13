@@ -376,6 +376,18 @@ applications:
     source:
       path: components/default/tripnibble
 
+  milvusdb:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/milvusdb
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+
   valetudopng:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
