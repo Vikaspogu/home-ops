@@ -40,7 +40,7 @@ controllers:
           - "7001"
         env:
           TZ: America/New_York
-          NAT_API_URL: http://tripnibble-nat.default.svc.local:8000
+          NAT_API_URL: http://tripnibble-nat.default.svc.cluster.local:8000
         resources:
           requests:
             cpu: 100m
