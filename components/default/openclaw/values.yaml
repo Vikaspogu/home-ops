@@ -83,6 +83,6 @@ persistence:
     type: secret
     name: openclaw-config-json
     globalMounts:
-      - path: /home/openclaw/.openclaw/config.json
+      - path: /home/node/.openclaw/config.json
         subPath: config.json
         readOnly: true
