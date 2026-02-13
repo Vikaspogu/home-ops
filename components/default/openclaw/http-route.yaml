@@ -9,7 +9,7 @@ metadata:
   annotations:
     gethomepage.dev/href: "https://openclaw.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: AI
+    gethomepage.dev/group: Ingress
     gethomepage.dev/icon: https://raw.githubusercontent.com/openclaw/openclaw/main/assets/icon.png
     gethomepage.dev/name: OpenClaw
     gethomepage.dev/description: "Personal AI Assistant"
