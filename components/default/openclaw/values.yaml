@@ -22,11 +22,11 @@ controllers:
               name: openclaw-secret
         probes:
           liveness:
-            enabled: true
+            enabled: false
           readiness:
-            enabled: true
+            enabled: false
           startup:
-            enabled: true
+            enabled: false
         resources:
           requests:
             cpu: 100m
