@@ -36,7 +36,7 @@ controllers:
       daemon:
         image:
           repository: docker
-          tag: 27-dind
+          tag: 29-dind
         env:
           DOCKER_TLS_CERTDIR: ""
         securityContext:
