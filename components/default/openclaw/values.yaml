@@ -13,7 +13,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/openclaw/openclaw
-          tag: 2026.2.12
+          tag: 2026.2.13
         env:
           TZ: "America/New_York"
         envFrom:
