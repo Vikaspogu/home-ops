@@ -372,25 +372,25 @@ applications:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
     destination:
-      namespace: default
+      namespace: ai
     source:
-      path: components/default/tripnibble
+      path: components/ai/tripnibble
 
   milvusdb:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
     destination:
-      namespace: default
+      namespace: ai
     source:
-      path: components/default/milvusdb
+      path: components/ai/milvusdb
 
   openclaw:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
     destination:
-      namespace: default
+      namespace: ai
     source:
-      path: components/default/openclaw
+      path: components/ai/openclaw
       plugin:
         env:
           - name: STORAGE_CLASS

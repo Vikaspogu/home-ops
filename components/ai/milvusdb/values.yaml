@@ -3,6 +3,7 @@ cluster:
   enabled: false
 
 standalone:
+  enabled: true
   resources:
     requests:
       cpu: 100m
@@ -27,5 +28,5 @@ minio:
     enabled: true
     size: 10Gi
 
-pulsar:
+pulsarv3:
   enabled: false
