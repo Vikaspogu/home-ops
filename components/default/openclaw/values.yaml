@@ -9,6 +9,29 @@ controllers:
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: "OnRootMismatch"
+    initContainers:
+      brew-tools:
+        image:
+          repository: ghcr.io/homebrew/ubuntu20.04
+          tag: 4.6.20@sha256:04e22473ff2cf0efaa91f830462a1ce0cff9026c481d020abb182a356b2aa4e0
+        command:
+          - /bin/bash
+          - -ec
+          - |
+            export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+            export HOMEBREW_NO_AUTO_UPDATE=1
+            brew install gh gogcli
+            brew install --cask 1password-cli
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
     containers:
       app:
         image:
@@ -16,6 +39,7 @@ controllers:
           tag: 2026.2.13
         env:
           TZ: "America/New_York"
+          PATH: "/home/node/.openclaw/.linuxbrew/bin:/home/node/.openclaw/.linuxbrew/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         envFrom:
           - secretRef:
               name: openclaw-secret
@@ -72,3 +96,14 @@ persistence:
       - path: /home/node/.openclaw/openclaw.json
         subPath: openclaw.json
         readOnly: true
+  homebrew:
+    enabled: true
+    existingClaim: openclaw
+    advancedMounts:
+      app:
+        brew-tools:
+          - path: /home/linuxbrew/.linuxbrew
+            subPath: .linuxbrew
+        app:
+          - path: /home/node/.openclaw/.linuxbrew
+            subPath: .linuxbrew
