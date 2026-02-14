@@ -3,29 +3,69 @@ controllers:
   app:
     annotations:
       reloader.stakater.com/auto: "true"
-    pod:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        fsGroupChangePolicy: "OnRootMismatch"
     initContainers:
-      brew-tools:
+      install-tools:
         image:
-          repository: ghcr.io/homebrew/ubuntu24.04
-          tag: 5.0.14
+          repository: ghcr.io/openclaw/openclaw
+          tag: 2026.2.13@sha256:c6528e72dbeeebca3c928e6d6109ef991d249b4939a093c7f9e28708d24fc059
         command:
-          - /bin/bash
-          - -ec
+          - /bin/sh
+          - -c
           - |
-            export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
-            export HOMEBREW_NO_AUTO_UPDATE=1
-            brew list gh >/dev/null 2>&1 || brew install gh
-            brew list gogcli >/dev/null 2>&1 || brew install gogcli
-            brew list 1password-cli >/dev/null 2>&1 || {
-              brew tap 1password/tap
-              brew install 1password-cli
-            }
+            set -e
+            mkdir -p /home/node/.local/bin /home/node/.local/go
+
+            echo "Starting tool installation..."
+
+            # Install gh CLI if not present on PVC
+            if [ ! -f /home/node/.local/bin/gh ]; then
+              echo "Installing gh CLI..."
+              cd /tmp
+              curl -fsSL https://github.com/cli/cli/releases/download/v2.61.0/gh_2.61.0_linux_amd64.tar.gz -o gh.tar.gz
+              tar xzf gh.tar.gz
+              cp gh_2.61.0_linux_amd64/bin/gh /home/node/.local/bin/
+              rm -rf gh.tar.gz gh_2.61.0_linux_amd64
+            fi
+
+            # Install Go if not present on PVC
+            if [ ! -f /home/node/.local/go/bin/go ]; then
+              echo "Installing Go..."
+              cd /tmp
+              curl -fsSL https://go.dev/dl/go1.23.5.linux-amd64.tar.gz -o go.tar.gz
+              tar xzf go.tar.gz
+              mv go /home/node/.local/
+              rm -rf go.tar.gz
+            fi
+
+            # Install Homebrew if not present on PVC
+            if [ ! -f /home/node/.local/homebrew/bin/brew ]; then
+              echo "Installing Homebrew..."
+              export HOMEBREW_PREFIX=/home/node/.local/homebrew
+              export HOMEBREW_CELLAR=/home/node/.local/homebrew/Cellar
+              export HOMEBREW_REPOSITORY=/home/node/.local/homebrew
+              mkdir -p $HOMEBREW_PREFIX
+              cd /tmp
+              git clone --depth 1 https://github.com/Homebrew/brew $HOMEBREW_PREFIX
+            fi
+
+            # Check if pip is available (either standalone or via python3 -m pip)
+            set +e
+            if command -v pip3 >/dev/null 2>&1 || command -v pip >/dev/null 2>&1 || python3 -m pip --version >/dev/null 2>&1; then
+              echo "pip is available"
+            else
+              echo "Installing pip..."
+              cd /tmp
+              curl -fsSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+              python3 get-pip.py --user --no-warn-script-location --break-system-packages || \
+              python3 get-pip.py --user --no-warn-script-location || \
+              echo "pip install skipped (use python3 -m pip instead)"
+              rm -f get-pip.py
+            fi
+            set -e
+
+            echo "Tool installation complete"
+            mkdir -p /home/node/.openclaw
+            echo "Init container completed successfully"
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
@@ -43,7 +83,15 @@ controllers:
           tag: 2026.2.13
         env:
           TZ: "America/New_York"
-          PATH: "/home/node/.openclaw/.linuxbrew/bin:/home/node/.openclaw/.linuxbrew/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+          BROWSER_WS_ENDPOINT: "ws://localhost:9222"
+          GOPATH: /home/node/go
+          HOME: &homepath /home/node
+          HOMEBREW_CELLAR: /home/node/.local/homebrew/Cellar
+          HOMEBREW_PREFIX: /home/node/.local/homebrew
+          HOMEBREW_REPOSITORY: /home/node/.local/homebrew
+          PATH: /home/node/.local/bin:/home/node/.local/go/bin:/home/node/.local/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          PIP_BREAK_SYSTEM_PACKAGES: "1"
+          TERM: xterm-256color
         envFrom:
           - secretRef:
               name: openclaw-secret
@@ -90,7 +138,7 @@ persistence:
     enabled: true
     existingClaim: openclaw
     globalMounts:
-      - path: /home/node/.openclaw
+      - path: *homepath
   # Mount openclaw.json from secret
   config:
     enabled: true
@@ -100,14 +148,3 @@ persistence:
       - path: /home/node/.openclaw/openclaw.json
         subPath: openclaw.json
         readOnly: true
-  homebrew:
-    enabled: true
-    existingClaim: openclaw
-    advancedMounts:
-      app:
-        brew-tools:
-          - path: /home/linuxbrew/.linuxbrew
-            subPath: .linuxbrew
-        app:
-          - path: /home/node/.openclaw/.linuxbrew
-            subPath: .linuxbrew

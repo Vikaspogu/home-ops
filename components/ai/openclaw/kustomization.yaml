@@ -4,8 +4,8 @@ namespace: ai
 resources:
   - ./externalsecret.yaml
   - ./http-route.yaml
-  - ./pvc.yaml
-
+components:
+  - ../../volsync-system/volsync-replication
 helmCharts:
   - name: app-template
     releaseName: openclaw
