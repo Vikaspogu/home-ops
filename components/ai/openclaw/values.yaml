@@ -12,16 +12,20 @@ controllers:
     initContainers:
       brew-tools:
         image:
-          repository: ghcr.io/homebrew/ubuntu20.04
-          tag: 4.6.20@sha256:04e22473ff2cf0efaa91f830462a1ce0cff9026c481d020abb182a356b2aa4e0
+          repository: ghcr.io/homebrew/ubuntu24.04
+          tag: 5.0.14
         command:
           - /bin/bash
           - -ec
           - |
             export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
             export HOMEBREW_NO_AUTO_UPDATE=1
-            brew install gh gogcli
-            brew install --cask 1password-cli
+            brew list gh >/dev/null 2>&1 || brew install gh
+            brew list gogcli >/dev/null 2>&1 || brew install gogcli
+            brew list 1password-cli >/dev/null 2>&1 || {
+              brew tap 1password/tap
+              brew install 1password-cli
+            }
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
