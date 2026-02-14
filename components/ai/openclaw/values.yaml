@@ -66,10 +66,6 @@ controllers:
             echo "Tool installation complete"
             mkdir -p /home/node/.openclaw
             echo "Init container completed successfully"
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          capabilities: { drop: ["ALL"] }
         resources:
           requests:
             cpu: 10m
