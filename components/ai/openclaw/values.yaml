@@ -13,7 +13,7 @@ controllers:
       install-tools:
         image:
           repository: ghcr.io/openclaw/openclaw
-          tag: 2026.2.13@sha256:c6528e72dbeeebca3c928e6d6109ef991d249b4939a093c7f9e28708d24fc059
+          tag: 2026.2.14@sha256:ace6f32961c4d574cb189d0007ec778408a9c02502f38af9ded6c864bae0f454
         command:
           - /bin/sh
           - -c
@@ -82,7 +82,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/openclaw/openclaw
-          tag: 2026.2.13
+          tag: 2026.2.14
         env:
           TZ: "America/New_York"
           BROWSER_WS_ENDPOINT: "ws://localhost:9222"
