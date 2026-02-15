@@ -14,6 +14,14 @@ controllers:
         image:
           repository: ghcr.io/openclaw/openclaw
           tag: 2026.2.13@sha256:c6528e72dbeeebca3c928e6d6109ef991d249b4939a093c7f9e28708d24fc059
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         command:
           - /bin/sh
           - -c
@@ -83,6 +91,14 @@ controllers:
         image:
           repository: ghcr.io/openclaw/openclaw
           tag: 2026.2.13
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         env:
           TZ: "America/New_York"
           BROWSER_WS_ENDPOINT: "ws://localhost:9222"
@@ -146,6 +162,7 @@ persistence:
     enabled: true
     type: secret
     name: openclaw-config-json
+    defaultMode: 0600
     globalMounts:
       - path: /home/node/.openclaw/openclaw.json
         subPath: openclaw.json
