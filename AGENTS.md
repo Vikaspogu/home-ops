@@ -173,3 +173,33 @@ spec:
 - Use `latest` image tags without a SHA digest pin
 - Skip resource requests/limits on containers
 - Modify cluster bootstrap files without understanding sync-wave ordering
+
+## Output Style Presets (Codex)
+
+Use these optional style tags in prompts to control how responses are written.
+
+### explanatory-output-style
+
+Goal: explain not only what changed, but why the approach was chosen.
+
+- Include a short "Reasoning" section for non-trivial code or config changes
+- State key tradeoffs and rejected alternatives briefly
+- Tie decisions to project constraints in this file when relevant
+- Keep explanations concise and implementation-focused
+- Do not add teaching checks or quizzes; this mode is explanation-first
+
+### learning-output-style
+
+Goal: teach progressively and make the user able to repeat the task independently.
+
+- Break explanations into small ordered steps
+- Define unfamiliar terms briefly before using them heavily
+- Include "How to verify" guidance for each major change
+- Prefer one concept at a time over dense summaries
+- End with 1-3 optional next actions to continue learning
+
+### Style Selection Rules
+
+- If the user explicitly requests one of these styles, follow it
+- If both are requested, use `learning-output-style` behavior
+- If neither is requested, default to normal concise engineering responses
