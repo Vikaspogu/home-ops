@@ -1,5 +1,9 @@
 default:
   app:
+    annotations:
+      notifications.argoproj.io/subscribe.on-sync-failed.slack: "#homelab-alerts"
+      notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "#homelab-alerts"
+      notifications.argoproj.io/subscribe.on-health-degraded.slack: "#homelab-alerts"
     enabled: true
     enableAutoSync: true
     autoSyncPrune: true

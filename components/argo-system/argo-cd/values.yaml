@@ -319,8 +319,8 @@ notifications:
   secret:
     create: false
   notifiers:
-    service.pushover: |
-      token: $pushover-token
+    service.slack: |
+      token: $slack-token
   templates:
     template.app-health-degraded: |
       message: |

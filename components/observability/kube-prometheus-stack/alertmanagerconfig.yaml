@@ -9,7 +9,7 @@ spec:
     groupBy: ["alertname", "job"]
     groupInterval: 10m
     groupWait: 1m
-    receiver: pushover
+    receiver: slack
     repeatInterval: 12h
     routes:
       - receiver: "null"
@@ -25,7 +25,7 @@ spec:
           - name: alertname
             value: Watchdog
             matchType: =
-      - receiver: pushover
+      - receiver: slack
         matchers:
           - name: severity
             value: critical
@@ -43,10 +43,16 @@ spec:
   receivers:
     - name: "null"
     - name: heartbeat
-    - name: pushover
-      pushoverConfigs:
-        - html: true
-          message: |-
+    - name: slack
+      slackConfigs:
+        - channel: "#homelab-alerts"
+          sendResolved: true
+          apiURL:
+            name: alertmanager-secret
+            key: SLACK_WEBHOOK_URL
+          title: >-
+            [${CLUSTER_DOMAIN}] [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
+          text: >-
             {{- range .Alerts }}
               {{- if ne .Annotations.description "" }}
                 {{ .Annotations.description }}
@@ -58,24 +64,8 @@ spec:
                 Alert description not available
               {{- end }}
               {{- if gt (len .Labels.SortedPairs) 0 }}
-                <small>
-                  {{- range .Labels.SortedPairs }}
-                    <b>{{ .Name }}:</b> {{ .Value }}
-                  {{- end }}
-                </small>
+                {{- range .Labels.SortedPairs }}
+                *{{ .Name }}:* {{ .Value }}
+                {{- end }}
               {{- end }}
             {{- end }}
-          priority: |-
-            {{ if eq .Status "firing" }}1{{ else }}0{{ end }}
-          sendResolved: true
-          sound: gamelan
-          title: >-
-            [${CLUSTER_DOMAIN}] [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }}
-          ttl: 86400s
-          token:
-            name: &secret alertmanager-secret
-            key: ALERTMANAGER_PUSHOVER_TOKEN
-          userKey:
-            name: *secret
-            key: PUSHOVER_USER_KEY
-          urlTitle: View in Alertmanager

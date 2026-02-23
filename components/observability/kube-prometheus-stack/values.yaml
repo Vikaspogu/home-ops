@@ -14,7 +14,7 @@ alertmanager:
       annotations:
         gethomepage.dev/enabled: "true"
         gethomepage.dev/group: Ingress
-        gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/pushover.png"
+        gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/slack.png"
   alertmanagerSpec:
     alertmanagerConfiguration:
       name: alertmanager
