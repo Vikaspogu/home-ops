@@ -339,6 +339,13 @@ notifications:
             * {{$c.message}}
         {{end}}
         {{end}}
+    template.app-comparison-error: |
+      message: |
+        :warning: Application {{.app.metadata.name}} has a comparison error.
+        {{range $c := .app.status.conditions}}
+        * {{$c.message}}
+        {{end}}
+        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
 
   triggers:
     trigger.on-health-degraded: |
@@ -356,8 +363,14 @@ notifications:
         send:
         - app-sync-status-unknown
         when: app.status.sync.status == 'Unknown'
+    trigger.on-comparison-error: |
+      - description: Application has a comparison error
+        send:
+        - app-comparison-error
+        when: app.status.conditions[0].type == 'ComparisonError'
 
   defaultTriggers: |
     - on-sync-status-unknown
     - on-sync-failed
     - on-health-degraded
+    - on-comparison-error
