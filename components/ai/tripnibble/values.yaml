@@ -23,7 +23,7 @@ controllers:
             memory: 2Gi
     pod:
       imagePullSecrets:
-        - name: tripnibble-registry-secret
+        - name: gitea-registry-secret
   chainlit:
     annotations:
       reloader.stakater.com/auto: "true"
@@ -51,7 +51,7 @@ controllers:
             memory: 1Gi
     pod:
       imagePullSecrets:
-        - name: tripnibble-registry-secret
+        - name: gitea-registry-secret
 
 service:
   nat:

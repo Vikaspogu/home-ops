@@ -376,6 +376,14 @@ applications:
     source:
       path: components/ai/tripnibble
 
+  mo:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/mo
+
   milvusdb:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

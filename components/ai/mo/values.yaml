@@ -1,0 +1,57 @@
+---
+controllers:
+  app:
+    replicas: 1
+    strategy: RollingUpdate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.2.0@sha256:ae89578925b480f5972f237dda2f7a37efe36aff500d3e7bd1d3a6a3181e4191
+        envFrom: &envFrom
+          - secretRef:
+              name: mo-secret
+    containers:
+      main:
+        image:
+          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent
+          tag: latest
+        env:
+          TZ: America/New_York
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - pgrep
+                  - -f
+                  - mo.main
+              initialDelaySeconds: 10
+              periodSeconds: 5
+              failureThreshold: 30
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - pgrep
+                  - -f
+                  - mo.main
+              periodSeconds: 30
+              failureThreshold: 3
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+
