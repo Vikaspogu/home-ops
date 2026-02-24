@@ -18,7 +18,7 @@ controllers:
         image:
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent
           tag: latest
-        imagePullPolicy: Always
+          pullPolicy: Always
         env:
           TZ: America/New_York
         envFrom: *envFrom
