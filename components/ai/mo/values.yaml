@@ -17,7 +17,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent
-          tag: latest
+          tag: df6692e
           pullPolicy: Always
         env:
           TZ: America/New_York
