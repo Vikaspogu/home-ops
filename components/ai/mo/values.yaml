@@ -30,7 +30,7 @@ controllers:
             memory: 2Gi
         probes:
           startup:
-            enabled: true
+            enabled: false
             custom: true
             spec:
               exec:
@@ -42,7 +42,7 @@ controllers:
               periodSeconds: 5
               failureThreshold: 30
           liveness:
-            enabled: true
+            enabled: false
             custom: true
             spec:
               exec:
