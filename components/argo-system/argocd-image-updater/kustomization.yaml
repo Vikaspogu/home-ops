@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: argo-system
 resources:
   - externalsecret.yaml
+  - imageupdater.yaml
 helmCharts:
   - name: argocd-image-updater
     releaseName: argocd-image-updater

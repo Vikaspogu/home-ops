@@ -1,0 +1,48 @@
+---
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: gitea-apps
+  namespace: argo-system
+spec:
+  namespace: argo-system
+  commonUpdateSettings:
+    updateStrategy: latest
+    pullSecret: "secret:argo-system/gitea-registry-secret"
+  writeBackConfig:
+    method: "git:argo-system/git-creds"
+    gitConfig:
+      branch: main
+  applicationRefs:
+    - namePattern: "mo"
+      writeBackConfig:
+        method: "git:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: mo
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent"
+          manifestTargets:
+            helm:
+              name: controllers.app.containers.main.image.repository
+              tag: controllers.app.containers.main.image.tag
+    - namePattern: "tripnibble"
+      writeBackConfig:
+        method: "git:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: tn-nat
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
+          manifestTargets:
+            helm:
+              name: controllers.nat.containers.main.image.repository
+              tag: controllers.nat.containers.main.image.tag
+        - alias: tn-chainlit
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
+          manifestTargets:
+            helm:
+              name: controllers.chainlit.containers.main.image.repository
+              tag: controllers.chainlit.containers.main.image.tag
