@@ -9,6 +9,9 @@ spec:
   commonUpdateSettings:
     updateStrategy: latest
     pullSecret: "secret:argo-system/gitea-registry-secret"
+    allowTags: "^[a-f0-9]{7,40}$"
+    ignoreTags:
+      - latest
   writeBackConfig:
     method: "git:secret:argo-system/git-creds"
     gitConfig:
