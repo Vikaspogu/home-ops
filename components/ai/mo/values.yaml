@@ -17,10 +17,12 @@ controllers:
       main:
         image:
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent
-          tag: df6692e
+          tag: e257ac0
           pullPolicy: Always
         env:
           TZ: America/New_York
+          DIGEST_HOUR: "12"
+          DIGEST_MINUTE: "05"
         envFrom: *envFrom
         resources:
           requests:
