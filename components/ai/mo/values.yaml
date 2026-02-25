@@ -21,7 +21,7 @@ controllers:
         env:
           TZ: America/New_York
           DIGEST_HOUR: "12"
-          DIGEST_MINUTE: "05"
+          DIGEST_MINUTE: "40"
         envFrom: *envFrom
         resources:
           requests:
