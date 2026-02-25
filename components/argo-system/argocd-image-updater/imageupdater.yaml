@@ -9,7 +9,6 @@ spec:
   commonUpdateSettings:
     updateStrategy: latest
     pullSecret: "secret:argo-system/gitea-registry-secret"
-    allowTags: "^[a-f0-9]{7,40}$"
     ignoreTags:
       - latest
   writeBackConfig:
@@ -26,6 +25,8 @@ spec:
       images:
         - alias: mo
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent"
+          commonUpdateSettings:
+            allowTags: "^\\d{4}-\\d{2}-\\d{2}-[a-f0-9]{7}$"
           manifestTargets:
             helm:
               name: controllers.app.containers.main.image.repository
@@ -39,12 +40,16 @@ spec:
       images:
         - alias: tn-nat
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
+          commonUpdateSettings:
+            allowTags: "^[a-f0-9]{7,40}$"
           manifestTargets:
             helm:
               name: controllers.nat.containers.main.image.repository
               tag: controllers.nat.containers.main.image.tag
         - alias: tn-chainlit
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
+          commonUpdateSettings:
+            allowTags: "^[a-f0-9]{7,40}$"
           manifestTargets:
             helm:
               name: controllers.chainlit.containers.main.image.repository
