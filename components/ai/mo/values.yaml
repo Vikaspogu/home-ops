@@ -1,4 +1,3 @@
----
 controllers:
   app:
     replicas: 1
@@ -11,13 +10,13 @@ controllers:
           repository: ghcr.io/home-operations/postgres-init
           tag: 18.2.0@sha256:ae89578925b480f5972f237dda2f7a37efe36aff500d3e7bd1d3a6a3181e4191
         envFrom: &envFrom
-          - secretRef:
-              name: mo-secret
+        - secretRef:
+            name: mo-secret
     containers:
       main:
         image:
-          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent
-          tag: e257ac0
+          repository: gitea.omv.a113.casa/vpogu/mo-agent
+          tag: latest
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -37,9 +36,9 @@ controllers:
             spec:
               exec:
                 command:
-                  - pgrep
-                  - -f
-                  - mo.main
+                - pgrep
+                - -f
+                - mo.main
               initialDelaySeconds: 10
               periodSeconds: 5
               failureThreshold: 30
@@ -49,12 +48,11 @@ controllers:
             spec:
               exec:
                 command:
-                  - pgrep
-                  - -f
-                  - mo.main
+                - pgrep
+                - -f
+                - mo.main
               periodSeconds: 30
               failureThreshold: 3
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
-
+      - name: gitea-registry-secret
