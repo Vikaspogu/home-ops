@@ -20,8 +20,8 @@ controllers:
           pullPolicy: Always
         env:
           TZ: America/New_York
-          DIGEST_HOUR: "12"
-          DIGEST_MINUTE: "40"
+          DIGEST_HOUR: "13"
+          DIGEST_MINUTE: "15"
         envFrom: *envFrom
         resources:
           requests:
