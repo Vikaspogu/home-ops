@@ -368,13 +368,13 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 4Gi
 
-  tripnibble:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/tripnibble
+  # tripnibble:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: ai
+  #   source:
+  #     path: components/ai/tripnibble
 
   mo:
     annotations:

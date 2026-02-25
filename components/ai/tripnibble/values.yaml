@@ -6,7 +6,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/tripnibble
-          tag: main
+          tag: 20260214
         env:
           TZ: America/New_York
           OAUTH_AUTHENTIK_DOMAIN: "id.${CLUSTER_DOMAIN}"
