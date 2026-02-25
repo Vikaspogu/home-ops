@@ -23,3 +23,19 @@ applications:
       namespace: argo-system
     source:
       path: clusters/talos/apps/argo-system/kubechecks
+
+  reflector:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/reflector
+
+  argocd-image-updater:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: argo-system
+    source:
+      path: components/argo-system/argocd-image-updater

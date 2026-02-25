@@ -1,0 +1,17 @@
+config:
+  registries:
+    - name: gitea
+      prefix: gitea.omv.${CLUSTER_DOMAIN}
+      api_url: https://gitea.omv.${CLUSTER_DOMAIN}
+      credentials: pullsecret:argo-system/gitea-registry-secret
+      insecure: false
+  argocd:
+    serverAddress: argocd-server.argo-system.svc.cluster.local
+    insecure: true
+    plaintext: true
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: kube-prometheus-stack
