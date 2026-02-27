@@ -6,4 +6,4 @@ helmCharts:
     releaseName: reflector
     namespace: kube-system
     repo: https://emberstack.github.io/helm-charts
-    version: "10.0.11"
+    version: "10.0.14"
