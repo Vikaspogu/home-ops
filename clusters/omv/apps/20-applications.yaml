@@ -55,6 +55,8 @@ applications:
             value: longhorn
           - name: VOLSYNC_CAPACITY
             value: 10Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 8Gi
 
   gitea:
     annotations:
@@ -71,6 +73,8 @@ applications:
             value: longhorn
           - name: VOLSYNC_CAPACITY
             value: 10Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 8Gi
 
   gitea-runner:
     annotations:
@@ -87,6 +91,8 @@ applications:
             value: longhorn
           - name: VOLSYNC_CAPACITY
             value: 2Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 8Gi
 
   rancher:
     annotations:

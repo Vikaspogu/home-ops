@@ -10,7 +10,7 @@ spec:
   kopia:
     accessModes: ["ReadWriteOnce"]
     cacheAccessModes: ["ReadWriteOnce"]
-    cacheCapacity: ${ARGOCD_ENV_VOLSYNC_CAPACITY}
+    cacheCapacity: ${ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY}
     cacheStorageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
     compression: zstd-fastest
     copyMethod: Snapshot
