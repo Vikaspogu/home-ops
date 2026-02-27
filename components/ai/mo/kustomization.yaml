@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: ai
 resources:
   - external-secret.yaml
+  - external-secret-kubeconfig.yaml
 
 helmCharts:
   - name: app-template

@@ -56,3 +56,11 @@ controllers:
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
+
+persistence:
+  kubeconfigs:
+    type: secret
+    name: mo-kubeconfigs
+    globalMounts:
+      - path: /etc/kube
+        readOnly: true
