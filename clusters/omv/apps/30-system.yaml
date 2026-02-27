@@ -23,3 +23,11 @@ applications:
       namespace: argo-system
     source:
       path: clusters/omv/apps/argo-system/kubechecks
+
+  mo-reader:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/mo-reader

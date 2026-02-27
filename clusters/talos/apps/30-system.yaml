@@ -39,3 +39,11 @@ applications:
       namespace: argo-system
     source:
       path: components/argo-system/argocd-image-updater
+
+  mo-reader:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/mo-reader

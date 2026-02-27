@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mo-reader-token
+  namespace: kube-system
+  annotations:
+    kubernetes.io/service-account.name: mo-reader
+type: kubernetes.io/service-account-token
