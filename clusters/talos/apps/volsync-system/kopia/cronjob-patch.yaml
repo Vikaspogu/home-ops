@@ -8,6 +8,11 @@ spec:
     spec:
       template:
         spec:
+          containers:
+            - name: maintenance
+              volumeMounts:
+                - name: repository
+                  mountPath: /repository
           volumes:
             - name: repository
               nfs:

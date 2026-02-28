@@ -51,16 +51,12 @@ spec:
                 - name: config-ro
                   mountPath: /config-ro
                   readOnly: true
-                - name: repository
-                  mountPath: /repository
                 - name: tmp
                   mountPath: /tmp
           volumes:
             - name: config-ro
               configMap:
                 name: kopia-repository-configmap
-            - name: repository
-              emptyDir: {}
             - name: tmp
               emptyDir:
                 sizeLimit: 2Gi
