@@ -29,10 +29,23 @@ deschedulerPolicy:
               - requiredDuringSchedulingIgnoredDuringExecution
         - name: RemovePodsViolatingNodeTaints
         - name: RemovePodsViolatingTopologySpreadConstraint
+        - name: LowNodeUtilization
+          args:
+            thresholds:
+              cpu: 20
+              memory: 20
+              pods: 15
+            targetThresholds:
+              cpu: 50
+              memory: 60
+              pods: 40
+        - name: RemoveDuplicates
       plugins:
         balance:
           enabled:
             - RemovePodsViolatingTopologySpreadConstraint
+            - LowNodeUtilization
+            - RemoveDuplicates
         deschedule:
           enabled:
             - RemoveFailedPods
