@@ -5,6 +5,7 @@ namespace: volsync-system
 resources:
   - external-secret.yaml
   - http-route.yaml
+  - maintenance-cronjob.yaml
 
 configMapGenerator:
   - name: kopia-repository-configmap

@@ -9,3 +9,7 @@ patches:
     target:
       kind: Deployment
       name: kopia
+  - path: cronjob-patch.yaml
+    target:
+      kind: CronJob
+      name: kopia-maintenance

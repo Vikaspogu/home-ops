@@ -1,0 +1,15 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kopia-maintenance
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          volumes:
+            - name: repository
+              hostPath:
+                path: /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/VolsyncKopia
+                type: DirectoryOrCreate

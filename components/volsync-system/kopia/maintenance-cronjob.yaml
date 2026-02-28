@@ -1,0 +1,66 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kopia-maintenance
+  namespace: volsync-system
+spec:
+  schedule: "0 */2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            supplementalGroups:
+              - 100
+          containers:
+            - name: maintenance
+              image: ghcr.io/home-operations/kopia:0.22.3@sha256:17ab64542280197a5368247deaefadc3e3bbe15714ab666c2455a06824e86efd
+              command:
+                - sh
+                - -c
+                - |
+                  mkdir -p /tmp/kopia/cache /tmp/kopia/logs
+                  cp /config-ro/repository.config /tmp/kopia/repository.config
+                  kopia --config-file=/tmp/kopia/repository.config maintenance run --full
+              env:
+                - name: KOPIA_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: kopia-secret
+                      key: KOPIA_PASSWORD
+                - name: KOPIA_CACHE_DIRECTORY
+                  value: /tmp/kopia/cache
+                - name: KOPIA_LOG_DIR
+                  value: /tmp/kopia/logs
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 512Mi
+                limits:
+                  memory: 4Gi
+              volumeMounts:
+                - name: config-ro
+                  mountPath: /config-ro
+                  readOnly: true
+                - name: repository
+                  mountPath: /repository
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: config-ro
+              configMap:
+                name: kopia-repository-configmap
+            - name: repository
+              emptyDir: {}
+            - name: tmp
+              emptyDir:
+                sizeLimit: 2Gi

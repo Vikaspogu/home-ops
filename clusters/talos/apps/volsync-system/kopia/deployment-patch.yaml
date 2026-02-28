@@ -1,6 +1,6 @@
 ---
-# OMV-specific deployment patch for Kopia
-# Adds hostPath volume for repository storage
+# Cluster-specific deployment patch for Kopia
+# Adds NFS volume for repository storage
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,6 +13,11 @@ spec:
           nfs:
             server: omv-baymx.a113.internal
             path: "/storage0/VolsyncKopia"
+      initContainers:
+        - name: copy-config
+          volumeMounts:
+            - name: repository
+              mountPath: /repository
       containers:
         - name: app
           volumeMounts:

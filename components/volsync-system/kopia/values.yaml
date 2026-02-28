@@ -11,6 +11,12 @@ controllers:
         fsGroupChangePolicy: "OnRootMismatch"
         supplementalGroups:
           - 100
+    initContainers:
+      copy-config:
+        image:
+          repository: ghcr.io/home-operations/kopia
+          tag: 0.22.3@sha256:17ab64542280197a5368247deaefadc3e3bbe15714ab666c2455a06824e86efd
+        command: ["sh", "-c", "cp /config-ro/repository.config /config/repository.config"]
     containers:
       app:
         image:
@@ -69,18 +75,15 @@ serviceMonitor:
         scrapeTimeout: 10s
 
 persistence:
-  config:
+  config-ro:
     enabled: true
     type: configMap
     name: kopia-repository-configmap
     globalMounts:
-      - path: /config/repository.config
+      - path: /config-ro/repository.config
         subPath: repository.config
         readOnly: true
-  tmpfs:
+  config:
     type: emptyDir
     globalMounts:
-      - path: /config/cache
-        subPath: cache
-      - path: /config/logs
-        subPath: logs
+      - path: /config

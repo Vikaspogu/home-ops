@@ -13,6 +13,11 @@ spec:
           hostPath:
             path: /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/VolsyncKopia
             type: DirectoryOrCreate
+      initContainers:
+        - name: copy-config
+          volumeMounts:
+            - name: repository
+              mountPath: /repository
       containers:
         - name: app
           volumeMounts:
