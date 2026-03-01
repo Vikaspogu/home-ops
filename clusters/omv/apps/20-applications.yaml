@@ -56,7 +56,7 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
-            value: 8Gi
+            value: 15Gi
 
   gitea:
     annotations:
@@ -74,7 +74,7 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
-            value: 8Gi
+            value: 15Gi
 
   gitea-runner:
     annotations:
