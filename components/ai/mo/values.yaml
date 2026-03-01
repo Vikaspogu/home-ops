@@ -16,7 +16,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/mo-agent
-          tag: 2026-02-27-00626d3
+          tag: 2026-03-01-23dbac6
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -56,11 +56,10 @@ controllers:
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
-
 persistence:
   kubeconfigs:
     type: secret
     name: mo-kubeconfigs
     globalMounts:
-      - path: /etc/kube
-        readOnly: true
+    - path: /etc/kube
+      readOnly: true
