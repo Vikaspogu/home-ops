@@ -1,0 +1,36 @@
+controllers:
+  chromadb:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: chromadb/chroma
+          tag: 0.6.3
+        env:
+          TZ: America/New_York
+          ANONYMIZED_TELEMETRY: "false"
+          IS_PERSISTENT: "TRUE"
+          PERSIST_DIRECTORY: /chroma/chroma
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: { drop: ["ALL"] }
+
+service:
+  app:
+    ports:
+      http:
+        port: 8000
+
+persistence:
+  data:
+    enabled: true
+    existingClaim: chromadb
+    globalMounts:
+      - path: /chroma/chroma
