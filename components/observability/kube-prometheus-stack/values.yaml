@@ -1,6 +1,9 @@
 ---
 cleanPrometheusOperatorObjectNames: true
 fullnameOverride: prometheus
+defaultRules:
+  disabled:
+    KubeMemoryOvercommit: true
 alertmanager:
   route:
     main:
