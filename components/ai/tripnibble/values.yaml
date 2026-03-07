@@ -6,7 +6,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/tripnibble
-          tag: 20260307224216-558e9fc
+          tag: 20260307234734-91d9b81
         env:
           TZ: America/New_York
           OAUTH_AUTHENTIK_DOMAIN: "id.${CLUSTER_DOMAIN}"
@@ -30,7 +30,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/tripnibble
-          tag: 20260307224216-558e9fc
+          tag: 20260307234734-91d9b81
         command:
         - chainlit
         - run
