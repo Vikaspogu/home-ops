@@ -40,7 +40,7 @@ spec:
         - alias: tn-nat
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
           commonUpdateSettings:
-            allowTags: 'regexp:^[a-f0-9]{7,40}'
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
           manifestTargets:
             helm:
               name: controllers.nat.containers.main.image.repository
@@ -48,7 +48,7 @@ spec:
         - alias: tn-chainlit
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
           commonUpdateSettings:
-            allowTags: 'regexp:^[a-f0-9]{7,40}'
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
           manifestTargets:
             helm:
               name: controllers.chainlit.containers.main.image.repository
