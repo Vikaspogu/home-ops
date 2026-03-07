@@ -1,0 +1,32 @@
+controllers:
+  actual-http-api:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: jhonderson/actual-http-api
+          tag: 26.2.1
+        env:
+          TZ: America/New_York
+          NODE_ENV: production
+          PORT: "5007"
+          ACTUAL_SERVER_URL: http://actual.default.svc.cluster.local:5006
+        envFrom:
+          - secretRef:
+              name: actual-http-api-secret
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: { drop: ["ALL"] }
+
+service:
+  app:
+    ports:
+      http:
+        port: 5007

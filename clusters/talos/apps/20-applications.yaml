@@ -26,6 +26,14 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
+  actual-http-api:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/actual-http-api
+
   atuin:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
