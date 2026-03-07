@@ -18,19 +18,19 @@ controllers:
           tag: 1.37.0
         command: ["sh", "-c"]
         args:
-          - |
-            if [ -n "$GOG_BUNDLE" ]; then
-              echo "$GOG_BUNDLE" | base64 -d | tar -xzf - -C /root/.config/gogcli/
-              echo "gogcli config unpacked"
-            else
-              echo "GOG_BUNDLE not set, skipping"
-            fi
+        - |
+          if [ -n "$GOG_BUNDLE" ]; then
+            echo "$GOG_BUNDLE" | base64 -d | tar -xzf - -C /root/.config/gogcli/
+            echo "gogcli config unpacked"
+          else
+            echo "GOG_BUNDLE not set, skipping"
+          fi
         envFrom: *envFrom
     containers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/mo-agent
-          tag: 20260307173436-fe6f569
+          tag: 20260307194406-2443ece
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -82,6 +82,6 @@ persistence:
     advancedMounts:
       app:
         init-gog:
-          - path: /root/.config/gogcli
+        - path: /root/.config/gogcli
         main:
-          - path: /root/.config/gogcli
+        - path: /root/.config/gogcli
