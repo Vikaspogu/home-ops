@@ -10,7 +10,7 @@ data:
 
     runner:
       file: /data/.runner
-      capacity: 4
+      capacity: 2
       timeout: 3h
       insecure: false
       fetch_timeout: 5s
