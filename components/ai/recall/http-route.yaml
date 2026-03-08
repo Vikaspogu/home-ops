@@ -11,5 +11,5 @@ spec:
   hostnames: ["recall.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
-        - name: recall-app
+        - name: recall
           port: 8000
