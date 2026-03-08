@@ -18,9 +18,9 @@ data:
       envs:
         DOCKER_HOST: tcp://host.docker.internal:2375
       labels:
-        - "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest"
-        - "ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04"
+        - "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-24.04"
         - "ubuntu-24.04:docker://docker.gitea.com/runner-images:ubuntu-24.04"
+        - "ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04"
 
     cache:
       enabled: true

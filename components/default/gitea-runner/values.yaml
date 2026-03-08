@@ -22,7 +22,7 @@ controllers:
         env:
           DOCKER_HOST: tcp://localhost:2375
           GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
-          GITEA_RUNNER_LABELS: "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest,ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04"
+          GITEA_RUNNER_LABELS: "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-24.04,ubuntu-24.04:docker://docker.gitea.com/runner-images:ubuntu-24.04,ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04"
           CONFIG_FILE: /config/config.yaml
         envFrom:
           - secretRef:
@@ -43,10 +43,10 @@ controllers:
           privileged: true
         resources:
           requests:
-            cpu: 200m
-            memory: 512Mi
+            cpu: 500m
+            memory: 1Gi
           limits:
-            memory: 4Gi
+            memory: 8Gi
 
 persistence:
   docker-certs:
@@ -54,6 +54,14 @@ persistence:
     type: emptyDir
     globalMounts:
       - path: /certs
+  docker-data:
+    enabled: true
+    type: emptyDir
+    sizeLimit: 20Gi
+    advancedMounts:
+      app:
+        daemon:
+          - path: /var/lib/docker
   config:
     enabled: true
     type: configMap
