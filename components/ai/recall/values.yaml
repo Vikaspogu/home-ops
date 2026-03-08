@@ -16,8 +16,8 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/recall-api
-          tag: latest # will be updated by argocd-image-updater after first CI build
-          pullPolicy: Always
+          tag: 20260308155958-c4d87aa
+          pullPolicy: IfNotPresent
         env:
           TZ: America/New_York
         envFrom: *envFrom
