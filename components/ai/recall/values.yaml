@@ -16,7 +16,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/recall-api
-          tag: 20260309000836-52fbd5c
+          tag: 20260309003522-53c478e
           pullPolicy: IfNotPresent
         env:
           TZ: America/New_York
