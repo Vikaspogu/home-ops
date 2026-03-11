@@ -30,7 +30,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/mo-agent
-          tag: 20260308234309-ddaafa0
+          tag: 20260311003550-1daa27f
           pullPolicy: Always
         env:
           TZ: America/New_York
