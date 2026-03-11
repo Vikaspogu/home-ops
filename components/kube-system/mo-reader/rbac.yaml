@@ -109,10 +109,11 @@ rules:
       - statefulsets
       - daemonsets
     verbs: ["patch"]
-  # Delete pods — for stuck pod remediation (triggers restart via controller)
+  # Delete pods/PVCs — for stuck pod remediation and CNPG replica recovery
   - apiGroups: [""]
     resources:
       - pods
+      - persistentvolumeclaims
     verbs: ["delete"]
   # Scale workloads — for emergency scale-down/up
   - apiGroups: ["apps"]
