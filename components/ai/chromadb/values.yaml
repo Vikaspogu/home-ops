@@ -6,7 +6,7 @@ controllers:
       app:
         image:
           repository: chromadb/chroma
-          tag: 1.5.4
+          tag: 1.5.5
         env:
           TZ: America/New_York
           ANONYMIZED_TELEMETRY: "false"
