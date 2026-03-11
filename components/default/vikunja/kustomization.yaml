@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: default
+resources:
+  - ./externalsecret.yaml
+  - ./http-route.yaml
+
+helmCharts:
+  - name: app-template
+    releaseName: vikunja
+    namespace: default
+    repo: oci://ghcr.io/bjw-s-labs/helm
+    version: "4.6.2"
+    valuesFile: values.yaml

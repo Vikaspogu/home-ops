@@ -1,0 +1,64 @@
+---
+controllers:
+  vikunja:
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.3.0@sha256:6fa1f331cddd2eb0b6afa7b8d3685c864127a81ab01c3d9400bc3ff5263a51cf
+        envFrom: &envFrom
+          - secretRef:
+              name: vikunja-secret
+    pod:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: vikunja/vikunja
+          tag: 0.24.6
+        env:
+          TZ: America/New_York
+          VIKUNJA_SERVICE_PUBLICURL: "https://vikunja.${CLUSTER_DOMAIN}"
+          VIKUNJA_SERVICE_TIMEZONE: America/New_York
+          VIKUNJA_DATABASE_TYPE: postgres
+        envFrom: *envFrom
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/v1/info
+                port: &port 3456
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 3
+              failureThreshold: 5
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  data:
+    type: emptyDir
+    globalMounts:
+      - path: /app/vikunja/files
