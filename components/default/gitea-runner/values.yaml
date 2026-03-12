@@ -37,6 +37,15 @@ controllers:
         image:
           repository: docker
           tag: 29-dind
+        command:
+          - sh
+          - -c
+          - |
+            dockerd-entrypoint.sh &
+            while ! docker info >/dev/null 2>&1; do sleep 2; done
+            docker system prune -af --volumes || true
+            echo "Docker prune complete, daemon running."
+            wait
         env:
           DOCKER_TLS_CERTDIR: ""
         securityContext:
@@ -57,7 +66,7 @@ persistence:
   docker-data:
     enabled: true
     type: emptyDir
-    sizeLimit: 20Gi
+    sizeLimit: 50Gi
     advancedMounts:
       app:
         daemon:
