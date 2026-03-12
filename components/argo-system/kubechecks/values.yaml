@@ -24,7 +24,7 @@ configMap:
     KUBECHECKS_TIDY_OUTDATED_COMMENTS_MODE: "hide" # other options delete
     GRPC_ENFORCE_ALPN_ENABLED: "false"
     KUBECHECKS_ENABLE_PREUPGRADE: "false"
-    KUBECHECKS_SCHEMAS_LOCATION: https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json
+    KUBECHECKS_ENABLE_KUBECONFORM: "false"
 
 deployment:
   annotations:
