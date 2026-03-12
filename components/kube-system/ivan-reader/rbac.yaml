@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: mo-reader
+  name: ivan-reader
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: mo-reader
+  name: ivan-reader
 rules:
   # ── Read: core resources (autonomous — no approval needed) ──
   - apiGroups: [""]
@@ -101,7 +101,7 @@ rules:
       - cephfilesystems
       - cephobjectstores
     verbs: ["get", "list"]
-  # ── Write: safe remediation (Mo's tiered confirmation handles approval) ──
+  # ── Write: safe remediation (ivan's tiered confirmation handles approval) ──
   # Rollout restart — safest remediation action
   - apiGroups: ["apps"]
     resources:
@@ -125,21 +125,21 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: mo-reader
+  name: ivan-reader
 subjects:
   - kind: ServiceAccount
-    name: mo-reader
+    name: ivan-reader
     namespace: kube-system
 roleRef:
   kind: ClusterRole
-  name: mo-reader
+  name: ivan-reader
   apiGroup: rbac.authorization.k8s.io
 ---
 # Namespace-scoped: pods/exec only in rook-ceph for ceph diagnostics
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: mo-reader-ceph-exec
+  name: ivan-reader-ceph-exec
   namespace: rook-ceph
 rules:
   - apiGroups: [""]
@@ -150,13 +150,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: mo-reader-ceph-exec
+  name: ivan-reader-ceph-exec
   namespace: rook-ceph
 subjects:
   - kind: ServiceAccount
-    name: mo-reader
+    name: ivan-reader
     namespace: kube-system
 roleRef:
   kind: Role
-  name: mo-reader-ceph-exec
+  name: ivan-reader-ceph-exec
   apiGroup: rbac.authorization.k8s.io

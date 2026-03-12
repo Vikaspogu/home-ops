@@ -11,7 +11,7 @@ controllers:
           tag: 18.3.0@sha256:6fa1f331cddd2eb0b6afa7b8d3685c864127a81ab01c3d9400bc3ff5263a51cf
         envFrom: &envFrom
         - secretRef:
-            name: mo-secret
+            name: ivan-secret
       init-gog:
         image:
           repository: busybox
@@ -29,8 +29,8 @@ controllers:
     containers:
       main:
         image:
-          repository: gitea.omv.a113.casa/vpogu/mo-agent
-          tag: 20260312141309-a3beff1
+          repository: gitea.omv.a113.casa/vpogu/ivan-agent
+          tag: 20260312155256-1ce55ed
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -52,7 +52,7 @@ controllers:
                 command:
                 - pgrep
                 - -f
-                - mo.main
+                - ivan.main
               initialDelaySeconds: 10
               periodSeconds: 5
               failureThreshold: 30
@@ -64,7 +64,7 @@ controllers:
                 command:
                 - pgrep
                 - -f
-                - mo.main
+                - ivan.main
               periodSeconds: 30
               failureThreshold: 3
     pod:
@@ -73,7 +73,7 @@ controllers:
 persistence:
   kubeconfigs:
     type: secret
-    name: mo-kubeconfigs
+    name: ivan-kubeconfigs
     globalMounts:
     - path: /etc/kube
       readOnly: true

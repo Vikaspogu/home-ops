@@ -24,10 +24,10 @@ applications:
     source:
       path: clusters/omv/apps/argo-system/kubechecks
 
-  mo-reader:
+  ivan-reader:
     annotations:
       argocd.argoproj.io/sync-wave: "30"
     destination:
       namespace: kube-system
     source:
-      path: components/kube-system/mo-reader
+      path: components/kube-system/ivan-reader

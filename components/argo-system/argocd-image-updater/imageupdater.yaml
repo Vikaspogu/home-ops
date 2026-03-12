@@ -15,44 +15,21 @@ spec:
     gitConfig:
       branch: main
   applicationRefs:
-    - namePattern: "mo"
+    - namePattern: "ivan"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
         gitConfig:
           branch: main
           writeBackTarget: "helmvalues:./values.yaml"
       images:
-        - alias: mo
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mo-agent"
+        - alias: ivan
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-agent"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
           manifestTargets:
             helm:
               name: controllers.app.containers.main.image.repository
               tag: controllers.app.containers.main.image.tag
-    - namePattern: "tripnibble"
-      writeBackConfig:
-        method: "git:secret:argo-system/git-creds"
-        gitConfig:
-          branch: main
-          writeBackTarget: "helmvalues:./values.yaml"
-      images:
-        - alias: tn-nat
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
-          manifestTargets:
-            helm:
-              name: controllers.nat.containers.main.image.repository
-              tag: controllers.nat.containers.main.image.tag
-        - alias: tn-chainlit
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/tripnibble"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
-          manifestTargets:
-            helm:
-              name: controllers.chainlit.containers.main.image.repository
-              tag: controllers.chainlit.containers.main.image.tag
     - namePattern: "recall"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
