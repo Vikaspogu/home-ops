@@ -20,7 +20,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/zxh326/kite
-          tag: v0.8.0
+          tag: v0.8.1
         envFrom:
           - secretRef:
               name: kite-secret
