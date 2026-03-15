@@ -10,9 +10,7 @@ spec:
     - interval: 30s
       path: /metrics
       port: https
-      scheme: https
-      tlsConfig:
-        insecureSkipVerify: true
+      scheme: http
   selector:
     matchLabels:
       control-plane: volsync-controller
