@@ -25,6 +25,7 @@ metadata:
     app.kubernetes.io/name: openclaw
 subsets:
   - addresses:
+      # DGX Spark bare-metal IP — update if host changes
       - ip: 10.30.10.86
     ports:
       - name: http
