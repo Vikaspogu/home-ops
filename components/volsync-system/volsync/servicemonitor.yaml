@@ -7,12 +7,8 @@ metadata:
   namespace: volsync-system
 spec:
   endpoints:
-    - interval: 30s
-      path: /metrics
-      port: https
-      scheme: https
-      tlsConfig:
-        insecureSkipVerify: true
+    - port: https
+      scheme: http
   selector:
     matchLabels:
       control-plane: volsync-controller
