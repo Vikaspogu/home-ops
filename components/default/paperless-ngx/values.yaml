@@ -1,0 +1,82 @@
+---
+controllers:
+  app:
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.3.0@sha256:6fa1f331cddd2eb0b6afa7b8d3685c864127a81ab01c3d9400bc3ff5263a51cf
+        envFrom: &envFrom
+          - secretRef:
+              name: paperless-ngx-secret
+    pod:
+      annotations:
+        reloader.stakater.com/auto: "true"
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: ghcr.io/paperless-ngx/paperless-ngx
+          tag: 2.16.3
+        env:
+          PAPERLESS_URL: "https://paperless.${CLUSTER_DOMAIN}"
+          PAPERLESS_REDIS: "redis://valkey.default.svc.cluster.local:6379/5"
+          PAPERLESS_OCR_LANGUAGE: eng
+          PAPERLESS_TIME_ZONE: America/New_York
+          PAPERLESS_CONSUMER_POLLING: "60"
+          PAPERLESS_CONSUMER_RECURSIVE: "true"
+          PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+          PAPERLESS_TASK_WORKERS: "2"
+          PAPERLESS_TIKA_ENABLED: "0"
+          PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
+          PAPERLESS_ACCOUNT_DEFAULT_HTTP_PROTOCOL: https
+          PAPERLESS_DISABLE_REGULAR_LOGIN: "false"
+          USERMAP_UID: "1000"
+          USERMAP_GID: "1000"
+        envFrom: *envFrom
+        probes:
+          liveness:
+            enabled: true
+          readiness:
+            enabled: true
+          startup:
+            enabled: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            memory: 2Gi
+
+service:
+  app:
+    ports:
+      http:
+        port: &port 8000
+
+persistence:
+  data:
+    existingClaim: paperless-ngx
+    advancedMounts:
+      app:
+        app:
+          - path: /usr/src/paperless/data
+  media:
+    enabled: true
+    type: nfs
+    server: synology.a113.internal
+    path: "/volume1/media/k8s-data/paperless-ngx"
+    globalMounts:
+      - path: /usr/src/paperless/media
+  consume:
+    enabled: true
+    type: nfs
+    server: synology.a113.internal
+    path: "/volume1/media/k8s-data/paperless-ngx/consume"
+    globalMounts:
+      - path: /usr/src/paperless/consume

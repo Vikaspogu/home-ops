@@ -258,13 +258,13 @@ applications:
     source:
       path: components/default/onstar2mqtt
 
-  papra:
+  paperless-ngx:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
     destination:
       namespace: default
     source:
-      path: components/default/papra
+      path: components/default/paperless-ngx
       plugin:
         env:
           - name: STORAGE_CLASS
@@ -272,7 +272,7 @@ applications:
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
-            value: 4Gi
+            value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
