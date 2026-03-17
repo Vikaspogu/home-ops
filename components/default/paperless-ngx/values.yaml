@@ -12,12 +12,6 @@ controllers:
     pod:
       annotations:
         reloader.stakater.com/auto: "true"
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        runAsNonRoot: true
-        fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
     containers:
       app:
         image:
@@ -36,8 +30,8 @@ controllers:
           PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
           PAPERLESS_ACCOUNT_DEFAULT_HTTP_PROTOCOL: https
           PAPERLESS_DISABLE_REGULAR_LOGIN: "false"
-          USERMAP_UID: "1000"
-          USERMAP_GID: "1000"
+          USERMAP_UID: "0"
+          USERMAP_GID: "0"
         envFrom: *envFrom
         probes:
           liveness:
