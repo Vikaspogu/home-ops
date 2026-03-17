@@ -70,13 +70,13 @@ persistence:
     enabled: true
     type: nfs
     server: synology.a113.internal
-    path: "/volume1/media/k8s-data/paperless-ngx"
+    path: "/volume1/media/k8s-data/paperless"
     globalMounts:
       - path: /usr/src/paperless/media
-  consume:
-    enabled: true
-    type: nfs
-    server: synology.a113.internal
-    path: "/volume1/media/k8s-data/paperless-ngx/consume"
-    globalMounts:
-      - path: /usr/src/paperless/consume
+  # consume:
+  #   enabled: true
+  #   type: nfs
+  #   server: synology.a113.internal
+  #   path: "/volume1/media/k8s-data/paperless/consume"
+  #   globalMounts:
+  #     - path: /usr/src/paperless/consume

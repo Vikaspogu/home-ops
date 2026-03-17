@@ -274,7 +274,7 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
-            value: 8Gi
+            value: 15Gi
 
   pgadmin:
     annotations:
