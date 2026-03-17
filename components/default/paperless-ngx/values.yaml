@@ -40,6 +40,10 @@ controllers:
             enabled: true
           startup:
             enabled: true
+            spec:
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              failureThreshold: 30
         resources:
           requests:
             cpu: 100m
