@@ -3,16 +3,15 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: volsync
+  name: volsync-metrics
   namespace: volsync-system
 spec:
   endpoints:
-    - interval: 30s
-      path: /metrics
-      port: https
+    - port: https
       scheme: https
       tlsConfig:
         insecureSkipVerify: true
+      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
   selector:
     matchLabels:
       control-plane: volsync-controller
