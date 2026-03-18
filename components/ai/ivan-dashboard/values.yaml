@@ -7,14 +7,14 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-api
-          tag: latest
+          tag: 20260318142633-02ded6e
           pullPolicy: Always
         env:
           TZ: America/New_York
           CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
         envFrom: &envFrom
-          - secretRef:
-              name: ivan-dashboard-secret
+        - secretRef:
+            name: ivan-dashboard-secret
         resources:
           requests:
             cpu: 50m
@@ -51,15 +51,14 @@ controllers:
               failureThreshold: 30
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
-
+      - name: gitea-registry-secret
   ui:
     replicas: 1
     containers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-ui
-          tag: latest
+          tag: 20260318142606-02ded6e
           pullPolicy: Always
         resources:
           requests:
@@ -96,8 +95,7 @@ controllers:
               failureThreshold: 10
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
-
+      - name: gitea-registry-secret
 service:
   ui:
     controller: ui
