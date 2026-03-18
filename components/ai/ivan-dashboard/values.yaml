@@ -1,0 +1,113 @@
+controllers:
+  api:
+    replicas: 1
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      main:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-api
+          tag: latest
+          pullPolicy: Always
+        env:
+          TZ: America/New_York
+          CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
+        envFrom: &envFrom
+          - secretRef:
+              name: ivan-dashboard-secret
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: &apiPort 8001
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: *apiPort
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: *apiPort
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              failureThreshold: 30
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+
+  ui:
+    replicas: 1
+    containers:
+      main:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-ui
+          tag: latest
+          pullPolicy: Always
+        env:
+          API_BACKEND: "ivan-dashboard-api:8001"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: &uiPort 80
+              periodSeconds: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *uiPort
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *uiPort
+              initialDelaySeconds: 3
+              periodSeconds: 3
+              failureThreshold: 10
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+
+service:
+  ui:
+    controller: ui
+    ports:
+      http:
+        port: *uiPort
+  api:
+    controller: api
+    ports:
+      http:
+        port: *apiPort
