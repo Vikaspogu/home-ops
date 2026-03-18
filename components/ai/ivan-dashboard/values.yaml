@@ -61,8 +61,6 @@ controllers:
           repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-ui
           tag: latest
           pullPolicy: Always
-        env:
-          API_BACKEND: "ivan-dashboard-api:8001"
         resources:
           requests:
             cpu: 10m

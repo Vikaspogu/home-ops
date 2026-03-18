@@ -18,6 +18,13 @@ spec:
       sectionName: https
   hostnames: ["dashboard.${CLUSTER_DOMAIN}"]
   rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/
+      backendRefs:
+        - name: ivan-dashboard-api
+          port: 8001
     - backendRefs:
         - name: ivan-dashboard-ui
           port: 80
