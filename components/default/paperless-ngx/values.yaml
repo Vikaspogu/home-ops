@@ -30,6 +30,7 @@ controllers:
           PAPERLESS_APPS: allauth.socialaccount.providers.openid_connect
           PAPERLESS_ACCOUNT_DEFAULT_HTTP_PROTOCOL: https
           PAPERLESS_DISABLE_REGULAR_LOGIN: "false"
+          PAPERLESS_FILENAME_FORMAT: "{created_year}/{correspondent}/{title}"
           USERMAP_UID: "0"
           USERMAP_GID: "0"
         envFrom: *envFrom
