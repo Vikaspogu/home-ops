@@ -30,6 +30,29 @@ spec:
             helm:
               name: controllers.app.containers.main.image.repository
               tag: controllers.app.containers.main.image.tag
+    - namePattern: "ivan-dashboard"
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: dashboard-api
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-dashboard-api"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
+          manifestTargets:
+            helm:
+              name: controllers.api.containers.main.image.repository
+              tag: controllers.api.containers.main.image.tag
+        - alias: dashboard-ui
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-dashboard-ui"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
+          manifestTargets:
+            helm:
+              name: controllers.ui.containers.main.image.repository
+              tag: controllers.ui.containers.main.image.tag
     - namePattern: "recall"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
