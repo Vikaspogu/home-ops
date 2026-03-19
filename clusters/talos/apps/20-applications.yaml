@@ -438,13 +438,13 @@ applications:
     source:
       path: components/ai/chromadb
 
-  milvusdb:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/milvusdb
+  # milvusdb:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: ai
+  #   source:
+  #     path: components/ai/milvusdb
 
   openclaw:
     annotations:
