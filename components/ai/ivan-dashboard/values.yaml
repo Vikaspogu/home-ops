@@ -7,7 +7,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-api
-          tag: 20260319125118-d8ba63f
+          tag: 20260319141843-5101c12
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -58,7 +58,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-ui
-          tag: 20260319125052-d8ba63f
+          tag: 20260319141840-5101c12
           pullPolicy: Always
         resources:
           requests:
