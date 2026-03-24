@@ -8,5 +8,5 @@ helmCharts:
     releaseName: postgres
     namespace: default
     repo: oci://registry-1.docker.io/bitnamicharts
-    version: 18.5.8
+    version: 18.5.14
     valuesFile: values.yaml
