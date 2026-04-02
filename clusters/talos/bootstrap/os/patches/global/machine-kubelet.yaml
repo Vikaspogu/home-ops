@@ -2,6 +2,9 @@ machine:
   kubelet:
     extraConfig:
       serializeImagePulls: false
+      imageGCHighThresholdPercent: 65
+      imageGCLowThresholdPercent: 55
+      imageMinimumGCAge: "5m"
     nodeIP:
       validSubnets:
         - 10.30.30.0/24
