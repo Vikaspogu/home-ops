@@ -16,7 +16,7 @@ spec:
     - name: ${GATEWAY_NAME}
       namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
-  hostnames: ["dashboard.${CLUSTER_DOMAIN}"]
+  hostnames: ["ivan.${CLUSTER_DOMAIN}"]
   rules:
     - matches:
         - path:
