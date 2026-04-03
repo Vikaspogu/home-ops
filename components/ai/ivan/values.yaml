@@ -36,6 +36,7 @@ controllers:
           TZ: America/New_York
           DIGEST_HOUR: "9"
           DIGEST_MINUTE: "00"
+          DASHBOARD_API_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001"
         envFrom: *envFrom
         resources:
           requests:
