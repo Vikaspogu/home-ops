@@ -6,7 +6,7 @@ controllers:
       app:
         image:
           repository: jhonderson/actual-http-api
-          tag: 26.3.0
+          tag: 26.4.0
         env:
           TZ: America/New_York
           NODE_ENV: production
