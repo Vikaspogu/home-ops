@@ -45,7 +45,7 @@ controllers:
             cat > /etc/docker/daemon.json <<'DAEMONJSON'
             {
               "default-address-pools": [
-                {"base": "172.17.0.0/12", "size": 24}
+                {"base": "172.30.0.0/16", "size": 24}
               ]
             }
             DAEMONJSON
@@ -54,6 +54,11 @@ controllers:
             docker system prune -af --volumes || true
             docker network prune -f || true
             echo "Docker prune complete, daemon running."
+            while true; do
+              sleep 1800
+              docker network prune -f || true
+              docker image prune -f || true
+            done &
             wait
         env:
           DOCKER_TLS_CERTDIR: ""
@@ -74,8 +79,10 @@ persistence:
       - path: /certs
   docker-data:
     enabled: true
-    type: emptyDir
-    sizeLimit: 50Gi
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 50Gi
+    storageClass: longhorn
     advancedMounts:
       app:
         daemon:
