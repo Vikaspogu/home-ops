@@ -83,6 +83,7 @@ persistence:
     accessMode: ReadWriteOnce
     size: 50Gi
     storageClass: longhorn
+    nameOverride: gitea-runner-docker
     advancedMounts:
       app:
         daemon:
