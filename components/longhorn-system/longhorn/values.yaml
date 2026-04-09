@@ -31,7 +31,7 @@ preUpgradeChecker:
 
 persistence:
   defaultClass: false
-  defaultClassReplicaCount: 2
+  defaultClassReplicaCount: 1
   defaultFsType: ext4
   reclaimPolicy: Delete
   defaultMkfsParams: "-F"
