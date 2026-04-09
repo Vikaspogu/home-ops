@@ -9,5 +9,5 @@ helmCharts:
     releaseName: argocd-image-updater
     namespace: argo-system
     repo: https://argoproj.github.io/argo-helm
-    version: "1.1.4"
+    version: "1.1.5"
     valuesFile: values.yaml
