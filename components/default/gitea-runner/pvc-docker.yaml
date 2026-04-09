@@ -9,4 +9,4 @@ spec:
   storageClassName: longhorn-volsync
   resources:
     requests:
-      storage: 50Gi
+      storage: 25Gi
