@@ -6,6 +6,7 @@ components:
 resources:
   - ./external-secret.yaml
   - ./configmap.yaml
+  - ./pvc-docker.yaml
 
 helmCharts:
   - name: app-template
