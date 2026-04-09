@@ -58,7 +58,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-ui
-          tag: 20260409164858-3f64b59
+          tag: 20260409174641-f4b9d99
           pullPolicy: Always
         resources:
           requests:
