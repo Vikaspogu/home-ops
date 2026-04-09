@@ -72,9 +72,9 @@ applications:
           - name: VOLUME_SNAPSHOT_CLASS
             value: longhorn
           - name: VOLSYNC_CAPACITY
-            value: 50Gi
+            value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
-            value: 75Gi
+            value: 20Gi
 
   gitea-runner:
     annotations:
@@ -92,7 +92,7 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
-            value: 8Gi
+            value: 4Gi
 
   rancher:
     annotations:
