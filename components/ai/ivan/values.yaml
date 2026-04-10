@@ -37,6 +37,15 @@ controllers:
           DIGEST_HOUR: "9"
           DIGEST_MINUTE: "00"
           DASHBOARD_API_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001"
+          GITEA_DOMAIN: "gitea.omv.${CLUSTER_DOMAIN}"
+          GITEA_OWNER: "vpogu"
+          GITHUB_OWNER: "Vikaspogu"
+          GIT_NAME: "I.V.A.N."
+          GIT_EMAIL: "ivan@${CLUSTER_DOMAIN}"
+          GITOPS_REPO: "Vikaspogu/home-ops"
+          LOG_HEALER_CLUSTER: "talos"
+          LOG_HEALER_NAMESPACE: "ai"
+          LOG_HEALER_DEPLOYMENTS: "ivan,ivan-dashboard-api,ivan-dashboard-ui"
         envFrom: *envFrom
         resources:
           requests:

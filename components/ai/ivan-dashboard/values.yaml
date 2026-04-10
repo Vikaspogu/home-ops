@@ -12,6 +12,7 @@ controllers:
         env:
           TZ: America/New_York
           CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
+          LITELLM_MODEL: "fast"
         envFrom: &envFrom
         - secretRef:
             name: ivan-dashboard-secret

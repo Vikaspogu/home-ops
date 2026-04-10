@@ -68,7 +68,7 @@ nodes:
     ipAddress: "10.30.30.23"
     installDiskSelector:
       model: "QEMU HARDDISK"
-    talosImageURL: factory.talos.dev/installer/a31d81eceab05afdc2c59b0002701173e117a5fb81bdc1f64062d27655145848
+    talosImageURL: factory.talos.dev/nocloud-installer/8a18364f394e7a07980b1397eb5c2946b2674a52dd6a8dee8d242683718a8623
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -80,17 +80,10 @@ nodes:
           - network: 0.0.0.0/0
             gateway: "10.30.30.1"
         mtu: 1500
-    kernelModules:
-      - name: nvidia
-      - name: nvidia_uvm
-      - name: nvidia_drm
-      - name: nvidia_modeset
     schematic:
       customization:
         systemExtensions:
           officialExtensions:
-            - siderolabs/nvidia-container-toolkit-production
-            - siderolabs/nvidia-open-gpu-kernel-modules-production
             - siderolabs/qemu-guest-agent
             - siderolabs/nfsrahead
 
