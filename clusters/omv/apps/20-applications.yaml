@@ -61,6 +61,13 @@ applications:
   gitea:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
+    ignoreDifferences:
+      - group: ""
+        kind: PersistentVolumeClaim
+        name: gitea
+        jsonPointers:
+          - /spec/dataSource
+          - /spec/dataSourceRef
     destination:
       namespace: default
     source:
