@@ -7,5 +7,5 @@ helmCharts:
     releaseName: milvusdb
     namespace: ai
     repo: https://zilliztech.github.io/milvus-helm/
-    version: "5.0.16"
+    version: "5.0.17"
     valuesFile: values.yaml
