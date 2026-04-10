@@ -92,7 +92,7 @@ applications:
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
-            value: 4Gi
+            value: 8Gi
 
   rancher:
     annotations:
