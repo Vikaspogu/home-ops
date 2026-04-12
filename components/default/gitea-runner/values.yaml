@@ -55,9 +55,9 @@ controllers:
             docker network prune -f || true
             echo "Docker prune complete, daemon running."
             while true; do
-              sleep 1800
+              sleep 3600
+              docker system prune -af --volumes || true
               docker network prune -f || true
-              docker image prune -f || true
             done &
             wait
         env:
