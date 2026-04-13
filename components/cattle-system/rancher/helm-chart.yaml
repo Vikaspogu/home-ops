@@ -19,6 +19,14 @@ spec:
       enabled: false
     tls: external
     agentTLSMode: "system-store"
+    startupProbe:
+      failureThreshold: 24
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        memory: 1536Mi
     extraEnv:
       - name: CATTLE_FEATURES
         value: "fleet=false"
