@@ -30,7 +30,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-agent
-          tag: 20260413181957-9051cc1
+          tag: 20260413184044-afad6af
           pullPolicy: Always
         env:
           TZ: America/New_York
