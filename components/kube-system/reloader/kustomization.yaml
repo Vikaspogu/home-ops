@@ -6,7 +6,7 @@ helmCharts:
     releaseName: reloader
     namespace: kube-system
     repo: https://stakater.github.io/stakater-charts
-    version: "2.2.10"
+    version: "2.2.11"
     valuesInline:
       nameOverride: reloader
       fullnameOverride: reloader
