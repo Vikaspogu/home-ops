@@ -388,15 +388,15 @@ applications:
     source:
       path: components/ai/ivan
       plugin:
-      env:
-        - name: STORAGE_CLASS
-          value: ceph-block
-        - name: VOLUME_SNAPSHOT_CLASS
-          value: csi-ceph-blockpool
-        - name: VOLSYNC_CAPACITY
-          value: 2Gi
-        - name: VOLSYNC_CACHE_CAPACITY
-          value: 4Gi
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 2Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 4Gi
 
   ivan-dashboard:
     annotations:
