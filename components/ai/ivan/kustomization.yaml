@@ -5,7 +5,8 @@ namespace: ai
 resources:
   - external-secret.yaml
   - external-secret-kc.yaml
-
+components:
+  - ../../volsync-system/volsync-replication
 helmCharts:
   - name: app-template
     releaseName: ivan
