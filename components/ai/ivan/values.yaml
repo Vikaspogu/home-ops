@@ -30,7 +30,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-agent
-          tag: 20260414220330-125f5e9
+          tag: 20260415125321-20a9d6e
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -80,7 +80,6 @@ controllers:
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
-
 persistence:
   data:
     existingClaim: ivan
