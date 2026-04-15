@@ -80,7 +80,14 @@ controllers:
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
+
 persistence:
+  data:
+    existingClaim: ivan
+    advancedMounts:
+      app:
+        main:
+        - path: /data/plugins
   kubeconfigs:
     type: secret
     name: ivan-kubeconfigs

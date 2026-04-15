@@ -190,14 +190,6 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
-  # kite:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/kite
-
   mosquitto:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -205,24 +197,6 @@ applications:
       namespace: default
     source:
       path: components/default/mosquitto
-
-  # nextcloud:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/nextcloud
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 5Gi
-  #         - name: VOLSYNC_CACHE_CAPACITY
-  #           value: 8Gi
 
   node-feature-discovery-rules:
     annotations:
@@ -413,6 +387,16 @@ applications:
       namespace: ai
     source:
       path: components/ai/ivan
+      plugin:
+      env:
+        - name: STORAGE_CLASS
+          value: ceph-block
+        - name: VOLUME_SNAPSHOT_CLASS
+          value: csi-ceph-blockpool
+        - name: VOLSYNC_CAPACITY
+          value: 2Gi
+        - name: VOLSYNC_CACHE_CAPACITY
+          value: 4Gi
 
   ivan-dashboard:
     annotations:
@@ -422,13 +406,13 @@ applications:
     source:
       path: components/ai/ivan-dashboard
 
-  chromadb:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/chromadb
+  # chromadb:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: ai
+  #   source:
+  #     path: components/ai/chromadb
 
   openclaw:
     annotations:
