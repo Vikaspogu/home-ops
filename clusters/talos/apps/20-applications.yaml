@@ -406,22 +406,6 @@ applications:
     source:
       path: components/ai/ivan-dashboard
 
-  # chromadb:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: ai
-  #   source:
-  #     path: components/ai/chromadb
-
-  openclaw:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/openclaw
-
   valetudopng:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -429,14 +413,6 @@ applications:
       namespace: default
     source:
       path: components/default/valetudopng
-
-  # vikunja:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/vikunja
 
   valkey:
     annotations:
