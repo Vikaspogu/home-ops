@@ -25,6 +25,13 @@ spec:
       backendRefs:
         - name: ivan-dashboard-api
           port: 8001
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /mcp
+      backendRefs:
+        - name: ivan-dashboard-api
+          port: 8001
     - backendRefs:
         - name: ivan-dashboard-ui
           port: 80
