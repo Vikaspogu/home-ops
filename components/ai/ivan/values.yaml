@@ -30,17 +30,17 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-agent
-          tag: 20260418125554-d068376
+          tag: 20260418153146-1a0e8e8
           pullPolicy: Always
         command: ["nat"]
         args:
-          - serve
-          - --config_file
-          - /app/.venv/lib/python3.13/site-packages/ivan/config/config.yaml
-          - --host
-          - "0.0.0.0"
-          - --port
-          - "8080"
+        - serve
+        - --config_file
+        - /app/.venv/lib/python3.13/site-packages/ivan/config/config.yaml
+        - --host
+        - "0.0.0.0"
+        - --port
+        - "8080"
         env:
           TZ: America/New_York
           DASHBOARD_API_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001"
