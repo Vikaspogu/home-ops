@@ -32,10 +32,17 @@ controllers:
           repository: gitea.omv.a113.casa/vpogu/ivan-agent
           tag: 20260418125554-d068376
           pullPolicy: Always
+        command: ["nat"]
+        args:
+          - serve
+          - --config_file
+          - /app/.venv/lib/python3.13/site-packages/ivan/config/config.yaml
+          - --host
+          - "0.0.0.0"
+          - --port
+          - "8080"
         env:
           TZ: America/New_York
-          DIGEST_HOUR: "9"
-          DIGEST_MINUTE: "00"
           DASHBOARD_API_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001"
           GITEA_DOMAIN: "gitea.omv.${CLUSTER_DOMAIN}"
           GITEA_OWNER: "vpogu"
@@ -43,11 +50,6 @@ controllers:
           GIT_NAME: "I.V.A.N."
           GIT_EMAIL: "ivan@${CLUSTER_DOMAIN}"
           GITOPS_REPO: "Vikaspogu/home-ops"
-          TELEGRAM_ALERTS_TOPIC_ID: "2"
-          TELEGRAM_RESOLVED_TOPIC_ID: "3"
-          TELEGRAM_DIGEST_TOPIC_ID: "4"
-          TELEGRAM_INFRA_TOPIC_ID: "5"
-          TELEGRAM_LIFESTYLE_TOPIC_ID: "6"
           LOG_HEALER_CLUSTER: "talos"
           LOG_HEALER_NAMESPACE: "ai"
           LOG_HEALER_DEPLOYMENTS: "ivan,ivan-dashboard-api,ivan-dashboard-ui"
@@ -60,31 +62,33 @@ controllers:
             memory: 2Gi
         probes:
           startup:
-            enabled: false
+            enabled: true
             custom: true
             spec:
-              exec:
-                command:
-                - pgrep
-                - -f
-                - ivan.main
-              initialDelaySeconds: 10
+              httpGet:
+                path: /health
+                port: 8080
+              initialDelaySeconds: 15
               periodSeconds: 5
               failureThreshold: 30
           liveness:
-            enabled: false
+            enabled: true
             custom: true
             spec:
-              exec:
-                command:
-                - pgrep
-                - -f
-                - ivan.main
+              httpGet:
+                path: /health
+                port: 8080
               periodSeconds: 30
               failureThreshold: 3
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: 8080
 persistence:
   data:
     existingClaim: ivan
