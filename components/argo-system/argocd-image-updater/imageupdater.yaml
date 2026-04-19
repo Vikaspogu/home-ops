@@ -23,7 +23,7 @@ spec:
           writeBackTarget: "helmvalues:./values.yaml"
       images:
         - alias: ivan
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-agent"
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-agent-v3"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
           manifestTargets:
@@ -53,18 +53,3 @@ spec:
             helm:
               name: controllers.ui.containers.main.image.repository
               tag: controllers.ui.containers.main.image.tag
-    - namePattern: "recall"
-      writeBackConfig:
-        method: "git:secret:argo-system/git-creds"
-        gitConfig:
-          branch: main
-          writeBackTarget: "helmvalues:./values.yaml"
-      images:
-        - alias: recall
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/recall-api"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.main.image.repository
-              tag: controllers.app.containers.main.image.tag
