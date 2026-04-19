@@ -22,7 +22,7 @@ controllers:
         env:
           TZ: America/New_York
           PYTHONPATH: /app/src
-          DASHBOARD_MCP_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001/mcp"
+          DASHBOARD_MCP_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001/mcp/"
           KUBECONFIG: /etc/kube/talos
         envFrom: *envFrom
         resources:
