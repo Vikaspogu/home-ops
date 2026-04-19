@@ -24,6 +24,8 @@ controllers:
           PYTHONPATH: /app/src
           DASHBOARD_MCP_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001/mcp/"
           KUBECONFIG: /etc/kube/talos
+          VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/0"
+          COST_RATES: "claude-opus-4:15.0/75.0,gpt-5.2:2.5/10.0,gemma-4-27b:0.0/0.0"
         envFrom: *envFrom
         resources:
           requests:
