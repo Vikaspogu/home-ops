@@ -12,47 +12,18 @@ controllers:
         envFrom: &envFrom
         - secretRef:
             name: ivan-secret
-      init-gog:
-        image:
-          repository: busybox
-          tag: 1.37.0
-        command: ["sh", "-c"]
-        args:
-        - |
-          if [ -n "$GOG_BUNDLE" ]; then
-            echo "$GOG_BUNDLE" | base64 -d | tar -xzf - -C /root/.config/gogcli/
-            echo "gogcli config unpacked"
-          else
-            echo "GOG_BUNDLE not set, skipping"
-          fi
-        envFrom: *envFrom
     containers:
       main:
         image:
-          repository: gitea.omv.a113.casa/vpogu/ivan-agent
+          repository: gitea.omv.a113.casa/vpogu/ivan-agent-v3
           tag: 20260419145054-a9b009f
-          pullPolicy: Always
-        command: ["nat"]
-        args:
-        - serve
-        - --config_file
-        - /app/.venv/lib/python3.13/site-packages/ivan/config/config.yaml
-        - --host
-        - "0.0.0.0"
-        - --port
-        - "8080"
+          pullPolicy: IfNotPresent
+        command: ["python", "-m", "main"]
         env:
           TZ: America/New_York
-          DASHBOARD_API_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001"
-          GITEA_DOMAIN: "gitea.omv.${CLUSTER_DOMAIN}"
-          GITEA_OWNER: "vpogu"
-          GITHUB_OWNER: "Vikaspogu"
-          GIT_NAME: "I.V.A.N."
-          GIT_EMAIL: "ivan@${CLUSTER_DOMAIN}"
-          GITOPS_REPO: "Vikaspogu/home-ops"
-          LOG_HEALER_CLUSTER: "talos"
-          LOG_HEALER_NAMESPACE: "ai"
-          LOG_HEALER_DEPLOYMENTS: "ivan,ivan-dashboard-api,ivan-dashboard-ui"
+          PYTHONPATH: /app/src
+          DASHBOARD_MCP_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001/mcp"
+          KUBECONFIG: /etc/kube/talos
         envFrom: *envFrom
         resources:
           requests:
@@ -62,51 +33,16 @@ controllers:
             memory: 2Gi
         probes:
           startup:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /health
-                port: 8080
-              initialDelaySeconds: 15
-              periodSeconds: 5
-              failureThreshold: 30
+            enabled: false
           liveness:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /health
-                port: 8080
-              periodSeconds: 30
-              failureThreshold: 3
+            enabled: false
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
-service:
-  app:
-    controller: app
-    ports:
-      http:
-        port: 8080
 persistence:
-  data:
-    existingClaim: ivan
-    advancedMounts:
-      app:
-        main:
-        - path: /data/plugins
   kubeconfigs:
     type: secret
     name: ivan-kubeconfigs
     globalMounts:
     - path: /etc/kube
       readOnly: true
-  gog-config:
-    type: emptyDir
-    advancedMounts:
-      app:
-        init-gog:
-        - path: /root/.config/gogcli
-        main:
-        - path: /root/.config/gogcli
