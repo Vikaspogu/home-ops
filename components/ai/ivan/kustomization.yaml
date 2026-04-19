@@ -5,7 +5,6 @@ namespace: ai
 resources:
   - external-secret.yaml
   - external-secret-kc.yaml
-  - http-route.yaml
 components:
   - ../../volsync-system/volsync-replication
 helmCharts:
