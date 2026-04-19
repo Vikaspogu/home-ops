@@ -26,6 +26,9 @@ controllers:
           KUBECONFIG: /etc/kube/talos
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/0"
           COST_RATES: "claude-opus-4:15.0/75.0,gpt-5.2:2.5/10.0,gemma-4-27b:0.0/0.0"
+          HOME_OPS_REPO_URL: "https://gitea.omv.${CLUSTER_DOMAIN}/vpogu/home-ops.git"
+          WEATHER_LATITUDE: "40.1717"
+          WEATHER_LONGITUDE: "-83.0841"
         envFrom: *envFrom
         resources:
           requests:
@@ -35,9 +38,24 @@ controllers:
             memory: 2Gi
         probes:
           startup:
-            enabled: false
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8080
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              failureThreshold: 30
           liveness:
-            enabled: false
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8080
+              periodSeconds: 30
+              failureThreshold: 3
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
