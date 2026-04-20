@@ -12,6 +12,20 @@ controllers:
         envFrom: &envFrom
         - secretRef:
             name: ivan-secret
+      init-gog:
+        image:
+          repository: busybox
+          tag: 1.37.0
+        command: ["sh", "-c"]
+        args:
+        - |
+          if [ -n "$GOG_BUNDLE" ]; then
+            echo "$GOG_BUNDLE" | base64 -d | tar -xzf - -C /root/.config/gogcli/
+            echo "gogcli config unpacked"
+          else
+            echo "GOG_BUNDLE not set, skipping"
+          fi
+        envFrom: *envFrom
     containers:
       main:
         image:
@@ -69,3 +83,11 @@ persistence:
     globalMounts:
     - path: /etc/kube
       readOnly: true
+  gog-config:
+    type: emptyDir
+    advancedMounts:
+      app:
+        init-gog:
+        - path: /root/.config/gogcli
+        main:
+        - path: /root/.config/gogcli
