@@ -24,6 +24,9 @@ controllers:
           PYTHONPATH: /app/src
           DASHBOARD_MCP_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001/mcp/"
           KUBECONFIG: /etc/kube/talos
+          KUBECONFIG_DIR: /etc/kube
+          PROMETHEUS_URL: "http://prometheus-operated.observability.svc.cluster.local:9090"
+          LOCAL_MODEL: fast
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/0"
           COST_RATES: "claude-opus-4:15.0/75.0,gpt-5.2:2.5/10.0,gemma-4-27b:0.0/0.0"
           HOME_OPS_REPO_URL: "https://gitea.omv.${CLUSTER_DOMAIN}/vpogu/home-ops.git"
