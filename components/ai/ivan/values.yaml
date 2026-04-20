@@ -76,6 +76,12 @@ controllers:
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: 8080
 persistence:
   kubeconfigs:
     type: secret

@@ -13,6 +13,7 @@ controllers:
           TZ: America/New_York
           CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
           LITELLM_MODEL: "fast"
+          AGENT_V3_URL: "http://ivan.ai.svc.cluster.local:8080"
         envFrom: &envFrom
         - secretRef:
             name: ivan-dashboard-secret
