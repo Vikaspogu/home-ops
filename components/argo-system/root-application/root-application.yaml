@@ -39,3 +39,4 @@ spec:
       kind: Application
       jsonPointers:
         - /spec/syncPolicy
+        - /status
