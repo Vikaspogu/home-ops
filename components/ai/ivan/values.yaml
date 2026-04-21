@@ -39,6 +39,8 @@ controllers:
           DASHBOARD_MCP_URL: "http://ivan-dashboard-api.ai.svc.cluster.local:8001/mcp/"
           KUBECONFIG: /etc/kube/talos
           KUBECONFIG_DIR: /etc/kube
+          LOG_ANALYZER_NAMESPACES: "ai"
+          LOG_ANALYZER_CLUSTER: "talos"
           PROMETHEUS_URL: "http://prometheus-operated.observability.svc.cluster.local:9090"
           LOCAL_MODEL: fast
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/0"
