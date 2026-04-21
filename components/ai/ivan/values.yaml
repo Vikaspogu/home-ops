@@ -46,6 +46,7 @@ controllers:
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/0"
           COST_RATES: "claude-opus-4:15.0/75.0,gpt-5.2:2.5/10.0,gemma-4-27b:0.0/0.0"
           HOME_OPS_REPO_URL: "https://gitea.omv.${CLUSTER_DOMAIN}/vpogu/home-ops.git"
+          REPO_REGISTRY: "ivan=gitea:vpogu/ivan,home-ops=github:vikaspogu/home-ops"
           WEATHER_LATITUDE: "40.1717"
           WEATHER_LONGITUDE: "-83.0841"
         envFrom: *envFrom
