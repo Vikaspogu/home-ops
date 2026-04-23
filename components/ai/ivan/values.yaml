@@ -30,7 +30,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-agent-v3
-          tag: 20260423203129-c1a2108
+          tag: 20260423224824-d457c9a
           pullPolicy: IfNotPresent
         command: ["python", "-m", "main"]
         env:
