@@ -52,6 +52,7 @@ controllers:
           REPO_WORKER_NAMESPACE: ai
           REPO_WORKER_SECRET_NAME: ivan-repo-worker-secret
           REPO_WORKER_IMAGE_PULL_SECRET: gitea-registry-secret
+          REPO_WORKER_TTL_SECONDS_AFTER_FINISHED: "300"
           WEATHER_LATITUDE: "40.1717"
           WEATHER_LONGITUDE: "-83.0841"
         envFrom: *envFrom
