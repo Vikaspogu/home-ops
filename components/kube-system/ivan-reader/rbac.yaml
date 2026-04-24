@@ -141,6 +141,36 @@ roleRef:
   name: ivan-reader
   apiGroup: rbac.authorization.k8s.io
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ivan-repo-worker-manager
+  namespace: ai
+rules:
+  - apiGroups: ["batch"]
+    resources:
+      - jobs
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources:
+      - pods
+      - pods/log
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ivan-repo-worker-manager
+  namespace: ai
+subjects:
+  - kind: ServiceAccount
+    name: ivan-reader
+    namespace: kube-system
+roleRef:
+  kind: Role
+  name: ivan-repo-worker-manager
+  apiGroup: rbac.authorization.k8s.io
+---
 # Namespace-scoped: pods/exec only in rook-ceph for ceph diagnostics
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role

@@ -30,6 +30,14 @@ spec:
             helm:
               name: controllers.app.containers.main.image.repository
               tag: controllers.app.containers.main.image.tag
+        - alias: ivan-repo-worker
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-repo-worker"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
+          manifestTargets:
+            helm:
+              name: controllers.app.containers.main.env.REPO_WORKER_IMAGE_REPOSITORY
+              tag: controllers.app.containers.main.env.REPO_WORKER_IMAGE_TAG
     - namePattern: "ivan-dashboard"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"

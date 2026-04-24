@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: ai
 resources:
   - external-secret.yaml
+  - external-secret-repo-worker.yaml
   - external-secret-kc.yaml
 components:
   - ../../volsync-system/volsync-replication
