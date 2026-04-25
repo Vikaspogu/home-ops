@@ -48,7 +48,7 @@ controllers:
           HOME_OPS_REPO_URL: "https://gitea.omv.${CLUSTER_DOMAIN}/vpogu/home-ops.git"
           REPO_REGISTRY: "ivan=gitea:vpogu/ivan,home-ops=github:vikaspogu/home-ops"
           REPO_WORKER_IMAGE_REPOSITORY: "gitea.omv.a113.casa/vpogu/ivan-repo-worker"
-          REPO_WORKER_IMAGE_TAG: 20260424170310-1e48d37
+          REPO_WORKER_IMAGE_TAG: 20260424204012-6489255
           REPO_WORKER_NAMESPACE: ai
           REPO_WORKER_SECRET_NAME: ivan-repo-worker-secret
           REPO_WORKER_IMAGE_PULL_SECRET: gitea-registry-secret
