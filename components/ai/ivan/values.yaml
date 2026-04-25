@@ -45,8 +45,7 @@ controllers:
           LOCAL_MODEL: fast
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/0"
           COST_RATES: "claude-opus-4:15.0/75.0,gpt-5.2:2.5/10.0,gemma-4-27b:0.0/0.0"
-          HOME_OPS_REPO_URL: "https://gitea.omv.${CLUSTER_DOMAIN}/vpogu/home-ops.git"
-          REPO_REGISTRY: "ivan=gitea:vpogu/ivan,home-ops=github:vikaspogu/home-ops"
+          GITHUB_USER: "vikaspogu"
           REPO_WORKER_IMAGE_REPOSITORY: "gitea.omv.a113.casa/vpogu/ivan-repo-worker"
           REPO_WORKER_IMAGE_TAG: 20260425124952-41f3cb7
           REPO_WORKER_NAMESPACE: ai
