@@ -23,7 +23,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/home-operations/home-assistant
-          tag: 2026.4.3@sha256:328680ff068d032fed0b0f64c26bd474ae6983e25d633ac8debce858a4742698
+          tag: 2026.4.4@sha256:589e4c1c93025d01320c14329427197c8b52d4f2e241a6bc1d6207837e07b4a7
         env:
           TZ: "America/New_York"
         probes:
@@ -42,7 +42,7 @@ controllers:
       codeserver:
         image:
           repository: ghcr.io/coder/code-server
-          tag: 4.116.0@sha256:4671fcaba60044478bc8238ad630cd53e19294de29012e6e2069411273f02415
+          tag: 4.117.0@sha256:e6702766518b961c7e3c41095c129c7c9a82b041578c53326c52fa363a057727
           pullPolicy: IfNotPresent
         env:
           TZ: "America/New_York"
