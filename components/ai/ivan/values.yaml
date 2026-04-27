@@ -54,6 +54,7 @@ controllers:
           REPO_WORKER_TTL_SECONDS_AFTER_FINISHED: "300"
           WEATHER_LATITUDE: "40.1717"
           WEATHER_LONGITUDE: "-83.0841"
+          GITEA_USER: "vpogu"
         envFrom: *envFrom
         resources:
           requests:
