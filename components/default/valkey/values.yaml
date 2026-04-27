@@ -13,7 +13,6 @@ controllers:
           - -c
           - |
             valkey-server \
-              --requirepass "$(cat /secret/valkey-password)" \
               --port 6379 \
               --dir /data \
               --save "300 1" \
