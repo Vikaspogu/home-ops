@@ -10,5 +10,5 @@ helmCharts:
     releaseName: loki
     namespace: observability
     repo: oci://ghcr.io/grafana/helm-charts
-    version: 6.55.0
+    version: 7.0.0
     valuesFile: values.yaml
