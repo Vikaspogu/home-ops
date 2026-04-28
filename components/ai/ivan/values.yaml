@@ -30,7 +30,7 @@ controllers:
       main:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-agent-v3
-          tag: 20260428140538-c424828
+          tag: 20260428152925-9c8f316
           pullPolicy: IfNotPresent
         command: ["python", "-m", "main"]
         env:
@@ -47,7 +47,7 @@ controllers:
           COST_RATES: "claude-opus-4:15.0/75.0,gpt-5.2:2.5/10.0,gemma-4-27b:0.0/0.0"
           GITHUB_USER: "vikaspogu"
           REPO_WORKER_IMAGE_REPOSITORY: "gitea.omv.a113.casa/vpogu/ivan-repo-worker"
-          REPO_WORKER_IMAGE_TAG: "20260428140538-c424828"
+          REPO_WORKER_IMAGE_TAG: ""
           REPO_WORKER_NAMESPACE: ai
           REPO_WORKER_SECRET_NAME: ivan-repo-worker-secret
           REPO_WORKER_IMAGE_PULL_SECRET: gitea-registry-secret
