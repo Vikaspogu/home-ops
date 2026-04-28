@@ -5,8 +5,8 @@ controllers:
     containers:
       app:
         image:
-          repository: quay.io/redlib/redlib
-          tag: latest@sha256:e6647a94d553bf3f7c95c53fc6d9da5785e6c278d9002e99ea32abdb5e3c513a
+          repository: ghcr.io/silvenga/redlib
+          tag: latest
         env:
           REDLIB_ROBOTS_DISABLE_INDEXING: "on"
           REDLIB_DEFAULT_THEME: "dracula"
