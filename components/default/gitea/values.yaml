@@ -33,7 +33,7 @@ controllers:
           GITEA__SERVER__DOMAIN: "gitea.${CLUSTER_DOMAIN}"
           GITEA__SERVER__ROOT_URL: "https://gitea.${CLUSTER_DOMAIN}"
           GITEA__SERVER__SSH_DOMAIN: "ssh.${CLUSTER_DOMAIN}"
-          GITEA__SERVER__SSH_PORT: 22
+          GITEA__SERVER__SSH_PORT: 2222
         securityContext:
           allowPrivilegeEscalation: false
           # mkdir: can't create directory '/tmp/gitea': Read-only file system
@@ -54,11 +54,14 @@ service:
         port: 3000
   ssh:
     enabled: true
+    # Phase 1 (DGX coding bot): expose Gitea's built-in SSH server externally
+    # via Klipper svclb on port 2222 (port 22 is taken by host OpenSSH).
+    type: LoadBalancer
     controller: *name
     ports:
       ssh:
         enabled: true
-        port: 22
+        port: 2222
         targetPort: 2222
         protocol: TCP
 
