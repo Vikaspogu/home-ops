@@ -18,6 +18,21 @@ spec:
       sectionName: https
   hostnames: ["ivan.${CLUSTER_DOMAIN}"]
   rules:
+    # agent-v3 (Service `ivan`, port 8080) — coding-dispatcher endpoints
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/coding-dispatches/
+        - path:
+            type: PathPrefix
+            value: /api/bot-alerts
+        - path:
+            type: PathPrefix
+            value: /webhooks/gitea_pr
+      backendRefs:
+        - name: ivan
+          port: 8080
+    # dashboard API (incl. /api/agents, /api/briefing, /api/monitors, etc.)
     - matches:
         - path:
             type: PathPrefix
