@@ -42,7 +42,6 @@ controllers:
           LOG_ANALYZER_NAMESPACES: "ai"
           LOG_ANALYZER_CLUSTER: "talos"
           PROMETHEUS_URL: "http://prometheus-operated.observability.svc.cluster.local:9090"
-          LOCAL_MODEL: fast
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/0"
           COST_RATES: "claude-opus-4:15.0/75.0,gpt-5.2:2.5/10.0,gemma-4-27b:0.0/0.0"
           GITHUB_USER: "vikaspogu"
@@ -58,6 +57,8 @@ controllers:
           WEATHER_LONGITUDE: "-83.0841"
           GITEA_USER: "vpogu"
           SCHEDULED_PROACTIVE_TASKS_V2_ENABLED: "true"
+          LOCAL_MODEL: "gemma4:26b"
+          OLLAMA_BASE_URL: "http://spark.a113.internal:11434"
         envFrom: *envFrom
         resources:
           requests:
