@@ -12,9 +12,6 @@ controllers:
         env:
           TZ: America/New_York
           CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
-          LITELLM_MODEL: "fast"
-          OLLAMA_BASE_URL: "http://spark.a113.internal:11434"
-          OLLAMA_PROMPT_MODEL: "gemma4:26b"
           AGENT_V3_URL: "http://ivan.ai.svc.cluster.local:8080"
         envFrom: &envFrom
         - secretRef:
