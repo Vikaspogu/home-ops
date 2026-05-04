@@ -35,7 +35,7 @@ controllers:
       api:
         image: &ivanOsImage
           repository: gitea.omv.a113.casa/vpogu/ivan-os
-          tag: 508b40997874
+          tag: b8bf6d44e3df
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
