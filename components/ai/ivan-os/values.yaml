@@ -10,32 +10,32 @@ controllers:
           repository: ghcr.io/home-operations/postgres-init
           tag: 18.3.0@sha256:6fa1f331cddd2eb0b6afa7b8d3685c864127a81ab01c3d9400bc3ff5263a51cf
         envFrom: &envFrom
-          - secretRef:
-              name: ivan-os-secret
+        - secretRef:
+            name: ivan-os-secret
       clone-repo:
         image:
           repository: alpine/git
           tag: 2.49.1
         command: ["sh", "-c"]
         args:
-          - |
-            rm -rf /workspace/ivan-os
-            cat > /tmp/git-askpass <<'EOF'
-            #!/bin/sh
-            case "$1" in
-              Username*) echo "${GITEA_USER:-vpogu}" ;;
-              Password*) echo "${GITEA_TOKEN}" ;;
-            esac
-            EOF
-            chmod 700 /tmp/git-askpass
-            GIT_ASKPASS=/tmp/git-askpass git clone --depth=1 "${GITEA_REPO_URL}" /workspace/ivan-os
-            rm -f /tmp/git-askpass
+        - |
+          rm -rf /workspace/ivan-os
+          cat > /tmp/git-askpass <<'EOF'
+          #!/bin/sh
+          case "$1" in
+            Username*) echo "${GITEA_USER:-vpogu}" ;;
+            Password*) echo "${GITEA_TOKEN}" ;;
+          esac
+          EOF
+          chmod 700 /tmp/git-askpass
+          GIT_ASKPASS=/tmp/git-askpass git clone --depth=1 "${GITEA_REPO_URL}" /workspace/ivan-os
+          rm -f /tmp/git-askpass
         envFrom: *envFrom
     containers:
       api:
         image: &ivanOsImage
           repository: gitea.omv.a113.casa/vpogu/ivan-os
-          tag: 83df7232bb58
+          tag: 508b40997874
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
@@ -88,7 +88,7 @@ controllers:
             memory: 2Gi
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
+      - name: gitea-registry-secret
 service:
   app:
     controller: app
@@ -101,8 +101,8 @@ persistence:
     advancedMounts:
       app:
         clone-repo:
-          - path: /workspace
+        - path: /workspace
         api:
-          - path: /workspace
+        - path: /workspace
         telegram:
-          - path: /workspace
+        - path: /workspace
