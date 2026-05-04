@@ -49,7 +49,7 @@ spec:
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-os"
           commonUpdateSettings:
             allowTags: 'regexp:^[a-f0-9]{12}$'
-            updateStrategy: latest
+            updateStrategy: newest-build
           manifestTargets:
             helm:
               name: controllers.app.containers.api.image.repository
@@ -58,7 +58,7 @@ spec:
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-os"
           commonUpdateSettings:
             allowTags: 'regexp:^[a-f0-9]{12}$'
-            updateStrategy: latest
+            updateStrategy: newest-build
           manifestTargets:
             helm:
               name: controllers.app.containers.telegram.image.repository
