@@ -1,0 +1,108 @@
+controllers:
+  app:
+    replicas: 1
+    strategy: RollingUpdate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.3.0@sha256:6fa1f331cddd2eb0b6afa7b8d3685c864127a81ab01c3d9400bc3ff5263a51cf
+        envFrom: &envFrom
+          - secretRef:
+              name: ivan-os-secret
+      clone-repo:
+        image:
+          repository: alpine/git
+          tag: 2.49.1
+        command: ["sh", "-c"]
+        args:
+          - |
+            rm -rf /workspace/ivan-os
+            cat > /tmp/git-askpass <<'EOF'
+            #!/bin/sh
+            case "$1" in
+              Username*) echo "${GITEA_USER:-vpogu}" ;;
+              Password*) echo "${GITEA_TOKEN}" ;;
+            esac
+            EOF
+            chmod 700 /tmp/git-askpass
+            GIT_ASKPASS=/tmp/git-askpass git clone --depth=1 "${GITEA_REPO_URL}" /workspace/ivan-os
+            rm -f /tmp/git-askpass
+        envFrom: *envFrom
+    containers:
+      api:
+        image: &ivanOsImage
+          repository: gitea.omv.a113.casa/vpogu/ivan-os
+          tag: 83df7232bb58
+          pullPolicy: Always
+        env: &appEnv
+          TZ: America/New_York
+          IVAN_OS_REPO_PATH: /workspace/ivan-os
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: &port 8080
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              failureThreshold: 30
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *port
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *port
+              periodSeconds: 10
+      telegram:
+        image: *ivanOsImage
+        command: ["python", "-m", "app.channels.telegram"]
+        env: *appEnv
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *port
+persistence:
+  workspace:
+    type: emptyDir
+    advancedMounts:
+      app:
+        clone-repo:
+          - path: /workspace
+        api:
+          - path: /workspace
+        telegram:
+          - path: /workspace
