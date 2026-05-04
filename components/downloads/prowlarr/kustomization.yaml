@@ -9,5 +9,5 @@ helmCharts:
     releaseName: prowlarr
     namespace: downloads
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "4.6.2"
+    version: "5.0.0"
     valuesFile: values.yaml
