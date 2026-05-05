@@ -47,7 +47,7 @@ controllers:
           PYTHONPATH: /workspace/ivan-os/apps/backend
           IVAN_OS_REPO_PATH: /workspace/ivan-os
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
-          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os-coding-worker:1de9871c2b1a
+          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os:39bf96ec407a
           IVAN_OS_WORKER_NAMESPACE: ai
           IVAN_OS_WORKER_SECRET_NAME: ivan-os-secret
           IVAN_OS_WORKER_SERVICE_ACCOUNT: ivan-os
