@@ -39,7 +39,7 @@ controllers:
       api:
         image: &ivanOsImage
           repository: gitea.omv.a113.casa/vpogu/ivan-os
-          tag: 95237dc2e590
+          tag: 20e0cdb90700
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
@@ -47,7 +47,7 @@ controllers:
           PYTHONPATH: /workspace/ivan-os/apps/backend
           IVAN_OS_REPO_PATH: /workspace/ivan-os
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
-          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os:25610a71fa21
+          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os:20e0cdb90700
           IVAN_OS_WORKER_NAMESPACE: ai
           IVAN_OS_WORKER_SECRET_NAME: ivan-os-secret
           IVAN_OS_WORKER_SERVICE_ACCOUNT: ivan-os
