@@ -43,6 +43,7 @@ controllers:
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
+          PYTHONPATH: /workspace/ivan-os/apps/backend
           IVAN_OS_REPO_PATH: /workspace/ivan-os
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
           IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os-coding-worker:cccfa0d0aa75
@@ -58,6 +59,15 @@ controllers:
             memory: 128Mi
           limits:
             memory: 512Mi
+        command: ["uvicorn"]
+        args:
+        - app.main:app
+        - --app-dir
+        - /workspace/ivan-os/apps/backend
+        - --host
+        - 0.0.0.0
+        - --port
+        - "8080"
         probes:
           startup:
             enabled: true
