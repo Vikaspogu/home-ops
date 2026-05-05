@@ -43,6 +43,7 @@ controllers:
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
+          PATH: /app/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           PYTHONPATH: /workspace/ivan-os/apps/backend
           IVAN_OS_REPO_PATH: /workspace/ivan-os
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
@@ -59,7 +60,7 @@ controllers:
             memory: 128Mi
           limits:
             memory: 512Mi
-        command: ["uvicorn"]
+        command: ["/app/.venv/bin/uvicorn"]
         args:
         - app.main:app
         - --app-dir
@@ -98,7 +99,7 @@ controllers:
               periodSeconds: 10
       telegram:
         image: *ivanOsImage
-        command: ["python", "-m", "app.channels.telegram"]
+        command: ["/app/.venv/bin/python", "-m", "app.channels.telegram"]
         env: *appEnv
         envFrom: *envFrom
         resources:
