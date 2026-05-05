@@ -45,7 +45,7 @@ controllers:
           TZ: America/New_York
           IVAN_OS_REPO_PATH: /workspace/ivan-os
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
-          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os-coding-worker:651ff5b27557
+          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os-coding-worker:f53345748d99
           IVAN_OS_WORKER_NAMESPACE: ai
           IVAN_OS_WORKER_SECRET_NAME: ivan-os-secret
           IVAN_OS_WORKER_SERVICE_ACCOUNT: ivan-os
