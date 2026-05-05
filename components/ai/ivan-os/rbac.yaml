@@ -1,0 +1,21 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ivan-os-coding-worker
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "delete", "get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ivan-os-coding-worker
+subjects:
+  - kind: ServiceAccount
+    name: ivan-os
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ivan-os-coding-worker
