@@ -39,13 +39,13 @@ controllers:
       api:
         image: &ivanOsImage
           repository: gitea.omv.a113.casa/vpogu/ivan-os
-          tag: f53345748d99
+          tag: cccfa0d0aa75
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
           IVAN_OS_REPO_PATH: /workspace/ivan-os
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
-          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os-coding-worker:f53345748d99
+          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os-coding-worker:cccfa0d0aa75
           IVAN_OS_WORKER_NAMESPACE: ai
           IVAN_OS_WORKER_SECRET_NAME: ivan-os-secret
           IVAN_OS_WORKER_SERVICE_ACCOUNT: ivan-os
