@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: ai
 resources:
   - external-secret.yaml
+  - http-route.yaml
   - rbac.yaml
 helmCharts:
   - name: app-template

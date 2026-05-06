@@ -2,21 +2,16 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: &app ivan-os-dashboard
+  name: &app ivan-os
   labels:
     app.kubernetes.io/instance: *app
     app.kubernetes.io/name: *app
-  annotations:
-    gethomepage.dev/href: "https://dashboard.${CLUSTER_DOMAIN}"
-    gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: AI
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homer.png
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
       namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
-  hostnames: ["dashboard.${CLUSTER_DOMAIN}"]
+  hostnames: ["ivan-api.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
         - name: *app
