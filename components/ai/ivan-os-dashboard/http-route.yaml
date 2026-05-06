@@ -1,0 +1,48 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: &app ivan-os-dashboard
+  labels:
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
+  annotations:
+    gethomepage.dev/href: "https://dashboard.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: AI
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homer.png
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["dashboard.${CLUSTER_DOMAIN}"]
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /bartender
+        - path:
+            type: PathPrefix
+            value: /media
+        - path:
+            type: PathPrefix
+            value: /chat
+        - path:
+            type: PathPrefix
+            value: /migrations
+        - path:
+            type: PathPrefix
+            value: /tasks
+        - path:
+            type: PathPrefix
+            value: /health
+        - path:
+            type: PathPrefix
+            value: /version
+      backendRefs:
+        - name: ivan-os
+          port: 8080
+    - backendRefs:
+        - name: *app
+          port: 8080

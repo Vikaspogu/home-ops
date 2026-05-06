@@ -406,6 +406,14 @@ applications:
     source:
       path: components/ai/ivan-os
 
+  ivan-os-dashboard:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/ivan-os-dashboard
+
   ivan-dashboard:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

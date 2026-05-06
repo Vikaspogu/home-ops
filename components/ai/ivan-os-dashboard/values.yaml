@@ -1,0 +1,59 @@
+---
+controllers:
+  app:
+    replicas: 1
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/ivan-os-dashboard
+          tag: d84a45ab05a0
+          pullPolicy: Always
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: &port 8080
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *port
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *port
+              initialDelaySeconds: 3
+              periodSeconds: 3
+              failureThreshold: 10
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *port

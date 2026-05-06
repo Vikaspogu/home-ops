@@ -47,7 +47,8 @@ controllers:
           PYTHONPATH: /workspace/ivan-os/apps/backend
           IVAN_OS_REPO_PATH: /workspace/ivan-os
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
-          IVAN_OS_WORKER_IMAGE: gitea.omv.a113.casa/vpogu/ivan-os:f1cd172b120f
+          IVAN_OS_WORKER_IMAGE_REPOSITORY: gitea.omv.a113.casa/vpogu/ivan-os
+          IVAN_OS_WORKER_IMAGE_TAG: d84a45ab05a0
           IVAN_OS_WORKER_NAMESPACE: ai
           IVAN_OS_WORKER_SECRET_NAME: ivan-os-secret
           IVAN_OS_WORKER_SERVICE_ACCOUNT: ivan-os
@@ -60,15 +61,14 @@ controllers:
             memory: 128Mi
           limits:
             memory: 512Mi
-        command: ["/app/.venv/bin/uvicorn"]
+        command: ["/bin/sh", "-c"]
         args:
-        - app.main:app
-        - --app-dir
-        - /workspace/ivan-os/apps/backend
-        - --host
-        - 0.0.0.0
-        - --port
-        - "8080"
+        - |
+          export IVAN_OS_WORKER_IMAGE="$(printenv IVAN_OS_WORKER_IMAGE_REPOSITORY):$(printenv IVAN_OS_WORKER_IMAGE_TAG)"
+          exec /app/.venv/bin/uvicorn app.main:app \
+            --app-dir /workspace/ivan-os/apps/backend \
+            --host 0.0.0.0 \
+            --port 8080
         probes:
           startup:
             enabled: true
@@ -99,7 +99,11 @@ controllers:
               periodSeconds: 10
       telegram:
         image: *ivanOsImage
-        command: ["/app/.venv/bin/python", "-m", "app.channels.telegram"]
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          export IVAN_OS_WORKER_IMAGE="$(printenv IVAN_OS_WORKER_IMAGE_REPOSITORY):$(printenv IVAN_OS_WORKER_IMAGE_TAG)"
+          exec /app/.venv/bin/python -m app.channels.telegram
         env: *appEnv
         envFrom: *envFrom
         resources:
