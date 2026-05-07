@@ -101,6 +101,14 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
+  holmesgpt:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/holmesgpt
+
   rancher:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
