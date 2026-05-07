@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hermes-agent-config
+data:
+  config.yaml: |-
+    model:
+      default: "openai/openai/gpt-5.5"
+      provider: "custom"
+      api_key: "${HERMES_API_KEY}"
+      base_url: "${HERMES_BASE_URL}"
+    terminal:
+      backend: local
+      cwd: /opt/data/workspace
+      timeout: 180

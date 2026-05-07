@@ -1,0 +1,80 @@
+---
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      configmap.reloader.stakater.com/reload: hermes-agent-config
+      secret.reloader.stakater.com/reload: hermes-agent-secret
+    initContainers:
+      seed-config:
+        image:
+          repository: busybox
+          tag: 1.37.0
+        command: ["sh", "-c"]
+        args:
+          - |
+            mkdir -p /opt/data/workspace
+            if [ ! -f /opt/data/config.yaml ]; then
+              cp /opt/bootstrap/config.yaml /opt/data/config.yaml
+            fi
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+    containers:
+      app:
+        image:
+          repository: nousresearch/hermes-agent
+          tag: v2026.5.7@sha256:bb976ccbfcb6989c04e331e0b3a4ddf959088fa6163782dc737ce6d62476905a
+        args:
+          - gateway
+          - run
+        env:
+          HERMES_HOME: /opt/data
+          PYTHONUNBUFFERED: "1"
+        envFrom:
+          - secretRef:
+              name: hermes-agent-secret
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            memory: 4Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+
+persistence:
+  app-data:
+    existingClaim: hermes-agent
+    advancedMounts:
+      app:
+        seed-config:
+          - path: /opt/data
+        app:
+          - path: /opt/data
+  config:
+    type: configMap
+    name: hermes-agent-config
+    advancedMounts:
+      app:
+        seed-config:
+          - path: /opt/bootstrap/config.yaml
+            subPath: config.yaml
+            readOnly: true
+  secret:
+    type: secret
+    name: hermes-agent-secret
+    advancedMounts:
+      app:
+        app:
+          - path: /opt/data/.env
+            subPath: .env
+            readOnly: true
