@@ -7,7 +7,7 @@ controllers:
       app:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-os-dashboard
-          tag: f2ace64146a5
+          tag: 1a033d60964d
           pullPolicy: Always
         env:
           IVAN_OS_API_BASE_URL: "https://ivan-api.${CLUSTER_DOMAIN}"
