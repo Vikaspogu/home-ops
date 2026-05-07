@@ -39,7 +39,7 @@ controllers:
       api:
         image: &ivanOsImage
           repository: gitea.omv.a113.casa/vpogu/ivan-os
-          tag: 1a033d60964d
+          tag: 94c346c6ac4b
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
@@ -49,7 +49,7 @@ controllers:
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
           IVAN_OS_CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
           IVAN_OS_WORKER_IMAGE_REPOSITORY: gitea.omv.a113.casa/vpogu/ivan-os
-          IVAN_OS_WORKER_IMAGE_TAG: 1a033d60964d
+          IVAN_OS_WORKER_IMAGE_TAG: 94c346c6ac4b
           IVAN_OS_WORKER_NAMESPACE: ai
           IVAN_OS_WORKER_SECRET_NAME: ivan-os-secret
           IVAN_OS_WORKER_SERVICE_ACCOUNT: ivan-os
