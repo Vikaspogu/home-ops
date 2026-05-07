@@ -56,7 +56,7 @@ controllers:
           IVAN_OS_WORKER_IMAGE_PULL_SECRET: gitea-registry-secret
           IVAN_OS_WORKER_LABEL_DOMAIN: a113.casa
           IVAN_OS_OLLAMA_BASE_URL: "http://spark.a113.internal:11434"
-          IVAN_OS_OLLAMA_MODEL: "gemma4:26b"
+          IVAN_OS_OLLAMA_MODEL: "gpt-oss:20b"
         envFrom: *envFrom
         resources:
           requests:
