@@ -33,6 +33,7 @@ controllers:
           NODE_ENV: production
 
           # -- URLs --
+          APP_URL: https://reactive-resume.${CLUSTER_DOMAIN}
           PUBLIC_URL: http://localhost:8080
 
           # -- Printer (Chrome) --
