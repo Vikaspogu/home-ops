@@ -20,7 +20,22 @@ controllers:
           tag: latest@sha256:a8c4a8dcead76ef9b580559469db4f140eae2c51510ee7d7d3a1485576fee554
         command:
           - sh
-          - docker/entrypoint.sh
+          - -ec
+        args:
+          - |
+            for attempt in $(seq 1 30); do
+              echo "Running database migrations... attempt ${attempt}/30"
+              if /app/.venv/bin/python scripts/provision_db.py; then
+                echo "Database migrations completed"
+                exec /app/.venv/bin/fastapi run --host 0.0.0.0 src/main.py
+              fi
+
+              echo "Database migrations failed; retrying in 10 seconds"
+              sleep 10
+            done
+
+            echo "Database migrations failed after 30 attempts"
+            exit 1
         envFrom: &envFrom
           - secretRef:
               name: honcho-secret
