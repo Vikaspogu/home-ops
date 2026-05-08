@@ -10,6 +10,54 @@ data:
       provider: "custom"
       api_key: "${HERMES_API_KEY}"
       base_url: "${HERMES_BASE_URL}"
+    providers:
+      spark:
+        base_url: http://spark.a113.internal:11434/v1
+        api_mode: chat_completions
+        models:
+          gpt-oss:20b:
+            context_length: 131072
+    auxiliary:
+      vision:
+        provider: main
+        model: openai/openai/gpt-5.5
+        timeout: 180
+      approval:
+        provider: auto
+      mcp:
+        provider: auto
+      title_generation:
+        provider: spark
+        model: gpt-oss:20b
+        timeout: 60
+      skills_hub:
+        provider: spark
+        model: gpt-oss:20b
+        timeout: 90
+      session_search:
+        provider: spark
+        model: gpt-oss:20b
+        timeout: 120
+        max_concurrency: 1
+      compression:
+        provider: spark
+        model: gpt-oss:20b
+        timeout: 300
+      web_extract:
+        provider: spark
+        model: gpt-oss:20b
+        timeout: 600
+      curator:
+        provider: spark
+        model: gpt-oss:20b
+        timeout: 900
+    stt:
+      enabled: true
+      provider: openai
+      openai:
+        model: Systran/faster-whisper-large-v3
+        base_url: http://spark.a113.internal:8300/v1
+        api_key: no-key-required
     terminal:
       backend: local
       cwd: /opt/data/workspace
