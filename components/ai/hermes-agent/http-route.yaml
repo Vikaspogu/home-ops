@@ -11,6 +11,10 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: AI
     gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homer.png
+    gethomepage.dev/name: Hermes Agent
+    gethomepage.dev/description: Hermes Agent dashboard
+    gethomepage.dev/app: hermes-agent
+    gethomepage.dev/pod-selector: app.kubernetes.io/instance=hermes-agent
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
