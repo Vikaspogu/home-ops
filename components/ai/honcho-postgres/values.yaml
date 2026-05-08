@@ -1,0 +1,97 @@
+---
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: pgvector/pgvector
+          tag: pg15@sha256:7f5681e45237acdf546cf7cdc0dfc0ed7752ede857fda6e54f6ea21b936f8742
+        args:
+          - postgres
+          - -c
+          - max_connections=200
+        env:
+          PGDATA: /var/lib/postgresql/data/pgdata
+        envFrom:
+          - secretRef:
+              name: honcho-postgres-secret
+        resources:
+          requests:
+            cpu: 50m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+              initialDelaySeconds: 10
+              periodSeconds: 5
+              failureThreshold: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+              periodSeconds: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+
+service:
+  app:
+    controller: app
+    ports:
+      postgres:
+        port: 5432
+
+persistence:
+  data:
+    existingClaim: honcho-postgres
+    globalMounts:
+      - path: /var/lib/postgresql/data
+  init:
+    type: configMap
+    name: honcho-postgres-init
+    advancedMounts:
+      app:
+        app:
+          - path: /docker-entrypoint-initdb.d/init.sql
+            subPath: init.sql
+            readOnly: true
