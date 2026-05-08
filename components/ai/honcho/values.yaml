@@ -2,6 +2,8 @@
 defaultPodOptions:
   securityContext:
     runAsNonRoot: true
+    runAsUser: 100
+    runAsGroup: 101
     seccompProfile:
       type: RuntimeDefault
 
