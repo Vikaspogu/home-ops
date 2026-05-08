@@ -39,7 +39,7 @@ controllers:
       api:
         image: &ivanOsImage
           repository: gitea.omv.a113.casa/vpogu/ivan-os
-          tag: 94c346c6ac4b
+          tag: ff5593ea454f
           pullPolicy: Always
         env: &appEnv
           TZ: America/New_York
@@ -49,7 +49,7 @@ controllers:
           IVAN_OS_EXECUTOR_BACKEND: kubernetes
           IVAN_OS_CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
           IVAN_OS_WORKER_IMAGE_REPOSITORY: gitea.omv.a113.casa/vpogu/ivan-os
-          IVAN_OS_WORKER_IMAGE_TAG: 94c346c6ac4b
+          IVAN_OS_WORKER_IMAGE_TAG: ff5593ea454f
           IVAN_OS_WORKER_NAMESPACE: ai
           IVAN_OS_WORKER_SECRET_NAME: ivan-os-secret
           IVAN_OS_WORKER_SERVICE_ACCOUNT: ivan-os
@@ -116,6 +116,21 @@ controllers:
             memory: 512Mi
           limits:
             memory: 2Gi
+      enrichment-worker:
+        image: *ivanOsImage
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          export IVAN_OS_WORKER_IMAGE="$(printenv IVAN_OS_WORKER_IMAGE_REPOSITORY):$(printenv IVAN_OS_WORKER_IMAGE_TAG)"
+          exec /app/.venv/bin/python -m app.domains.enrichment.worker
+        env: *appEnv
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 25m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
@@ -135,4 +150,6 @@ persistence:
         api:
         - path: /workspace
         telegram:
+        - path: /workspace
+        enrichment-worker:
         - path: /workspace
