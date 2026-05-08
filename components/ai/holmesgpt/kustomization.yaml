@@ -6,6 +6,7 @@ resources:
   - ./namespace.yaml
   - ./externalsecret.yaml
   - ./http-route.yaml
+  - ./scheduled-healthchecks.yaml
 
 helmCharts:
   - name: holmes
@@ -14,3 +15,4 @@ helmCharts:
     repo: https://robusta-charts.storage.googleapis.com
     version: 0.28.0
     valuesFile: values.yaml
+    includeCRDs: true

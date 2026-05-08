@@ -22,6 +22,11 @@ additionalEnvVars:
       secretKeyRef:
         name: holmesgpt-ai-provider
         key: base_url
+  - name: SLACK_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: holmesgpt-ai-provider
+        key: slack_token
 
 modelList:
   gpt-5.5:
@@ -38,8 +43,56 @@ toolsets:
     enabled: true
   kubernetes/logs:
     enabled: true
+  kubernetes/live-metrics:
+    enabled: true
   prometheus/metrics:
     enabled: true
+    subtype: prometheus
+    config:
+      prometheus_url: http://prometheus-operated.observability.svc.cluster.local:9090
+      query_timeout_seconds_default: 20
+      query_timeout_seconds_hard_max: 180
+      metadata_timeout_seconds_default: 20
+      metadata_timeout_seconds_hard_max: 60
+  grafana/loki:
+    enabled: true
+    config:
+      api_url: http://loki.observability.svc.cluster.local:3100
+  cilium/core:
+    enabled: true
+    config:
+      timeout: 60
+  hubble/observability:
+    enabled: false
+  alertmanager-api:
+    type: http
+    enabled: true
+    config:
+      timeout_seconds: 20
+      endpoints:
+        - hosts:
+            - alertmanager-operated.observability.svc.cluster.local
+          paths:
+            - /api/v2/alerts
+            - /api/v2/alerts/groups
+            - /api/v2/status
+            - /api/v2/silences
+          methods:
+            - GET
+    llm_instructions: |-
+      Read-only access to the in-cluster Alertmanager API.
+
+      Base URL: http://alertmanager-operated.observability.svc.cluster.local:9093
+
+      Useful endpoints:
+      - GET /api/v2/alerts?active=true&silenced=false&inhibited=false
+      - GET /api/v2/alerts/groups
+      - GET /api/v2/status
+      - GET /api/v2/silences
+
+      Use this data source first when asked to investigate active alerts. Treat
+      silenced or inhibited alerts as lower priority unless the user explicitly
+      asks for all alerts.
   internet:
     enabled: false
   bash:
@@ -61,6 +114,88 @@ crdPermissions:
   gatewayApi: true
   velero: false
   externalSecrets: true
+
+customClusterRoleRules:
+  - apiGroups:
+      - cilium.io
+    resources:
+      - ciliumbgpadvertisements
+      - ciliumbgpclusterconfigs
+      - ciliumbgpnodeconfigoverrides
+      - ciliumbgpnodeconfigs
+      - ciliumbgppeerconfigs
+      - ciliumbgppeeringpolicies
+      - ciliumcidrgroups
+      - ciliumclusterwideenvoyconfigs
+      - ciliumclusterwidenetworkpolicies
+      - ciliumendpoints
+      - ciliumenvoyconfigs
+      - ciliumgatewayclassconfigs
+      - ciliumidentities
+      - ciliuml2announcementpolicies
+      - ciliumloadbalancerippools
+      - ciliumlocalredirectpolicies
+      - ciliumnetworkpolicies
+      - ciliumnodeconfigs
+      - ciliumnodes
+      - ciliumpodippools
+    verbs:
+      - get
+      - list
+      - watch
+
+initContainers:
+  - name: install-cilium-cli
+    image: curlimages/curl:8.8.0
+    command:
+      - sh
+      - -c
+    args:
+      - |
+        set -eu
+        cd /tools
+        curl -fsSLO https://github.com/cilium/cilium-cli/releases/download/v0.18.9/cilium-linux-amd64.tar.gz
+        curl -fsSLO https://github.com/cilium/cilium-cli/releases/download/v0.18.9/cilium-linux-amd64.tar.gz.sha256sum
+        sha256sum -c cilium-linux-amd64.tar.gz.sha256sum
+        tar xzf cilium-linux-amd64.tar.gz
+        chmod 0555 cilium
+        rm -f cilium-linux-amd64.tar.gz cilium-linux-amd64.tar.gz.sha256sum
+    securityContext:
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 10001
+      runAsGroup: 10001
+      capabilities:
+        drop:
+          - ALL
+    volumeMounts:
+      - name: cilium-cli
+        mountPath: /tools
+
+additionalVolumes:
+  - name: cilium-cli
+    emptyDir:
+      sizeLimit: 256Mi
+
+additionalVolumeMounts:
+  - name: cilium-cli
+    mountPath: /usr/local/bin/cilium
+    subPath: cilium
+    readOnly: true
+
+operator:
+  enabled: true
+  holmesApiTimeout: 300
+  logLevel: INFO
+  maxHistoryItems: 10
+  cleanupCompletedChecks: true
+  completedCheckTTLHours: 48
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
 
 podSecurityContext:
   runAsNonRoot: true
