@@ -42,6 +42,9 @@ controllers:
         env:
           HERMES_HOME: /opt/data
           PYTHONUNBUFFERED: "1"
+          HERMES_DASHBOARD: "1"
+          HERMES_DASHBOARD_HOST: "0.0.0.0"
+          HERMES_DASHBOARD_PORT: &dashboardPort 9119
         envFrom:
           - secretRef:
               name: hermes-agent-secret
@@ -53,6 +56,13 @@ controllers:
             memory: 4Gi
         securityContext:
           allowPrivilegeEscalation: false
+
+service:
+  app:
+    controller: app
+    ports:
+      dashboard:
+        port: *dashboardPort
 
 persistence:
   app-data:
