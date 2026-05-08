@@ -15,7 +15,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/actualbudget/actual-server
-          tag: 26.5.0
+          tag: 26.5.1
         probes:
           liveness:
             enabled: true
