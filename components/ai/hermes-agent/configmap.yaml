@@ -58,7 +58,36 @@ data:
         model: Systran/faster-whisper-large-v3
         base_url: http://spark.a113.internal:8300/v1
         api_key: no-key-required
+    memory:
+      memory_enabled: true
+      user_profile_enabled: true
+      memory_char_limit: 2200
+      user_char_limit: 1375
+      provider: honcho
     terminal:
       backend: local
       cwd: /opt/data/workspace
       timeout: 180
+  honcho.json: |-
+    {
+      "baseUrl": "http://honcho.ai.svc.cluster.local:8000",
+      "workspace": "hermes",
+      "peerName": "vikas",
+      "pinPeerName": true,
+      "timeout": 20,
+      "hosts": {
+        "hermes": {
+          "enabled": true,
+          "aiPeer": "hermes",
+          "recallMode": "hybrid",
+          "sessionStrategy": "per-session",
+          "contextTokens": 1200,
+          "contextCadence": 1,
+          "dialecticCadence": 5,
+          "dialecticDepth": 1,
+          "dialecticReasoningLevel": "low",
+          "writeFrequency": "async",
+          "observationMode": "directional"
+        }
+      }
+    }

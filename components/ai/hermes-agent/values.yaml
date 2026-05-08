@@ -18,6 +18,9 @@ controllers:
             if [ ! -f /opt/data/config.yaml ]; then
               cp /opt/bootstrap/config.yaml /opt/data/config.yaml
             fi
+            if [ ! -f /opt/data/honcho.json ]; then
+              cp /opt/bootstrap/honcho.json /opt/data/honcho.json
+            fi
         resources:
           requests:
             cpu: 10m
@@ -81,6 +84,9 @@ persistence:
         seed-config:
           - path: /opt/bootstrap/config.yaml
             subPath: config.yaml
+            readOnly: true
+          - path: /opt/bootstrap/honcho.json
+            subPath: honcho.json
             readOnly: true
   secret:
     type: secret
