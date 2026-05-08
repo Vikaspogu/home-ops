@@ -27,6 +27,9 @@ controllers:
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
           capabilities: { drop: ["ALL"] }
     containers:
       app:
