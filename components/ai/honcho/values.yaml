@@ -1,0 +1,95 @@
+---
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+controllers:
+  api:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/plastic-labs/honcho
+          tag: latest@sha256:a8c4a8dcead76ef9b580559469db4f140eae2c51510ee7d7d3a1485576fee554
+        command:
+          - sh
+          - docker/entrypoint.sh
+        envFrom: &envFrom
+          - secretRef:
+              name: honcho-secret
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: &httpPort 8000
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              failureThreshold: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *httpPort
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *httpPort
+              periodSeconds: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+  deriver:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/plastic-labs/honcho
+          tag: latest@sha256:a8c4a8dcead76ef9b580559469db4f140eae2c51510ee7d7d3a1485576fee554
+        command:
+          - /app/.venv/bin/python
+          - -m
+          - src.deriver
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+
+service:
+  app:
+    controller: api
+    ports:
+      http:
+        port: 8000
