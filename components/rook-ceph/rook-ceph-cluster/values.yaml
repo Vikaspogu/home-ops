@@ -2,6 +2,23 @@
 monitoring:
   enabled: true
   createPrometheusRules: true
+  prometheusRuleOverrides:
+    CephNodeDiskspaceWarning:
+      # The upstream predictive rule is noisy for new Talos nodes because
+      # bootstrap image churn can look like a sustained 48h fill rate.
+      expr: |
+        (
+          predict_linear(
+            node_filesystem_free_bytes{device=~"/.*", mountpoint!="/etc/nfsmount.conf"}[2d],
+            3600 * 24 * 5
+          ) < 0
+          and
+          (
+            node_filesystem_free_bytes{device=~"/.*", mountpoint!="/etc/nfsmount.conf"}
+            / node_filesystem_size_bytes{device=~"/.*", mountpoint!="/etc/nfsmount.conf"}
+            < 0.50
+          )
+        ) * on(instance) group_left(nodename) node_uname_info
 toolbox:
   enabled: true
 cephImage:
