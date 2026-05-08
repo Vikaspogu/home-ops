@@ -98,6 +98,9 @@ controllers:
           HERMES_DASHBOARD: "1"
           HERMES_DASHBOARD_HOST: "0.0.0.0"
           HERMES_DASHBOARD_PORT: &dashboardPort 9119
+          API_SERVER_ENABLED: "true"
+          API_SERVER_HOST: "127.0.0.1"
+          API_SERVER_PORT: "8642"
         envFrom:
           - secretRef:
               name: hermes-agent-secret
@@ -109,6 +112,49 @@ controllers:
             memory: 4Gi
         securityContext:
           allowPrivilegeEscalation: false
+      workspace:
+        image:
+          repository: ghcr.io/outsourc-e/hermes-workspace
+          tag: latest@sha256:2d2ba9aa5b1230766267322817e8e51113541780a5797802a582a47cc34a3df3
+        env:
+          HERMES_HOME: /opt/data
+          PORT: &workspacePort 3000
+          HERMES_WORKSPACE_DIR: /workspace
+          HERMES_API_URL: http://127.0.0.1:8642
+          HERMES_DASHBOARD_URL: http://127.0.0.1:9119
+          HERMES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: HERMES_WORKSPACE_PASSWORD
+          COOKIE_SECURE: "1"
+          TRUST_PROXY: "1"
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 3Gi
+        probes:
+          liveness: &workspaceProbes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *workspacePort
+              initialDelaySeconds: 20
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness: *workspaceProbes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10010
+          runAsGroup: 10010
+          capabilities: { drop: ["ALL"] }
 
 service:
   app:
@@ -116,6 +162,8 @@ service:
     ports:
       dashboard:
         port: *dashboardPort
+      workspace:
+        port: *workspacePort
 
 persistence:
   app-data:
@@ -126,6 +174,18 @@ persistence:
           - path: /opt/data
         app:
           - path: /opt/data
+        workspace:
+          - path: /opt/data
+          - path: /workspace
+            subPath: workspace
+  tmp:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 256Mi
+    advancedMounts:
+      app:
+        workspace:
+          - path: /tmp
   config:
     type: configMap
     name: hermes-agent-config

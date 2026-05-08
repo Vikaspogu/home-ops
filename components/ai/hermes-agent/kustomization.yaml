@@ -6,6 +6,7 @@ resources:
   - ./configmap.yaml
   - ./externalsecret.yaml
   - ./http-route.yaml
+  - ./http-route-workspace.yaml
 components:
   - ../../volsync-system/volsync-replication
 
