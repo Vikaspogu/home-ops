@@ -7,10 +7,10 @@ metadata:
     app.kubernetes.io/instance: *app
     app.kubernetes.io/name: *app
   annotations:
-    gethomepage.dev/href: "https://dashboard.${CLUSTER_DOMAIN}"
+    gethomepage.dev/href: "https://ivan.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Ingress
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homer.png
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/localai.png
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
@@ -18,20 +18,6 @@ spec:
       sectionName: https
   hostnames: ["ivan.${CLUSTER_DOMAIN}"]
   rules:
-    # agent-v3 (Service `ivan`, port 8080) — coding-dispatcher endpoints
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /api/coding-dispatches/
-        - path:
-            type: PathPrefix
-            value: /api/bot-alerts
-        - path:
-            type: PathPrefix
-            value: /webhooks/gitea_pr
-      backendRefs:
-        - name: ivan
-          port: 8080
     # dashboard API (incl. /api/agents, /api/briefing, /api/monitors, etc.)
     - matches:
         - path:
