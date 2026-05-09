@@ -68,6 +68,54 @@ data:
       backend: local
       cwd: /opt/data/workspace
       timeout: 180
+    skills:
+      disabled:
+        - architecture-diagram
+        - arxiv
+        - ascii-art
+        - ascii-video
+        - airtable
+        - audiocraft-audio-generation
+        - axolotl
+        - baoyu-comic
+        - baoyu-infographic
+        - claude-design
+        - comfyui
+        - design-md
+        - dogfood
+        - dspy
+        - evaluating-llms-harness
+        - excalidraw
+        - fine-tuning-with-trl
+        - godmode
+        - heartmula
+        - himalaya
+        - huggingface-hub
+        - humanizer
+        - ideation
+        - jupyter-live-kernel
+        - llama-cpp
+        - manim-video
+        - minecraft-modpack-server
+        - notion
+        - obliteratus
+        - openhue
+        - outlines
+        - p5js
+        - pixel-art
+        - pokemon-player
+        - popular-web-designs
+        - powerpoint
+        - pretext
+        - segment-anything-model
+        - serving-llms-vllm
+        - sketch
+        - songsee
+        - songwriting-and-ai-music
+        - touchdesigner-mcp
+        - unsloth
+        - weights-and-biases
+        - yuanbao
     plugins:
       enabled:
         - ivan-personal
