@@ -38,6 +38,15 @@ spec:
     Return fail only when at least one active alert still needs operator
     attention. Include the alert name, namespace or resource, likely root cause,
     evidence used, and the next concrete remediation step.
+
+    Decision contract:
+    - If the only active alert is Watchdog or there are no actionable warning or
+      critical alerts, the structured passed field must be true.
+    - If the rationale says no operator attention is needed, the structured
+      passed field must be true.
+    - Set passed=false only when an active warning or critical alert still
+      needs operator attention, or when the check could not be evaluated.
+    - End the rationale with exactly one of: Decision: PASS or Decision: FAIL.
 ---
 apiVersion: holmesgpt.dev/v1alpha1
 kind: ScheduledHealthCheck
@@ -74,3 +83,15 @@ spec:
     that need operator attention, with concise evidence and next steps. Do not
     report purely informational drift or already-recovering transient states as
     failures.
+
+    Decision contract:
+    - If no actionable pod, node, PVC, ArgoCD, Cilium, event, or Prometheus
+      issue currently needs operator attention, the structured passed field
+      must be true.
+    - If the rationale says no current actionable issues were found, the
+      structured passed field must be true.
+    - Set passed=false only when there is a current operator-actionable issue,
+      or when the check could not be evaluated.
+    - Do not set passed=false for historical, recovered, transient, or purely
+      informational findings.
+    - End the rationale with exactly one of: Decision: PASS or Decision: FAIL.
