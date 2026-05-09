@@ -87,6 +87,32 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: { drop: ["ALL"] }
+      install-ivan-personal-plugin:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/ivan-personal-plugin
+          tag: latest-oci
+          pullPolicy: Always
+        command: ["/bin/sh", "-ec"]
+        args:
+          - |
+            rm -rf /opt/data/plugins/ivan-personal
+            mkdir -p /opt/data/plugins/ivan-personal
+            cp -R /plugin/. /opt/data/plugins/ivan-personal/
+            test -f /opt/data/plugins/ivan-personal/plugin.yaml
+            test -f /opt/data/plugins/ivan-personal/__init__.py
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities: { drop: ["ALL"] }
     containers:
       app:
         image:
@@ -176,6 +202,8 @@ persistence:
     advancedMounts:
       app:
         seed-config:
+          - path: /opt/data
+        install-ivan-personal-plugin:
           - path: /opt/data
         app:
           - path: /opt/data

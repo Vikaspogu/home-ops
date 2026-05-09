@@ -1,0 +1,76 @@
+---
+controllers:
+  app:
+    replicas: 1
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.3.0@sha256:6fa1f331cddd2eb0b6afa7b8d3685c864127a81ab01c3d9400bc3ff5263a51cf
+        envFrom: &envFrom
+          - secretRef:
+              name: ivan-personal-service-secret
+    containers:
+      app:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/ivan-personal-service
+          tag: latest-oci
+          pullPolicy: Always
+        env:
+          TZ: America/New_York
+          CORS_ORIGINS: "https://ivan.${CLUSTER_DOMAIN}"
+          HOME_ASSISTANT_URL: "http://home-assistant.default.svc.cluster.local:8123"
+          ACTUAL_BUDGET_URL: "http://actual-http-api.default.svc.cluster.local:5007"
+          PAPERLESS_URL: "http://paperless-ngx.default.svc.cluster.local:8000"
+          SYNOLOGY_URL: "https://nas.${CLUSTER_DOMAIN}"
+          OBSIDIAN_S3_BUCKET: obsidian-notes
+          VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/6"
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: &httpPort 8080
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /readyz
+                port: *httpPort
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /readyz
+                port: *httpPort
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              failureThreshold: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *httpPort

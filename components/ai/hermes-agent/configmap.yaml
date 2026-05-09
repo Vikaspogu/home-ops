@@ -68,6 +68,9 @@ data:
       backend: local
       cwd: /opt/data/workspace
       timeout: 180
+    plugins:
+      enabled:
+        - ivan-personal
   honcho.json: |-
     {
       "baseUrl": "http://honcho.ai.svc.cluster.local:8000",

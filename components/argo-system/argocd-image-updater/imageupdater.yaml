@@ -38,56 +38,6 @@ spec:
             helm:
               name: controllers.app.containers.main.env.REPO_WORKER_IMAGE_REPOSITORY
               tag: controllers.app.containers.main.env.REPO_WORKER_IMAGE_TAG
-    - namePattern: "ivan-os"
-      writeBackConfig:
-        method: "git:secret:argo-system/git-creds"
-        gitConfig:
-          branch: main
-          writeBackTarget: "helmvalues:./values.yaml"
-      images:
-        - alias: ivan-os-api
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-os"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[a-f0-9]{12}$'
-            updateStrategy: newest-build
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.api.image.repository
-              tag: controllers.app.containers.api.image.tag
-        - alias: ivan-os-telegram
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-os"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[a-f0-9]{12}$'
-            updateStrategy: newest-build
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.telegram.image.repository
-              tag: controllers.app.containers.telegram.image.tag
-        - alias: ivan-os-worker
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-os"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[a-f0-9]{12}$'
-            updateStrategy: newest-build
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.api.env.IVAN_OS_WORKER_IMAGE_REPOSITORY
-              tag: controllers.app.containers.api.env.IVAN_OS_WORKER_IMAGE_TAG
-    - namePattern: "ivan-os-dashboard"
-      writeBackConfig:
-        method: "git:secret:argo-system/git-creds"
-        gitConfig:
-          branch: main
-          writeBackTarget: "helmvalues:./values.yaml"
-      images:
-        - alias: ivan-os-dashboard
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-os-dashboard"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[a-f0-9]{12}$'
-            updateStrategy: newest-build
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.app.image.repository
-              tag: controllers.app.containers.app.image.tag
     - namePattern: "ivan-dashboard"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
@@ -111,3 +61,33 @@ spec:
             helm:
               name: controllers.ui.containers.main.image.repository
               tag: controllers.ui.containers.main.image.tag
+    - namePattern: "ivan-personal-service"
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: ivan-personal-service
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-personal-service"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+          manifestTargets:
+            helm:
+              name: controllers.app.containers.app.image.repository
+              tag: controllers.app.containers.app.image.tag
+    - namePattern: "hermes-agent"
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: ivan-personal-plugin
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-personal-plugin"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+          manifestTargets:
+            helm:
+              name: controllers.app.initContainers.install-ivan-personal-plugin.image.repository
+              tag: controllers.app.initContainers.install-ivan-personal-plugin.image.tag

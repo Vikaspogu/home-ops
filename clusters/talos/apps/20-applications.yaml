@@ -398,9 +398,17 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 4Gi
 
-  ivan-dashboard:
+  ivan-personal-service:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/ivan-personal-service
+
+  ivan-dashboard:
+    annotations:
+      argocd.argoproj.io/sync-wave: "21"
     destination:
       namespace: ai
     source:

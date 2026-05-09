@@ -15,6 +15,7 @@ controllers:
           OLLAMA_BASE_URL: "http://spark.a113.internal:11434"
           OLLAMA_PROMPT_MODEL: "gpt-oss:20b"
           AGENT_V3_URL: "http://ivan.ai.svc.cluster.local:8080"
+          # IVAN_PERSONAL_SERVICE_URL: "http://ivan-personal-service.ai.svc.cluster.local:8080"
         envFrom: &envFrom
         - secretRef:
             name: ivan-dashboard-secret
