@@ -45,22 +45,14 @@ spec:
           branch: main
           writeBackTarget: "helmvalues:./values.yaml"
       images:
-        - alias: dashboard-api
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-dashboard-api"
+        - alias: ivan-personal-dashboard
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-personal-dashboard"
           commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
             helm:
-              name: controllers.api.containers.main.image.repository
-              tag: controllers.api.containers.main.image.tag
-        - alias: dashboard-ui
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-dashboard-ui"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
-          manifestTargets:
-            helm:
-              name: controllers.ui.containers.main.image.repository
-              tag: controllers.ui.containers.main.image.tag
+              name: controllers.app.containers.app.image.repository
+              tag: controllers.app.containers.app.image.tag
     - namePattern: "ivan-personal-service"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"

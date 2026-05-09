@@ -1,69 +1,16 @@
+---
 controllers:
-  api:
-    replicas: 0
-    annotations:
-      reloader.stakater.com/auto: "true"
+  app:
+    replicas: 1
     containers:
-      main:
+      app:
         image:
-          repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-api
-          tag: 20260504004005-d593867
+          repository: gitea.omv.a113.casa/vpogu/ivan-personal-dashboard
+          tag: latest-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
-          CORS_ORIGINS: "https://dashboard.${CLUSTER_DOMAIN}"
-          OLLAMA_BASE_URL: "http://spark.a113.internal:11434"
-          OLLAMA_PROMPT_MODEL: "gpt-oss:20b"
-          AGENT_V3_URL: "http://ivan.ai.svc.cluster.local:8080"
-          # IVAN_PERSONAL_SERVICE_URL: "http://ivan-personal-service.ai.svc.cluster.local:8080"
-        envFrom: &envFrom
-        - secretRef:
-            name: ivan-dashboard-secret
-        resources:
-          requests:
-            cpu: 50m
-            memory: 128Mi
-          limits:
-            memory: 512Mi
-        probes:
-          liveness:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /api/health
-                port: &apiPort 8001
-              periodSeconds: 30
-              failureThreshold: 3
-          readiness:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /api/health
-                port: *apiPort
-              periodSeconds: 10
-          startup:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /api/health
-                port: *apiPort
-              initialDelaySeconds: 5
-              periodSeconds: 5
-              failureThreshold: 30
-    pod:
-      imagePullSecrets:
-      - name: gitea-registry-secret
-  ui:
-    replicas: 0
-    containers:
-      main:
-        image:
-          repository: gitea.omv.a113.casa/vpogu/ivan-dashboard-ui
-          tag: 20260503203719-9e834bf
-          pullPolicy: Always
+          IVAN_SERVICE_UPSTREAM: "http://ivan-personal-service.ai.svc.cluster.local:8080"
         resources:
           requests:
             cpu: 10m
@@ -76,38 +23,36 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /
-                port: &uiPort 80
+                path: /healthz
+                port: &httpPort 8080
               periodSeconds: 30
+              failureThreshold: 3
           readiness:
             enabled: true
             custom: true
             spec:
               httpGet:
-                path: /
-                port: *uiPort
+                path: /healthz
+                port: *httpPort
               periodSeconds: 10
           startup:
             enabled: true
             custom: true
             spec:
               httpGet:
-                path: /
-                port: *uiPort
+                path: /healthz
+                port: *httpPort
               initialDelaySeconds: 3
               periodSeconds: 3
               failureThreshold: 10
+        securityContext:
+          allowPrivilegeEscalation: false
     pod:
       imagePullSecrets:
-      - name: gitea-registry-secret
+        - name: gitea-registry-secret
 service:
-  ui:
-    controller: ui
+  app:
+    controller: app
     ports:
       http:
-        port: *uiPort
-  api:
-    controller: api
-    ports:
-      http:
-        port: *apiPort
+        port: *httpPort
