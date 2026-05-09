@@ -1,6 +1,6 @@
 controllers:
   api:
-    replicas: 1
+    replicas: 0
     annotations:
       reloader.stakater.com/auto: "true"
     containers:
@@ -57,7 +57,7 @@ controllers:
       imagePullSecrets:
       - name: gitea-registry-secret
   ui:
-    replicas: 1
+    replicas: 0
     containers:
       main:
         image:
