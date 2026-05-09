@@ -63,11 +63,7 @@ spec:
   schedule: "20 */2 * * *"
   enabled: true
   timeout: 300
-  mode: alert
-  destinations:
-    - type: slack
-      config:
-        channel: "#homelab-alerts"
+  mode: monitor
   query: |-
     Run a proactive health sweep for high-signal cluster issues.
 
