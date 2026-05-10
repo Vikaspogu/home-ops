@@ -13,8 +13,11 @@ controllers:
         command: ["/opt/hermes/.venv/bin/python", "-c"]
         args:
         - |
+          import base64
+          import io
           import json
           import os
+          import tarfile
           from pathlib import Path
 
           import yaml
@@ -73,6 +76,18 @@ controllers:
           hermes_home_alias = data_dir / ".hermes"
           if not hermes_home_alias.exists():
               hermes_home_alias.symlink_to(".")
+
+          gog_bundle = os.environ.get("GOG_BUNDLE")
+          if gog_bundle:
+              gog_config_dir = data_dir / ".config" / "gogcli"
+              gog_config_dir.mkdir(parents=True, exist_ok=True)
+              bundle_bytes = base64.b64decode(gog_bundle)
+              with tarfile.open(fileobj=io.BytesIO(bundle_bytes), mode="r:gz") as bundle:
+                  for member in bundle.getmembers():
+                      target = (gog_config_dir / member.name).resolve()
+                      if not str(target).startswith(str(gog_config_dir.resolve())):
+                          raise RuntimeError(f"refusing unsafe gog bundle path: {member.name}")
+                  bundle.extractall(gog_config_dir)
         resources:
           requests:
             cpu: 10m
@@ -86,6 +101,9 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
+        envFrom:
+        - secretRef:
+            name: hermes-agent-secret
       install-ivan-personal-plugin:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-personal-plugin
@@ -115,13 +133,23 @@ controllers:
     containers:
       app:
         image:
-          repository: nousresearch/hermes-agent
-          tag: v2026.5.7@sha256:bb976ccbfcb6989c04e331e0b3a4ddf959088fa6163782dc737ce6d62476905a
+          repository: gitea.omv.a113.casa/vpogu/hermes-agent-custom
+          tag: 20260510182003-dfba536-oci
         args:
         - gateway
         - run
         env:
+          PATH: /usr/local/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          HOME: /opt/data
           HERMES_HOME: /opt/data
+          XDG_CONFIG_HOME: /opt/data/.config
+          XDG_DATA_HOME: /opt/data/.local/share
+          XDG_CACHE_HOME: /opt/data/.cache
+          CODEX_HOME: /opt/data/.codex
+          CLAUDE_CONFIG_DIR: /opt/data/.claude
+          AGENT_BROWSER_EXECUTABLE_PATH: /usr/bin/chromium
+          PLAYWRIGHT_BROWSERS_PATH: /opt/data/.cache/ms-playwright
+          PUPPETEER_CACHE_DIR: /opt/data/.cache/puppeteer
           PYTHONUNBUFFERED: "1"
           HERMES_DASHBOARD: "1"
           HERMES_DASHBOARD_HOST: "0.0.0.0"
