@@ -1,0 +1,39 @@
+---
+# Local storage user volumes for k8s-4-dell.
+#
+# Intentionally excluded:
+# - sdb / CT500MX500SSD1: current Talos system disk
+# - sdc / MARSHAL MAL38000NS-T72: failed SMART evidence
+# - nvme0n1 / KINGSTON SNV3S1000G: reserved as future raw Rook/Ceph OSD
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: media
+provisioning:
+  diskSelector:
+    match: "'/dev/disk/by-id/wwn-0x50014ee214f03cdb' in disk.symlinks"
+  minSize: 3TB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: downloads
+provisioning:
+  diskSelector:
+    match: "'/dev/disk/by-id/nvme-eui.00000000000000000026b7382439f6f5' in disk.symlinks"
+  minSize: 400GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: transcode
+provisioning:
+  diskSelector:
+    match: "'/dev/disk/by-id/nvme-eui.0025385581b3be2f' in disk.symlinks"
+  minSize: 200GB
+  grow: true
+filesystem:
+  type: xfs

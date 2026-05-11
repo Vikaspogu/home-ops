@@ -92,6 +92,8 @@ nodes:
       model: "CT500MX500SSD1"
     talosImageURL: factory.talos.dev/installer/c1c8847e58bca7ae9584c3b209f21c50add404d9cb9466a1d4ea8be43a160b8a
     controlPlane: false
+    patches:
+      - "@./patches/k8s-4-dell/user-volumes.yaml"
     kernelModules:
       - name: nvidia
       - name: nvidia_uvm
