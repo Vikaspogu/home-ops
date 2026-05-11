@@ -9,7 +9,7 @@ controllers:
       seed-config:
         image:
           repository: gitea.omv.a113.casa/vpogu/hermes-agent-custom
-          tag: 20260510182003-dfba536-oci
+          tag: 20260510235447-e2b93d0-oci
         command: ["hermes-seed-config"]
         resources:
           requests:
