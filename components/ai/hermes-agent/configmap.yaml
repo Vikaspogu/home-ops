@@ -163,6 +163,23 @@ data:
     plugins:
       enabled:
         - ivan-personal
+  pricing-overrides.yaml: |-
+    pricing:
+      overrides:
+        - provider: custom
+          model: openai/openai/gpt-5.5
+          input_per_million: "5.00"
+          cached_input_per_million: "0.50"
+          output_per_million: "30.00"
+          source_url: https://openai.com/api/pricing/
+          pricing_version: openai-pricing-2026-05-11
+        - provider: openai
+          model: gpt-5.5
+          input_per_million: "5.00"
+          cached_input_per_million: "0.50"
+          output_per_million: "30.00"
+          source_url: https://openai.com/api/pricing/
+          pricing_version: openai-pricing-2026-05-11
   honcho.json: |-
     {
       "baseUrl": "http://honcho.ai.svc.cluster.local:8000",
