@@ -5,6 +5,10 @@ controllers:
     annotations:
       configmap.reloader.stakater.com/reload: hermes-agent-config
       secret.reloader.stakater.com/reload: hermes-agent-secret
+    pod:
+      securityContext:
+        fsGroup: 10000
+        fsGroupChangePolicy: Always
     initContainers:
       seed-config:
         image:
