@@ -112,6 +112,8 @@ data:
       backend: local
       cwd: /opt/data/workspace
       timeout: 180
+      env_passthrough:
+        - "*"
     skills:
       disabled:
         - architecture-diagram
