@@ -3,6 +3,8 @@ monitoring:
   enabled: true
   createPrometheusRules: true
   prometheusRuleOverrides:
+    CephNodeNetworkPacketDrops:
+      disabled: true
     CephNodeDiskspaceWarning:
       # The upstream predictive rule is noisy for new Talos nodes because
       # bootstrap image churn can look like a sustained 48h fill rate.

@@ -109,6 +109,7 @@ data:
         - excalidraw
         - fine-tuning-with-trl
         - godmode
+        - google-workspace
         - heartmula
         - himalaya
         - huggingface-hub
