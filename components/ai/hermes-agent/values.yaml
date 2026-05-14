@@ -34,7 +34,7 @@ controllers:
       install-ivan-personal-plugin:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-personal-plugin
-          tag: 20260514144600-9ab8f10-oci
+          tag: 20260514152537-e140f67-oci
           pullPolicy: Always
         command: ["/bin/sh", "-ec"]
         args:
