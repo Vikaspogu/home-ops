@@ -13,7 +13,7 @@ controllers:
       seed-config:
         image:
           repository: gitea.omv.a113.casa/vpogu/hermes-agent-custom
-          tag: 20260513142400-2decc97-oci
+          tag: 20260514005435-9bbafb1-oci
         command: ["hermes-seed-config"]
         resources:
           requests:
@@ -61,7 +61,7 @@ controllers:
       app:
         image:
           repository: gitea.omv.a113.casa/vpogu/hermes-agent-custom
-          tag: 20260513142400-2decc97-oci
+          tag: 20260514005435-9bbafb1-oci
         args:
         - gateway
         - run
