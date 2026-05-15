@@ -20,7 +20,7 @@ controllers:
         env:
           TZ: America/New_York
           CORS_ORIGINS: "https://ivan.${CLUSTER_DOMAIN}"
-          HOME_ASSISTANT_URL: "http://home-assistant.default.svc.cluster.local:8123"
+          HOME_ASSISTANT_URL: "http://home-assistant-app.default.svc.cluster.local:8123"
           ACTUAL_BUDGET_URL: "http://actual-http-api.default.svc.cluster.local:5007"
           PAPERLESS_URL: "http://paperless-ngx.default.svc.cluster.local:8000"
           SYNOLOGY_URL: "https://nas.${CLUSTER_DOMAIN}"
