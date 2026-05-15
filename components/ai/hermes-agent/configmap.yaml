@@ -74,6 +74,8 @@ data:
     browser:
       inactivity_timeout: 120
       command_timeout: 60
+    dashboard:
+      theme: frosted-glass-dark
     kanban:
       dispatch_in_gateway: true
       dispatch_interval_seconds: 60
@@ -100,8 +102,12 @@ data:
         - axolotl
         - baoyu-comic
         - baoyu-infographic
+        - claude-code
         - claude-design
+        - codex
         - comfyui
+        - dashboard-usability-review
+        - debugging-hermes-tui-commands
         - design-md
         - dogfood
         - dspy
@@ -129,6 +135,7 @@ data:
         - popular-web-designs
         - powerpoint
         - pretext
+        - research-paper-writing
         - segment-anything-model
         - serving-llms-vllm
         - sketch
@@ -137,6 +144,8 @@ data:
         - touchdesigner-mcp
         - unsloth
         - weights-and-biases
+        - xurl
+        - youtube-content
         - yuanbao
     plugins:
       enabled:
