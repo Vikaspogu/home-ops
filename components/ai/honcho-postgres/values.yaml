@@ -19,7 +19,7 @@ controllers:
       app:
         image:
           repository: pgvector/pgvector
-          tag: pg15@sha256:7f5681e45237acdf546cf7cdc0dfc0ed7752ede857fda6e54f6ea21b936f8742
+          tag: pg15@sha256:bd12d6788a617f4147d5a2ae0b56d07921398adabfe5a033bd3f50c245df55a1
         args:
           - postgres
           - -c
