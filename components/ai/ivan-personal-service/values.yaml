@@ -26,6 +26,10 @@ controllers:
           SYNOLOGY_URL: "https://nas.${CLUSTER_DOMAIN}"
           OBSIDIAN_S3_BUCKET: obsidian-notes
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/6"
+          WORKOUT_PLAN_GENERATOR: openai_compatible
+          WORKOUT_PLAN_MODEL: openai/openai/gpt-5.5
+          WORKOUT_VIDEO_RERANKER: openai_compatible
+          WORKOUT_VIDEO_RERANK_MODEL: openai/openai/gpt-5.4-mini
         envFrom: *envFrom
         resources:
           requests:
