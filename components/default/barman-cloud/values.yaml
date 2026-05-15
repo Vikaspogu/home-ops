@@ -3,6 +3,8 @@ serviceAccount:
   barman-cloud: {}
 controllers:
   barman-cloud:
+    pod:
+      automountServiceAccountToken: true
     serviceAccount:
       identifier: barman-cloud
     containers:
