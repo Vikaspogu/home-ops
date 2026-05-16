@@ -5,6 +5,8 @@ controllers:
     annotations:
       configmap.reloader.stakater.com/reload: homepage-config
       secret.reloader.stakater.com/reload: homepage-secret
+    pod:
+      automountServiceAccountToken: true
     serviceAccount:
       identifier: homepage
     containers:
