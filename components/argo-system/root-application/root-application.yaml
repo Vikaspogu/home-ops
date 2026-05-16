@@ -6,6 +6,7 @@ metadata:
   labels:
     app-source: root
   annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=false
     argocd.argoproj.io/sync-options: Delete=false
 spec:
   project: default
