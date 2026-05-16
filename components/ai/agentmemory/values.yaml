@@ -1,0 +1,102 @@
+---
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      configmap.reloader.stakater.com/reload: agentmemory-config
+      secret.reloader.stakater.com/reload: agentmemory-secret
+    pod:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: docker.io/library/node
+          tag: 22.21.1-bookworm
+        command: ["/bin/sh", "/config/entrypoint.sh"]
+        env:
+          TZ: America/New_York
+          HOME: /data
+          AGENTMEMORY_URL: http://localhost:3111
+          AGENTMEMORY_VERSION: 0.9.16
+          AGENTMEMORY_III_VERSION: 0.11.2
+          III_SDK_VERSION: 0.11.2
+          III_REST_PORT: "3111"
+          III_STREAMS_PORT: "3112"
+          AGENTMEMORY_TOOLS: core
+          AGENTMEMORY_AUTO_COMPRESS: "false"
+          AGENTMEMORY_INJECT_CONTEXT: "false"
+          CONSOLIDATION_ENABLED: "false"
+          GRAPH_EXTRACTION_ENABLED: "false"
+          NPM_CONFIG_CACHE: /data/.npm
+        envFrom:
+          - secretRef:
+              name: agentmemory-secret
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /agentmemory/livez
+                port: &httpPort 3111
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              failureThreshold: 60
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /agentmemory/livez
+                port: *httpPort
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /agentmemory/livez
+                port: *httpPort
+              periodSeconds: 30
+              failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *httpPort
+
+persistence:
+  data:
+    existingClaim: agentmemory
+    globalMounts:
+      - path: /data
+  config:
+    type: configMap
+    name: agentmemory-config
+    globalMounts:
+      - path: /config
+        readOnly: true
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

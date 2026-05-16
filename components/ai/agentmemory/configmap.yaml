@@ -1,0 +1,102 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agentmemory-config
+data:
+  entrypoint.sh: |-
+    #!/usr/bin/env sh
+    set -eu
+
+    DATA_DIR="${AGENTMEMORY_DATA_DIR:-/data}"
+    APP_DIR="${AGENTMEMORY_RUNTIME_DIR:-${DATA_DIR}/runtime}"
+    PACKAGE_VERSION="${AGENTMEMORY_VERSION:-0.9.16}"
+    SDK_VERSION="${III_SDK_VERSION:-0.11.2}"
+    VERSION_MARKER="${PACKAGE_VERSION}:${SDK_VERSION}"
+
+    export HOME="${DATA_DIR}"
+    export PATH="${DATA_DIR}/.local/bin:${APP_DIR}/node_modules/.bin:${PATH}"
+    export npm_config_cache="${NPM_CONFIG_CACHE:-${DATA_DIR}/.npm}"
+
+    mkdir -p \
+      "${APP_DIR}" \
+      "${DATA_DIR}/.agentmemory" \
+      "${DATA_DIR}/.local/bin" \
+      "${DATA_DIR}/.npm"
+
+    if [ ! -s "${DATA_DIR}/.agentmemory/preferences.json" ]; then
+      cat > "${DATA_DIR}/.agentmemory/preferences.json" <<'EOF'
+    {
+      "lastAgent": null,
+      "lastAgents": [],
+      "lastProvider": null,
+      "skipSplash": true,
+      "skipGlobalInstall": true,
+      "firstRunAt": "2026-05-16T00:00:00.000Z",
+      "schemaVersion": 1
+    }
+    EOF
+    fi
+
+    cd "${APP_DIR}"
+    if [ ! -s ".agentmemory-version" ] || [ "$(cat .agentmemory-version)" != "${VERSION_MARKER}" ]; then
+      rm -rf node_modules package-lock.json
+      printf '{"name":"agentmemory-runtime","version":"1.0.0","private":true,"overrides":{"iii-sdk":"%s"}}\n' "${SDK_VERSION}" > package.json
+      npm install "@agentmemory/agentmemory@${PACKAGE_VERSION}" --omit=optional --no-fund --no-audit
+      printf '%s\n' "${VERSION_MARKER}" > .agentmemory-version
+    fi
+
+    cat > "${APP_DIR}/node_modules/@agentmemory/agentmemory/dist/iii-config.yaml" <<'EOF'
+    workers:
+      - name: iii-http
+        config:
+          port: 3111
+          host: 0.0.0.0
+          default_timeout: 180000
+          cors:
+            allowed_origins:
+              - "http://localhost:3111"
+              - "http://localhost:3113"
+              - "http://127.0.0.1:3111"
+              - "http://127.0.0.1:3113"
+            allowed_methods: [GET, POST, PUT, DELETE, OPTIONS]
+      - name: iii-state
+        config:
+          adapter:
+            name: kv
+            config:
+              store_method: file_based
+              file_path: /data/state_store.db
+      - name: iii-queue
+        config:
+          adapter:
+            name: builtin
+      - name: iii-pubsub
+        config:
+          adapter:
+            name: local
+      - name: iii-cron
+        config:
+          adapter:
+            name: kv
+      - name: iii-stream
+        config:
+          port: 3112
+          host: 0.0.0.0
+          adapter:
+            name: kv
+            config:
+              store_method: file_based
+              file_path: /data/stream_store
+      - name: iii-observability
+        config:
+          enabled: true
+          service_name: agentmemory
+          exporter: memory
+          sampling_ratio: 1.0
+          metrics_enabled: true
+          logs_enabled: true
+          logs_console_output: true
+    EOF
+
+    exec node "${APP_DIR}/node_modules/@agentmemory/agentmemory/dist/cli.mjs"
