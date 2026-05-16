@@ -17,7 +17,7 @@ controllers:
       app:
         image:
           repository: docker.io/library/node
-          tag: 22.21.1-bookworm
+          tag: 22.22.3-bookworm
         command: ["/bin/sh", "/config/entrypoint.sh"]
         env:
           TZ: America/New_York
