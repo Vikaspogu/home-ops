@@ -171,6 +171,7 @@ data:
     plugins:
       enabled:
         - ivan-personal
+        - disk-cleanup
   pricing-overrides.yaml: |-
     pricing:
       overrides:
