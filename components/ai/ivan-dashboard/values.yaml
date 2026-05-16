@@ -1,6 +1,8 @@
 controllers:
   app:
     replicas: 1
+    annotations:
+      reloader.stakater.com/auto: "true"
     containers:
       app:
         image:
@@ -10,6 +12,9 @@ controllers:
         env:
           TZ: America/New_York
           IVAN_SERVICE_UPSTREAM: "http://ivan-personal-service.ai.svc.cluster.local:8080"
+        envFrom:
+          - secretRef:
+              name: ivan-dashboard-secret
         resources:
           requests:
             cpu: 10m
@@ -48,7 +53,7 @@ controllers:
           allowPrivilegeEscalation: false
     pod:
       imagePullSecrets:
-      - name: gitea-registry-secret
+        - name: gitea-registry-secret
 service:
   app:
     controller: app
