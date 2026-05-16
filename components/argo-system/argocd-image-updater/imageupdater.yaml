@@ -5,7 +5,6 @@ metadata:
   name: gitea-apps
   namespace: argo-system
 spec:
-  namespace: argo-system
   commonUpdateSettings:
     updateStrategy: latest
     ignoreTags:

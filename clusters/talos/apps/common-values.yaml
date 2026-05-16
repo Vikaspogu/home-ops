@@ -1,7 +1,6 @@
 default:
   app:
     annotations:
-      argocd.argoproj.io/compare-options: ServerSideDiff=false
       notifications.argoproj.io/subscribe.on-sync-failed.slack: "#homelab-alerts"
       notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "#homelab-alerts"
       notifications.argoproj.io/subscribe.on-health-degraded.slack: "#homelab-alerts"
