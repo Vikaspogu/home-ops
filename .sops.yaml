@@ -1,5 +1,9 @@
 ---
 creation_rules:
+  - path_regex: clusters/talos/bootstrap/os/talsecret\.sops\.ya?ml
+    encrypted_regex: "^(id|secret|bootstraptoken|secretboxencryptionsecret|token|crt|key)$"
+    age: >-
+      age16ycyj229cr26sk80dxukkpwp9h64rtqdfqj4v9gy8h2dphljus3qphckza
   - path_regex: (components|clusters)/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData)$"
     age: >-
