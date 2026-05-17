@@ -30,6 +30,7 @@ controllers:
           WORKOUT_PLAN_MODEL: openai/openai/gpt-5.5
           WORKOUT_VIDEO_RERANKER: openai_compatible
           WORKOUT_VIDEO_RERANK_MODEL: openai/openai/gpt-5.4-mini
+          IMAGE_SEARCH_USER_AGENT: "IvanPersonal/1.0 (https://ivan.${CLUSTER_DOMAIN}; journal image enrichment)"
         envFrom: *envFrom
         resources:
           requests:
