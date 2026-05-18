@@ -77,6 +77,45 @@ controllers:
           capabilities:
             drop:
               - ALL
+      viewer-proxy:
+        image:
+          repository: docker.io/library/node
+          tag: 24.15.0-bookworm
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            exec node -e '
+            const net = require("node:net");
+            const listenPort = Number(process.env.VIEWER_PROXY_PORT || 3114);
+            const upstreamHost = process.env.VIEWER_UPSTREAM_HOST || "127.0.0.1";
+            const upstreamPort = Number(process.env.VIEWER_UPSTREAM_PORT || 3113);
+            const server = net.createServer((client) => {
+              const upstream = net.connect(upstreamPort, upstreamHost);
+              client.on("error", () => upstream.destroy());
+              upstream.on("error", () => client.destroy());
+              client.pipe(upstream);
+              upstream.pipe(client);
+            });
+            server.listen(listenPort, "0.0.0.0", () => {
+              console.log(`viewer proxy listening on ${listenPort}, forwarding to ${upstreamHost}:${upstreamPort}`);
+            });
+            '
+        env:
+          VIEWER_PROXY_PORT: "3114"
+          VIEWER_UPSTREAM_HOST: 127.0.0.1
+          VIEWER_UPSTREAM_PORT: "3113"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
 
 service:
   app:
@@ -84,6 +123,11 @@ service:
     ports:
       http:
         port: *httpPort
+      stream:
+        port: 3112
+      viewer:
+        port: 3113
+        targetPort: 3114
 
 persistence:
   data:

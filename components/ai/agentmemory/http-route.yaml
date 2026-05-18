@@ -13,6 +13,17 @@ spec:
       sectionName: https
   hostnames: ["agentmemory.${CLUSTER_DOMAIN}"]
   rules:
-    - backendRefs:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /stream
+      backendRefs:
         - name: *app
-          port: 3111
+          port: 3112
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: *app
+          port: 3113
