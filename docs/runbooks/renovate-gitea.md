@@ -38,12 +38,14 @@ Only after reviewing dry-run logs:
 3. Merge and sync the GitOps change.
 4. Watch the next run logs and first onboarding/update pull requests.
 
-The central config keeps schedule and PR limits conservative:
+The deployment keeps write volume conservative at both the CronJob and Renovate levels:
 
-- CronJob schedule: `0 3 * * *`
+- CronJob schedule: `0 3 * * *` in `America/New_York`
 - `concurrencyPolicy: Forbid`
-- `prHourlyLimit: 2`
-- `prConcurrentLimit: 5`
+- Renovate timezone: `America/New_York`
+- top-level `prHourlyLimit: 2`
+- top-level `prConcurrentLimit: 5`
+- onboarding schedule for new repo configs: `after 10pm and before 6am every weekday` plus `every weekend`
 - onboarding labels: `dependencies`, `renovate`
 
 ## Inspect operations
