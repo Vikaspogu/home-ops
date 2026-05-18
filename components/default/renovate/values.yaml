@@ -1,0 +1,64 @@
+---
+controllers:
+  app:
+    type: cronjob
+    cronjob:
+      schedule: "0 3 * * *"
+      timeZone: America/New_York
+      concurrencyPolicy: Forbid
+      suspend: true
+      successfulJobsHistory: 3
+      failedJobsHistory: 3
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 604800
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      restartPolicy: Never
+    containers:
+      app:
+        image:
+          repository: ghcr.io/renovatebot/renovate
+          tag: "41.159.4@sha256:e0db6b8efa1479a9e7e2dc5e2c423bd0c059d90e37baf58b32cbadf3471de5bf"
+        env:
+          RENOVATE_CONFIG_FILE: /config/config.js
+          LOG_LEVEL: info
+        envFrom:
+          - secretRef:
+              name: renovate-secret
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        probes:
+          liveness:
+            enabled: false
+          readiness:
+            enabled: false
+          startup:
+            enabled: false
+
+persistence:
+  config:
+    enabled: true
+    type: configMap
+    name: renovate-config
+    globalMounts:
+      - path: /config
+        readOnly: true
+  cache:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /tmp/renovate
+  tmp:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

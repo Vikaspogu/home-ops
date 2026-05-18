@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: renovate-config
+data:
+  config.js: |
+    module.exports = {
+      platform: "gitea",
+      endpoint: "https://gitea.omv.a113.casa/api/v1/",
+      gitAuthor: "Renovate Bot <renovate-bot@gitea.omv.a113.casa>",
+      username: "renovate-bot",
+      autodiscover: true,
+      autodiscoverFilter: ["vpogu/*"],
+      onboarding: true,
+      onboardingConfigFileName: "renovate.json",
+      onboardingConfig: {
+        $schema: "https://docs.renovatebot.com/renovate-schema.json",
+        extends: ["config:recommended", ":dependencyDashboard", ":semanticCommits"],
+        labels: ["dependencies", "renovate"],
+        prHourlyLimit: 2,
+        prConcurrentLimit: 5,
+        schedule: ["after 10pm and before 6am every weekday", "every weekend"],
+      },
+      optimizeForDisabled: true,
+      persistRepoData: false,
+      prHourlyLimit: 2,
+      prConcurrentLimit: 5,
+      labels: ["dependencies", "renovate"],
+      dependencyDashboard: true,
+      timezone: "America/New_York",
+    };
