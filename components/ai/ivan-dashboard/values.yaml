@@ -7,14 +7,14 @@ controllers:
       app:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-personal-dashboard
-          tag: 20260516181029-ca5c7e3-oci
+          tag: 20260517231156-cd1af0f-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
           IVAN_SERVICE_UPSTREAM: "http://ivan-personal-service.ai.svc.cluster.local:8080"
         envFrom:
-          - secretRef:
-              name: ivan-dashboard-secret
+        - secretRef:
+            name: ivan-dashboard-secret
         resources:
           requests:
             cpu: 10m
@@ -53,7 +53,7 @@ controllers:
           allowPrivilegeEscalation: false
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
+      - name: gitea-registry-secret
 service:
   app:
     controller: app

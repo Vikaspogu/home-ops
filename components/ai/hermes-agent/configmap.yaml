@@ -30,6 +30,10 @@ data:
         provider: main
         model: openai/openai/gpt-5.4-mini
         timeout: 60
+      triage_specifier:
+        provider: spark
+        model: gpt-oss:20b
+        timeout: 120
       title_generation:
         provider: spark
         model: gpt-oss:20b
@@ -82,13 +86,27 @@ data:
       theme: frosted-glass-dark
     goals:
       max_turns: 20
+    code_execution:
+      mode: project
+      timeout: 300
+      max_tool_calls: 50
+    checkpoints:
+      enabled: true
+      max_snapshots: 20
+      max_total_size_mb: 500
+      max_file_size_mb: 10
+      auto_prune: true
+      retention_days: 7
+      delete_orphans: true
+    security:
+      redact_secrets: true
     kanban:
       dispatch_in_gateway: true
       dispatch_interval_seconds: 60
     mcp_servers:
       agentmemory:
-        command: npx
-        args: ["-y", "@agentmemory/agentmemory@0.9.16", "mcp"]
+        command: agentmemory
+        args: ["mcp"]
         env:
           AGENTMEMORY_URL: http://agentmemory.ai.svc.cluster.local:3111
           AGENTMEMORY_SECRET: "${AGENTMEMORY_SECRET}"
