@@ -29,5 +29,4 @@ data:
       labels: ["dependencies", "renovate"],
       dependencyDashboard: true,
       timezone: "America/New_York",
-      dryRun: process.env.RENOVATE_DRY_RUN || null,
     };

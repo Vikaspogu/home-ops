@@ -8,9 +8,9 @@ The deployment expects an ExternalSecret backed by the 1Password item `renovate`
 
 No token value belongs in Git, ArgoCD application values, logs, or merge request text.
 
-## Initial rollout / dry run
+## Initial rollout
 
-The CronJob is intentionally committed with both `suspend: true` and `RENOVATE_DRY_RUN=full`.
+The CronJob is intentionally committed with `suspend: true` so the first live run can be started manually after the ExternalSecret is healthy.
 
 After the GitOps change is synced and the ExternalSecret is healthy:
 
@@ -18,25 +18,24 @@ After the GitOps change is synced and the ExternalSecret is healthy:
 kubectl -n default get externalsecret renovate
 kubectl -n default get secret renovate-secret
 kubectl -n default get cronjob renovate
-kubectl -n default create job --from=cronjob/renovate renovate-dry-run-$(date +%Y%m%d%H%M)
+kubectl -n default create job --from=cronjob/renovate renovate-run-$(date +%Y%m%d%H%M)
 kubectl -n default logs -l app.kubernetes.io/instance=renovate --tail=200
 ```
 
-Expected dry-run evidence:
+Expected first-run evidence:
 
 - logs show `platform=gitea` and the Gitea endpoint
 - repository discovery is limited to `vpogu/*`
-- dry run does not create branches or pull requests
-- onboarding is proposed for repositories without existing Renovate config
+- onboarding or update pull requests are created for eligible repositories
+- no repositories outside the autodiscovery filter are processed
 
 ## Enable scheduled writes
 
-Only after reviewing dry-run logs:
+Only after reviewing the first live run:
 
-1. Remove `RENOVATE_DRY_RUN=full` from `components/default/renovate/values.yaml`.
-2. Set `controllers.app.cronjob.suspend` to `false`.
-3. Merge and sync the GitOps change.
-4. Watch the next run logs and first onboarding/update pull requests.
+1. Set `controllers.app.cronjob.suspend` to `false`.
+2. Merge and sync the GitOps change.
+3. Watch the next scheduled run logs and onboarding/update pull requests.
 
 The deployment keeps write volume conservative at both the CronJob and Renovate levels:
 
