@@ -27,7 +27,9 @@ kubeconform_args=(
     "-strict"
     "-ignore-missing-schemas"
     "-skip"
-    "Secret,ExternalSecret,SecretStore,ClusterSecretStore,HelmChart,HelmChartConfig"
+    # The public ImageUpdater schema requires spec.namespace, but the installed
+    # CRD rejects it and Argo CD server-side diff fails when it is present.
+    "Secret,ExternalSecret,SecretStore,ClusterSecretStore,HelmChart,HelmChartConfig,ImageUpdater"
     "-schema-location"
     "default"
     "-schema-location"
