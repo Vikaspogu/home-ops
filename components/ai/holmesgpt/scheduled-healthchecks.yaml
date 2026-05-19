@@ -12,7 +12,7 @@ metadata:
     app.kubernetes.io/component: proactive-check
 spec:
   schedule: "*/30 * * * *"
-  enabled: true
+  enabled: false
   timeout: 300
   mode: alert
   destinations:
@@ -61,7 +61,7 @@ metadata:
     app.kubernetes.io/component: proactive-check
 spec:
   schedule: "20 */2 * * *"
-  enabled: true
+  enabled: false
   timeout: 300
   mode: monitor
   query: |-
