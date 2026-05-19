@@ -6,7 +6,6 @@ controllers:
       schedule: "0 3 * * *"
       timeZone: America/New_York
       concurrencyPolicy: Forbid
-      suspend: true
       successfulJobsHistory: 3
       failedJobsHistory: 3
       backoffLimit: 1
