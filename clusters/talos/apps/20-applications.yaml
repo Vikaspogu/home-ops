@@ -380,24 +380,6 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
-  # ivan:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: ai
-  #   source:
-  #     path: components/ai/ivan
-  #     plugin:
-  #       env:
-  #         - name: STORAGE_CLASS
-  #           value: ceph-block
-  #         - name: VOLUME_SNAPSHOT_CLASS
-  #           value: csi-ceph-blockpool
-  #         - name: VOLSYNC_CAPACITY
-  #           value: 2Gi
-  #         - name: VOLSYNC_CACHE_CAPACITY
-  #           value: 4Gi
-
   ivan-personal-service:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -421,32 +403,6 @@ applications:
       namespace: ai
     source:
       path: components/ai/holmesgpt
-
-  honcho-postgres:
-    annotations:
-      argocd.argoproj.io/sync-wave: "21"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/honcho-postgres
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: ceph-block
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: csi-ceph-blockpool
-          - name: VOLSYNC_CAPACITY
-            value: 10Gi
-          - name: VOLSYNC_CACHE_CAPACITY
-            value: 8Gi
-
-  honcho:
-    annotations:
-      argocd.argoproj.io/sync-wave: "22"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/honcho
 
   mem0:
     annotations:
