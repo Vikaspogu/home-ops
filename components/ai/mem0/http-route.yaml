@@ -13,6 +13,46 @@ spec:
       sectionName: https
   hostnames: ["mem0.${CLUSTER_DOMAIN}"]
   rules:
-    - backendRefs:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /auth
+        - path:
+            type: PathPrefix
+            value: /api-keys
+        - path:
+            type: PathPrefix
+            value: /requests
+        - path:
+            type: PathPrefix
+            value: /entities
+        - path:
+            type: PathPrefix
+            value: /configure
+        - path:
+            type: PathPrefix
+            value: /generate-instructions
+        - path:
+            type: PathPrefix
+            value: /memories
+        - path:
+            type: PathPrefix
+            value: /search
+        - path:
+            type: PathPrefix
+            value: /reset
+        - path:
+            type: PathPrefix
+            value: /docs
+        - path:
+            type: PathPrefix
+            value: /redoc
+        - path:
+            type: PathPrefix
+            value: /openapi.json
+      backendRefs:
         - name: *app
           port: 8000
+    - backendRefs:
+        - name: mem0-dashboard
+          port: 3000

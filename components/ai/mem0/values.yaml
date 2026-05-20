@@ -127,13 +127,75 @@ controllers:
           capabilities:
             drop:
               - ALL
+  dashboard:
+    replicas: 1
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+    containers:
+      app:
+        image:
+          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mem0-dashboard
+          tag: 202605201103-edd1b3e-node22-amd64
+        env:
+          TZ: America/New_York
+          NEXT_PUBLIC_API_URL: "https://mem0.${CLUSTER_DOMAIN}"
+          API_INTERNAL_URL: "http://mem0.ai.svc.cluster.local:8000"
+          NEXT_PUBLIC_INSTANCE_NAME: Mem0
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: &dashboardPort 3000
+              initialDelaySeconds: 10
+              periodSeconds: 5
+              failureThreshold: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: *dashboardPort
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: *dashboardPort
+              periodSeconds: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
 
 service:
   app:
+    forceRename: mem0
+    primary: true
     controller: app
     ports:
       http:
         port: 8000
+  dashboard:
+    controller: dashboard
+    ports:
+      http:
+        port: *dashboardPort
 
 persistence:
   data:
