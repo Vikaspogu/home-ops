@@ -5,6 +5,9 @@ controllers:
     strategy: Recreate
     annotations:
       reloader.stakater.com/auto: "true"
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
     initContainers:
       init-01-db:
         image:
