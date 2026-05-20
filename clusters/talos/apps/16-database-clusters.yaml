@@ -7,3 +7,11 @@ applications:
       namespace: default
     source:
       path: clusters/talos/apps/default/cloudnative-cluster
+
+  pgvector-cluster:
+    annotations:
+      argocd.argoproj.io/sync-wave: "17"
+    destination:
+      namespace: default
+    source:
+      path: clusters/talos/apps/default/pgvector-cluster

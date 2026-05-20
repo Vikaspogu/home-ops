@@ -448,13 +448,13 @@ applications:
     source:
       path: components/ai/honcho
 
-  agentmemory:
+  mem0:
     annotations:
-      argocd.argoproj.io/sync-wave: "22"
+      argocd.argoproj.io/sync-wave: "23"
     destination:
       namespace: ai
     source:
-      path: components/ai/agentmemory
+      path: components/ai/mem0
       plugin:
         env:
           - name: STORAGE_CLASS
@@ -462,13 +462,13 @@ applications:
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
-            value: 10Gi
+            value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
-            value: 8Gi
+            value: 2Gi
 
   hermes-agent:
     annotations:
-      argocd.argoproj.io/sync-wave: "23"
+      argocd.argoproj.io/sync-wave: "24"
     destination:
       namespace: ai
     source:

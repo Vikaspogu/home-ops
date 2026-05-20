@@ -103,21 +103,6 @@ data:
     kanban:
       dispatch_in_gateway: true
       dispatch_interval_seconds: 60
-    mcp_servers:
-      agentmemory:
-        command: agentmemory
-        args: ["mcp"]
-        env:
-          AGENTMEMORY_URL: http://agentmemory.ai.svc.cluster.local:3111
-          AGENTMEMORY_SECRET: "${AGENTMEMORY_SECRET}"
-          AGENTMEMORY_FORCE_PROXY: "1"
-          AGENTMEMORY_PROBE_TIMEOUT_MS: "5000"
-        connect_timeout: 60
-        timeout: 120
-        tools:
-          exclude:
-            - memory_export
-            - memory_governance_delete
     memory:
       memory_enabled: true
       user_profile_enabled: true
