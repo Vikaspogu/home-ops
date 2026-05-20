@@ -50,7 +50,7 @@ controllers:
       app:
         image:
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mem0-api-server
-          tag: 202605201045-edd1b3e-amd64@sha256:1fc4402afb9cffecff7d8c8fcef5b55bec49c36df4de42445467daf74aed68f9
+          tag: 202605201045-edd1b3e-amd64
         command:
           - sh
           - -ec
