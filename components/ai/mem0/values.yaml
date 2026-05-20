@@ -49,8 +49,8 @@ controllers:
     containers:
       app:
         image:
-          repository: mem0/mem0-api-server
-          tag: latest@sha256:03a184f90f45ad7a4fb1f5459a9663b1e27c5ea822f0e4f0c70c7ae7a9a30621
+          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mem0-api-server
+          tag: 202605201045-edd1b3e-amd64@sha256:1fc4402afb9cffecff7d8c8fcef5b55bec49c36df4de42445467daf74aed68f9
         command:
           - sh
           - -ec
