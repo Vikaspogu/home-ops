@@ -9,5 +9,5 @@ helmCharts:
     releaseName: descheduler
     namespace: kube-system
     repo: oci://ghcr.io/home-operations/charts-mirror
-    version: 0.35.1
+    version: 0.36.0
     valuesFile: values.yaml
