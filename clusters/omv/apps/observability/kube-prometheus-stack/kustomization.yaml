@@ -10,7 +10,7 @@ helmCharts:
     namespace: observability
     repo: oci://ghcr.io/prometheus-community/charts
     includeCRDs: true
-    version: 85.2.0
+    version: 85.2.2
     valuesInline:
       kubeEtcd:
         enabled: false
