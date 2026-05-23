@@ -115,6 +115,9 @@ data:
       timeout: 180
       env_passthrough:
         - "*"
+        - GITEA_PR_REVIEW_REPOS
+        - GH_TOKEN
+        - GITHUB_PR_REVIEW_REPOS
     skills:
       disabled:
         - architecture-diagram
@@ -175,6 +178,18 @@ data:
       enabled:
         - ivan-personal
         - disk-cleanup
+        - rtk-rewrite
+    platforms:
+      telegram:
+        extra:
+          dm_topics:
+            - chat_id: 8658000242
+              topics:
+                - name: General
+                  thread_id: 1430
+                - name: Coding
+                  skill: coder-kanban-workflow
+                  thread_id: 1432
   pricing-overrides.yaml: |-
     pricing:
       overrides:
