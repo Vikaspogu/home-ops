@@ -17,7 +17,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/plastic-labs/honcho
-          tag: latest@sha256:3cb1fdcfe3beb37259bd3550ab4338f1e3c5eee3f7a0a32cfde66c81785f03e9
+          tag: latest@sha256:5d9d2c53bcc0297de497634a3611728f81d171cc428cc93d74c1f07c405c2d33
         command:
           - sh
           - -ec
@@ -86,7 +86,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/plastic-labs/honcho
-          tag: latest@sha256:3cb1fdcfe3beb37259bd3550ab4338f1e3c5eee3f7a0a32cfde66c81785f03e9
+          tag: latest@sha256:5d9d2c53bcc0297de497634a3611728f81d171cc428cc93d74c1f07c405c2d33
         command:
           - /app/.venv/bin/python
           - -m
