@@ -130,9 +130,6 @@ persistence:
         - path: /opt/bootstrap/pricing-overrides.yaml
           subPath: pricing-overrides.yaml
           readOnly: true
-        - path: /opt/bootstrap/honcho.json
-          subPath: honcho.json
-          readOnly: true
   secret:
     type: secret
     name: hermes-agent-secret
