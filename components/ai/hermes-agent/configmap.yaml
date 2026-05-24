@@ -214,26 +214,3 @@ data:
           output_per_million: "30.00"
           source_url: https://openai.com/api/pricing/
           pricing_version: openai-pricing-2026-05-11
-  honcho.json: |-
-    {
-      "baseUrl": "http://honcho.ai.svc.cluster.local:8000",
-      "workspace": "hermes",
-      "peerName": "vikas",
-      "pinPeerName": true,
-      "timeout": 20,
-      "hosts": {
-        "hermes": {
-          "enabled": true,
-          "aiPeer": "hermes",
-          "recallMode": "hybrid",
-          "sessionStrategy": "per-session",
-          "contextTokens": 1200,
-          "contextCadence": 1,
-          "dialecticCadence": 5,
-          "dialecticDepth": 1,
-          "dialecticReasoningLevel": "low",
-          "writeFrequency": "async",
-          "observationMode": "directional"
-        }
-      }
-    }
