@@ -15,8 +15,8 @@ data:
         base_url: http://spark.a113.internal:11434/v1
         api_mode: chat_completions
         models:
-          gpt-oss:20b:
-            context_length: 131072
+          qwen3-coder:30b:
+            context_length: 262144
     auxiliary:
       vision:
         provider: main
@@ -32,33 +32,40 @@ data:
         timeout: 60
       triage_specifier:
         provider: spark
-        model: gpt-oss:20b
+        model: qwen3-coder:30b
         timeout: 120
       title_generation:
         provider: spark
-        model: gpt-oss:20b
+        model: qwen3-coder:30b
         timeout: 60
       skills_hub:
         provider: spark
-        model: gpt-oss:20b
+        model: qwen3-coder:30b
         timeout: 90
       session_search:
         provider: spark
-        model: gpt-oss:20b
+        model: qwen3-coder:30b
         timeout: 120
         max_concurrency: 1
       compression:
         provider: spark
-        model: gpt-oss:20b
+        model: qwen3-coder:30b
         timeout: 300
       web_extract:
         provider: spark
-        model: gpt-oss:20b
+        model: qwen3-coder:30b
         timeout: 600
       curator:
         provider: spark
-        model: gpt-oss:20b
+        model: qwen3-coder:30b
         timeout: 900
+    compression:
+      enabled: true
+      threshold: 0.75
+      target_ratio: 0.30
+      protect_last_n: 30
+      protect_first_n: 0
+      hygiene_hard_message_limit: 500
     stt:
       enabled: true
       provider: openai
