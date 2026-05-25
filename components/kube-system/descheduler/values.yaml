@@ -29,7 +29,6 @@ deschedulerPolicy:
           args:
             nodeAffinityType:
               - requiredDuringSchedulingIgnoredDuringExecution
-        - name: RemovePodsViolatingNodeTaints
         - name: RemovePodsViolatingTopologySpreadConstraint
         - name: LowNodeUtilization
           args:
@@ -52,7 +51,6 @@ deschedulerPolicy:
             - RemoveFailedPods
             - RemovePodsViolatingInterPodAntiAffinity
             - RemovePodsViolatingNodeAffinity
-            - RemovePodsViolatingNodeTaints
 service:
   enabled: true
 serviceMonitor:
