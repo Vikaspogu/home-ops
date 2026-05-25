@@ -14,7 +14,7 @@ controllers:
       app:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-beadboard
-          tag: 20260525180046-b79cb05-oci
+          tag: 20260525182028-cd43399-oci
           pullPolicy: IfNotPresent
         env:
           TZ: America/New_York
