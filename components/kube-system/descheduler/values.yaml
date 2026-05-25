@@ -7,9 +7,11 @@ deschedulerPolicy:
       pluginConfig:
         - name: DefaultEvictor
           args:
-            evictFailedBarePods: true
-            evictLocalStoragePods: true
-            evictSystemCriticalPods: true
+            nodeFit: true
+            noEvictionPolicy: Mandatory
+            podProtections:
+              defaultDisabled:
+                - FailedBarePods
         - name: RemoveFailedPods
           args:
             reasons:
@@ -31,14 +33,13 @@ deschedulerPolicy:
         - name: RemovePodsViolatingTopologySpreadConstraint
         - name: LowNodeUtilization
           args:
+            useDeviationThresholds: true
             thresholds:
-              cpu: 20
-              memory: 20
-              pods: 15
+              pods: 10
             targetThresholds:
-              cpu: 50
-              memory: 60
-              pods: 40
+              pods: 10
+            evictionLimits:
+              node: 5
         - name: RemoveDuplicates
       plugins:
         balance:
