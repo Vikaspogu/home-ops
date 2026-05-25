@@ -1,0 +1,45 @@
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: pod-topology-spread
+spec:
+  policyName: pod-topology-spread
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: pod-topology-spread
+spec:
+  matchConstraints:
+    resourceRules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+  matchConditions:
+    - name: no-existing-topology-spread
+      expression: >
+        !has(object.spec.topologySpreadConstraints) || size(object.spec.topologySpreadConstraints) == 0
+    - name: skip-daemonsets
+      expression: >
+        !has(object.metadata.ownerReferences) || !object.metadata.ownerReferences.exists(owner, owner.kind == "DaemonSet")
+  failurePolicy: Ignore
+  reinvocationPolicy: IfNeeded
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        expression: >
+          [
+            JSONPatch{
+              op: "add", path: "/spec/topologySpreadConstraints",
+              value: [
+                Object.spec.topologySpreadConstraints{
+                  maxSkew: 1,
+                  topologyKey: "kubernetes.io/hostname",
+                  whenUnsatisfiable: "ScheduleAnyway",
+                  labelSelector: Object.spec.topologySpreadConstraints.labelSelector{}
+                }
+              ]
+            }
+          ]
