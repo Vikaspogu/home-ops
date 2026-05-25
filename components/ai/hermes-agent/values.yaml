@@ -101,12 +101,84 @@ controllers:
             memory: 4Gi
         securityContext:
           allowPrivilegeEscalation: false
+      workspace:
+        image:
+          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-workspace
+          tag: 20260524212100-1b4e91f-oci
+          pullPolicy: IfNotPresent
+        env:
+          HOME: /home/workspace
+          HERMES_HOME: /home/workspace/.hermes
+          XDG_CONFIG_HOME: /home/workspace/.config
+          XDG_DATA_HOME: /home/workspace/.local/share
+          XDG_CACHE_HOME: /home/workspace/.cache
+          CODEX_HOME: /home/workspace/.codex
+          CLAUDE_CONFIG_DIR: /home/workspace/.claude
+          PORT: &workspacePort 3000
+          HERMES_WORKSPACE_DIR: /workspace
+          HERMES_API_URL: http://127.0.0.1:8642
+          HERMES_DASHBOARD_URL: http://127.0.0.1:9119
+          HERMES_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: HERMES_WORKSPACE_PASSWORD
+          COOKIE_SECURE: "1"
+          TRUST_PROXY: "1"
+          TMUX_BIN: /usr/bin/tmux
+          HERMES_TMUX_BIN: /usr/bin/tmux
+          BEADS_DOLT_SERVER_HOST: beadboard-dolt.ai.svc.cluster.local
+          BEADS_DOLT_SERVER_PORT: "3307"
+          BEADS_DOLT_SERVER_USER: root
+          TZ: America/New_York
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 3Gi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *workspacePort
+              initialDelaySeconds: 20
+              periodSeconds: 5
+              failureThreshold: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *workspacePort
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *workspacePort
+              periodSeconds: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities: {drop: ["ALL"]}
 service:
   app:
     controller: app
     ports:
       dashboard:
         port: *dashboardPort
+      workspace:
+        port: *workspacePort
 persistence:
   app-data:
     existingClaim: hermes-agent
@@ -118,6 +190,19 @@ persistence:
         - path: /opt/data
         app:
         - path: /opt/data
+        workspace:
+        - path: /home/workspace
+          subPath: workspace-home
+        - path: /workspace
+          subPath: workspace
+  tmp:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 512Mi
+    advancedMounts:
+      app:
+        workspace:
+        - path: /tmp
   config:
     type: configMap
     name: hermes-agent-config

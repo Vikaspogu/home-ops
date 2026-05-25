@@ -3,16 +3,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: ai
 resources:
-  - ./configmap.yaml
-  - ./externalsecret.yaml
   - ./http-route.yaml
-  - ./http-route-workspace.yaml
+  - ./tcp-route.yaml
 components:
   - ../../volsync-system/volsync-replication
 
 helmCharts:
   - name: app-template
-    releaseName: hermes-agent
+    releaseName: beadboard
     namespace: ai
     repo: oci://ghcr.io/bjw-s-labs/helm
     version: "5.0.1"

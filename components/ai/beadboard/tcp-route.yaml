@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.networking.k8s.io/tcproute_v1alpha2.json
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+metadata:
+  name: beadboard-dolt
+  labels:
+    app.kubernetes.io/instance: beadboard
+    app.kubernetes.io/name: beadboard-dolt
+spec:
+  parentRefs:
+    - name: envoy-internal
+      namespace: network
+      sectionName: dolt
+  rules:
+    - backendRefs:
+        - name: beadboard-dolt
+          port: 3307
