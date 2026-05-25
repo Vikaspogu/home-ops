@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: ai
 resources:
   - ./http-route.yaml
+  - ./pvc-dolt.yaml
   - ./tcp-route.yaml
 components:
   - ../../volsync-system/volsync-replication

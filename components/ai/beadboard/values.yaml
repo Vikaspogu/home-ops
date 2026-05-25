@@ -152,10 +152,12 @@ persistence:
             subPath: beadboard-home
           - path: /workspace
             subPath: workspace
+  dolt-data:
+    existingClaim: beadboard-dolt
+    advancedMounts:
       dolt:
         app:
           - path: /var/lib/dolt
-            subPath: dolt
   tmp:
     type: emptyDir
     medium: Memory

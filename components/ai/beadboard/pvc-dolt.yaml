@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: beadboard-dolt
+  labels:
+    app.kubernetes.io/instance: beadboard
+    app.kubernetes.io/name: beadboard-dolt
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
