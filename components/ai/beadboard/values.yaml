@@ -86,6 +86,10 @@ controllers:
           - --loglevel=info
         env:
           TZ: America/New_York
+          HOME: /var/lib/dolt
+          XDG_CONFIG_HOME: /var/lib/dolt/.config
+          XDG_CACHE_HOME: /var/lib/dolt/.cache
+          XDG_DATA_HOME: /var/lib/dolt/.local/share
         resources:
           requests:
             cpu: 50m
