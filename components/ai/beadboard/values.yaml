@@ -1,4 +1,3 @@
----
 controllers:
   beadboard:
     replicas: 1
@@ -7,15 +6,15 @@ controllers:
       reloader.stakater.com/auto: "true"
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
+      - name: gitea-registry-secret
       securityContext:
         fsGroup: 10020
         fsGroupChangePolicy: OnRootMismatch
     containers:
       app:
         image:
-          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-beadboard
-          tag: 20260524212601-1649e16-oci
+          repository: gitea.omv.a113.casa/vpogu/agent-platform-beadboard
+          tag: 20260525023057-a37957b-oci
           pullPolicy: IfNotPresent
         env:
           TZ: America/New_York
@@ -79,11 +78,11 @@ controllers:
           tag: 2.0.6
           pullPolicy: IfNotPresent
         args:
-          - sql-server
-          - --host=0.0.0.0
-          - --port=3307
-          - --data-dir=/var/lib/dolt
-          - --loglevel=info
+        - sql-server
+        - --host=0.0.0.0
+        - --port=3307
+        - --data-dir=/var/lib/dolt
+        - --loglevel=info
         env:
           TZ: America/New_York
           HOME: /var/lib/dolt
@@ -126,7 +125,6 @@ controllers:
           runAsUser: 10020
           runAsGroup: 10020
           capabilities: {drop: ["ALL"]}
-
 service:
   app:
     forceRename: beadboard
@@ -141,23 +139,22 @@ service:
     ports:
       mysql:
         port: *doltPort
-
 persistence:
   data:
     existingClaim: beadboard
     advancedMounts:
       beadboard:
         app:
-          - path: /home/beadboard
-            subPath: beadboard-home
-          - path: /workspace
-            subPath: workspace
+        - path: /home/beadboard
+          subPath: beadboard-home
+        - path: /workspace
+          subPath: workspace
   dolt-data:
     existingClaim: beadboard-dolt
     advancedMounts:
       dolt:
         app:
-          - path: /var/lib/dolt
+        - path: /var/lib/dolt
   tmp:
     type: emptyDir
     medium: Memory
@@ -165,7 +162,7 @@ persistence:
     advancedMounts:
       beadboard:
         app:
-          - path: /tmp
+        - path: /tmp
       dolt:
         app:
-          - path: /tmp
+        - path: /tmp
