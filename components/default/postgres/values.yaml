@@ -1,6 +1,0 @@
-auth:
-  password: "secret"
-
-primary:
-  persistence:
-    storageClass: openebs-hostpath
