@@ -186,7 +186,100 @@ data:
         - ivan-personal
         - disk-cleanup
         - rtk-rewrite
-        - spotify
+    platform_toolsets:
+      cli:
+        - browser
+        - clarify
+        - code_execution
+        - computer_use
+        - cronjob
+        - delegation
+        - file
+        - image_gen
+        - ivan_bartender
+        - ivan_budget
+        - ivan_dining
+        - ivan_documents
+        - ivan_fitness
+        - ivan_holmesgpt
+        - ivan_home_assistant
+        - ivan_household
+        - ivan_journal_images
+        - ivan_obsidian
+        - ivan_paperless
+        - ivan_synology
+        - ivan_travel
+        - kanban
+        - memory
+        - messaging
+        - session_search
+        - skills
+        - terminal
+        - todo
+        - tts
+        - vision
+        - web
+      telegram:
+        - browser
+        - clarify
+        - code_execution
+        - computer_use
+        - cronjob
+        - delegation
+        - file
+        - image_gen
+        - ivan_bartender
+        - ivan_budget
+        - ivan_dining
+        - ivan_documents
+        - ivan_fitness
+        - ivan_holmesgpt
+        - ivan_home_assistant
+        - ivan_household
+        - ivan_journal_images
+        - ivan_obsidian
+        - ivan_paperless
+        - ivan_synology
+        - ivan_travel
+        - kanban
+        - memory
+        - messaging
+        - session_search
+        - skills
+        - terminal
+        - todo
+        - tts
+        - vision
+        - web
+    known_plugin_toolsets:
+      cli:
+        - ivan_bartender
+        - ivan_budget
+        - ivan_dining
+        - ivan_documents
+        - ivan_fitness
+        - ivan_holmesgpt
+        - ivan_home_assistant
+        - ivan_household
+        - ivan_journal_images
+        - ivan_obsidian
+        - ivan_paperless
+        - ivan_synology
+        - ivan_travel
+      telegram:
+        - ivan_bartender
+        - ivan_budget
+        - ivan_dining
+        - ivan_documents
+        - ivan_fitness
+        - ivan_holmesgpt
+        - ivan_home_assistant
+        - ivan_household
+        - ivan_journal_images
+        - ivan_obsidian
+        - ivan_paperless
+        - ivan_synology
+        - ivan_travel
     platforms:
       telegram:
         extra:
