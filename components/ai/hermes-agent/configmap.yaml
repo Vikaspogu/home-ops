@@ -186,6 +186,7 @@ data:
         - ivan-personal
         - disk-cleanup
         - rtk-rewrite
+        - spotify
     platforms:
       telegram:
         extra:
