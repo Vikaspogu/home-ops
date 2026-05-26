@@ -1,0 +1,22 @@
+{
+  "projects": [
+    {
+      "alias": "ivan-plugin",
+      "displayName": "Ivan Plugin",
+      "root": "/workspace/ivan-plugin",
+      "notifySessionKey": "coding"
+    },
+    {
+      "alias": "agent-platform-custom",
+      "displayName": "Agent Platform Custom",
+      "root": "/workspace/agent-platform-custom",
+      "notifySessionKey": "coding"
+    },
+    {
+      "alias": "home-ops",
+      "displayName": "Home Ops",
+      "root": "/workspace/home-ops",
+      "notifySessionKey": "coding"
+    }
+  ]
+}

@@ -89,16 +89,16 @@ spec:
           branch: main
           writeBackTarget: "helmvalues:./values.yaml"
       images:
-        - alias: hermes-agent-custom
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/hermes-agent-custom"
+        - alias: agent-platform-hermes-agent
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
-        - alias: hermes-agent-custom-seed
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/hermes-agent-custom"
+        - alias: agent-platform-hermes-agent-seed
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
