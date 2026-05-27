@@ -13,30 +13,11 @@ controllers:
       workspace-repo-alias:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260526205722-927c198-oci
-        command: ["/bin/sh", "-ec"]
-        args:
-        - |
-          mkdir -p /workspace
-          if [ ! -L /opt/data/repos ]; then
-            if [ -d /opt/data/repos ]; then
-              for repo in /opt/data/repos/*; do
-                [ -d "${repo}/.git" ] || continue
-                name="$(basename "${repo}")"
-                if [ ! -d "/workspace/${name}/.git" ]; then
-                  rm -rf "/workspace/${name}"
-                  mkdir -p "/workspace/${name}"
-                  rsync -rl --no-perms --no-owner --no-group "${repo}/" "/workspace/${name}/"
-                fi
-              done
-              if [ ! -e /opt/data/repos.pvc-cache ]; then
-                mv /opt/data/repos /opt/data/repos.pvc-cache
-              else
-                rm -rf /opt/data/repos
-              fi
-            fi
-            ln -s /workspace /opt/data/repos
-          fi
+          tag: 20260527200318-9077a27-oci
+        command: ["hermes-workspace-repo-bootstrap"]
+        envFrom:
+        - secretRef:
+            name: hermes-agent-secret
         resources:
           requests:
             cpu: 10m
@@ -281,6 +262,8 @@ persistence:
       app:
         workspace-repo-alias:
         - path: /opt/data
+        - path: /home/workspace
+          subPath: workspace-home
         seed-config:
         - path: /opt/data
         install-ivan-personal-plugin:
@@ -308,6 +291,10 @@ persistence:
     name: beads-project-registry
     advancedMounts:
       app:
+        workspace-repo-alias:
+        - path: /etc/hermes/project-registry/projects.json
+          subPath: projects.json
+          readOnly: true
         seed-config:
         - path: /etc/hermes/project-registry/projects.json
           subPath: projects.json
@@ -326,6 +313,8 @@ persistence:
     sizeLimit: 512Mi
     advancedMounts:
       app:
+        workspace-repo-alias:
+        - path: /tmp
         workspace:
         - path: /tmp
   workspace-runtime:

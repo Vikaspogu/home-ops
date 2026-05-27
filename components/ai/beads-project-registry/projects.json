@@ -4,18 +4,21 @@
       "alias": "ivan-plugin",
       "displayName": "Ivan Plugin",
       "root": "/workspace/ivan-plugin",
+      "repoUrl": "https://gitea.omv.a113.casa/vpogu/ivan-plugin.git",
       "notifySessionKey": "coding"
     },
     {
       "alias": "agent-platform-custom",
       "displayName": "Agent Platform Custom",
       "root": "/workspace/agent-platform-custom",
+      "repoUrl": "https://gitea.omv.a113.casa/vpogu/agent-platform-custom.git",
       "notifySessionKey": "coding"
     },
     {
       "alias": "home-ops",
       "displayName": "Home Ops",
       "root": "/workspace/home-ops",
+      "repoUrl": "https://github.com/Vikaspogu/home-ops.git",
       "notifySessionKey": "coding"
     }
   ]
