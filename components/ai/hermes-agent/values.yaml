@@ -317,6 +317,14 @@ persistence:
       app:
         workspace:
         - path: /tmp
+  workspace-runtime:
+    type: emptyDir
+    medium: Memory
+    sizeLimit: 256Mi
+    advancedMounts:
+      app:
+        workspace:
+        - path: /app/.runtime
   config:
     type: configMap
     name: hermes-agent-config
