@@ -13,6 +13,6 @@ helmCharts:
     releaseName: holmesgpt
     namespace: ai
     repo: https://robusta-charts.storage.googleapis.com
-    version: 0.30.1
+    version: 0.31.0
     valuesFile: values.yaml
     includeCRDs: true
