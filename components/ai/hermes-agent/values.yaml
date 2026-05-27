@@ -172,6 +172,16 @@ controllers:
           HERMES_WORKSPACE_BEADS_INTAKE_INITIAL_DELAY_SECONDS: "20"
           HERMES_API_URL: http://127.0.0.1:8642
           HERMES_DASHBOARD_URL: http://127.0.0.1:9119
+          HERMES_API_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: HERMES_API_KEY
+          HERMES_BASE_URL:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: HERMES_BASE_URL
           HERMES_PASSWORD:
             valueFrom:
               secretKeyRef:
@@ -336,6 +346,10 @@ persistence:
           readOnly: true
         - path: /opt/bootstrap/pricing-overrides.yaml
           subPath: pricing-overrides.yaml
+          readOnly: true
+        workspace:
+        - path: /etc/hermes/bootstrap/config.yaml
+          subPath: config.yaml
           readOnly: true
   secret:
     type: secret
