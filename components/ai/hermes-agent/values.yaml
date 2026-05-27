@@ -133,7 +133,7 @@ controllers:
       workspace:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-workspace
-          tag: 20260527200318-9077a27-oci
+          tag: 20260527203909-5b1a59b-oci
           pullPolicy: IfNotPresent
         env:
           HOME: /home/workspace
