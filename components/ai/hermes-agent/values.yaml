@@ -26,7 +26,7 @@ controllers:
                 if [ ! -d "/workspace/${name}/.git" ]; then
                   rm -rf "/workspace/${name}"
                   mkdir -p "/workspace/${name}"
-                  rsync -a "${repo}/" "/workspace/${name}/"
+                  rsync -rl --no-perms --no-owner --no-group "${repo}/" "/workspace/${name}/"
                 fi
               done
               if [ ! -e /opt/data/repos.pvc-cache ]; then
@@ -37,7 +37,6 @@ controllers:
             fi
             ln -s /workspace /opt/data/repos
           fi
-          chmod -R a+rwX /workspace
         resources:
           requests:
             cpu: 10m
