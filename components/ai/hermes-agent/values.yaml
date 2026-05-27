@@ -152,7 +152,7 @@ controllers:
       workspace:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-workspace
-          tag: 20260527141653-46b4727-oci
+          tag: 20260527142822-39d659d-oci
           pullPolicy: IfNotPresent
         env:
           HOME: /home/workspace
@@ -170,6 +170,7 @@ controllers:
           HERMES_WORKSPACE_BEADS_INTAKE_ENABLED: "true"
           HERMES_WORKSPACE_BEADS_INTAKE_INTERVAL_SECONDS: "60"
           HERMES_WORKSPACE_BEADS_INTAKE_INITIAL_DELAY_SECONDS: "20"
+          HERMES_WORKSPACE_SWARM_TMUX_ENABLED: "false"
           HERMES_API_URL: http://127.0.0.1:8642
           HERMES_DASHBOARD_URL: http://127.0.0.1:9119
           HERMES_API_KEY:
