@@ -10,6 +10,47 @@ controllers:
         fsGroup: 10000
         fsGroupChangePolicy: Always
     initContainers:
+      workspace-repo-alias:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260526205722-927c198-oci
+        command: ["/bin/sh", "-ec"]
+        args:
+        - |
+          mkdir -p /workspace
+          if [ ! -L /opt/data/repos ]; then
+            if [ -d /opt/data/repos ]; then
+              for repo in /opt/data/repos/*; do
+                [ -d "${repo}/.git" ] || continue
+                name="$(basename "${repo}")"
+                if [ ! -d "/workspace/${name}/.git" ]; then
+                  rm -rf "/workspace/${name}"
+                  mkdir -p "/workspace/${name}"
+                  rsync -a "${repo}/" "/workspace/${name}/"
+                fi
+              done
+              if [ ! -e /opt/data/repos.pvc-cache ]; then
+                mv /opt/data/repos /opt/data/repos.pvc-cache
+              else
+                rm -rf /opt/data/repos
+              fi
+            fi
+            ln -s /workspace /opt/data/repos
+          fi
+          chmod -R a+rwX /workspace
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities: {drop: ["ALL"]}
       seed-config:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
@@ -127,6 +168,9 @@ controllers:
           HERMES_WORKSPACE_PROJECT_REGISTRY: /etc/hermes/project-registry/projects.json
           HERMES_WORKSPACE_BEADS_DEFAULT_WORKER: swarm5
           HERMES_WORKSPACE_BEADS_MAX_CLAIMS: "1"
+          HERMES_WORKSPACE_BEADS_INTAKE_ENABLED: "true"
+          HERMES_WORKSPACE_BEADS_INTAKE_INTERVAL_SECONDS: "60"
+          HERMES_WORKSPACE_BEADS_INTAKE_INITIAL_DELAY_SECONDS: "20"
           HERMES_API_URL: http://127.0.0.1:8642
           HERMES_DASHBOARD_URL: http://127.0.0.1:9119
           HERMES_PASSWORD:
@@ -225,6 +269,8 @@ persistence:
     existingClaim: hermes-agent
     advancedMounts:
       app:
+        workspace-repo-alias:
+        - path: /opt/data
         seed-config:
         - path: /opt/data
         install-ivan-personal-plugin:
@@ -241,6 +287,8 @@ persistence:
     path: /volume1/media/k8s-data/hermes-workspace
     advancedMounts:
       app:
+        workspace-repo-alias:
+        - path: /workspace
         app:
         - path: /workspace
         workspace:
