@@ -64,7 +64,7 @@ controllers:
       app:
         image: &macImage
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac
-          tag: 2316d057d3ed
+          tag: 977c1c229608
         command: ["uvicorn"]
         args:
           - mac.api:create_app
@@ -232,7 +232,7 @@ controllers:
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
           MAC_RUNNER_NAMESPACE: ai
           MAC_RUNNER_TASK_SERVICE_ACCOUNT: mac-task-runner
-          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:2316d057d3ed
+          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:977c1c229608
           MAC_RUNNER_POLL_INTERVAL_SECONDS: "5"
           MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "1800"
           # Stable agent id, shared by all runner replicas. mac's
