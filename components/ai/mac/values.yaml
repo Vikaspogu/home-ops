@@ -139,6 +139,89 @@ controllers:
             matchLabels:
               app.kubernetes.io/name: mac
               app.kubernetes.io/component: runner
+    initContainers:
+      # Register the runner's machine + agent rows in mac before the
+      # claim loop starts. mac-api's claim-next requires the agent row
+      # to exist; without this the runner gets "agent not found" for
+      # every poll. Idempotent via mac's ON CONFLICT(id) DO UPDATE.
+      register-mac-agent:
+        image: *macImage
+        env:
+          PYTHONUNBUFFERED: "1"
+          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
+          MACHINE_ID: mac-runner
+          MACHINE_HOSTNAME: mac-runner.ai.svc.cluster.local
+          AGENT_ID: mac-runner
+          AGENT_NAME: mac-runner
+          AGENT_CAPABILITIES: '["ops","python","review","hermes"]'
+        envFrom: *envFrom    # provides MAC_WORKER_TOKEN
+        command: ["python", "-c"]
+        args:
+        - |
+          import json, os, sys, time
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+
+          URL = os.environ["MAC_URL"].rstrip("/")
+          TOK = os.environ["MAC_WORKER_TOKEN"]
+          HEADERS = {"Authorization": f"Bearer {TOK}", "Content-Type": "application/json"}
+
+          def call(method, path, body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              req = Request(URL + path, data=data, headers=HEADERS, method=method)
+              try:
+                  with urlopen(req, timeout=15) as r:
+                      payload = r.read()
+                      return r.status, (json.loads(payload) if payload else {})
+              except HTTPError as e:
+                  return e.code, e.read().decode("utf-8", "replace")
+
+          for attempt in range(60):
+              try:
+                  with urlopen(URL + "/health", timeout=3) as r:
+                      if r.status == 200:
+                          break
+              except (HTTPError, URLError, TimeoutError):
+                  pass
+              print(f"[wait] mac-api /health not ready ({attempt+1}/60)...")
+              time.sleep(2)
+          else:
+              print("FAIL: mac-api /health never became ready", file=sys.stderr); sys.exit(1)
+          print(f"[ok] mac-api reachable at {URL}")
+
+          status, m = call("POST", "/machines", {
+              "hostname": os.environ["MACHINE_HOSTNAME"],
+              "machine_id": os.environ["MACHINE_ID"],
+              "labels": {"kind": "k8s-deployment", "namespace": "ai"},
+              "trusted": True,
+          })
+          if status >= 400:
+              print(f"FAIL machine: HTTP {status} {m}", file=sys.stderr); sys.exit(2)
+          print(f"[ok] machine  id={m.get('id')} hostname={m.get('hostname')}")
+
+          status, a = call("POST", "/agents", {
+              "machine_id": m.get("id"),
+              "name": os.environ["AGENT_NAME"],
+              "agent_id": os.environ["AGENT_ID"],
+              "capabilities": json.loads(os.environ["AGENT_CAPABILITIES"]),
+          })
+          if status >= 400:
+              print(f"FAIL agent: HTTP {status} {a}", file=sys.stderr); sys.exit(3)
+          print(f"[ok] agent    id={a.get('id')} name={a.get('name')} caps={a.get('capabilities')}")
+          print("\n✓ runner agent bootstrap complete")
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities: {drop: ["ALL"]}
     containers:
       app:
         image: *macImage
@@ -152,12 +235,11 @@ controllers:
           MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:2316d057d3ed
           MAC_RUNNER_POLL_INTERVAL_SECONDS: "5"
           MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "1800"
-          # Deterministic per-pod agent id so claim audit lines back to
-          # the runner replica that issued them.
-          MAC_AGENT_ID:
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
+          # Stable agent id, shared by all runner replicas. mac's
+          # partial unique index on active leases ensures only one
+          # replica wins each claim — agent_id is just the audit
+          # label, not a uniqueness key.
+          MAC_AGENT_ID: mac-runner
         envFrom: *envFrom
         resources:
           requests:
