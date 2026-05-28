@@ -90,14 +90,6 @@ spec:
             helm:
               name: controllers.app.initContainers.seed-config.image.repository
               tag: controllers.app.initContainers.seed-config.image.tag
-        - alias: agent-platform-hermes-workspace
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-workspace"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.workspace.image.repository
-              tag: controllers.app.containers.workspace.image.tag
         - alias: ivan-personal-plugin
           imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-personal-plugin"
           commonUpdateSettings:

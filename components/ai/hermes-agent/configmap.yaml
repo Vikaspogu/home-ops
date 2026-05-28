@@ -118,7 +118,7 @@ data:
       provider: mem0_selfhosted
     terminal:
       backend: local
-      cwd: /workspace
+      cwd: /opt/data/workspace
       timeout: 180
       env_passthrough:
         - "*"

@@ -101,122 +101,12 @@ controllers:
             memory: 4Gi
         securityContext:
           allowPrivilegeEscalation: false
-      workspace:
-        image:
-          repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-workspace
-          tag: 20260527203909-5b1a59b-oci
-          pullPolicy: IfNotPresent
-        env:
-          HOME: /home/workspace
-          HERMES_HOME: /home/workspace/.hermes
-          XDG_CONFIG_HOME: /home/workspace/.config
-          XDG_DATA_HOME: /home/workspace/.local/share
-          XDG_CACHE_HOME: /home/workspace/.cache
-          CODEX_HOME: /home/workspace/.codex
-          CLAUDE_CONFIG_DIR: /home/workspace/.claude
-          PORT: &workspacePort 3000
-          HERMES_WORKSPACE_DIR: /workspace
-          HERMES_WORKSPACE_SWARM_TMUX_ENABLED: "false"
-          HERMES_API_URL: http://127.0.0.1:8642
-          HERMES_DASHBOARD_URL: http://127.0.0.1:9119
-          HERMES_API_KEY:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: HERMES_API_KEY
-          HERMES_BASE_URL:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: HERMES_BASE_URL
-          HERMES_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: HERMES_WORKSPACE_PASSWORD
-          HERMES_WORKSPACE_SERVICE_TOKEN_DISPATCH:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: HERMES_WORKSPACE_PASSWORD
-          HERMES_WORKSPACE_SERVICE_TOKEN_INTAKE:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: HERMES_WORKSPACE_PASSWORD
-          HERMES_WORKSPACE_SERVICE_TOKEN_CHECKPOINT:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: HERMES_WORKSPACE_PASSWORD
-          GITEA_TOKEN:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: GITEA_TOKEN
-          GITEA_URL:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: GITEA_URL
-          GITEA_USER:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: GITEA_USER
-          COOKIE_SECURE: "1"
-          TRUST_PROXY: "1"
-          TMUX_BIN: /usr/bin/tmux
-          HERMES_TMUX_BIN: /usr/bin/tmux
-          TZ: America/New_York
-        resources:
-          requests:
-            cpu: 50m
-            memory: 256Mi
-          limits:
-            memory: 3Gi
-        probes:
-          startup:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /
-                port: *workspacePort
-              initialDelaySeconds: 20
-              periodSeconds: 5
-              failureThreshold: 30
-          readiness:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /
-                port: *workspacePort
-              periodSeconds: 10
-          liveness:
-            enabled: true
-            custom: true
-            spec:
-              httpGet:
-                path: /
-                port: *workspacePort
-              periodSeconds: 30
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
 service:
   app:
     controller: app
     ports:
       dashboard:
         port: *dashboardPort
-      workspace:
-        port: *workspacePort
 persistence:
   app-data:
     existingClaim: hermes-agent
@@ -228,36 +118,6 @@ persistence:
         - path: /opt/data
         app:
         - path: /opt/data
-        workspace:
-        - path: /home/workspace
-          subPath: workspace-home
-  workspace:
-    enabled: true
-    type: nfs
-    server: synology.a113.internal
-    path: /volume1/media/k8s-data/hermes-workspace
-    advancedMounts:
-      app:
-        app:
-        - path: /workspace
-        workspace:
-        - path: /workspace
-  tmp:
-    type: emptyDir
-    medium: Memory
-    sizeLimit: 512Mi
-    advancedMounts:
-      app:
-        workspace:
-        - path: /tmp
-  workspace-runtime:
-    type: emptyDir
-    medium: Memory
-    sizeLimit: 256Mi
-    advancedMounts:
-      app:
-        workspace:
-        - path: /app/.runtime
   config:
     type: configMap
     name: hermes-agent-config
@@ -269,10 +129,6 @@ persistence:
           readOnly: true
         - path: /opt/bootstrap/pricing-overrides.yaml
           subPath: pricing-overrides.yaml
-          readOnly: true
-        workspace:
-        - path: /etc/hermes/bootstrap/config.yaml
-          subPath: config.yaml
           readOnly: true
   secret:
     type: secret
