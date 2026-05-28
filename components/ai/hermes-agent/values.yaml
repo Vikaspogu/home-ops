@@ -142,6 +142,8 @@ persistence:
         - path: /opt/data
         install-ivan-personal-plugin:
         - path: /opt/data
+        install-mac-plugin:
+        - path: /opt/data
         app:
         - path: /opt/data
   config:
