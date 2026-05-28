@@ -183,6 +183,7 @@ data:
         - ivan-personal
         - disk-cleanup
         - rtk-rewrite
+        - mac
     platform_toolsets:
       cli:
         - browser
