@@ -57,6 +57,32 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
+      install-mac-plugin:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/mac-hermes-plugin
+          tag: f4e252ad147f
+          pullPolicy: Always
+        command: ["/bin/sh", "-ec"]
+        args:
+        - |
+          rm -rf /opt/data/plugins/mac
+          mkdir -p /opt/data/plugins/mac
+          cp -R /plugin/. /opt/data/plugins/mac/
+          test -f /opt/data/plugins/mac/plugin.yaml
+          test -f /opt/data/plugins/mac/__init__.py
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities: {drop: ["ALL"]}
     containers:
       app:
         image:
