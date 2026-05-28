@@ -7,7 +7,6 @@ resources:
   - ./externalsecret.yaml
   - ./rbac.yaml
   - ./http-route.yaml
-  - ./register-hermes-job.yaml
 
 helmCharts:
   - name: app-template
