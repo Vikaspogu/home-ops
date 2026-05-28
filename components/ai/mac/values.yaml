@@ -1,0 +1,240 @@
+---
+# bjw-s app-template values for mac.
+#
+# Three controllers in one release:
+#   - api        Phase 3 stateless coordinator (HTTP/8000)
+#   - runner     Phase 4 mac-k8s-runner: claims tasks, creates Jobs
+#   - controller Phase 5 mac-k8s-controller: stuck-Job reconciler
+#
+# The single mac image (gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac) ships
+# the three console-scripts as commands. Postgres lives at
+# pg17-omv-rw.default.svc.cluster.local (the existing cnpg cluster);
+# the init container creates the `mac` db + role with the same
+# postgres-init image mem0 already uses.
+
+defaultPodOptions:
+  imagePullSecrets:
+    - name: gitea-registry-secret
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    fsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+
+controllers:
+  # ============================================================
+  # mac-api — Phase 3 stateless coordinator. The only controller
+  # that talks to Postgres directly. Init container creates the
+  # `mac` database + role via postgres-init.
+  # ============================================================
+  api:
+    replicas: 2
+    strategy: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      automountServiceAccountToken: false
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: mac
+              app.kubernetes.io/component: api
+    initContainers:
+      init-01-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.4.0@sha256:5086f94abc783f1147d7c2a32c01db00ab594820026e4f6a82ac2af3dbde7fc7
+        envFrom: &envFrom
+          - secretRef:
+              name: mac-secret
+        securityContext: &containerSecurityContext
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+    containers:
+      app:
+        image: &macImage
+          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac
+          tag: f3d007adc9cc
+        command: ["uvicorn"]
+        args:
+          - mac.api:create_app
+          - --factory
+          - --host
+          - "0.0.0.0"
+          - --port
+          - "8000"
+          - --workers
+          - "1"
+          - --log-level
+          - info
+        env:
+          TZ: America/New_York
+          PYTHONUNBUFFERED: "1"
+          MAC_BIND_HOST: "0.0.0.0"
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: &apiPort 8000
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              failureThreshold: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *apiPort
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *apiPort
+              periodSeconds: 30
+        securityContext: *containerSecurityContext
+
+  # ============================================================
+  # mac-k8s-runner — Phase 4. Polls /agents/{id}/claim-next,
+  # creates one batch/v1 Job per claimed lease. Multi-replica
+  # safe via `uniq_leases_active_per_task` partial unique index.
+  # ============================================================
+  runner:
+    replicas: 2
+    strategy: RollingUpdate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    serviceAccount:
+      name: mac-k8s-runner   # created with its Role/RoleBinding in rbac.yaml
+    pod:
+      automountServiceAccountToken: true   # needed for in-cluster K8s client
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: mac
+              app.kubernetes.io/component: runner
+    containers:
+      app:
+        image: *macImage
+        command: ["mac-k8s-runner"]
+        env:
+          TZ: America/New_York
+          PYTHONUNBUFFERED: "1"
+          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
+          MAC_RUNNER_NAMESPACE: ai
+          MAC_RUNNER_TASK_SERVICE_ACCOUNT: mac-task-runner
+          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:f3d007adc9cc
+          MAC_RUNNER_POLL_INTERVAL_SECONDS: "5"
+          MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "1800"
+          # Deterministic per-pod agent id so claim audit lines back to
+          # the runner replica that issued them.
+          MAC_AGENT_ID:
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command: ["pgrep", "-f", "mac-k8s-runner"]
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              failureThreshold: 3
+        securityContext: *containerSecurityContext
+
+  # ============================================================
+  # mac-k8s-controller — Phase 5. Singleton reconciler. Deletes
+  # stuck Jobs whose lease was superseded/expired and (optional)
+  # scales worker-pool Deployments. Set replicas: 0 to skip
+  # initially — the `uniq_leases_active_per_task` index already
+  # prevents duplicate launches.
+  # ============================================================
+  controller:
+    replicas: 1
+    strategy: Recreate   # singleton; no leader election in MVP
+    annotations:
+      reloader.stakater.com/auto: "true"
+    serviceAccount:
+      name: mac-k8s-controller
+    pod:
+      automountServiceAccountToken: true
+    containers:
+      app:
+        image: *macImage
+        command: ["mac-k8s-controller"]
+        env:
+          TZ: America/New_York
+          PYTHONUNBUFFERED: "1"
+          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
+          MAC_RUNNER_NAMESPACE: ai
+          MAC_CONTROLLER_INTERVAL_SECONDS: "30"
+          # Worker-pool scaling is OFF by default. Enable once you have
+          # mac-worker-<role-slug> Deployments following the
+          # K8sDeploymentScaler naming convention.
+          MAC_CONTROLLER_SCALER_ENABLED: "0"
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command: ["pgrep", "-f", "mac-k8s-controller"]
+              initialDelaySeconds: 15
+              periodSeconds: 30
+              failureThreshold: 3
+        securityContext: *containerSecurityContext
+
+# ============================================================
+# Service — only the api controller is reachable; runner +
+# controller are headless workloads with no inbound traffic.
+# ============================================================
+service:
+  app:
+    forceRename: mac-api
+    primary: true
+    controller: api
+    ports:
+      http:
+        port: 8000
