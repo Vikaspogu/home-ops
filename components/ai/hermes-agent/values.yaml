@@ -10,27 +10,6 @@ controllers:
         fsGroup: 10000
         fsGroupChangePolicy: OnRootMismatch
     initContainers:
-      workspace-repo-alias:
-        image:
-          repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260527200318-9077a27-oci
-        command: ["hermes-workspace-repo-bootstrap"]
-        envFrom:
-        - secretRef:
-            name: hermes-agent-secret
-        resources:
-          requests:
-            cpu: 10m
-            memory: 64Mi
-          limits:
-            memory: 256Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
       seed-config:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
@@ -49,12 +28,9 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-        env:
-          HERMES_BEADS_INTAKE_ENABLED: "true"
-          HERMES_PROJECT_REGISTRY: /etc/hermes/project-registry/projects.json
         envFrom:
-        - secretRef:
-            name: hermes-agent-secret
+          - secretRef:
+              name: hermes-agent-secret
       install-ivan-personal-plugin:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-personal-plugin
@@ -62,12 +38,12 @@ controllers:
           pullPolicy: Always
         command: ["/bin/sh", "-ec"]
         args:
-        - |
-          rm -rf /opt/data/plugins/ivan-personal
-          mkdir -p /opt/data/plugins/ivan-personal
-          cp -R /plugin/. /opt/data/plugins/ivan-personal/
-          test -f /opt/data/plugins/ivan-personal/plugin.yaml
-          test -f /opt/data/plugins/ivan-personal/__init__.py
+          - |
+            rm -rf /opt/data/plugins/ivan-personal
+            mkdir -p /opt/data/plugins/ivan-personal
+            cp -R /plugin/. /opt/data/plugins/ivan-personal/
+            test -f /opt/data/plugins/ivan-personal/plugin.yaml
+            test -f /opt/data/plugins/ivan-personal/__init__.py
         resources:
           requests:
             cpu: 10m
@@ -87,8 +63,8 @@ controllers:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260528004414-a899c66-oci
         args:
-        - gateway
-        - run
+          - gateway
+          - run
         env:
           PATH: /usr/local/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           HOME: /opt/data
@@ -113,15 +89,10 @@ controllers:
           MEM0_AGENT_ID: hermes
           MEM0_PIN_USER_ID: "true"
           MEM0_TOP_K: "5"
-          HERMES_BEADS_INTAKE_ENABLED: "true"
-          HERMES_PROJECT_REGISTRY: /etc/hermes/project-registry/projects.json
-          BEADS_DOLT_SERVER_HOST: beadboard-dolt.ai.svc.cluster.local
-          BEADS_DOLT_SERVER_PORT: "3307"
-          BEADS_DOLT_SERVER_USER: root
           TZ: America/New_York
         envFrom:
-        - secretRef:
-            name: hermes-agent-secret
+          - secretRef:
+              name: hermes-agent-secret
         resources:
           requests:
             cpu: 100m
@@ -145,12 +116,6 @@ controllers:
           CLAUDE_CONFIG_DIR: /home/workspace/.claude
           PORT: &workspacePort 3000
           HERMES_WORKSPACE_DIR: /workspace
-          HERMES_WORKSPACE_PROJECT_REGISTRY: /etc/hermes/project-registry/projects.json
-          HERMES_WORKSPACE_BEADS_DEFAULT_WORKER: swarm5
-          HERMES_WORKSPACE_BEADS_MAX_CLAIMS: "1"
-          HERMES_WORKSPACE_BEADS_INTAKE_ENABLED: "true"
-          HERMES_WORKSPACE_BEADS_INTAKE_INTERVAL_SECONDS: "60"
-          HERMES_WORKSPACE_BEADS_INTAKE_INITIAL_DELAY_SECONDS: "20"
           HERMES_WORKSPACE_SWARM_TMUX_ENABLED: "false"
           HERMES_API_URL: http://127.0.0.1:8642
           HERMES_DASHBOARD_URL: http://127.0.0.1:9119
@@ -203,9 +168,6 @@ controllers:
           TRUST_PROXY: "1"
           TMUX_BIN: /usr/bin/tmux
           HERMES_TMUX_BIN: /usr/bin/tmux
-          BEADS_DOLT_SERVER_HOST: beadboard-dolt.ai.svc.cluster.local
-          BEADS_DOLT_SERVER_PORT: "3307"
-          BEADS_DOLT_SERVER_USER: root
           TZ: America/New_York
         resources:
           requests:
@@ -260,19 +222,15 @@ persistence:
     existingClaim: hermes-agent
     advancedMounts:
       app:
-        workspace-repo-alias:
-        - path: /opt/data
-        - path: /home/workspace
-          subPath: workspace-home
         seed-config:
-        - path: /opt/data
+          - path: /opt/data
         install-ivan-personal-plugin:
-        - path: /opt/data
+          - path: /opt/data
         app:
-        - path: /opt/data
+          - path: /opt/data
         workspace:
-        - path: /home/workspace
-          subPath: workspace-home
+          - path: /home/workspace
+            subPath: workspace-home
   workspace:
     enabled: true
     type: nfs
@@ -280,43 +238,18 @@ persistence:
     path: /volume1/media/k8s-data/hermes-workspace
     advancedMounts:
       app:
-        workspace-repo-alias:
-        - path: /workspace
         app:
-        - path: /workspace
+          - path: /workspace
         workspace:
-        - path: /workspace
-  project-registry:
-    type: configMap
-    name: beads-project-registry
-    advancedMounts:
-      app:
-        workspace-repo-alias:
-        - path: /etc/hermes/project-registry/projects.json
-          subPath: projects.json
-          readOnly: true
-        seed-config:
-        - path: /etc/hermes/project-registry/projects.json
-          subPath: projects.json
-          readOnly: true
-        app:
-        - path: /etc/hermes/project-registry/projects.json
-          subPath: projects.json
-          readOnly: true
-        workspace:
-        - path: /etc/hermes/project-registry/projects.json
-          subPath: projects.json
-          readOnly: true
+          - path: /workspace
   tmp:
     type: emptyDir
     medium: Memory
     sizeLimit: 512Mi
     advancedMounts:
       app:
-        workspace-repo-alias:
-        - path: /tmp
         workspace:
-        - path: /tmp
+          - path: /tmp
   workspace-runtime:
     type: emptyDir
     medium: Memory
@@ -324,29 +257,29 @@ persistence:
     advancedMounts:
       app:
         workspace:
-        - path: /app/.runtime
+          - path: /app/.runtime
   config:
     type: configMap
     name: hermes-agent-config
     advancedMounts:
       app:
         seed-config:
-        - path: /opt/bootstrap/config.yaml
-          subPath: config.yaml
-          readOnly: true
-        - path: /opt/bootstrap/pricing-overrides.yaml
-          subPath: pricing-overrides.yaml
-          readOnly: true
+          - path: /opt/bootstrap/config.yaml
+            subPath: config.yaml
+            readOnly: true
+          - path: /opt/bootstrap/pricing-overrides.yaml
+            subPath: pricing-overrides.yaml
+            readOnly: true
         workspace:
-        - path: /etc/hermes/bootstrap/config.yaml
-          subPath: config.yaml
-          readOnly: true
+          - path: /etc/hermes/bootstrap/config.yaml
+            subPath: config.yaml
+            readOnly: true
   secret:
     type: secret
     name: hermes-agent-secret
     advancedMounts:
       app:
         app:
-        - path: /opt/data/.env
-          subPath: .env
-          readOnly: true
+          - path: /opt/data/.env
+            subPath: .env
+            readOnly: true

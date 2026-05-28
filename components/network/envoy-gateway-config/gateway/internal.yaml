@@ -29,12 +29,6 @@ spec:
         certificateRefs:
           - kind: Secret
             name: ${CLUSTER_DOMAIN}-production-tls
-    - name: dolt
-      protocol: TCP
-      port: 3307
-      allowedRoutes:
-        namespaces:
-          from: All
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/envoypatchpolicy_v1alpha1.json
 apiVersion: gateway.envoyproxy.io/v1alpha1
