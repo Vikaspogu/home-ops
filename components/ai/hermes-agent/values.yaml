@@ -29,8 +29,8 @@ controllers:
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
         envFrom:
-          - secretRef:
-              name: hermes-agent-secret
+        - secretRef:
+            name: hermes-agent-secret
       install-ivan-personal-plugin:
         image:
           repository: gitea.omv.a113.casa/vpogu/ivan-personal-plugin
@@ -38,12 +38,12 @@ controllers:
           pullPolicy: Always
         command: ["/bin/sh", "-ec"]
         args:
-          - |
-            rm -rf /opt/data/plugins/ivan-personal
-            mkdir -p /opt/data/plugins/ivan-personal
-            cp -R /plugin/. /opt/data/plugins/ivan-personal/
-            test -f /opt/data/plugins/ivan-personal/plugin.yaml
-            test -f /opt/data/plugins/ivan-personal/__init__.py
+        - |
+          rm -rf /opt/data/plugins/ivan-personal
+          mkdir -p /opt/data/plugins/ivan-personal
+          cp -R /plugin/. /opt/data/plugins/ivan-personal/
+          test -f /opt/data/plugins/ivan-personal/plugin.yaml
+          test -f /opt/data/plugins/ivan-personal/__init__.py
         resources:
           requests:
             cpu: 10m
@@ -63,8 +63,8 @@ controllers:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260528004414-a899c66-oci
         args:
-          - gateway
-          - run
+        - gateway
+        - run
         env:
           PATH: /usr/local/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           HOME: /opt/data
@@ -91,8 +91,8 @@ controllers:
           MEM0_TOP_K: "5"
           TZ: America/New_York
         envFrom:
-          - secretRef:
-              name: hermes-agent-secret
+        - secretRef:
+            name: hermes-agent-secret
         resources:
           requests:
             cpu: 100m
@@ -223,14 +223,14 @@ persistence:
     advancedMounts:
       app:
         seed-config:
-          - path: /opt/data
+        - path: /opt/data
         install-ivan-personal-plugin:
-          - path: /opt/data
+        - path: /opt/data
         app:
-          - path: /opt/data
+        - path: /opt/data
         workspace:
-          - path: /home/workspace
-            subPath: workspace-home
+        - path: /home/workspace
+          subPath: workspace-home
   workspace:
     enabled: true
     type: nfs
@@ -239,9 +239,9 @@ persistence:
     advancedMounts:
       app:
         app:
-          - path: /workspace
+        - path: /workspace
         workspace:
-          - path: /workspace
+        - path: /workspace
   tmp:
     type: emptyDir
     medium: Memory
@@ -249,7 +249,7 @@ persistence:
     advancedMounts:
       app:
         workspace:
-          - path: /tmp
+        - path: /tmp
   workspace-runtime:
     type: emptyDir
     medium: Memory
@@ -257,29 +257,29 @@ persistence:
     advancedMounts:
       app:
         workspace:
-          - path: /app/.runtime
+        - path: /app/.runtime
   config:
     type: configMap
     name: hermes-agent-config
     advancedMounts:
       app:
         seed-config:
-          - path: /opt/bootstrap/config.yaml
-            subPath: config.yaml
-            readOnly: true
-          - path: /opt/bootstrap/pricing-overrides.yaml
-            subPath: pricing-overrides.yaml
-            readOnly: true
+        - path: /opt/bootstrap/config.yaml
+          subPath: config.yaml
+          readOnly: true
+        - path: /opt/bootstrap/pricing-overrides.yaml
+          subPath: pricing-overrides.yaml
+          readOnly: true
         workspace:
-          - path: /etc/hermes/bootstrap/config.yaml
-            subPath: config.yaml
-            readOnly: true
+        - path: /etc/hermes/bootstrap/config.yaml
+          subPath: config.yaml
+          readOnly: true
   secret:
     type: secret
     name: hermes-agent-secret
     advancedMounts:
       app:
         app:
-          - path: /opt/data/.env
-            subPath: .env
-            readOnly: true
+        - path: /opt/data/.env
+          subPath: .env
+          readOnly: true
