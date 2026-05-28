@@ -12,9 +12,29 @@ metadata:
     app.kubernetes.io/component: task-executor
 automountServiceAccountToken: false
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mac-k8s-runner
+  namespace: ai
+  labels:
+    app.kubernetes.io/name: mac
+    app.kubernetes.io/component: runner
+automountServiceAccountToken: true
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: mac-k8s-controller
+  namespace: ai
+  labels:
+    app.kubernetes.io/name: mac
+    app.kubernetes.io/component: controller
+automountServiceAccountToken: true
+---
 # Permissions for mac-k8s-runner: create + read + delete batch/v1 Jobs
-# in the `ai` namespace. The runner pod itself gets these via its own
-# ServiceAccount (created by app-template from values.yaml).
+# in the `ai` namespace. Bound to the mac-k8s-runner ServiceAccount
+# defined above.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
