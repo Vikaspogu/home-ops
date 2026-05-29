@@ -153,6 +153,17 @@ controllers:
           MACHINE_HOSTNAME: mac-runner.ai.svc.cluster.local
           AGENT_ID: mac-runner
           AGENT_NAME: mac-runner
+          # IMPORTANT: this list MUST be the UNION of every role capability
+          # declared in the `mac-seed` init container below (plus "hermes"
+          # for the Hermes plugin). mac-api's /agents/{id}/claim-next
+          # filters by the DISPATCHER's capabilities, not the task's, so
+          # if a role needs a capability not listed here the dispatcher
+          # will never claim tasks for that role.
+          #
+          # Current union: python-coder([python, ops]) ∪
+          #                python-reviewer([review, python]) ∪ [hermes]
+          #              = [ops, python, review, hermes]
+          # When adding a new role to mac-seed, append its capabilities here.
           AGENT_CAPABILITIES: '["ops","python","review","hermes"]'
         envFrom: *envFrom    # provides MAC_WORKER_TOKEN
         command: ["python", "-c"]
@@ -209,6 +220,156 @@ controllers:
               print(f"FAIL agent: HTTP {status} {a}", file=sys.stderr); sys.exit(3)
           print(f"[ok] agent    id={a.get('id')} name={a.get('name')} caps={a.get('capabilities')}")
           print("\n✓ runner agent bootstrap complete")
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities: {drop: ["ALL"]}
+      # ============================================================
+      # mac-seed — PR2a of job-per-task role specialisation.
+      # Registers the shared `mac-worker-machine` row plus the
+      # role-specialised agent rows (`mac-worker-python-coder`,
+      # `mac-worker-python-reviewer`) referenced by the runner's
+      # forthcoming MAC_RUNNER_ROLE_AGENT_IDS map (PR2b). After
+      # PR2a these rows exist in mac's DB but nothing references
+      # them yet — production behaviour is unchanged.
+      #
+      # Runs AFTER register-mac-agent so mac-api is known healthy
+      # and the dispatcher row exists. Idempotent: mac-api's
+      # /machines and /agents handlers use ON CONFLICT(id) DO
+      # UPDATE (identity_service.py:64+, :258+), so re-rolling the
+      # Deployment is a no-op.
+      #
+      # Seed shape (forward-looking `roles:` block is informational
+      # — mac-api doesn't model role agents as first-class entities
+      # yet; the seeder POSTs only /machines and /agents).
+      # ============================================================
+      mac-seed:
+        image: *macImage
+        env:
+          PYTHONUNBUFFERED: "1"
+          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
+          # Inlined per docs/job-per-task-roles-spec.md §7 + §12 PR2a.
+          # Keep this in sync with the dispatcher's AGENT_CAPABILITIES
+          # above when adding new roles.
+          SEED_YAML: |
+            roles:
+              - slug: python-coder
+                name: Python Coder
+                default_capabilities: [python, ops]
+                required_capabilities: [python]
+              - slug: python-reviewer
+                name: Python Reviewer
+                default_capabilities: [review, python]
+                required_capabilities: [review]
+            machines:
+              - id: mac-worker-machine
+                hostname: mac-worker.ai.svc.cluster.local
+                labels:
+                  kind: virtual
+                  owner: mac-seed
+            agents:
+              - id: mac-worker-python-coder
+                name: mac-worker-python-coder
+                machine_id: mac-worker-machine
+                capabilities: [python, ops]
+                role_slug: python-coder
+              - id: mac-worker-python-reviewer
+                name: mac-worker-python-reviewer
+                machine_id: mac-worker-machine
+                capabilities: [review, python]
+                role_slug: python-reviewer
+        envFrom: *envFrom    # provides MAC_WORKER_TOKEN
+        command: ["python", "-c"]
+        args:
+        - |
+          import json, os, sys, time
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+          import yaml  # PyYAML ships in the mac image (pyproject: PyYAML>=6.0)
+
+          URL = os.environ["MAC_URL"].rstrip("/")
+          TOK = os.environ["MAC_WORKER_TOKEN"]
+          HEADERS = {"Authorization": f"Bearer {TOK}", "Content-Type": "application/json"}
+
+          def call(method, path, body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              req = Request(URL + path, data=data, headers=HEADERS, method=method)
+              try:
+                  with urlopen(req, timeout=15) as r:
+                      payload = r.read()
+                      return r.status, (json.loads(payload) if payload else {})
+              except HTTPError as e:
+                  return e.code, e.read().decode("utf-8", "replace")
+
+          # Wait for mac-api health — same 60×2s pattern as register-mac-agent.
+          for attempt in range(60):
+              try:
+                  with urlopen(URL + "/health", timeout=3) as r:
+                      if r.status == 200:
+                          break
+              except (HTTPError, URLError, TimeoutError):
+                  pass
+              print(f"[wait] mac-api /health not ready ({attempt+1}/60)...")
+              time.sleep(2)
+          else:
+              print("FAIL: mac-api /health never became ready", file=sys.stderr); sys.exit(1)
+          print(f"[ok] mac-api reachable at {URL}")
+
+          seed = yaml.safe_load(os.environ["SEED_YAML"]) or {}
+          machines = seed.get("machines") or []
+          agents = seed.get("agents") or []
+          if not machines and not agents:
+              print("FAIL: SEED_YAML has no machines or agents", file=sys.stderr); sys.exit(2)
+
+          # 1. POST /machines for the shared mac-worker machine row.
+          # Idempotent via identity_service.py:64 ON CONFLICT(id) DO UPDATE.
+          machine_db_ids = {}    # seed-id -> mac-api machine id
+          for m in machines:
+              seed_id = m["id"]
+              body = {
+                  "hostname": m["hostname"],
+                  "machine_id": seed_id,
+                  "labels": m.get("labels") or {},
+                  "trusted": True,
+              }
+              status, resp = call("POST", "/machines", body)
+              if status >= 400:
+                  print(f"FAIL machine {seed_id}: HTTP {status} {resp}", file=sys.stderr); sys.exit(3)
+              machine_db_ids[seed_id] = resp.get("id")
+              print(f"[ok] machine id={resp.get('id')} hostname={resp.get('hostname')}")
+
+          # 2. POST /agents for each role agent. Idempotent via
+          # identity_service.py:258 ON CONFLICT(id) DO UPDATE. We pass
+          # agent_id explicitly so the row keys off the stable seed id.
+          # role_slug is intentionally NOT sent — mac's /agents schema
+          # (api.py:AgentRegister) doesn't accept it as of PR2a; PR2b
+          # consumes the role mapping via runner env, not agent rows.
+          for a in agents:
+              ref = a["machine_id"]
+              machine_db_id = machine_db_ids.get(ref)
+              if not machine_db_id:
+                  print(f"FAIL agent {a['id']}: unknown machine_id ref {ref}", file=sys.stderr); sys.exit(4)
+              body = {
+                  "machine_id": machine_db_id,
+                  "name": a["name"],
+                  "agent_id": a["id"],
+                  "capabilities": list(a.get("capabilities") or []),
+              }
+              status, resp = call("POST", "/agents", body)
+              if status >= 400:
+                  print(f"FAIL agent {a['id']}: HTTP {status} {resp}", file=sys.stderr); sys.exit(5)
+              print(f"[ok] agent id={resp.get('id')} name={resp.get('name')} caps={resp.get('capabilities')}")
+
+          print("\n✓ mac-seed role agents bootstrap complete")
         resources:
           requests:
             cpu: 25m
