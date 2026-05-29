@@ -1,16 +1,4 @@
 ---
-# bjw-s app-template values for mac.
-#
-# Three controllers in one release:
-#   - api        Phase 3 stateless coordinator (HTTP/8000)
-#   - runner     Phase 4 mac-k8s-runner: claims tasks, creates Jobs
-#   - controller Phase 5 mac-k8s-controller: stuck-Job reconciler
-#
-# The single mac image (gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac) ships
-# the three console-scripts as commands. Postgres lives at
-# pg17-omv-rw.default.svc.cluster.local (the existing cnpg cluster);
-# the init container creates the `mac` db + role with the same
-# postgres-init image mem0 already uses.
 
 defaultPodOptions:
   imagePullSecrets:
@@ -24,11 +12,6 @@ defaultPodOptions:
       type: RuntimeDefault
 
 controllers:
-  # ============================================================
-  # mac-api — Phase 3 stateless coordinator. The only controller
-  # that talks to Postgres directly. Init container creates the
-  # `mac` database + role via postgres-init.
-  # ============================================================
   api:
     replicas: 2
     strategy: RollingUpdate
@@ -64,7 +47,7 @@ controllers:
       app:
         image: &macImage
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac
-          tag: f94e69629690
+          tag: 74963cdb7f67
         command: ["uvicorn"]
         args:
           - mac.api:create_app
@@ -117,20 +100,15 @@ controllers:
               periodSeconds: 30
         securityContext: *containerSecurityContext
 
-  # ============================================================
-  # mac-k8s-runner — Phase 4. Polls /agents/{id}/claim-next,
-  # creates one batch/v1 Job per claimed lease. Multi-replica
-  # safe via `uniq_leases_active_per_task` partial unique index.
-  # ============================================================
-  runner:
-    replicas: 2
-    strategy: RollingUpdate
+  orchestrator:
+    replicas: 1
+    strategy: Recreate
     annotations:
       reloader.stakater.com/auto: "true"
     serviceAccount:
-      name: mac-k8s-runner   # created with its Role/RoleBinding in rbac.yaml
+      name: mac-k8s-orchestrator
     pod:
-      automountServiceAccountToken: true   # needed for in-cluster K8s client
+      automountServiceAccountToken: true
       topologySpreadConstraints:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
@@ -138,238 +116,14 @@ controllers:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: mac
-              app.kubernetes.io/component: runner
+              app.kubernetes.io/component: orchestrator
     initContainers:
-      # Register the runner's machine + agent rows in mac before the
-      # claim loop starts. mac-api's claim-next requires the agent row
-      # to exist; without this the runner gets "agent not found" for
-      # every poll. Idempotent via mac's ON CONFLICT(id) DO UPDATE.
-      register-mac-agent:
+      mac-bootstrap:
         image: *macImage
+        command: ["mac-k8s-bootstrap"]
+        envFrom: *envFrom
         env:
           PYTHONUNBUFFERED: "1"
-          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
-          MACHINE_ID: mac-runner
-          MACHINE_HOSTNAME: mac-runner.ai.svc.cluster.local
-          AGENT_ID: mac-runner
-          AGENT_NAME: mac-runner
-          # IMPORTANT: this list MUST be the UNION of every role capability
-          # declared in the `mac-seed` init container below (plus "hermes"
-          # for the Hermes plugin). mac-api's /agents/{id}/claim-next
-          # filters by the DISPATCHER's capabilities, not the task's, so
-          # if a role needs a capability not listed here the dispatcher
-          # will never claim tasks for that role.
-          #
-          # Current union: python-coder([python, ops]) ∪
-          #                python-reviewer([review, python]) ∪ [hermes]
-          #              = [ops, python, review, hermes]
-          # When adding a new role to mac-seed, append its capabilities here.
-          AGENT_CAPABILITIES: '["ops","python","review","hermes"]'
-        envFrom: *envFrom    # provides MAC_WORKER_TOKEN
-        command: ["python", "-c"]
-        args:
-        - |
-          import json, os, sys, time
-          from urllib.request import Request, urlopen
-          from urllib.error import HTTPError, URLError
-
-          URL = os.environ["MAC_URL"].rstrip("/")
-          TOK = os.environ["MAC_WORKER_TOKEN"]
-          HEADERS = {"Authorization": f"Bearer {TOK}", "Content-Type": "application/json"}
-
-          def call(method, path, body=None):
-              data = json.dumps(body).encode() if body is not None else None
-              req = Request(URL + path, data=data, headers=HEADERS, method=method)
-              try:
-                  with urlopen(req, timeout=15) as r:
-                      payload = r.read()
-                      return r.status, (json.loads(payload) if payload else {})
-              except HTTPError as e:
-                  return e.code, e.read().decode("utf-8", "replace")
-
-          for attempt in range(60):
-              try:
-                  with urlopen(URL + "/health", timeout=3) as r:
-                      if r.status == 200:
-                          break
-              except (HTTPError, URLError, TimeoutError):
-                  pass
-              print(f"[wait] mac-api /health not ready ({attempt+1}/60)...")
-              time.sleep(2)
-          else:
-              print("FAIL: mac-api /health never became ready", file=sys.stderr); sys.exit(1)
-          print(f"[ok] mac-api reachable at {URL}")
-
-          status, m = call("POST", "/machines", {
-              "hostname": os.environ["MACHINE_HOSTNAME"],
-              "machine_id": os.environ["MACHINE_ID"],
-              "labels": {"kind": "k8s-deployment", "namespace": "ai"},
-              "trusted": True,
-          })
-          if status >= 400:
-              print(f"FAIL machine: HTTP {status} {m}", file=sys.stderr); sys.exit(2)
-          print(f"[ok] machine  id={m.get('id')} hostname={m.get('hostname')}")
-
-          status, a = call("POST", "/agents", {
-              "machine_id": m.get("id"),
-              "name": os.environ["AGENT_NAME"],
-              "agent_id": os.environ["AGENT_ID"],
-              "capabilities": json.loads(os.environ["AGENT_CAPABILITIES"]),
-          })
-          if status >= 400:
-              print(f"FAIL agent: HTTP {status} {a}", file=sys.stderr); sys.exit(3)
-          print(f"[ok] agent    id={a.get('id')} name={a.get('name')} caps={a.get('capabilities')}")
-          print("\n✓ runner agent bootstrap complete")
-        resources:
-          requests:
-            cpu: 25m
-            memory: 64Mi
-          limits:
-            memory: 256Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
-          capabilities: {drop: ["ALL"]}
-      # ============================================================
-      # mac-seed — PR2a of job-per-task role specialisation.
-      # Registers the shared `mac-worker-machine` row plus the
-      # role-specialised agent rows (`mac-worker-python-coder`,
-      # `mac-worker-python-reviewer`) referenced by the runner's
-      # forthcoming MAC_RUNNER_ROLE_AGENT_IDS map (PR2b). After
-      # PR2a these rows exist in mac's DB but nothing references
-      # them yet — production behaviour is unchanged.
-      #
-      # Runs AFTER register-mac-agent so mac-api is known healthy
-      # and the dispatcher row exists. Idempotent: mac-api's
-      # /machines and /agents handlers use ON CONFLICT(id) DO
-      # UPDATE (identity_service.py:64+, :258+), so re-rolling the
-      # Deployment is a no-op.
-      #
-      # Seed shape (forward-looking `roles:` block is informational
-      # — mac-api doesn't model role agents as first-class entities
-      # yet; the seeder POSTs only /machines and /agents).
-      # ============================================================
-      mac-seed:
-        image: *macImage
-        env:
-          PYTHONUNBUFFERED: "1"
-          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
-          # Inlined per docs/job-per-task-roles-spec.md §7 + §12 PR2a.
-          # Keep this in sync with the dispatcher's AGENT_CAPABILITIES
-          # above when adding new roles.
-          SEED_YAML: |
-            roles:
-              - slug: python-coder
-                name: Python Coder
-                default_capabilities: [python, ops]
-                required_capabilities: [python]
-              - slug: python-reviewer
-                name: Python Reviewer
-                default_capabilities: [review, python]
-                required_capabilities: [review]
-            machines:
-              - id: mac-worker-machine
-                hostname: mac-worker.ai.svc.cluster.local
-                labels:
-                  kind: virtual
-                  owner: mac-seed
-            agents:
-              - id: mac-worker-python-coder
-                name: mac-worker-python-coder
-                machine_id: mac-worker-machine
-                capabilities: [python, ops]
-                role_slug: python-coder
-              - id: mac-worker-python-reviewer
-                name: mac-worker-python-reviewer
-                machine_id: mac-worker-machine
-                capabilities: [review, python]
-                role_slug: python-reviewer
-        envFrom: *envFrom    # provides MAC_WORKER_TOKEN
-        command: ["python", "-c"]
-        args:
-        - |
-          import json, os, sys, time
-          from urllib.request import Request, urlopen
-          from urllib.error import HTTPError, URLError
-          import yaml  # PyYAML ships in the mac image (pyproject: PyYAML>=6.0)
-
-          URL = os.environ["MAC_URL"].rstrip("/")
-          TOK = os.environ["MAC_WORKER_TOKEN"]
-          HEADERS = {"Authorization": f"Bearer {TOK}", "Content-Type": "application/json"}
-
-          def call(method, path, body=None):
-              data = json.dumps(body).encode() if body is not None else None
-              req = Request(URL + path, data=data, headers=HEADERS, method=method)
-              try:
-                  with urlopen(req, timeout=15) as r:
-                      payload = r.read()
-                      return r.status, (json.loads(payload) if payload else {})
-              except HTTPError as e:
-                  return e.code, e.read().decode("utf-8", "replace")
-
-          # Wait for mac-api health — same 60×2s pattern as register-mac-agent.
-          for attempt in range(60):
-              try:
-                  with urlopen(URL + "/health", timeout=3) as r:
-                      if r.status == 200:
-                          break
-              except (HTTPError, URLError, TimeoutError):
-                  pass
-              print(f"[wait] mac-api /health not ready ({attempt+1}/60)...")
-              time.sleep(2)
-          else:
-              print("FAIL: mac-api /health never became ready", file=sys.stderr); sys.exit(1)
-          print(f"[ok] mac-api reachable at {URL}")
-
-          seed = yaml.safe_load(os.environ["SEED_YAML"]) or {}
-          machines = seed.get("machines") or []
-          agents = seed.get("agents") or []
-          if not machines and not agents:
-              print("FAIL: SEED_YAML has no machines or agents", file=sys.stderr); sys.exit(2)
-
-          # 1. POST /machines for the shared mac-worker machine row.
-          # Idempotent via identity_service.py:64 ON CONFLICT(id) DO UPDATE.
-          machine_db_ids = {}    # seed-id -> mac-api machine id
-          for m in machines:
-              seed_id = m["id"]
-              body = {
-                  "hostname": m["hostname"],
-                  "machine_id": seed_id,
-                  "labels": m.get("labels") or {},
-                  "trusted": True,
-              }
-              status, resp = call("POST", "/machines", body)
-              if status >= 400:
-                  print(f"FAIL machine {seed_id}: HTTP {status} {resp}", file=sys.stderr); sys.exit(3)
-              machine_db_ids[seed_id] = resp.get("id")
-              print(f"[ok] machine id={resp.get('id')} hostname={resp.get('hostname')}")
-
-          # 2. POST /agents for each role agent. Idempotent via
-          # identity_service.py:258 ON CONFLICT(id) DO UPDATE. We pass
-          # agent_id explicitly so the row keys off the stable seed id.
-          # role_slug is intentionally NOT sent — mac's /agents schema
-          # (api.py:AgentRegister) doesn't accept it as of PR2a; PR2b
-          # consumes the role mapping via runner env, not agent rows.
-          for a in agents:
-              ref = a["machine_id"]
-              machine_db_id = machine_db_ids.get(ref)
-              if not machine_db_id:
-                  print(f"FAIL agent {a['id']}: unknown machine_id ref {ref}", file=sys.stderr); sys.exit(4)
-              body = {
-                  "machine_id": machine_db_id,
-                  "name": a["name"],
-                  "agent_id": a["id"],
-                  "capabilities": list(a.get("capabilities") or []),
-              }
-              status, resp = call("POST", "/agents", body)
-              if status >= 400:
-                  print(f"FAIL agent {a['id']}: HTTP {status} {resp}", file=sys.stderr); sys.exit(5)
-              print(f"[ok] agent id={resp.get('id')} name={resp.get('name')} caps={resp.get('capabilities')}")
-
-          print("\n✓ mac-seed role agents bootstrap complete")
         resources:
           requests:
             cpu: 25m
@@ -386,66 +140,19 @@ controllers:
     containers:
       app:
         image: *macImage
-        command: ["mac-k8s-runner"]
+        command: ["mac-k8s-orchestrator"]
         env:
           TZ: America/New_York
           PYTHONUNBUFFERED: "1"
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
           MAC_RUNNER_NAMESPACE: ai
           MAC_RUNNER_TASK_SERVICE_ACCOUNT: mac-task-runner
-          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:f94e69629690
-          # The runner generates Job specs that reference this Secret
-          # for MAC_WORKER_TOKEN + MAC_SECRET_KEY. Must match the name
-          # the ExternalSecret in this directory produces (`mac-secret`).
+          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:74963cdb7f67
           MAC_RUNNER_TASK_SECRET_NAME: mac-secret
           MAC_RUNNER_POLL_INTERVAL_SECONDS: "5"
           MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "1800"
-          # Stable agent id, shared by all runner replicas. mac's
-          # partial unique index on active leases ensures only one
-          # replica wins each claim — agent_id is just the audit
-          # label, not a uniqueness key.
           MAC_AGENT_ID: mac-runner
-          # ----------------------------------------------------------
-          # PR2b — Job-per-task role specialisation.
-          # See docs/job-per-task-roles-spec.md (in the mac repo) §6.1.
-          #
-          # When a task carries metadata.required_role = "python-coder"
-          # (or, transitionally, required_capabilities=[python] which
-          # resolves via the alias map below), the runner spawns the
-          # Job under the mac-codex-runner image with
-          # MAC_AGENT_ID=mac-worker-python-coder and the executor
-          # command pointing at the stub script in that image.
-          #
-          # Reviewer role is identical except agent_id and executor
-          # script. Both roles use the same image — the role is
-          # carried in env, not in separate images. Two distinct
-          # images would only be needed if their dependency closures
-          # diverged, which they don't today.
-          # ----------------------------------------------------------
-          MAC_RUNNER_ROLE_IMAGES: |
-            {
-              "python-coder":    "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:f94e69629690-codex",
-              "python-reviewer": "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:f94e69629690-codex"
-            }
-          MAC_RUNNER_ROLE_AGENT_IDS: |
-            {
-              "python-coder":    "mac-worker-python-coder",
-              "python-reviewer": "mac-worker-python-reviewer"
-            }
-          MAC_RUNNER_ROLE_EXECUTORS: |
-            {
-              "python-coder":    "/usr/local/bin/mac-task-executor-codex",
-              "python-reviewer": "/usr/local/bin/mac-task-executor-codex-review"
-            }
-          # Transitional capability → role alias map. Lets Hermes-
-          # created tasks with required_capabilities=[python] route
-          # to python-coder without an explicit metadata.required_role.
-          # Remove once the Hermes plugin sets required_role directly.
-          MAC_RUNNER_CAPABILITY_ROLE_ALIASES: |
-            {
-              "python": "python-coder",
-              "review": "python-reviewer"
-            }
+          MAC_CONTROLLER_INTERVAL_SECONDS: "30"
         envFrom: *envFrom
         resources:
           requests:
@@ -459,65 +166,12 @@ controllers:
             custom: true
             spec:
               exec:
-                command: ["pgrep", "-f", "mac-k8s-runner"]
+                command: ["pgrep", "-f", "mac-k8s-orchestrator"]
               initialDelaySeconds: 15
               periodSeconds: 30
               failureThreshold: 3
         securityContext: *containerSecurityContext
 
-  # ============================================================
-  # mac-k8s-controller — Phase 5. Singleton reconciler. Deletes
-  # stuck Jobs whose lease was superseded/expired and (optional)
-  # scales worker-pool Deployments. Set replicas: 0 to skip
-  # initially — the `uniq_leases_active_per_task` index already
-  # prevents duplicate launches.
-  # ============================================================
-  controller:
-    replicas: 1
-    strategy: Recreate   # singleton; no leader election in MVP
-    annotations:
-      reloader.stakater.com/auto: "true"
-    serviceAccount:
-      name: mac-k8s-controller
-    pod:
-      automountServiceAccountToken: true
-    containers:
-      app:
-        image: *macImage
-        command: ["mac-k8s-controller"]
-        env:
-          TZ: America/New_York
-          PYTHONUNBUFFERED: "1"
-          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
-          MAC_RUNNER_NAMESPACE: ai
-          MAC_CONTROLLER_INTERVAL_SECONDS: "30"
-          # Worker-pool scaling is OFF by default. Enable once you have
-          # mac-worker-<role-slug> Deployments following the
-          # K8sDeploymentScaler naming convention.
-          MAC_CONTROLLER_SCALER_ENABLED: "0"
-        envFrom: *envFrom
-        resources:
-          requests:
-            cpu: 25m
-            memory: 64Mi
-          limits:
-            memory: 256Mi
-        probes:
-          liveness:
-            enabled: true
-            custom: true
-            spec:
-              exec:
-                command: ["pgrep", "-f", "mac-k8s-controller"]
-              initialDelaySeconds: 15
-              periodSeconds: 30
-              failureThreshold: 3
-        securityContext: *containerSecurityContext
-
-# ============================================================
-# Service — only the api controller is reachable; runner +
-# controller are headless workloads with no inbound traffic.
-# ============================================================
 service:
   app:
     forceRename: mac-api
@@ -526,3 +180,18 @@ service:
     ports:
       http:
         port: 8000
+
+persistence:
+  mac-config:
+    type: configMap
+    name: mac-config
+    advancedMounts:
+      orchestrator:
+        mac-bootstrap:
+          - path: /etc/mac/config.yaml
+            subPath: config.yaml
+            readOnly: true
+        app:
+          - path: /etc/mac/config.yaml
+            subPath: config.yaml
+            readOnly: true

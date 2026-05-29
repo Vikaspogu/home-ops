@@ -1,7 +1,4 @@
 ---
-# ServiceAccount that task Jobs run AS. Intentionally bare: task Jobs
-# never need K8s API access — they authenticate to mac-api via the
-# MAC_WORKER_TOKEN env var injected from a Secret.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -15,30 +12,17 @@ automountServiceAccountToken: false
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: mac-k8s-runner
+  name: mac-k8s-orchestrator
   namespace: ai
   labels:
     app.kubernetes.io/name: mac
-    app.kubernetes.io/component: runner
+    app.kubernetes.io/component: orchestrator
 automountServiceAccountToken: true
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: mac-k8s-controller
-  namespace: ai
-  labels:
-    app.kubernetes.io/name: mac
-    app.kubernetes.io/component: controller
-automountServiceAccountToken: true
----
-# Permissions for mac-k8s-runner: create + read + delete batch/v1 Jobs
-# in the `ai` namespace. Bound to the mac-k8s-runner ServiceAccount
-# defined above.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: mac-k8s-runner
+  name: mac-k8s-orchestrator
   namespace: ai
 rules:
   - apiGroups: ["batch"]
@@ -46,57 +30,28 @@ rules:
     verbs: ["get", "list", "watch", "create", "delete"]
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["get", "list"]
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: mac-k8s-runner
-  namespace: ai
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: mac-k8s-runner
-subjects:
-  - kind: ServiceAccount
-    name: mac-k8s-runner
-    namespace: ai
----
-# Permissions for mac-k8s-controller (Phase 5):
-#   - list/watch/delete batch/v1 Jobs   (reconcile stuck Jobs)
-#   - read/scale apps/v1 Deployments    (provisioning fan-out)
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: mac-k8s-controller
-  namespace: ai
-rules:
-  - apiGroups: ["batch"]
-    resources: ["jobs"]
-    verbs: ["get", "list", "watch", "delete"]
-  - apiGroups: ["apps"]
-    resources: ["deployments"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["apps"]
-    resources: ["deployments/scale"]
-    verbs: ["get", "patch", "update"]
   - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["create", "patch"]
+    resources: ["secrets"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["mac-agent-attestation-keys"]
+    verbs: ["get", "update", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: mac-k8s-controller
+  name: mac-k8s-orchestrator
   namespace: ai
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: mac-k8s-controller
+  name: mac-k8s-orchestrator
 subjects:
   - kind: ServiceAccount
-    name: mac-k8s-controller
+    name: mac-k8s-orchestrator
     namespace: ai

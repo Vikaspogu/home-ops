@@ -1,0 +1,52 @@
+---
+
+mac_url: http://mac-api.ai.svc.cluster.local:8000
+
+dispatcher:
+  machine:
+    machine_id: mac-runner
+    hostname: mac-runner.ai.svc.cluster.local
+    labels:
+      kind: k8s-deployment
+      namespace: ai
+  agent:
+    agent_id: mac-runner
+    name: mac-runner
+    capabilities: [ops, python, review, hermes]
+
+role_machines:
+  - machine_id: mac-worker-machine
+    hostname: mac-worker.ai.svc.cluster.local
+    labels:
+      kind: virtual
+      owner: mac-k8s-bootstrap
+
+roles:
+  python-coder:
+    agent_id: mac-worker-python-coder
+    name: mac-worker-python-coder
+    machine_id: mac-worker-machine
+    capabilities: [python, ops]
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:74963cdb7f67-codex
+    executor: /usr/local/bin/mac-task-executor-codex
+    attestation_key_secret:
+      name: mac-agent-attestation-keys
+      key: python-coder
+  python-reviewer:
+    agent_id: mac-worker-python-reviewer
+    name: mac-worker-python-reviewer
+    machine_id: mac-worker-machine
+    capabilities: [review, python]
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:74963cdb7f67-codex
+    executor: /usr/local/bin/mac-task-executor-codex-review
+    attestation_key_secret:
+      name: mac-agent-attestation-keys
+      key: python-reviewer
+
+capability_role_aliases:
+  python: python-coder
+  review: python-reviewer
+
+attestation_keys:
+  namespace: ai
+  secret_name: mac-agent-attestation-keys
