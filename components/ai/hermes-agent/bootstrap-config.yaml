@@ -1,0 +1,22 @@
+mac_url: http://mac-api.ai.svc.cluster.local:8000
+
+plugins:
+  - name: mac
+    repo: https://github.com/Vikaspogu/mac.git
+    ref: main
+    path: plugin
+  - name: ivan-personal
+    repo: https://gitea.omv.a113.casa/vpogu/ivan-plugin.git
+    ref: main
+    path: plugin
+
+mac_identities:
+  - tenant_id: personal
+    tenant_name: personal
+    persona_id: persona_hermes_ai
+    persona_name: AssistantOne
+    soul_ref: hermes://personal/AssistantOne/SOUL.md
+    memory_scope: hermes://personal/AssistantOne/memory
+    instance_id: hermes_ai
+    instance_name: hermes-ai
+    home_ref: k8s://ai/hermes-agent

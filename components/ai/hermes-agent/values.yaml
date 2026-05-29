@@ -10,174 +10,17 @@ controllers:
         fsGroup: 10000
         fsGroupChangePolicy: OnRootMismatch
     initContainers:
-      seed-config:
+      hermes-bootstrap:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260528004414-a899c66-oci
-        command: ["hermes-seed-config"]
-        resources:
-          requests:
-            cpu: 10m
-            memory: 64Mi
-          limits:
-            memory: 256Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
-        envFrom:
-        - secretRef:
-            name: hermes-agent-secret
-      install-ivan-personal-plugin:
-        image:
-          repository: gitea.omv.a113.casa/vpogu/ivan-personal-plugin
-          tag: 20260526002735-bdabfb8-oci
-          pullPolicy: Always
-        command: ["/bin/sh", "-ec"]
-        args:
-        - |
-          rm -rf /opt/data/plugins/ivan-personal
-          mkdir -p /opt/data/plugins/ivan-personal
-          cp -R /plugin/. /opt/data/plugins/ivan-personal/
-          test -f /opt/data/plugins/ivan-personal/plugin.yaml
-          test -f /opt/data/plugins/ivan-personal/__init__.py
-        resources:
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            memory: 128Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
-      install-mac-plugin:
-        image:
-          repository: gitea.omv.a113.casa/vpogu/mac-hermes-plugin
-          tag: e882c2324c72
-          pullPolicy: Always
-        command: ["/bin/sh", "-ec"]
-        args:
-        - |
-          rm -rf /opt/data/plugins/mac
-          mkdir -p /opt/data/plugins/mac
-          cp -R /plugin/. /opt/data/plugins/mac/
-          test -f /opt/data/plugins/mac/plugin.yaml
-          test -f /opt/data/plugins/mac/__init__.py
-        resources:
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            memory: 128Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
-      # Declaratively register this hermes-agent runtime's identity in
-      # mac on every roll. Uses explicit deterministic ids; mac's
-      # identity layer is idempotent on (parent, name) +
-      # ON CONFLICT(id) DO UPDATE, so re-runs are no-ops once the rows
-      # exist. The init blocks the main container until mac-api is
-      # reachable AND the rows are present — by the time hermes-agent
-      # boots, MAC_HERMES_INSTANCE_ID is guaranteed to resolve.
-      register-mac-identity:
-        image:
-          repository: gitea.omv.a113.casa/vpogu/mac
-          tag: 652623fd6254
+        command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
         env:
           PYTHONUNBUFFERED: "1"
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
-          # IDENTITIES: one entry per Hermes runtime this pod represents.
-          # The instance_id MUST match MAC_HERMES_INSTANCE_ID below in
-          # the externalsecret so the plugin's runtime env agrees with
-          # what's in mac's database.
-          IDENTITIES: |
-            [
-              {
-                "tenant_id": "personal",
-                "tenant_name": "personal",
-                "persona_id": "persona_hermes_ai",
-                "persona_name": "AssistantOne",
-                "soul_ref": "hermes://personal/AssistantOne/SOUL.md",
-                "memory_scope": "hermes://personal/AssistantOne/memory",
-                "instance_id": "hermes_ai",
-                "instance_name": "hermes-ai",
-                "home_ref": "k8s://ai/hermes-agent"
-              }
-            ]
         envFrom:
         - secretRef:
-            name: hermes-agent-secret    # provides MAC_WORKER_TOKEN
-        command: ["python", "-c"]
-        args:
-        - |
-          import json, os, sys, time
-          from urllib.request import Request, urlopen
-          from urllib.error import HTTPError, URLError
-
-          URL = os.environ["MAC_URL"].rstrip("/")
-          TOK = os.environ["MAC_WORKER_TOKEN"]
-          HEADERS = {"Authorization": f"Bearer {TOK}", "Content-Type": "application/json"}
-
-          def call(method, path, body=None):
-              data = json.dumps(body).encode() if body is not None else None
-              req = Request(URL + path, data=data, headers=HEADERS, method=method)
-              try:
-                  with urlopen(req, timeout=15) as r:
-                      payload = r.read()
-                      return r.status, (json.loads(payload) if payload else {})
-              except HTTPError as e:
-                  return e.code, e.read().decode("utf-8", "replace")
-
-          for attempt in range(60):
-              try:
-                  with urlopen(URL + "/health", timeout=3) as r:
-                      if r.status == 200:
-                          break
-              except (HTTPError, URLError, TimeoutError):
-                  pass
-              print(f"[wait] mac-api /health not ready ({attempt+1}/60)...")
-              time.sleep(2)
-          else:
-              print("FAIL: mac-api /health never became ready", file=sys.stderr); sys.exit(1)
-          print(f"[ok] mac-api reachable at {URL}")
-
-          for ident in json.loads(os.environ["IDENTITIES"]):
-              print(f"\n--- {ident['instance_id']} ---")
-              status, t = call("POST", "/tenants", {"name": ident["tenant_name"], "tenant_id": ident["tenant_id"]})
-              if status >= 400:
-                  print(f"FAIL tenant: HTTP {status} {t}", file=sys.stderr); sys.exit(2)
-              print(f"[ok] tenant   id={t.get('id')} name={t.get('name')}")
-
-              status, p = call("POST", "/personas", {
-                  "tenant_id": ident["tenant_id"], "name": ident["persona_name"],
-                  "persona_id": ident["persona_id"],
-                  "soul_ref": ident["soul_ref"], "memory_scope": ident["memory_scope"],
-              })
-              if status >= 400:
-                  print(f"FAIL persona: HTTP {status} {p}", file=sys.stderr); sys.exit(3)
-              print(f"[ok] persona  id={p.get('id')} name={p.get('name')}")
-
-              status, h = call("POST", "/hermes-instances", {
-                  "tenant_id": ident["tenant_id"], "name": ident["instance_name"],
-                  "instance_id": ident["instance_id"], "persona_id": ident["persona_id"],
-                  "home_ref": ident.get("home_ref", ""),
-              })
-              if status >= 400:
-                  print(f"FAIL instance: HTTP {status} {h}", file=sys.stderr); sys.exit(4)
-              print(f"[ok] instance id={h.get('id')} name={h.get('name')}")
-
-          print("\n✓ registration complete")
+            name: hermes-agent-secret
         resources:
           requests:
             cpu: 25m
@@ -188,8 +31,8 @@ controllers:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
+          runAsUser: 10000
+          runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
     containers:
       app:
@@ -246,11 +89,7 @@ persistence:
     existingClaim: hermes-agent
     advancedMounts:
       app:
-        seed-config:
-        - path: /opt/data
-        install-ivan-personal-plugin:
-        - path: /opt/data
-        install-mac-plugin:
+        hermes-bootstrap:
         - path: /opt/data
         app:
         - path: /opt/data
@@ -259,12 +98,24 @@ persistence:
     name: hermes-agent-config
     advancedMounts:
       app:
-        seed-config:
+        hermes-bootstrap:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
           readOnly: true
         - path: /opt/bootstrap/pricing-overrides.yaml
           subPath: pricing-overrides.yaml
+          readOnly: true
+  bootstrap:
+    type: configMap
+    name: hermes-bootstrap
+    advancedMounts:
+      app:
+        hermes-bootstrap:
+        - path: /etc/hermes-bootstrap/bootstrap.py
+          subPath: bootstrap.py
+          readOnly: true
+        - path: /etc/hermes-bootstrap/config.yaml
+          subPath: config.yaml
           readOnly: true
   secret:
     type: secret
