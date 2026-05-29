@@ -64,7 +64,7 @@ controllers:
       app:
         image: &macImage
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac
-          tag: 7301fb329711
+          tag: 4f8eb79f021c
         command: ["uvicorn"]
         args:
           - mac.api:create_app
@@ -393,7 +393,7 @@ controllers:
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
           MAC_RUNNER_NAMESPACE: ai
           MAC_RUNNER_TASK_SERVICE_ACCOUNT: mac-task-runner
-          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:7301fb329711
+          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:4f8eb79f021c
           # The runner generates Job specs that reference this Secret
           # for MAC_WORKER_TOKEN + MAC_SECRET_KEY. Must match the name
           # the ExternalSecret in this directory produces (`mac-secret`).
@@ -424,8 +424,8 @@ controllers:
           # ----------------------------------------------------------
           MAC_RUNNER_ROLE_IMAGES: |
             {
-              "python-coder":    "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:7301fb329711-codex",
-              "python-reviewer": "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:7301fb329711-codex"
+              "python-coder":    "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:4f8eb79f021c-codex",
+              "python-reviewer": "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:4f8eb79f021c-codex"
             }
           MAC_RUNNER_ROLE_AGENT_IDS: |
             {
