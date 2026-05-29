@@ -16,9 +16,13 @@ helmCharts:
     version: "5.0.1"
     valuesFile: values.yaml
 configMapGenerator:
-  - files:
+  - name: mac-config
+    files:
       - config.yaml=config.yaml
-    name: mac-config
+    options:
+      disableNameSuffixHash: true
   - name: mac-opencode-config
     files:
       - opencode.json
+    options:
+      disableNameSuffixHash: true
