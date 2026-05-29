@@ -1,5 +1,4 @@
 {
-  "_comment": "Yolo-permissions variant of opencode.json baked for the mac Job pod ConfigMap. Production Job pods are non-interactive so all permission prompts are set to 'allow'. Source: ~/.config/opencode/opencode.json + ~/.config/opencode/opencode-yolo.json merged. Update both source files first; do NOT hand-edit here.",
   "$schema": "https://opencode.ai/config.json",
   "permission": {
     "*": "allow"
