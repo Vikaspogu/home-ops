@@ -13,23 +13,12 @@ defaultPodOptions:
 
 controllers:
   api:
-    replicas: 2
-    strategy: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
+    replicas: 1
+    strategy: Recreate
     annotations:
       reloader.stakater.com/auto: "true"
     pod:
       automountServiceAccountToken: false
-      topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: mac
-              app.kubernetes.io/component: api
     initContainers:
       init-01-db:
         image:
