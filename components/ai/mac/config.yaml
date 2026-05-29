@@ -50,3 +50,17 @@ capability_role_aliases:
 attestation_keys:
   namespace: ai
   secret_name: mac-agent-attestation-keys
+
+projects:
+  - name: ivan-plugin
+    description: Ivan personal Hermes plugin
+    status: active
+    metadata:
+      repository: https://gitea.omv.a113.casa/vpogu/ivan-plugin.git
+      default_branch: main
+  - name: mac
+    description: Mac control plane + Hermes plugin source
+    status: active
+    metadata:
+      repository: https://github.com/Vikaspogu/mac.git
+      default_branch: main
