@@ -27,7 +27,7 @@ roles:
     name: mac-worker-python-coder
     machine_id: mac-worker-machine
     capabilities: [python, ops]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:657211dad639-codex
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:cff1f37ddbc7-codex
     executor: /usr/local/bin/mac-task-executor-codex
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -37,11 +37,31 @@ roles:
     name: mac-worker-python-reviewer
     machine_id: mac-worker-machine
     capabilities: [review, python]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:657211dad639-codex
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:cff1f37ddbc7-codex
     executor: /usr/local/bin/mac-task-executor-codex-review
     attestation_key_secret:
       name: mac-agent-attestation-keys
       key: python-reviewer
+  python-coder-opencode:
+    agent_id: mac-worker-python-coder-opencode
+    name: mac-worker-python-coder-opencode
+    machine_id: mac-worker-machine
+    capabilities: [python, ops]
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:cff1f37ddbc7-codex
+    executor: /usr/local/bin/mac-task-executor-opencode-build
+    attestation_key_secret:
+      name: mac-agent-attestation-keys
+      key: python-coder-opencode
+  python-reviewer-opencode:
+    agent_id: mac-worker-python-reviewer-opencode
+    name: mac-worker-python-reviewer-opencode
+    machine_id: mac-worker-machine
+    capabilities: [review, python]
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:cff1f37ddbc7-codex
+    executor: /usr/local/bin/mac-task-executor-opencode-review
+    attestation_key_secret:
+      name: mac-agent-attestation-keys
+      key: python-reviewer-opencode
 
 capability_role_aliases:
   python: python-coder

@@ -19,3 +19,6 @@ configMapGenerator:
   - files:
       - config.yaml=config.yaml
     name: mac-config
+  - name: mac-opencode-config
+    files:
+      - opencode.json

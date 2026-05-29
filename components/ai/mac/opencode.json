@@ -1,0 +1,130 @@
+{
+  "_comment": "Yolo-permissions variant of opencode.json baked for the mac Job pod ConfigMap. Production Job pods are non-interactive so all permission prompts are set to 'allow'. Source: ~/.config/opencode/opencode.json + ~/.config/opencode/opencode-yolo.json merged. Update both source files first; do NOT hand-edit here.",
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "allow"
+  },
+  "provider": {
+    "inference-hub": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "NVIDIA Inference Hub",
+      "options": {
+        "baseURL": "https://inference-api.nvidia.com/v1",
+        "apiKey": "{env:INFERENCE_HUB_API_KEY}",
+        "timeout": 600000
+      },
+      "models": {
+        "nvidia/qwen/qwen3-next-80b-a3b-instruct": {
+          "name": "Qwen3 Next 80B A3B Instruct"
+        },
+        "nvidia/deepseek-ai/deepseek-v4-flash": {
+          "name": "DeepSeek V4 Flash"
+        },
+        "nvidia/deepseek-ai/deepseek-v4-pro": {
+          "name": "DeepSeek V4 Pro"
+        },
+        "azure/openai/gpt-5.5": {
+          "name": "GPT-5.5"
+        },
+        "aws/anthropic/bedrock-claude-opus-4-7": {
+          "name": "Claude Opus 4.7"
+        },
+        "nvidia/minimaxai/minimax-m2.7": {
+          "name": "Minimax M2.7"
+        },
+        "nvidia/minimaxai/minimax-m2.5": {
+          "name": "Minimax M2.5"
+        },
+        "nvidia/zai-org/glm-5.1": {
+          "name": "GLM 5.1"
+        },
+        "nvidia/nvidia/nemotron-3-ultra": {
+          "name": "Nemotron 3 Ultra"
+        },
+        "nvidia/openai/gpt-oss-120b": {
+          "name": "GPT OSS 120B"
+        },
+        "perplexity/perplexity/sonar-pro": {
+          "name": "Perplexity Sonar Pro"
+        },
+        "perplexity/perplexity/sonar-deep-research": {
+          "name": "Perplexity Sonar Deep Research"
+        },
+        "gcp/google/gemini-2.5-pro": {
+          "name": "Gemini 2.5 Pro"
+        }
+      }
+    }
+  },
+  "model": "inference-hub/nvidia/qwen/qwen3-next-80b-a3b-instruct",
+  "small_model": "inference-hub/nvidia/deepseek-ai/deepseek-v4-flash",
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "model": "inference-hub/nvidia/qwen/qwen3-next-80b-a3b-instruct",
+      "temperature": 0.2,
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "review": {
+      "description": "Review code for bugs, regressions, security issues, and missing tests.",
+      "mode": "primary",
+      "model": "inference-hub/aws/anthropic/bedrock-claude-opus-4-7",
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "review-minimax": {
+      "description": "Review code using Minimax as a non-Claude independent confidence check.",
+      "mode": "subagent",
+      "model": "inference-hub/nvidia/minimaxai/minimax-m2.7",
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "review-glm": {
+      "description": "Review code using GLM 5.1 as a fast non-Claude/non-Codex check.",
+      "mode": "subagent",
+      "model": "inference-hub/nvidia/zai-org/glm-5.1",
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "code-flash": {
+      "description": "Fast coding pass using DeepSeek V4 Flash.",
+      "mode": "primary",
+      "model": "inference-hub/nvidia/deepseek-ai/deepseek-v4-flash",
+      "temperature": 0.2,
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "code-pro": {
+      "description": "Deeper coding pass using DeepSeek V4 Pro.",
+      "mode": "primary",
+      "model": "inference-hub/nvidia/deepseek-ai/deepseek-v4-pro",
+      "temperature": 0.2,
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "code-gpt55": {
+      "description": "High quality coding pass using GPT-5.5.",
+      "mode": "primary",
+      "model": "inference-hub/azure/openai/gpt-5.5",
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "research": {
+      "description": "Research external docs, APIs, dependency behavior, and implementation options.",
+      "mode": "primary",
+      "model": "inference-hub/perplexity/perplexity/sonar-deep-research",
+      "temperature": 0.2,
+      "permission": {
+        "*": "allow"
+      }
+    }
+  }
+}

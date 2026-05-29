@@ -1,0 +1,48 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "*": "allow"
+  },
+  "agent": {
+    "build": {
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "review": {
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "review-minimax": {
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "review-glm": {
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "code-flash": {
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "code-pro": {
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "code-gpt55": {
+      "permission": {
+        "*": "allow"
+      }
+    },
+    "research": {
+      "permission": {
+        "*": "allow"
+      }
+    }
+  }
+}
