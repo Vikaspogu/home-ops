@@ -393,7 +393,7 @@ controllers:
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
           MAC_RUNNER_NAMESPACE: ai
           MAC_RUNNER_TASK_SERVICE_ACCOUNT: mac-task-runner
-          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:652623fd6254
+          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:7301fb329711
           # The runner generates Job specs that reference this Secret
           # for MAC_WORKER_TOKEN + MAC_SECRET_KEY. Must match the name
           # the ExternalSecret in this directory produces (`mac-secret`).
@@ -405,6 +405,47 @@ controllers:
           # replica wins each claim — agent_id is just the audit
           # label, not a uniqueness key.
           MAC_AGENT_ID: mac-runner
+          # ----------------------------------------------------------
+          # PR2b — Job-per-task role specialisation.
+          # See docs/job-per-task-roles-spec.md (in the mac repo) §6.1.
+          #
+          # When a task carries metadata.required_role = "python-coder"
+          # (or, transitionally, required_capabilities=[python] which
+          # resolves via the alias map below), the runner spawns the
+          # Job under the mac-codex-runner image with
+          # MAC_AGENT_ID=mac-worker-python-coder and the executor
+          # command pointing at the stub script in that image.
+          #
+          # Reviewer role is identical except agent_id and executor
+          # script. Both roles use the same image — the role is
+          # carried in env, not in separate images. Two distinct
+          # images would only be needed if their dependency closures
+          # diverged, which they don't today.
+          # ----------------------------------------------------------
+          MAC_RUNNER_ROLE_IMAGES: |
+            {
+              "python-coder":    "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:7301fb329711-codex",
+              "python-reviewer": "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:7301fb329711-codex"
+            }
+          MAC_RUNNER_ROLE_AGENT_IDS: |
+            {
+              "python-coder":    "mac-worker-python-coder",
+              "python-reviewer": "mac-worker-python-reviewer"
+            }
+          MAC_RUNNER_ROLE_EXECUTORS: |
+            {
+              "python-coder":    "/usr/local/bin/mac-task-executor-codex",
+              "python-reviewer": "/usr/local/bin/mac-task-executor-codex-review"
+            }
+          # Transitional capability → role alias map. Lets Hermes-
+          # created tasks with required_capabilities=[python] route
+          # to python-coder without an explicit metadata.required_role.
+          # Remove once the Hermes plugin sets required_role directly.
+          MAC_RUNNER_CAPABILITY_ROLE_ALIASES: |
+            {
+              "python": "python-coder",
+              "review": "python-reviewer"
+            }
         envFrom: *envFrom
         resources:
           requests:
