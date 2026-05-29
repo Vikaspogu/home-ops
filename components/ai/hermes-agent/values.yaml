@@ -93,7 +93,7 @@ controllers:
       register-mac-identity:
         image:
           repository: gitea.omv.a113.casa/vpogu/mac
-          tag: f28bb1cda62c
+          tag: 652623fd6254
         env:
           PYTHONUNBUFFERED: "1"
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
