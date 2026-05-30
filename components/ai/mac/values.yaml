@@ -36,7 +36,7 @@ controllers:
       app:
         image: &macImage
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac
-          tag: "3ae9f205dba6"
+          tag: "bea1534a50d5"
         command: ["uvicorn"]
         args:
           - mac.api:create_app
@@ -53,6 +53,11 @@ controllers:
           TZ: America/New_York
           PYTHONUNBUFFERED: "1"
           MAC_BIND_HOST: "0.0.0.0"
+          # Virtual reviewer role-agents are registered by bootstrap and
+          # never heartbeat, so the default 300s staleness gate makes them
+          # ineligible and tasks stall in needs_review. Treat them as
+          # always-available (orchestrator re-bootstraps on restart).
+          MAC_DEFAULT_REVIEWER_STALE_AFTER_SECONDS: "86400"
         envFrom: *envFrom
         resources:
           requests:
@@ -136,7 +141,7 @@ controllers:
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
           MAC_RUNNER_NAMESPACE: ai
           MAC_RUNNER_TASK_SERVICE_ACCOUNT: mac-task-runner
-          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:3ae9f205dba6
+          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:bea1534a50d5
           MAC_RUNNER_TASK_SECRET_NAME: mac-secret
           MAC_RUNNER_POLL_INTERVAL_SECONDS: "5"
           MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "1800"

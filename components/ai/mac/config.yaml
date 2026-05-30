@@ -33,7 +33,7 @@ roles:
     name: mac-worker-python-coder
     machine_id: mac-worker-machine
     capabilities: [python, ops]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:a1f6c3821b60-codex
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bea1534a50d5-codex
     executor: /usr/local/bin/mac-task-executor-codex
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -43,7 +43,7 @@ roles:
     name: mac-worker-python-reviewer
     machine_id: mac-worker-machine
     capabilities: [review, python]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:a1f6c3821b60-codex
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bea1534a50d5-codex
     executor: /usr/local/bin/mac-task-executor-codex-review
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -53,7 +53,7 @@ roles:
     name: mac-worker-python-coder-opencode
     machine_id: mac-worker-machine
     capabilities: [python, ops]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:a1f6c3821b60-codex
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bea1534a50d5-codex
     executor: /usr/local/bin/mac-task-executor-opencode-build
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -63,7 +63,7 @@ roles:
     name: mac-worker-python-reviewer-opencode
     machine_id: mac-worker-machine
     capabilities: [review, python]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:a1f6c3821b60-codex
+    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bea1534a50d5-codex
     executor: /usr/local/bin/mac-task-executor-opencode-review
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -84,9 +84,15 @@ projects:
     metadata:
       repository: https://gitea.omv.a113.casa/vpogu/ivan-plugin.git
       default_branch: main
+      # Non-git target: completion = reviewed + MR opened. publish_task
+      # records this and transitions the task to COMPLETED without merging
+      # (git:// targets would auto-merge to main — not wanted for the
+      # human-merge MR flow). The agent's branch/MR stays open for review.
+      publication_target: gitea://merge-request
   - name: mac
     description: Mac control plane + Hermes plugin source
     status: active
     metadata:
       repository: https://github.com/Vikaspogu/mac.git
       default_branch: main
+      publication_target: gitea://merge-request
