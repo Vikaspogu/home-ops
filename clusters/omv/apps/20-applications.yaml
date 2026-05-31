@@ -60,6 +60,11 @@ applications:
   gitea:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
+      # The gitea PVC was restored by volsync, so Kubernetes rewrote its
+      # immutable dataSource to the restore VolumeSnapshot. ArgoCD's
+      # server-side diff dry-run fails on that immutable field, so use
+      # client-side diff for this app (ignoreDifferences then applies).
+      argocd.argoproj.io/compare-options: ServerSideDiff=false
     ignoreDifferences:
       - group: ""
         kind: PersistentVolumeClaim
