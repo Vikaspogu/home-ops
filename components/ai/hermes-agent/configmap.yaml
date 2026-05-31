@@ -108,7 +108,8 @@ data:
     security:
       redact_secrets: true
     kanban:
-      dispatch_in_gateway: true
+      enabled: false
+      dispatch_in_gateway: false
       dispatch_interval_seconds: 60
     memory:
       memory_enabled: true
@@ -207,7 +208,6 @@ data:
         - ivan_paperless
         - ivan_synology
         - ivan_travel
-        - kanban
         - memory
         - messaging
         - session_search
@@ -239,7 +239,6 @@ data:
         - ivan_paperless
         - ivan_synology
         - ivan_travel
-        - kanban
         - memory
         - messaging
         - session_search
@@ -278,16 +277,6 @@ data:
         - ivan_paperless
         - ivan_synology
         - ivan_travel
-    platforms:
-      telegram:
-        extra:
-          dm_topics:
-            - chat_id: 8658000242
-              topics:
-                - name: General
-                  thread_id: 1430
-                - name: Coding
-                  thread_id: 1432
   pricing-overrides.yaml: |-
     pricing:
       overrides:
