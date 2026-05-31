@@ -59,7 +59,7 @@ controllers:
           PLAYWRIGHT_BROWSERS_PATH: /opt/data/.cache/ms-playwright
           PUPPETEER_CACHE_DIR: /opt/data/.cache/puppeteer
           PYTHONUNBUFFERED: "1"
-          HERMES_DASHBOARD: "1"
+          HERMES_DASHBOARD: "0"
           HERMES_DASHBOARD_HOST: "0.0.0.0"
           HERMES_DASHBOARD_PORT: &dashboardPort 9119
           API_SERVER_ENABLED: "true"
