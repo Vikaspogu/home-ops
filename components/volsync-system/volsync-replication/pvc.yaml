@@ -3,6 +3,12 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: ${ARGOCD_APP_NAME}
+  annotations:
+    # dataSource/dataSourceRef become immutable once the PVC is bound, and
+    # Kubernetes rewrites dataSource to the VolumeSnapshot that volsync used
+    # to restore. ArgoCD's server-side diff dry-run then fails on the
+    # immutable field. Force client-side diff so ignoreDifferences applies.
+    argocd.argoproj.io/compare-options: ServerSideDiff=false
 spec:
   accessModes:
     - ReadWriteOnce
