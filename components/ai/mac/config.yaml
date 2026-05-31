@@ -91,6 +91,9 @@ projects:
       publication_target: gitea://merge-request
       task_defaults:
         role: python-coder-opencode
+        allowed_capabilities:
+          - python
+          - ops
   - name: mac
     description: Mac control plane + Hermes plugin source
     status: active
@@ -100,3 +103,6 @@ projects:
       publication_target: gitea://merge-request
       task_defaults:
         role: python-coder-opencode
+        allowed_capabilities:
+          - python
+          - ops
