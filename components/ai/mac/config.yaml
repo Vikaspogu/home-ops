@@ -89,6 +89,8 @@ projects:
       # (git:// targets would auto-merge to main — not wanted for the
       # human-merge MR flow). The agent's branch/MR stays open for review.
       publication_target: gitea://merge-request
+      task_defaults:
+        role: python-coder-opencode
   - name: mac
     description: Mac control plane + Hermes plugin source
     status: active
@@ -96,3 +98,5 @@ projects:
       repository: https://github.com/Vikaspogu/mac.git
       default_branch: main
       publication_target: gitea://merge-request
+      task_defaults:
+        role: python-coder-opencode
