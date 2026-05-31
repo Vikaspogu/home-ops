@@ -81,6 +81,8 @@ applications:
             value: 20Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 30Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "20 */6 * * *"
 
   gitea-runner:
     annotations:
@@ -99,6 +101,8 @@ applications:
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "40 */6 * * *"
 
   renovate:
     annotations:

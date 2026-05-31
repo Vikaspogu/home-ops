@@ -6,7 +6,7 @@ metadata:
 spec:
   sourcePVC: ${ARGOCD_APP_NAME}
   trigger:
-    schedule: "0 */6 * * *"
+    schedule: "${ARGOCD_ENV_VOLSYNC_SCHEDULE-0 */6 * * *}"
   kopia:
     accessModes: ["ReadWriteOnce"]
     cacheAccessModes: ["ReadWriteOnce"]
