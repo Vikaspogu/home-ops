@@ -34,11 +34,15 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
+      seed-config:
+        image:
+          tag: 20260531014244-3bdb5c4-oci
+          repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
     containers:
       app:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260528004414-a899c66-oci
+          tag: 20260531014244-3bdb5c4-oci
         args:
         - gateway
         - run
