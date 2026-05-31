@@ -19,7 +19,16 @@ export ARGOCD_ENV_VOLSYNC_CAPACITY="${ARGOCD_ENV_VOLSYNC_CAPACITY:-4Gi}"
 export ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY="${ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY:-2Gi}"
 export ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS="${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS:-longhorn-snapclass}"
 export ARGOCD_ENV_STORAGE_CLASS="${ARGOCD_ENV_STORAGE_CLASS:-longhorn}"
+export ARGOCD_ENV_VOLSYNC_SCHEDULE="${ARGOCD_ENV_VOLSYNC_SCHEDULE:-0 */6 * * *}"
 export NAS_IP_ADDRESS="${NAS_IP_ADDRESS:-192.168.1.100}"
+
+# The ReplicationSource template uses envsub default syntax
+# (${VAR-default}) which production renders via `envsub --greedy-defaults`.
+# GNU envsubst used here only understands bare ${VAR}, so rewrite the
+# default form to a plain reference before substitution.
+strip_envsub_defaults() {
+    sed -E 's/\$\{([A-Za-z_][A-Za-z0-9_]*)-[^}]*\}/${\1}/g'
+}
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins")
 kustomize_config="kustomization.yaml"
@@ -53,7 +62,7 @@ validate_kustomization() {
     fi
 
     # Build and validate the kustomization (process env vars with envsubst)
-    if ! kustomize build "${dir}" "${kustomize_args[@]}" | envsubst | kubeconform "${kubeconform_args[@]}"; then
+    if ! kustomize build "${dir}" "${kustomize_args[@]}" | strip_envsub_defaults | envsubst | kubeconform "${kubeconform_args[@]}"; then
         echo "❌ Validation failed for ${relative_path}"
         return 1
     fi
@@ -105,7 +114,7 @@ validate_standalone_files() {
         fi
 
         echo "Validating ${file_relative}"
-        if ! envsubst < "${file}" | kubeconform "${kubeconform_args[@]}"; then
+        if ! strip_envsub_defaults < "${file}" | envsubst | kubeconform "${kubeconform_args[@]}"; then
             echo "❌ Validation failed for ${file_relative}"
             exit 1
         fi
