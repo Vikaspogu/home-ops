@@ -5,10 +5,13 @@ metadata:
   name: ${ARGOCD_APP_NAME}
   annotations:
     # dataSource/dataSourceRef become immutable once the PVC is bound, and
-    # Kubernetes rewrites dataSource to the VolumeSnapshot that volsync used
-    # to restore. ArgoCD's server-side diff dry-run then fails on the
-    # immutable field. Force client-side diff so ignoreDifferences applies.
+    # Kubernetes rewrites dataSource to the restore VolumeSnapshot. ArgoCD's
+    # server-side apply dry-run then fails on the immutable field. Scope
+    # client-side diff/apply to THIS PVC only (not the whole app) so the
+    # ignoreDifferences applies here while other resources (ExternalSecret,
+    # HTTPRoute) keep server-side diff and don't churn on webhook defaults.
     argocd.argoproj.io/compare-options: ServerSideDiff=false
+    argocd.argoproj.io/sync-options: ServerSideApply=false
 spec:
   accessModes:
     - ReadWriteOnce
