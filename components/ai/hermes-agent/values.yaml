@@ -82,10 +82,6 @@ controllers:
             memory: 4Gi
         securityContext:
           allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
 service:
   app:
     controller: app
