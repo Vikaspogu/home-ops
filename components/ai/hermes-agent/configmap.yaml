@@ -132,11 +132,13 @@ data:
         - airtable
         - audiocraft-audio-generation
         - axolotl
+        - baoyu-article-illustrator
         - baoyu-comic
         - baoyu-infographic
         - claude-code
         - claude-design
         - codex
+        - coder-kanban-workflow
         - comfyui
         - dashboard-usability-review
         - debugging-hermes-tui-commands
@@ -154,6 +156,9 @@ data:
         - humanizer
         - ideation
         - jupyter-live-kernel
+        - kanban-codex-lane
+        - kanban-orchestrator
+        - kanban-worker
         - llama-cpp
         - manim-video
         - minecraft-modpack-server
@@ -173,6 +178,7 @@ data:
         - sketch
         - songsee
         - songwriting-and-ai-music
+        - teams-meeting-pipeline
         - touchdesigner-mcp
         - unsloth
         - weights-and-biases
@@ -185,6 +191,9 @@ data:
         - disk-cleanup
         - rtk-rewrite
         - mac
+        - web/ddgs
+        - security-guidance
+        - observability/langfuse
     platform_toolsets:
       cli:
         - browser
