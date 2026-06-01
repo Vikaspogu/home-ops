@@ -107,9 +107,6 @@ persistence:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
           readOnly: true
-        - path: /opt/bootstrap/pricing-overrides.yaml
-          subPath: pricing-overrides.yaml
-          readOnly: true
   bootstrap:
     type: configMap
     name: hermes-bootstrap

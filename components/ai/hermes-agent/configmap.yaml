@@ -6,7 +6,7 @@ metadata:
 data:
   config.yaml: |-
     model:
-      default: "openai/openai/gpt-5.5"
+      default: "aws/anthropic/bedrock-claude-sonnet-4-6"
       provider: "custom"
       api_key: "${HERMES_API_KEY}"
       base_url: "${HERMES_BASE_URL}"
@@ -20,7 +20,7 @@ data:
     auxiliary:
       vision:
         provider: main
-        model: openai/openai/gpt-5.5
+        model: gcp/google/gemini-3.1-pro-preview
         timeout: 180
       approval:
         provider: auto
@@ -28,7 +28,7 @@ data:
         provider: auto
       goal_judge:
         provider: main
-        model: openai/openai/gpt-5.4-mini
+        model: openai/openai/gpt-5-mini
         timeout: 60
       triage_specifier:
         provider: spark
@@ -286,20 +286,3 @@ data:
         - ivan_paperless
         - ivan_synology
         - ivan_travel
-  pricing-overrides.yaml: |-
-    pricing:
-      overrides:
-        - provider: custom
-          model: openai/openai/gpt-5.5
-          input_per_million: "5.00"
-          cached_input_per_million: "0.50"
-          output_per_million: "30.00"
-          source_url: https://openai.com/api/pricing/
-          pricing_version: openai-pricing-2026-05-11
-        - provider: openai
-          model: gpt-5.5
-          input_per_million: "5.00"
-          cached_input_per_million: "0.50"
-          output_per_million: "30.00"
-          source_url: https://openai.com/api/pricing/
-          pricing_version: openai-pricing-2026-05-11
