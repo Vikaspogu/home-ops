@@ -140,7 +140,8 @@ controllers:
           MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:bc710bad79a7
           MAC_RUNNER_TASK_SECRET_NAME: mac-secret
           MAC_RUNNER_POLL_INTERVAL_SECONDS: "5"
-          MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "1800"
+          MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "3000"
+          MAC_TASK_EXECUTOR_TIMEOUT_SECONDS: "2700"
           MAC_AGENT_ID: mac-runner
           MAC_CONTROLLER_INTERVAL_SECONDS: "30"
         envFrom: *envFrom
