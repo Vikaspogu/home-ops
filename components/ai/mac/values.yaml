@@ -1,8 +1,6 @@
----
-
 defaultPodOptions:
   imagePullSecrets:
-    - name: gitea-registry-secret
+  - name: gitea-registry-secret
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
@@ -10,7 +8,6 @@ defaultPodOptions:
     fsGroup: 1000
     seccompProfile:
       type: RuntimeDefault
-
 controllers:
   api:
     replicas: 1
@@ -25,8 +22,8 @@ controllers:
           repository: ghcr.io/home-operations/postgres-init
           tag: 18.4.0@sha256:5086f94abc783f1147d7c2a32c01db00ab594820026e4f6a82ac2af3dbde7fc7
         envFrom: &envFrom
-          - secretRef:
-              name: mac-secret
+        - secretRef:
+            name: mac-secret
         securityContext: &containerSecurityContext
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -39,16 +36,16 @@ controllers:
           tag: "20260601193030-852c26a"
         command: ["uvicorn"]
         args:
-          - mac.api:create_app
-          - --factory
-          - --host
-          - "0.0.0.0"
-          - --port
-          - "8000"
-          - --workers
-          - "1"
-          - --log-level
-          - info
+        - mac.api:create_app
+        - --factory
+        - --host
+        - "0.0.0.0"
+        - --port
+        - "8000"
+        - --workers
+        - "1"
+        - --log-level
+        - info
         env:
           TZ: America/New_York
           PYTHONUNBUFFERED: "1"
@@ -93,7 +90,6 @@ controllers:
                 port: *apiPort
               periodSeconds: 30
         securityContext: *containerSecurityContext
-
   orchestrator:
     replicas: 1
     strategy: Recreate
@@ -104,13 +100,13 @@ controllers:
     pod:
       automountServiceAccountToken: true
       topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          labelSelector:
-            matchLabels:
-              app.kubernetes.io/name: mac
-              app.kubernetes.io/component: orchestrator
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: mac
+            app.kubernetes.io/component: orchestrator
     initContainers:
       mac-bootstrap:
         image: *macImage
@@ -165,7 +161,12 @@ controllers:
               periodSeconds: 30
               failureThreshold: 3
         securityContext: *containerSecurityContext
-
+  app:
+    containers:
+      app:
+        image:
+          tag: 20260602120803-563325a
+          repository: gitea.omv.a113.casa/vpogu/mac
 service:
   app:
     forceRename: mac-api
@@ -174,7 +175,6 @@ service:
     ports:
       http:
         port: 8000
-
 persistence:
   mac-config:
     type: configMap
@@ -182,10 +182,10 @@ persistence:
     advancedMounts:
       orchestrator:
         mac-bootstrap:
-          - path: /etc/mac/config.yaml
-            subPath: config.yaml
-            readOnly: true
+        - path: /etc/mac/config.yaml
+          subPath: config.yaml
+          readOnly: true
         app:
-          - path: /etc/mac/config.yaml
-            subPath: config.yaml
-            readOnly: true
+        - path: /etc/mac/config.yaml
+          subPath: config.yaml
+          readOnly: true
