@@ -67,6 +67,21 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
+    - namePattern: "mac"
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: mac
+          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}$'
+          manifestTargets:
+            helm:
+              name: controllers.app.containers.app.image.repository
+              tag: controllers.app.containers.app.image.tag
     - namePattern: "hermes-agent"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
