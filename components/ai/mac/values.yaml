@@ -33,7 +33,7 @@ controllers:
       app:
         image: &macImage
           repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac
-          tag: "20260601193030-852c26a"
+          tag: "20260602120803-563325a"
         command: ["uvicorn"]
         args:
         - mac.api:create_app
@@ -161,12 +161,6 @@ controllers:
               periodSeconds: 30
               failureThreshold: 3
         securityContext: *containerSecurityContext
-  app:
-    containers:
-      app:
-        image:
-          tag: 20260602120803-563325a
-          repository: gitea.omv.a113.casa/vpogu/mac
 service:
   app:
     forceRename: mac-api
