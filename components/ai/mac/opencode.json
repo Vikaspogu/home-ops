@@ -8,8 +8,8 @@
       "npm": "@ai-sdk/openai-compatible",
       "name": "NVIDIA Inference Hub",
       "options": {
-        "baseURL": "https://inference-api.nvidia.com/v1",
-        "apiKey": "{env:INFERENCE_HUB_API_KEY}",
+        "baseURL": "http://mac-api.ai.svc.cluster.local:8000/v1",
+        "apiKey": "{env:MAC_WORKER_TOKEN}",
         "timeout": 600000
       },
       "models": {
