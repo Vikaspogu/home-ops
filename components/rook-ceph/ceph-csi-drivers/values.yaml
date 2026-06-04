@@ -1,0 +1,148 @@
+---
+# CephConnection and ClientProfile remain managed by the rook-ceph operator.
+cephConnections: []
+clientProfiles: []
+
+# OperatorConfig (ceph-csi-operator-config) is left as-is (rook/operator managed);
+# this chart only (re)creates the per-driver RBAC, ServiceAccounts and Driver CRs
+# that rook v1.20 no longer ships.
+operatorConfig:
+  create: false
+
+drivers:
+  rbd:
+    # Driver name MUST match the existing rook-created Driver CR so the
+    # ceph-csi-operator regenerates the ctrl/node plugin workloads against the
+    # ServiceAccounts this chart creates.
+    name: rook-ceph.rbd.csi.ceph.com
+    enabled: true
+    clusterName: rook-ceph
+    cephFsClientType: kernel
+    fsGroupPolicy: File
+    snapshotPolicy: none
+    imageSet:
+      name: rook-csi-operator-image-set-configmap
+    nodePlugin:
+      kubeletDirPath: /var/lib/kubelet
+      priorityClassName: system-node-critical
+      resources:
+        plugin:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        registrar:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+      updateStrategy:
+        type: RollingUpdate
+    controllerPlugin:
+      replicas: 2
+      priorityClassName: system-cluster-critical
+      resources:
+        attacher:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        provisioner:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        resizer:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        snapshotter:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        omapGenerator:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        plugin:
+          limits:
+            memory: 1Gi
+          requests:
+            memory: 512Mi
+
+  cephfs:
+    name: rook-ceph.cephfs.csi.ceph.com
+    enabled: true
+    clusterName: rook-ceph
+    cephFsClientType: kernel
+    fsGroupPolicy: File
+    snapshotPolicy: volumeGroupSnapshot
+    imageSet:
+      name: rook-csi-operator-image-set-configmap
+    nodePlugin:
+      kubeletDirPath: /var/lib/kubelet
+      priorityClassName: system-node-critical
+      resources:
+        plugin:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        registrar:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+      updateStrategy:
+        type: RollingUpdate
+    controllerPlugin:
+      replicas: 2
+      priorityClassName: system-cluster-critical
+      resources:
+        attacher:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        provisioner:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        resizer:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        snapshotter:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        plugin:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+
+  nvmeof:
+    enabled: false
+  nfs:
+    enabled: false

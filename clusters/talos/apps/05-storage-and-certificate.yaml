@@ -8,6 +8,14 @@ applications:
     source:
       path: components/rook-ceph/rook-ceph-app
 
+  ceph-csi-drivers:
+    annotations:
+      argocd.argoproj.io/sync-wave: "5"
+    destination:
+      namespace: rook-ceph
+    source:
+      path: components/rook-ceph/ceph-csi-drivers
+
   rook-ceph-cluster:
     annotations:
       argocd.argoproj.io/sync-wave: "5"
