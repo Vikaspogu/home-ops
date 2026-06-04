@@ -38,6 +38,11 @@ drivers:
           requests:
             cpu: 50m
             memory: 128Mi
+        # Keys below are referenced by the chart template and must be objects
+        # (the CRD rejects null), so set empty when no limits are desired.
+        liveness: {}
+        addons: {}
+        logRotator: {}
       updateStrategy:
         type: RollingUpdate
     controllerPlugin:
@@ -79,6 +84,9 @@ drivers:
             memory: 1Gi
           requests:
             memory: 512Mi
+        liveness: {}
+        addons: {}
+        logRotator: {}
 
   cephfs:
     name: rook-ceph.cephfs.csi.ceph.com
@@ -105,6 +113,9 @@ drivers:
           requests:
             cpu: 50m
             memory: 128Mi
+        liveness: {}
+        addons: {}
+        logRotator: {}
       updateStrategy:
         type: RollingUpdate
     controllerPlugin:
@@ -141,6 +152,10 @@ drivers:
           requests:
             cpu: 250m
             memory: 512Mi
+        omapGenerator: {}
+        liveness: {}
+        addons: {}
+        logRotator: {}
 
   nvmeof:
     enabled: false
