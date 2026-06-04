@@ -2,6 +2,14 @@
 
 mac_url: http://mac-api.ai.svc.cluster.local:8000
 
+# Fleet record for the UI Map (Fleet → Map view). Membership is derived by
+# mac-k8s-bootstrap from the dispatcher agent + every role agent below; no
+# agent_ids list to keep in sync. Create-or-update on every bootstrap.
+fleet:
+  name: ai-k8s
+  description: K8s-native MAC fleet (ai namespace)
+  status: active
+
 dispatcher:
   machine:
     machine_id: mac-runner
