@@ -98,7 +98,7 @@ projects:
     description: Mac control plane + Hermes plugin source
     status: active
     metadata:
-      repository: https://github.com/Vikaspogu/mac.git
+      repository: https://github.com/jordanhubbard/mac.git
       default_branch: main
       publication_target: gitea://merge-request
       task_defaults:
