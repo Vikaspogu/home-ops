@@ -10,8 +10,11 @@ defaultPodOptions:
       type: RuntimeDefault
 controllers:
   api:
-    replicas: 1
-    strategy: Recreate
+    replicas: 2
+    strategy: RollingUpdate
+    rollingUpdate:
+      surge: 1
+      unavailable: "0%"
     annotations:
       reloader.stakater.com/auto: "true"
     pod:
