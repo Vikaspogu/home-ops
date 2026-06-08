@@ -39,11 +39,11 @@ controllers:
           # -- Printer (Chrome) --
           CHROME_TOKEN: chrome_token
           CHROME_URL: ws://localhost:3000
-          STORAGE_ENDPOINT: s3.omv.a113.casa
-          STORAGE_PORT: 443
+          STORAGE_ENDPOINT: garage-s3.default.svc.cluster.local
+          STORAGE_PORT: 3900
           STORAGE_REGION: garage # Optional
           STORAGE_BUCKET: reactive-resume
-          STORAGE_USE_SSL: "true"
+          STORAGE_USE_SSL: "false"
           STORAGE_SKIP_BUCKET_CHECK: "false"
           DISABLE_SIGNUPS: "true"
           DISABLE_EMAIL_AUTH: "false"
