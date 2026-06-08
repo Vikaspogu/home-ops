@@ -36,7 +36,7 @@ controllers:
           capabilities: {drop: ["ALL"]}
       seed-config:
         image:
-          tag: 20260608145339-04bcf8b-oci
+          tag: 20260608200944-cc10473-oci
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
     containers:
       app:
