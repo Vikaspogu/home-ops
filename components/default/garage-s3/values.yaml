@@ -1,0 +1,131 @@
+---
+controllers:
+  garage-s3:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: dxflrs/garage
+          tag: v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
+        env:
+          TZ: "America/New_York"
+          GARAGE_ADMIN_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: garage-s3-secret
+                key: GARAGE_ADMIN_TOKEN
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+      webui:
+        image:
+          repository: khairul169/garage-webui
+          tag: 1.1.0@sha256:17c793551873155065bf9a022dabcde874de808a1f26e648d4b82e168806439c
+        env:
+          API_BASE_URL: "http://garage-s3.default.svc.cluster.local:3903"
+          S3_ENDPOINT_URL: "http://garage-s3.default.svc.cluster.local:3900"
+          API_ADMIN_KEY:
+            valueFrom:
+              secretKeyRef:
+                name: garage-s3-secret
+                key: GARAGE_ADMIN_TOKEN
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
+
+service:
+  app:
+    controller: garage-s3
+    ports:
+      s3:
+        port: 3900
+      api:
+        port: 3903
+      webui:
+        port: 3909
+
+persistence:
+  # Multi-HDD configuration - 8 drives
+  data1:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd1
+    globalMounts:
+      - path: /data1
+  data2:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd2
+    globalMounts:
+      - path: /data2
+  data3:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd3
+    globalMounts:
+      - path: /data3
+  data4:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd4
+    globalMounts:
+      - path: /data4
+  data5:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd5
+    globalMounts:
+      - path: /data5
+  data6:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd6
+    globalMounts:
+      - path: /data6
+  data7:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd7
+    globalMounts:
+      - path: /data7
+  data8:
+    type: hostPath
+    hostPath: /var/mnt/garage-hdd8
+    globalMounts:
+      - path: /data8
+
+  # Metadata on system disk for better performance
+  meta:
+    type: hostPath
+    hostPath: /var/mnt/garage-meta
+    globalMounts:
+      - path: /meta
+
+  # Configuration from ConfigMap
+  config:
+    type: configMap
+    name: garage-s3-configmap
+    globalMounts:
+      - path: /etc/garage.toml
+        subPath: configuration.toml
+
+# Node affinity to pin to k8s-5-1u
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k8s-5-1u

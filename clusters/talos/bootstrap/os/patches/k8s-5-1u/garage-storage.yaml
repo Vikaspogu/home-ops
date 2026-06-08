@@ -1,0 +1,104 @@
+---
+# Garage S3 storage volumes for k8s-5-1u
+# Uses 8x 900GB SAS drives for multi-HDD Garage deployment
+# Drives: sdc, sdd, sde, sdf, sdg, sdh, sdi, sdj
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd1
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sdc'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd2
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sdd'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd3
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sde'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd4
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sdf'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd5
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sdg'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd6
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sdh'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd7
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sdi'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-hdd8
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sdj'"
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+# Separate volume for Garage metadata (LMDB)
+# Uses system disk to keep metadata on faster storage
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: garage-meta
+provisioning:
+  diskSelector:
+    match: "disk.device == '/dev/sda'"
+  minSize: 50GB
+  grow: false
+filesystem:
+  type: xfs
