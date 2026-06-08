@@ -22,6 +22,10 @@ data:
         provider: main
         model: gcp/google/gemini-3.1-pro-preview
         timeout: 180
+      image_gen:
+        provider: main
+        model: azure/openai/gpt-image-2
+        timeout: 180
       approval:
         provider: auto
       mcp:
