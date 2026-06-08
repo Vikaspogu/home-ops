@@ -13,7 +13,7 @@ controllers:
       hermes-bootstrap:
         image:
           repository: gitea.omv.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260608145339-04bcf8b-oci
+          tag: 20260608200944-cc10473-oci
         command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
         env:
           PYTHONUNBUFFERED: "1"
