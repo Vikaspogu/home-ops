@@ -89,13 +89,11 @@ nodes:
   - hostname: "k8s-4-dell"
     ipAddress: "10.30.30.24"
     installDiskSelector:
-      model: "CT500MX500SSD1"
+      model: "Samsung SSD 970 EVO 250GB"
     talosImageURL: factory.talos.dev/installer/c1c8847e58bca7ae9584c3b209f21c50add404d9cb9466a1d4ea8be43a160b8a
     controlPlane: false
-    # User volumes are disabled while the Dell PCIe/NVMe storage is removed/failing.
-    # Keep the patch file so these local volumes can be restored later.
-    # patches:
-    #   - "@./patches/k8s-4-dell/user-volumes.yaml"
+    patches:
+      - "@./patches/k8s-4-dell/user-volumes.yaml"
     kernelModules:
       - name: nvidia
       - name: nvidia_uvm
@@ -107,6 +105,22 @@ nodes:
         dhcp: false
         addresses:
           - "10.30.30.24/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "10.30.30.1"
+        mtu: 1500
+  - hostname: "k8s-5-1u"
+    ipAddress: "10.30.30.25"
+    installDiskSelector:
+      model: "SAMSUNG MZ7TE128"
+    talosImageURL: factory.talos.dev/installer/ed036d0640097a4e7af413ee089851a12963cd2e2e1715f8866d551d17c2ec62
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:1e:67:e9:a6:1b"
+        dhcp: false
+        addresses:
+          - "10.30.30.25/24"
         routes:
           - network: 0.0.0.0/0
             gateway: "10.30.30.1"
