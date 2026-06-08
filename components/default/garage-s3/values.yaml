@@ -15,6 +15,16 @@ controllers:
               secretKeyRef:
                 name: garage-s3-secret
                 key: GARAGE_ADMIN_TOKEN
+          GARAGE_RPC_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: garage-s3-secret
+                key: GARAGE_RPC_SECRET
+          GARAGE_METRICS_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: garage-s3-secret
+                key: GARAGE_METRICS_TOKEN
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
