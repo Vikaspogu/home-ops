@@ -104,10 +104,10 @@ persistence:
     globalMounts:
       - path: /data8
 
-  # Metadata on system disk for better performance
+  # Metadata on HDD1 (system disk has insufficient space)
   meta:
     type: hostPath
-    hostPath: /var/mnt/garage-meta
+    hostPath: /var/mnt/garage-hdd1/meta
     globalMounts:
       - path: /meta
 

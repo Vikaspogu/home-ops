@@ -88,16 +88,5 @@ provisioning:
   grow: true
 filesystem:
   type: xfs
----
-# Separate volume for Garage metadata (LMDB)
-# Uses system disk for metadata on faster storage
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-meta
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5002538870064dd3' in disk.symlinks"
-  minSize: 50GB
-  grow: false
-filesystem:
-  type: xfs
+# Note: garage-meta removed - system disk (128GB) has insufficient free space
+# Metadata will be stored on garage-hdd1 alongside data
