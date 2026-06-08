@@ -78,8 +78,14 @@ data:
         base_url: http://spark.a113.internal:8300/v1
         api_key: no-key-required
     tts:
-      provider: edge
+      provider: openai
       speed: 1.0
+      openai:
+        model: openai/openai/gpt-4o-mini-tts
+        voice: alloy
+        speed: 1.0
+        base_url: "${HERMES_BASE_URL}"
+        api_key: "${HERMES_API_KEY}"
       edge:
         voice: en-US-AriaNeural
         speed: 1.0
@@ -94,13 +100,21 @@ data:
       inactivity_timeout: 120
       command_timeout: 60
     dashboard:
-      theme: frosted-glass-dark
+      theme: amber-terminal
     goals:
       max_turns: 20
+    agent:
+      max_turns: 90
+      api_max_retries: 3
     code_execution:
       mode: project
       timeout: 300
       max_tool_calls: 50
+    file_read_max_chars: 100000
+    tool_output:
+      max_bytes: 50000
+      max_lines: 2000
+      max_line_length: 2000
     checkpoints:
       enabled: true
       max_snapshots: 20
@@ -109,8 +123,13 @@ data:
       auto_prune: true
       retention_days: 7
       delete_orphans: true
+      min_interval_hours: 24
     security:
       redact_secrets: true
+    updates:
+      pre_update_backup: false
+      backup_keep: 5
+      non_interactive_local_changes: stash
     kanban:
       enabled: false
       dispatch_in_gateway: false
@@ -189,6 +208,9 @@ data:
         - xurl
         - youtube-content
         - yuanbao
+      guard_agent_created: true
+      creation_nudge_interval: 15
+      config: {}
     plugins:
       enabled:
         - ivan-personal
