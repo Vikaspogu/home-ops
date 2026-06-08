@@ -1,13 +1,12 @@
 ---
 # Garage S3 storage volumes for k8s-5-1u
 # Uses 8x 900GB SAS drives for multi-HDD Garage deployment
-# Drives: sdc, sdd, sde, sdf, sdg, sdh, sdi, sdj
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: garage-hdd1
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sdc'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca02278736c' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
@@ -18,7 +17,7 @@ kind: UserVolumeConfig
 name: garage-hdd2
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sdd'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca07194d828' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
@@ -29,7 +28,7 @@ kind: UserVolumeConfig
 name: garage-hdd3
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sde'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca0576b90f0' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
@@ -40,7 +39,7 @@ kind: UserVolumeConfig
 name: garage-hdd4
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sdf'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca0430361b0' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
@@ -51,7 +50,7 @@ kind: UserVolumeConfig
 name: garage-hdd5
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sdg'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca07111a7cc' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
@@ -62,7 +61,7 @@ kind: UserVolumeConfig
 name: garage-hdd6
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sdh'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca0719b81d8' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
@@ -73,7 +72,7 @@ kind: UserVolumeConfig
 name: garage-hdd7
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sdi'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca071478cf0' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
@@ -84,20 +83,20 @@ kind: UserVolumeConfig
 name: garage-hdd8
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sdj'"
+    match: "'/dev/disk/by-id/wwn-0x5000cca07147a3c0' in disk.symlinks"
   minSize: 800GB
   grow: true
 filesystem:
   type: xfs
 ---
 # Separate volume for Garage metadata (LMDB)
-# Uses system disk to keep metadata on faster storage
+# Uses system disk for metadata on faster storage
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: garage-meta
 provisioning:
   diskSelector:
-    match: "disk.device == '/dev/sda'"
+    match: "'/dev/disk/by-id/wwn-0x5002538870064dd3' in disk.symlinks"
   minSize: 50GB
   grow: false
 filesystem:
