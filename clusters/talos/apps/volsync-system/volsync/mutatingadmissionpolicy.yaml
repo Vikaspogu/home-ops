@@ -93,10 +93,14 @@ spec:
               op: "add", path: "/spec/template/spec/volumes/-",
               value: Object.spec.template.spec.volumes{
                 name: "repository",
-                nfs: Object.spec.template.spec.volumes.nfs{
-                  server: "omv-baymx.a113.internal",
-                  path: "/storage0/VolsyncKopia"
+                hostPath: Object.spec.template.spec.volumes.hostPath{
+                  path: "/var/mnt/media/.kopia",
+                  type: "Directory"
                 }
               }
+            },
+            JSONPatch{
+              op: "add", path: "/spec/template/spec/nodeSelector",
+              value: {"kubernetes.io/hostname": "k8s-4-dell"}
             }
           ]
