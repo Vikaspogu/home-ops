@@ -19,7 +19,7 @@ drivers:
     clusterName: rook-ceph
     cephFsClientType: kernel
     fsGroupPolicy: File
-    snapshotPolicy: none
+    snapshotPolicy: volumeSnapshot
     imageSet:
       name: rook-csi-operator-image-set-configmap
     nodePlugin:
