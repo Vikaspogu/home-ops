@@ -1,6 +1,8 @@
 ---
 defaultPodOptions:
   enableServiceLinks: false
+  nodeSelector:
+    kubernetes.io/hostname: k8s-4-dell
 controllers:
   jellyfin:
     strategy: Recreate
@@ -57,6 +59,6 @@ persistence:
       - path: /transcode
   media:
     type: hostPath
-    hostPath: /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/media
+    hostPath: /var/mnt/media
     globalMounts:
       - path: /nfs-nas-pvc
