@@ -94,6 +94,53 @@ applications:
     source:
       path: components/default/flaresolverr
 
+  gitea:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    ignoreDifferences:
+      - group: ""
+        kind: PersistentVolumeClaim
+        name: gitea
+        jsonPointers:
+          - /spec/dataSource
+          - /spec/dataSourceRef
+    destination:
+      namespace: default
+    source:
+      path: components/default/gitea
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 20Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 30Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "20 */6 * * *"
+
+  gitea-runner:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/gitea-runner
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 2Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "40 */6 * * *"
+
   gotify:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
