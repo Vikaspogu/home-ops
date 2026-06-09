@@ -42,7 +42,7 @@ metadata:
 spec:
   configuration:
     destinationPath: s3://postgres/
-    endpointURL: https://s3.omv.a113.casa
+    endpointURL: http://garage-s3.default.svc.cluster.local:3900
     s3Credentials:
       accessKeyId:
         name: garage-access-keys
