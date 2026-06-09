@@ -196,13 +196,15 @@
 
 ---
 
-## Work Stream 2: KubeVirt + Gitea Runner Fix (Design Phase)
+## Work Stream 2: KubeVirt + Gitea Runner Fix
 
-**Status:** Research complete, design approved, ready for spec writing
+**Status:** ✅ KubeVirt deployed via ArgoCD, ready for gitea-runner refactor (Tasks 9-13)
 
 **Goals:**
-1. Deploy KubeVirt for VM workloads on Talos cluster (k8s-4-dell + k8s-5-1u now, k8s-6-omv in Phase 2)
-2. Fix gitea-runner's privileged Docker-in-Docker issues
+1. ✅ Deploy KubeVirt for VM workloads on Talos cluster (k8s-4-dell + k8s-5-1u now, k8s-6-omv in Phase 2)
+2. ⏳ Fix gitea-runner's privileged Docker-in-Docker issues
+
+**Next action:** Execute Tasks 9-13 (gitea-runner rootless DinD refactor + testing)
 
 ### Research Findings Summary
 
@@ -275,15 +277,23 @@ Start with **Option A (rootless DinD)** as the pragmatic fix. Skip Sysbox (not v
 
 ---
 
-### Next Steps for Work Stream 2
+### Completed (2026-06-09)
 
-1. **Write design spec** — `docs/superpowers/specs/2026-06-09-kubevirt-gitea-runner-design.md`
-   - KubeVirt deployment (operator, CDI, storage, node selection)
-   - Gitea-runner rootless DinD refactor (values changes, security context, testing)
-   - Success criteria, rollback plan
-2. **User reviews spec** — approval gate before implementation planning
-3. **Invoke writing-plans** — create implementation plan from approved spec
-4. **Execute** — subagent-driven or inline per user preference
+✅ **KubeVirt Deployment (Tasks 1-4 equivalent):**
+- Structure: `components/kubevirt/operator/` (sync wave 30) + `components/kubevirt/cdi-operator/` (sync wave 31)
+- ArgoCD apps: `kubevirt-operator` and `cdi-operator` both **Synced & Healthy**
+- KubeVirt operator: v1.4.0, CR status: **Deploying** (control plane rolling out)
+- CDI operator: v1.65.0, CR status: **Deployed**
+- Both operators deployed via ArgoCD (no manual kubectl apply)
+- Namespaces: `kubevirt` and `cdi`
+
+**Docs:**
+- Design spec: `docs/superpowers/specs/2026-06-09-kubevirt-gitea-runner-design.md` ✅
+- Implementation plan: `docs/superpowers/plans/2026-06-09-kubevirt-gitea-runner-implementation.md` ✅
+
+**Remaining Tasks:**
+- Tasks 5-8: KubeVirt testing (deferred - can validate later)
+- **Tasks 9-13: Gitea runner rootless DinD refactor** (ready to execute)
 
 ---
 
