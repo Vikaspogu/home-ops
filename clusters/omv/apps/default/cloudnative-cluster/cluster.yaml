@@ -53,7 +53,7 @@ metadata:
 spec:
   configuration:
     destinationPath: s3://postgres/
-    endpointURL: http://garage:3900
+    endpointURL: https://s3.a113.casa
     s3Credentials:
       accessKeyId:
         name: garage-access-keys
