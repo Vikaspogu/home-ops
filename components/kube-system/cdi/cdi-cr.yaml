@@ -1,0 +1,17 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: CDI
+metadata:
+  name: cdi
+  namespace: cdi
+spec:
+  imagePullPolicy: IfNotPresent
+  config:
+    uploadProxyURLOverride: ""
+    scratchSpaceStorageClass: ceph-block
+    podResourceRequirements:
+      limits:
+        cpu: "4"
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 60Mi
