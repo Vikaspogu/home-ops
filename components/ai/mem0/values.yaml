@@ -53,7 +53,7 @@ controllers:
       app:
         image:
           repository: gitea.${CLUSTER_DOMAIN}/vpogu/mem0-api-server
-          tag: 202605201050-edd1b3e-libpq-amd64
+          tag: 20260608200944-cc10473-oci
         command:
           - sh
           - -ec
@@ -138,7 +138,7 @@ controllers:
       app:
         image:
           repository: gitea.${CLUSTER_DOMAIN}/vpogu/mem0-dashboard
-          tag: 202605201103-edd1b3e-node22-amd64
+          tag: 20260608200944-cc10473-oci
         env:
           TZ: America/New_York
           NEXT_PUBLIC_API_URL: "https://mem0.${CLUSTER_DOMAIN}"
