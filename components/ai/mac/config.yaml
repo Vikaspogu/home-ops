@@ -41,7 +41,7 @@ roles:
     name: mac-worker-python-coder
     machine_id: mac-worker-machine
     capabilities: [python, ops]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
     executor: /usr/local/bin/mac-task-executor-codex
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -51,7 +51,7 @@ roles:
     name: mac-worker-python-reviewer
     machine_id: mac-worker-machine
     capabilities: [review, python]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
     executor: /usr/local/bin/mac-task-executor-codex-review
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -61,7 +61,7 @@ roles:
     name: mac-worker-python-coder-opencode
     machine_id: mac-worker-machine
     capabilities: [python, ops]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
     executor: /usr/local/bin/mac-task-executor-opencode-build
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -71,7 +71,7 @@ roles:
     name: mac-worker-python-reviewer-opencode
     machine_id: mac-worker-machine
     capabilities: [review, python]
-    image: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:bc710bad79a7-codex
     executor: /usr/local/bin/mac-task-executor-opencode-review
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -108,7 +108,7 @@ projects:
     description: Ivan personal Hermes plugin
     status: active
     metadata:
-      repository: https://gitea.omv.a113.casa/vpogu/ivan-plugin.git
+      repository: https://gitea.a113.casa/vpogu/ivan-plugin.git
       default_branch: main
       # Non-git target: completion = reviewed + MR opened. publish_task
       # records this and transitions the task to COMPLETED without merging

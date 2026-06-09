@@ -58,7 +58,7 @@ def _authed_clone_url(url: str) -> str:
     """Inject GITEA_TOKEN into gitea HTTPS URLs."""
     token = os.environ.get("GITEA_TOKEN", "")
     user = os.environ.get("GITEA_USER", "")
-    if token and user and "gitea.omv." in url and url.startswith("https://"):
+    if token and user and "gitea." in url and url.startswith("https://"):
         return url.replace("https://", f"https://{user}:{token}@")
     return url
 

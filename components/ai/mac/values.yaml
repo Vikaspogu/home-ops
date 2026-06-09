@@ -35,7 +35,7 @@ controllers:
     containers:
       app:
         image: &macImage
-          repository: gitea.omv.a113.casa/vpogu/mac
+          repository: gitea.a113.casa/vpogu/mac
           tag: "20260609014437-c8163ef"
         command: ["uvicorn"]
         args:
@@ -148,7 +148,7 @@ controllers:
           MAC_URL: http://mac-api.ai.svc.cluster.local:8000
           MAC_RUNNER_NAMESPACE: ai
           MAC_RUNNER_TASK_SERVICE_ACCOUNT: mac-task-runner
-          MAC_RUNNER_DEFAULT_IMAGE: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac:bc710bad79a7
+          MAC_RUNNER_DEFAULT_IMAGE: gitea.${CLUSTER_DOMAIN}/vpogu/mac:bc710bad79a7
           MAC_RUNNER_TASK_SECRET_NAME: mac-secret
           MAC_RUNNER_POLL_INTERVAL_SECONDS: "5"
           MAC_RUNNER_ACTIVE_DEADLINE_SECONDS: "3000"

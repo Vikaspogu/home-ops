@@ -6,7 +6,7 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.omv.a113.casa/vpogu/ivan-personal-dashboard
+          repository: gitea.a113.casa/vpogu/ivan-personal-dashboard
           tag: 20260608200511-f4522ab-oci
           pullPolicy: Always
         env:

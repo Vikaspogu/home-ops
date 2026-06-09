@@ -14,7 +14,7 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.omv.a113.casa/vpogu/ivan-personal-service
+          repository: gitea.a113.casa/vpogu/ivan-personal-service
           tag: 20260608200511-f4522ab-oci
           pullPolicy: Always
         env:

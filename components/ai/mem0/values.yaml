@@ -52,7 +52,7 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mem0-api-server
+          repository: gitea.${CLUSTER_DOMAIN}/vpogu/mem0-api-server
           tag: 202605201050-edd1b3e-libpq-amd64
         command:
           - sh
@@ -137,7 +137,7 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.omv.${CLUSTER_DOMAIN}/vpogu/mem0-dashboard
+          repository: gitea.${CLUSTER_DOMAIN}/vpogu/mem0-dashboard
           tag: 202605201103-edd1b3e-node22-amd64
         env:
           TZ: America/New_York

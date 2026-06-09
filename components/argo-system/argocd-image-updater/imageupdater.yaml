@@ -22,7 +22,7 @@ spec:
           writeBackTarget: "helmvalues:./values.yaml"
       images:
         - alias: ivan
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-agent-v3"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-agent-v3"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
           manifestTargets:
@@ -30,7 +30,7 @@ spec:
               name: controllers.app.containers.main.image.repository
               tag: controllers.app.containers.main.image.tag
         - alias: ivan-repo-worker
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-repo-worker"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-repo-worker"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
           manifestTargets:
@@ -45,7 +45,7 @@ spec:
           writeBackTarget: "helmvalues:./values.yaml"
       images:
         - alias: ivan-personal-dashboard
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-personal-dashboard"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-personal-dashboard"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
@@ -60,7 +60,7 @@ spec:
           writeBackTarget: "helmvalues:./values.yaml"
       images:
         - alias: ivan-personal-service
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-personal-service"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-personal-service"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
@@ -75,7 +75,7 @@ spec:
           writeBackTarget: "helmvalues:./values.yaml"
       images:
         - alias: mac
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/mac"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/mac"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}$'
           manifestTargets:
@@ -90,7 +90,7 @@ spec:
           writeBackTarget: "helmvalues:./values.yaml"
       images:
         - alias: agent-platform-hermes-agent
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
@@ -98,7 +98,7 @@ spec:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
         - alias: agent-platform-hermes-agent-seed
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
@@ -106,7 +106,7 @@ spec:
               name: controllers.app.initContainers.seed-config.image.repository
               tag: controllers.app.initContainers.seed-config.image.tag
         - alias: agent-platform-hermes-agent-bootstrap
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
@@ -114,7 +114,7 @@ spec:
               name: controllers.app.initContainers.hermes-bootstrap.image.repository
               tag: controllers.app.initContainers.hermes-bootstrap.image.tag
         - alias: ivan-personal-plugin
-          imageName: "gitea.omv.${CLUSTER_DOMAIN}/vpogu/ivan-personal-plugin"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-personal-plugin"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:

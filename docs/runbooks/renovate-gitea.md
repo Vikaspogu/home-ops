@@ -1,6 +1,6 @@
 # Renovate on Gitea
 
-Renovate runs as a suspended Kubernetes CronJob in the OMV cluster and targets the self-hosted Gitea API at `https://gitea.omv.a113.casa/api/v1/`.
+Renovate runs as a suspended Kubernetes CronJob in the OMV cluster and targets the self-hosted Gitea API at `https://gitea.a113.casa/api/v1/`.
 
 ## Secrets
 
