@@ -20,10 +20,10 @@ controllers:
           TZ: "America/New_York"
           USER_UID: 1000
           USER_GID: 1000
-          GITEA__ACTIONS__ENABLED: "True"
+          GITEA__ACTIONS__ENABLED: "true"
           GITEA__ACTIONS__DEFAULT_ACTIONS_URL: "https://gitea.com"
-          GITEA__PACKAGES__ENABLED: "True"
-          GITEA__cron.cleanup_packages__ENABLED: "True"
+          GITEA__PACKAGES__ENABLED: "true"
+          GITEA__cron.cleanup_packages__ENABLED: "true"
           GITEA__cron.cleanup_packages__SCHEDULE: "0 */6 * * *"
           GITEA__cron.cleanup_packages__OLDER_THAN: "48h"
           GITEA__database__DB_TYPE: "postgres"
