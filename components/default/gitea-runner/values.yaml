@@ -36,7 +36,7 @@ controllers:
       daemon:
         image:
           repository: docker
-          tag: 29-dind
+          tag: dind-rootless
         command:
           - sh
           - -c
@@ -78,13 +78,19 @@ controllers:
         env:
           DOCKER_TLS_CERTDIR: ""
         securityContext:
-          privileged: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
         resources:
           requests:
-            cpu: 1000m
-            memory: 1Gi
+            cpu: 500m
+            memory: 512Mi
           limits:
-            memory: 8Gi
+            memory: 2Gi
 
 persistence:
   docker-certs:
