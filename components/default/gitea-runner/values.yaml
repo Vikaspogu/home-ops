@@ -45,8 +45,9 @@ controllers:
           allowPrivilegeEscalation: true
           readOnlyRootFilesystem: false
           capabilities:
-            drop:
-              - ALL
+            add:
+              - SETUID
+              - SETGID
         resources:
           requests:
             cpu: 500m
