@@ -1,6 +1,7 @@
 ---
 # Cluster-specific deployment patch for Kopia
-# Adds NFS volume for repository storage
+# Mounts the repository from local XFS on k8s-4-dell (hostPath), interim home
+# under the media volume. Pinned to k8s-4-dell because hostPath data is node-local.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,11 +9,13 @@ metadata:
 spec:
   template:
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-4-dell
       volumes:
         - name: repository
-          nfs:
-            server: omv-baymx.a113.internal
-            path: "/storage0/VolsyncKopia"
+          hostPath:
+            path: /var/mnt/media/.kopia
+            type: Directory
       initContainers:
         - name: copy-config
           volumeMounts:

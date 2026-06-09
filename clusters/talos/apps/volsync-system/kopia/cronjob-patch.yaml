@@ -8,6 +8,8 @@ spec:
     spec:
       template:
         spec:
+          nodeSelector:
+            kubernetes.io/hostname: k8s-4-dell
           containers:
             - name: maintenance
               volumeMounts:
@@ -15,6 +17,6 @@ spec:
                   mountPath: /repository
           volumes:
             - name: repository
-              nfs:
-                server: omv-baymx.a113.internal
-                path: "/storage0/VolsyncKopia"
+              hostPath:
+                path: /var/mnt/media/.kopia
+                type: Directory
