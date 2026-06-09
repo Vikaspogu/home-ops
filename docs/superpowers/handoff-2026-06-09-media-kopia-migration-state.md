@@ -1,6 +1,21 @@
-# Media + Kopia Migration State Handoff — 2026-06-09
+# Home-Ops Session Handoff — 2026-06-09
 
-**Status:** Phase 1 in progress — kopia cutover DONE, media copy running (20%, ~2h45m ETA)
+> **⚠️ NEW SESSIONS: USE THIS HANDOFF — it's the single source of truth.**
+> Other `handoff-*.md` files in this directory are stale/uncommitted and should be ignored.
+
+**Current work streams:**
+1. **Media + Kopia Migration (Phase 1)** — kopia cutover DONE, media copy running (20%, ~2h45m ETA)
+2. **KubeVirt + Gitea Runner Fix (Design)** — research complete, design approved, ready for spec writing
+
+**Next actions:**
+- Media migration: when copy completes → checksum verify → push T4+T5 → validate → decommission OMV
+- KubeVirt/Runner: write design spec → implementation plan
+
+---
+
+## Work Stream 1: Media + Kopia Migration (Phase 1)
+
+**Status:** In progress — kopia cutover DONE, media copy running
 
 **Next action:** When media copy completes → checksum verify → push T4+T5 → validate → decommission OMV.
 
@@ -178,3 +193,105 @@
 - Media + kopia data on `k8s-4-dell` local XFS, neither on Ceph ✓
 - Jellyfin runs on Talos, serves media from `/var/mnt/media` ✓
 - VolSync backup + restore round-trip succeeds against the dell-local Kopia repo ✓
+
+---
+
+## Work Stream 2: KubeVirt + Gitea Runner Fix (Design Phase)
+
+**Status:** Research complete, design approved, ready for spec writing
+
+**Goals:**
+1. Deploy KubeVirt for VM workloads on Talos cluster (k8s-4-dell + k8s-5-1u now, k8s-6-omv in Phase 2)
+2. Fix gitea-runner's privileged Docker-in-Docker issues
+
+### Research Findings Summary
+
+#### KubeVirt on Talos: ✅ SUPPORTED
+
+**Official support:** YES — Talos v1.13 docs have full KubeVirt install guide  
+**Hardware verified:** Both k8s-4-dell and k8s-5-1u have VT-x + `/dev/kvm`  
+**Installation:** Standard kubectl apply kubevirt-operator + KubeVirt CR + CDI operator  
+**Storage:** Use existing Rook-Ceph `ceph-block` for VM PVCs; optionally add `local-path-provisioner` for CDI scratch space  
+**Features:** LiveMigration (requires shared storage), NetworkBindingPlugins (optional Multus for bridge networking)  
+**Talos-specific notes:**
+- No `rpc.statd` daemon → must use `nolock` mount option for NFS-CSI (if used)
+- Bridge mode networking requires Talos machine config changes (optional)
+
+**Recommendation:** Straightforward deployment, well-documented, no blockers.
+
+---
+
+#### Sysbox on Talos: ❌ NOT SUPPORTED (high-risk)
+
+**Official support:** NO — Sysbox distro compat lists Ubuntu/Debian/Fedora/RHEL/Amazon Linux/Flatcar, NOT Talos  
+**Key conflicts:**
+1. **Containerd config:** Sysbox requires runtime registration in containerd config. Talos uses immutable machine config, not editable `/etc/containerd/config.toml`.
+2. **Systemd services:** Sysbox installs sysbox-fs + sysbox-mgr as systemd user services. Talos doesn't support this (extensions or static binaries only).
+3. **Installation method:** Sysbox K8s DaemonSet expects to patch host containerd config via privileged pod + restart containerd. May not work on Talos's immutable OS structure.
+
+**Community evidence:** Zero GitHub issues or docs mentioning Talos. Flatcar (similar immutable OS) required Sysbox Enterprise Edition with custom install guide (now deprecated).
+
+**Conclusion:** Sysbox on Talos is NOT officially supported and would require custom Talos System Extension build + containerd machine config integration — high-risk, high-effort, no community precedent.
+
+---
+
+#### Alternatives for Gitea Runner's DinD Issues
+
+Given Sysbox is impractical, alternatives to fix gitea-runner's privileged Docker-in-Docker:
+
+**Option A: Rootless Docker-in-Docker (RECOMMENDED — pragmatic)**
+- Replace `docker:29-dind` with `docker:dind-rootless`
+- Remove `privileged: true`, no Sysbox needed
+- **Trade-offs:** Requires cgroupv2 (Talos has it ✓), fuse-overlayfs storage driver (not overlay2), some Docker features unsupported (minor)
+- **Effort:** Low — change 1 image tag + security context in gitea-runner values
+
+**Option B: Daemonless builds (Kaniko)**
+- Remove DinD sidecar, use Kaniko for unprivileged container image builds
+- **Trade-offs:** Only for `docker build` equivalent; Docker Compose, `docker run`, etc. not supported. Gitea workflows need rewrite.
+- **Effort:** Medium — workflow changes required
+
+**Option C: KubeVirt VMs for runner jobs**
+- Runner spawns a lightweight VM per CI job (instead of DinD container)
+- Full isolation, real nested virtualization
+- **Trade-offs:** VM boot overhead (~10-20s), need to build/maintain runner VM images, more complex
+- **Effort:** High — only makes sense if KubeVirt is already deployed for other workloads
+
+**Option D: Kubernetes-native CI (Tekton, Argo Workflows)**
+- Replace gitea-runner entirely with K8s-native job executor
+- **Trade-offs:** Loses Gitea Actions integration, large migration
+- **Effort:** Very high
+
+---
+
+### Approved Design (Verbal)
+
+**For Goal 1 (KubeVirt):**  
+Standard KubeVirt deployment on Talos following official docs. Deploy KubeVirt operator + CDI, use Rook-Ceph for VM PVCs, target nodes: k8s-4-dell + k8s-5-1u (+ k8s-6 in Phase 2).
+
+**For Goal 2 (Gitea Runner):**  
+Start with **Option A (rootless DinD)** as the pragmatic fix. Skip Sysbox (not viable on Talos). If rootless DinD proves insufficient later, revisit Option C (KubeVirt VMs for jobs) once KubeVirt is stable.
+
+**User decision:** Proceed with writing the design spec for KubeVirt deployment + rootless DinD gitea-runner refactor (two independent features, single spec or separate specs TBD).
+
+---
+
+### Next Steps for Work Stream 2
+
+1. **Write design spec** — `docs/superpowers/specs/2026-06-09-kubevirt-gitea-runner-design.md`
+   - KubeVirt deployment (operator, CDI, storage, node selection)
+   - Gitea-runner rootless DinD refactor (values changes, security context, testing)
+   - Success criteria, rollback plan
+2. **User reviews spec** — approval gate before implementation planning
+3. **Invoke writing-plans** — create implementation plan from approved spec
+4. **Execute** — subagent-driven or inline per user preference
+
+---
+
+### Research References
+
+- **KubeVirt on Talos:** https://docs.siderolabs.com/talos/v1.13/advanced-guides/install-kubevirt
+- **Sysbox repo:** https://github.com/nestybox/sysbox
+- **Sysbox distro compat:** https://github.com/nestybox/sysbox/blob/master/docs/distro-compat.md (no Talos)
+- **Research notes:** `/tmp/kubevirt-sysbox-research/research-notes.md` (local, not committed)
+
+---

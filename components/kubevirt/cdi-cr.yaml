@@ -1,0 +1,15 @@
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: CDI
+metadata:
+  name: cdi
+  namespace: kubevirt
+spec:
+  config:
+    scratchSpaceStorageClass: ceph-block
+    podResourceRequirements:
+      requests:
+        cpu: "100m"
+        memory: "60M"
+      limits:
+        cpu: "4"
+        memory: "1Gi"
