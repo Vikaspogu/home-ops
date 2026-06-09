@@ -48,13 +48,26 @@ applications:
     source:
       path: components/kube-system/ivan-reader
 
-  kubevirt:
+  kubevirt-operator:
     annotations:
       argocd.argoproj.io/sync-wave: "30"
     destination:
       namespace: kubevirt
     source:
-      path: components/kubevirt
+      path: components/kubevirt/operator
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+      retry:
+        limit: 5
+
+  cdi-operator:
+    annotations:
+      argocd.argoproj.io/sync-wave: "31"
+    destination:
+      namespace: cdi
+    source:
+      path: components/kubevirt/cdi-operator
     syncPolicy:
       syncOptions:
         - CreateNamespace=true
