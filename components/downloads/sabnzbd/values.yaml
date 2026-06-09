@@ -1,5 +1,7 @@
 ---
 defaultPodOptions:
+  nodeSelector:
+    kubernetes.io/hostname: k8s-4-dell
   securityContext:
     runAsUser: 568
     runAsGroup: 568
@@ -60,8 +62,7 @@ persistence:
   tmp:
     type: emptyDir
   media:
-    type: nfs
-    server: omv-baymx.a113.internal
-    path: "/storage0/media"
+    type: hostPath
+    hostPath: /var/mnt/media
     globalMounts:
       - path: /nfs-nas-pvc

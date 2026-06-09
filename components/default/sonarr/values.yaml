@@ -1,4 +1,7 @@
 ---
+defaultPodOptions:
+  nodeSelector:
+    kubernetes.io/hostname: k8s-4-dell
 controllers:
   app:
     pod:
@@ -49,8 +52,7 @@ persistence:
     enabled: true
     existingClaim: sonarr
   media:
-    type: nfs
-    server: omv-baymx.a113.internal
-    path: "/storage0/media"
+    type: hostPath
+    hostPath: /var/mnt/media
     globalMounts:
       - path: /nfs-nas-pvc

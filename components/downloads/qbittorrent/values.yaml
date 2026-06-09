@@ -1,6 +1,8 @@
 ---
 defaultPodOptions:
   enableServiceLinks: false
+  nodeSelector:
+    kubernetes.io/hostname: k8s-4-dell
 
 controllers:
   qbittorrent:
@@ -138,9 +140,8 @@ persistence:
         port-forward:
           - path: /config
   media:
-    type: nfs
-    server: omv-baymx.a113.internal
-    path: "/storage0/media"
+    type: hostPath
+    hostPath: /var/mnt/media
     advancedMounts:
       qbittorrent:
         app:
