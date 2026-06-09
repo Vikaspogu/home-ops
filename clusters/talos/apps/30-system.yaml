@@ -47,3 +47,16 @@ applications:
       namespace: kube-system
     source:
       path: components/kube-system/ivan-reader
+
+  kubevirt:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: kubevirt
+    source:
+      path: components/kubevirt
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+      retry:
+        limit: 5
