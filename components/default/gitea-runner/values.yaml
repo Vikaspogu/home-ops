@@ -37,44 +37,6 @@ controllers:
         image:
           repository: docker
           tag: dind-rootless
-        command:
-          - sh
-          - -c
-          - |
-            mkdir -p /etc/docker
-            cat > /etc/docker/daemon.json <<'DAEMONJSON'
-            {
-              "max-concurrent-downloads": 3,
-              "max-concurrent-uploads": 3,
-              "default-address-pools": [
-                {"base": "172.30.0.0/16", "size": 24}
-              ]
-            }
-            DAEMONJSON
-            dockerd-entrypoint.sh &
-            while ! docker info >/dev/null 2>&1; do sleep 2; done
-
-            pre_pull_runner_images() {
-              docker pull docker.gitea.com/runner-images:ubuntu-24.04 || true
-              docker pull docker.gitea.com/runner-images:ubuntu-22.04 || true
-            }
-
-            cleanup_docker() {
-              docker container prune -f --filter "until=24h" || true
-              docker network prune -f --filter "until=24h" || true
-              docker image prune -f || true
-              docker builder prune -af --filter "until=24h" || true
-            }
-
-            cleanup_docker
-            pre_pull_runner_images
-            echo "Docker cleanup complete, runner images cached, daemon running."
-            while true; do
-              sleep 3600
-              cleanup_docker
-              pre_pull_runner_images
-            done &
-            wait
         env:
           DOCKER_TLS_CERTDIR: ""
         securityContext:
