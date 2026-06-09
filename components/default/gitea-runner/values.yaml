@@ -44,6 +44,12 @@ controllers:
           runAsUser: 1000
           allowPrivilegeEscalation: true
           readOnlyRootFilesystem: false
+          # RuntimeDefault seccomp (kubelet seccompDefault=true) blocks the
+          # clone/unshare CLONE_NEWUSER syscalls rootlesskit needs, causing
+          # "fork/exec /proc/self/exe: operation not permitted". Unconfined is
+          # required for rootless DinD; daemon still runs as non-root UID 1000.
+          seccompProfile:
+            type: Unconfined
           capabilities:
             add:
               - SETUID
