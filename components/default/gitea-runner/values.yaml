@@ -42,7 +42,7 @@ controllers:
         securityContext:
           runAsNonRoot: true
           runAsUser: 1000
-          allowPrivilegeEscalation: false
+          allowPrivilegeEscalation: true
           readOnlyRootFilesystem: false
           capabilities:
             drop:
