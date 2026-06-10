@@ -69,7 +69,8 @@ nodes:
   - hostname: "k8s-3-4u"
     ipAddress: "10.30.30.23"
     installDiskSelector:
-      model: "KINGSTON SNV3S1000G"
+      size: "== 256GB"
+      model: "SAMSUNG MZ7LN256"
     talosImageURL: factory.talos.dev/installer/398cb142982a474381a3601ea2551e89aadb2ab6e88b9c6c02bf9642ec399eed
     controlPlane: true
     # patches:
