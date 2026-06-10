@@ -48,6 +48,14 @@ applications:
     source:
       path: components/kube-system/ivan-reader
 
+  nvidia-device-plugin:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/nvidia-device-plugin
+
   # Disabled 2026-06-10: virt-handler exercising VMX on old microcode is the
   # likely trigger of the k8s-4-dell reboot loop. Kept components/kubevirt/ for
   # future re-enable once BIOS/microcode are updated.
