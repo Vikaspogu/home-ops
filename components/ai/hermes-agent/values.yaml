@@ -89,6 +89,8 @@ service:
     ports:
       dashboard:
         port: *dashboardPort
+      webhook:
+        port: 8644
 persistence:
   app-data:
     existingClaim: hermes-agent
