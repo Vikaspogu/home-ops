@@ -2,16 +2,35 @@
 # NVIDIA Device Plugin for Kubernetes
 # Exposes nvidia.com/gpu resources to enable GPU scheduling
 
-# Override default affinity rules - just use simple node selector
+# Use NFD label from node-feature-discovery-rules/nvidia.yaml
+# Label: nvidia.feature.node.kubernetes.io/gpu=true
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
       nodeSelectorTerms:
       - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: nvidia.feature.node.kubernetes.io/gpu
           operator: In
           values:
-          - k8s-4-dell
+          - "true"
+
+# RuntimeClass for NVIDIA Container Runtime (uses containerd default runtime on Talos)
+runtimeClassName: ""
+
+# Device discovery strategy - use legacy mode for Talos
+config:
+  name: nvidia-device-plugin-config
+  default: |-
+    version: v1
+    flags:
+      migStrategy: none
+      failOnInitError: false
+      deviceDiscoveryStrategy: legacy
+      nvidiaDriverRoot: /
+      plugin:
+        passDeviceSpecs: true
+        deviceListStrategy: ["envvar"]
+        deviceIDStrategy: uuid
 
 # Resource limits for the plugin itself
 resources:
