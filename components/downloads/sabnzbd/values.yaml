@@ -7,6 +7,7 @@ defaultPodOptions:
     runAsGroup: 568
     fsGroup: 568
     supplementalGroups:
+      - 100
       - 65536
 controllers:
   sabnzbd:
