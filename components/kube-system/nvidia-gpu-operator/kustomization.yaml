@@ -1,0 +1,11 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kube-system
+helmCharts:
+  - name: gpu-operator
+    repo: https://helm.ngc.nvidia.com/nvidia
+    version: v26.3.1
+    releaseName: gpu-operator
+    namespace: kube-system
+    valuesFile: values.yaml
