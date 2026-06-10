@@ -23,7 +23,7 @@ nodes:
   - hostname: k8s-1-nab9
     ipAddress: "10.30.30.21"
     installDisk: /dev/sda
-    talosImageURL: factory.talos.dev/installer/ed036d0640097a4e7af413ee089851a12963cd2e2e1715f8866d551d17c2ec62
+    talosImageURL: factory.talos.dev/installer/4b3cd373a192c8469e859b7a0cfbed3ecc3577c4a2d346a37b0aeff9cd17cdb0
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -41,11 +41,12 @@ nodes:
       customization:
         systemExtensions:
           officialExtensions:
-            - siderolabs/nfsrahead
+            - siderolabs/i915
+            - siderolabs/intel-ucode
   - hostname: "k8s-2-ser"
     ipAddress: "10.30.30.22"
     installDisk: /dev/sda
-    talosImageURL: factory.talos.dev/installer/ed036d0640097a4e7af413ee089851a12963cd2e2e1715f8866d551d17c2ec62
+    talosImageURL: factory.talos.dev/installer/4b3cd373a192c8469e859b7a0cfbed3ecc3577c4a2d346a37b0aeff9cd17cdb0
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -63,7 +64,8 @@ nodes:
       customization:
         systemExtensions:
           officialExtensions:
-            - siderolabs/nfsrahead
+            - siderolabs/i915
+            - siderolabs/intel-ucode
   - hostname: "k8s-3-pxm"
     ipAddress: "10.30.30.23"
     installDiskSelector:
@@ -90,7 +92,7 @@ nodes:
     ipAddress: "10.30.30.24"
     installDiskSelector:
       model: "Samsung SSD 970 EVO 250GB"
-    talosImageURL: factory.talos.dev/installer/c1c8847e58bca7ae9584c3b209f21c50add404d9cb9466a1d4ea8be43a160b8a
+    talosImageURL: factory.talos.dev/installer/26f113405d8f80e8a9ce2d8c92d5114f7ee0b44589570568cfd3aa72f3dcef75
     controlPlane: false
     patches:
       - "@./patches/k8s-4-dell/user-volumes.yaml"
@@ -99,6 +101,14 @@ nodes:
       - name: nvidia_uvm
       - name: nvidia_drm
       - name: nvidia_modeset
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/nfsrahead
+            - siderolabs/nonfree-kmod-nvidia-lts
+            - siderolabs/nvidia-container-toolkit-lts
+            - siderolabs/intel-ucode
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "d8:9e:f3:3c:9b:81"
@@ -113,10 +123,16 @@ nodes:
     ipAddress: "10.30.30.25"
     installDiskSelector:
       model: "SAMSUNG MZ7TE128"
-    talosImageURL: factory.talos.dev/installer/ed036d0640097a4e7af413ee089851a12963cd2e2e1715f8866d551d17c2ec62
+    talosImageURL: factory.talos.dev/installer/4b3cd373a192c8469e859b7a0cfbed3ecc3577c4a2d346a37b0aeff9cd17cdb0
     controlPlane: false
     patches:
       - "@./patches/k8s-5-1u/garage-storage.yaml"
+    schematic:
+      customization:
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/i915
+            - siderolabs/intel-ucode
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "00:1e:67:e9:a6:1b"
