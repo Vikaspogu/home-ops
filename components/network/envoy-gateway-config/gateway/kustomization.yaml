@@ -7,3 +7,4 @@ resources:
   - envoy.yaml
   - external.yaml
   - internal.yaml
+  - media.yaml

@@ -13,8 +13,8 @@ metadata:
     gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/jellyfin.png
 spec:
   parentRefs:
-    - name: ${GATEWAY_NAME}
-      namespace: ${GATEWAY_NAMESPACE}
+    - name: envoy-media
+      namespace: network
       sectionName: https
   hostnames: ["jellyfin.${CLUSTER_DOMAIN}"]
   rules:
