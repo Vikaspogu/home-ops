@@ -18,7 +18,10 @@ controllers:
           JELLYFIN_FFmpeg__probesize: 50000000
           JELLYFIN_FFmpeg__analyzeduration: 50000000
           TZ: America/New_York
-          NVIDIA_VISIBLE_DEVICES: all
+          # Pin to the RTX 3060 only (UUID survives driver/BIOS reorderings,
+          # unlike positional index "1"). The GT 1030 stays free for other
+          # workloads. Use `nvidia-smi -L` on k8s-4-dell to list UUIDs.
+          NVIDIA_VISIBLE_DEVICES: GPU-dbe22ad2-8707-a394-a7dd-5d865fc290f6
           NVIDIA_DRIVER_CAPABILITIES: all
         securityContext:
           privileged: true
