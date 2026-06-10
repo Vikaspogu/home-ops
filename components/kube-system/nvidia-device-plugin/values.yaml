@@ -2,8 +2,16 @@
 # NVIDIA Device Plugin for Kubernetes
 # Exposes nvidia.com/gpu resources to enable GPU scheduling
 
-nodeSelector:
-  kubernetes.io/hostname: k8s-4-dell
+# Override default affinity rules - just use simple node selector
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - k8s-4-dell
 
 # Resource limits for the plugin itself
 resources:
