@@ -66,15 +66,17 @@ nodes:
           officialExtensions:
             - siderolabs/i915
             - siderolabs/intel-ucode
-  - hostname: "k8s-3-pxm"
+  - hostname: "k8s-3-4u"
     ipAddress: "10.30.30.23"
     installDiskSelector:
-      model: "QEMU HARDDISK"
-    talosImageURL: factory.talos.dev/nocloud-installer/8a18364f394e7a07980b1397eb5c2946b2674a52dd6a8dee8d242683718a8623
+      model: "KINGSTON SNV3S1000G"
+    talosImageURL: factory.talos.dev/installer/398cb142982a474381a3601ea2551e89aadb2ab6e88b9c6c02bf9642ec399eed
     controlPlane: true
+    patches:
+      - "@./patches/k8s-3-4u/storage-volumes.yaml"
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "52:50:56:11:33:11"
+          hardwareAddr: "0c:c4:7a:d3:fd:25"
         dhcp: false
         addresses:
           - "10.30.30.23/24"
@@ -82,11 +84,13 @@ nodes:
           - network: 0.0.0.0/0
             gateway: "10.30.30.1"
         mtu: 1500
+        vip:
+          ip: "10.30.30.150"
     schematic:
       customization:
         systemExtensions:
           officialExtensions:
-            - siderolabs/qemu-guest-agent
+            - siderolabs/intel-ucode
             - siderolabs/nfsrahead
   - hostname: "k8s-4-dell"
     ipAddress: "10.30.30.24"

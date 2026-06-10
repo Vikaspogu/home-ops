@@ -1,0 +1,20 @@
+---
+# Storage configuration for k8s-3-4u (ex-OMV hardware)
+# 4× 3.6TB HDDs for media replication and kopia repo
+machine:
+  disks:
+    # Media replication target (rsync destination from k8s-4-dell)
+    - device: /dev/sda
+      partitions:
+        - mountpoint: /var/mnt/media
+  volumes:
+    # Kopia backup repository (relocate from k8s-4-dell)
+    - name: kopia
+      provisioning:
+        filesystem: xfs
+        grow: true
+      mount:
+        device: /dev/sdb
+        path: /var/mnt/kopia
+        options:
+          - noatime
