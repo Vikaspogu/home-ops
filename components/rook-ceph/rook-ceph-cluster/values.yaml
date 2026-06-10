@@ -70,9 +70,9 @@ cephClusterSpec:
       - name: "k8s-2-ser"
         devices:
           - name: "nvme0n1"
-      - name: "k8s-3-pxm"
+      - name: "k8s-3-4u"
         devices:
-          - name: "sdb"
+          - name: "nvme0n1"
 cephBlockPools:
   - name: ceph-blockpool
     spec:
