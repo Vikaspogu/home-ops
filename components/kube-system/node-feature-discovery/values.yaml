@@ -2,7 +2,10 @@
 worker:
   config:
     core:
-      sources: ["custom", "pci", "usb"]
+      # `system` is required by the NVIDIA GPU Operator — it reads
+      # feature.node.kubernetes.io/system-os_release.ID to pick the correct
+      # OS variant for driver/toolkit/device-plugin DaemonSets.
+      sources: ["custom", "pci", "system", "usb"]
     sources:
       usb:
         deviceClassWhitelist: ["02", "03", "0e", "ef", "fe", "ff"]
