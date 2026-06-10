@@ -48,28 +48,31 @@ applications:
     source:
       path: components/kube-system/ivan-reader
 
-  kubevirt-operator:
-    annotations:
-      argocd.argoproj.io/sync-wave: "30"
-    destination:
-      namespace: kubevirt
-    source:
-      path: components/kubevirt/operator
-    syncPolicy:
-      syncOptions:
-        - CreateNamespace=true
-      retry:
-        limit: 5
+  # Disabled 2026-06-10: virt-handler exercising VMX on old microcode is the
+  # likely trigger of the k8s-4-dell reboot loop. Kept components/kubevirt/ for
+  # future re-enable once BIOS/microcode are updated.
+  # kubevirt-operator:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "30"
+  #   destination:
+  #     namespace: kubevirt
+  #   source:
+  #     path: components/kubevirt/operator
+  #   syncPolicy:
+  #     syncOptions:
+  #       - CreateNamespace=true
+  #     retry:
+  #       limit: 5
 
-  cdi-operator:
-    annotations:
-      argocd.argoproj.io/sync-wave: "31"
-    destination:
-      namespace: cdi
-    source:
-      path: components/kubevirt/cdi-operator
-    syncPolicy:
-      syncOptions:
-        - CreateNamespace=true
-      retry:
-        limit: 5
+  # cdi-operator:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "31"
+  #   destination:
+  #     namespace: cdi
+  #   source:
+  #     path: components/kubevirt/cdi-operator
+  #   syncPolicy:
+  #     syncOptions:
+  #       - CreateNamespace=true
+  #     retry:
+  #       limit: 5
