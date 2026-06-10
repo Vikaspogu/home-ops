@@ -1,0 +1,9 @@
+---
+# This ClusterPolicy is applied in a later sync wave than nvidia-gpu-operator
+# so the operator's ClusterPolicy CRD is registered before the CR is dry-run
+# validated by ArgoCD.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: kube-system
+resources:
+  - ./cluster-policy.yaml

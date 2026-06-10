@@ -9,3 +9,13 @@ helmCharts:
     releaseName: gpu-operator
     namespace: kube-system
     valuesFile: values.yaml
+# Strip the default ClusterPolicy CR from the chart output. The CR is
+# delivered by a separate Application (nvidia-gpu-cluster-policy) at a later
+# sync wave so its CRD is registered before ArgoCD dry-runs it.
+patches:
+  - patch: |
+      $patch: delete
+      apiVersion: nvidia.com/v1
+      kind: ClusterPolicy
+      metadata:
+        name: cluster-policy

@@ -40,6 +40,16 @@ applications:
     source:
       path: components/kube-system/nvidia-gpu-operator
 
+  nvidia-gpu-cluster-policy:
+    annotations:
+      # Sync wave 31 — after nvidia-gpu-operator (wave 30) registers the
+      # ClusterPolicy CRD and brings up the operator manager.
+      argocd.argoproj.io/sync-wave: "31"
+    destination:
+      namespace: kube-system
+    source:
+      path: components/kube-system/nvidia-gpu-cluster-policy
+
   # Disabled 2026-06-10: virt-handler exercising VMX on old microcode is the
   # likely trigger of the k8s-4-dell reboot loop. Kept components/kubevirt/ for
   # future re-enable once BIOS/microcode are updated.
