@@ -18,11 +18,14 @@ controllers:
           JELLYFIN_FFmpeg__probesize: 50000000
           JELLYFIN_FFmpeg__analyzeduration: 50000000
           TZ: America/New_York
-          # Pin to the RTX 3060 only (UUID survives driver/BIOS reorderings,
-          # unlike positional index "1"). The GT 1030 stays free for other
-          # workloads. Use `nvidia-smi -L` on k8s-4-dell to list UUIDs.
-          NVIDIA_VISIBLE_DEVICES: GPU-dbe22ad2-8707-a394-a7dd-5d865fc290f6
+          # Expose both GPUs to the container — the device plugin runs in CDI
+          # mode and overrides any UUID/index here with "void", breaking access.
+          NVIDIA_VISIBLE_DEVICES: all
           NVIDIA_DRIVER_CAPABILITIES: all
+          # Pin ffmpeg/CUDA to the RTX 3060. CUDA_VISIBLE_DEVICES is a
+          # userspace CUDA library filter — doesn't fight the device plugin's
+          # CDI flow. Index 1 = RTX 3060 (index 0 is the GT 1030).
+          CUDA_VISIBLE_DEVICES: "1"
         securityContext:
           privileged: true
         resources:
