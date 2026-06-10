@@ -408,6 +408,14 @@ applications:
     source:
       path: components/default/redlib
 
+  renovate:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/renovate
+
   reverse-proxy:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -543,14 +551,6 @@ applications:
       namespace: default
     source:
       path: components/default/valkey
-
-  webhook-relay:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: default
-    source:
-      path: components/default/webhook-relay
 
   zigbee2mqtt:
     annotations:

@@ -34,7 +34,6 @@ controllers:
           GITEA__SERVER__ROOT_URL: "https://gitea.${CLUSTER_DOMAIN}"
           GITEA__SERVER__SSH_DOMAIN: "ssh.${CLUSTER_DOMAIN}"
           GITEA__SERVER__SSH_PORT: 2222
-          GITEA__SERVER__PAGES_DOMAIN: "pages.${CLUSTER_DOMAIN}"
         securityContext:
           allowPrivilegeEscalation: false
           # mkdir: can't create directory '/tmp/gitea': Read-only file system

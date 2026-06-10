@@ -32,13 +32,13 @@ applications:
     source:
       path: components/argo-system/argocd-image-updater
 
-  nvidia-device-plugin:
+  nvidia-gpu-operator:
     annotations:
       argocd.argoproj.io/sync-wave: "30"
     destination:
       namespace: kube-system
     source:
-      path: components/kube-system/nvidia-device-plugin
+      path: components/kube-system/nvidia-gpu-operator
 
   # Disabled 2026-06-10: virt-handler exercising VMX on old microcode is the
   # likely trigger of the k8s-4-dell reboot loop. Kept components/kubevirt/ for

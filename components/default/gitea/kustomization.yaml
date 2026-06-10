@@ -6,7 +6,6 @@ components:
 resources:
   - ./external-secret.yaml
   - ./http-route.yaml
-  - ./http-route-pages.yaml
 
 helmCharts:
   - name: app-template

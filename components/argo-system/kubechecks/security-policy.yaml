@@ -1,0 +1,28 @@
+---
+# SecurityPolicy to restrict kubechecks webhook access to GitHub IPs only
+# GitHub webhook IP ranges: https://api.github.com/meta
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: kubechecks-github-ip-whitelist
+spec:
+  targetSelectors:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: kubechecks
+  authorization:
+    defaultAction: Deny
+    rules:
+      - name: allow-github-webhooks
+        action: Allow
+        principal:
+          clientCIDRs:
+            # GitHub webhook IP ranges as of 2024
+            # Update these periodically from: https://api.github.com/meta
+            # hooks[] section
+            - "192.30.252.0/22"   # GitHub hooks primary range
+            - "185.199.108.0/22"  # GitHub Pages/hooks
+            - "140.82.112.0/20"   # GitHub services
+            - "143.55.64.0/20"    # GitHub services
+            - "2a0a:a440::/29"    # GitHub IPv6
+            - "2606:50c0::/32"    # GitHub IPv6

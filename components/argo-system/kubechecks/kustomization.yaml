@@ -5,6 +5,7 @@ namespace: argo-system
 resources:
   - ./externalsecret.yaml
   - ./http-route.yaml
+  - ./security-policy.yaml
 
 helmCharts:
   - name: kubechecks

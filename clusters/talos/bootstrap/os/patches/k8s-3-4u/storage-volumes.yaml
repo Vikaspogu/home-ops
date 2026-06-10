@@ -1,5 +1,5 @@
 ---
-# Storage configuration for k8s-3-4u (ex-OMV hardware)
+# Storage configuration for k8s-3-4u
 # 4× 3.6TB HDDs for media replication and kopia repo
 machine:
   disks:

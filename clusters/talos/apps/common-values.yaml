@@ -12,7 +12,6 @@ default:
     finalizers:
       - resources-finalizer.argocd.argoproj.io
     labels:
-      app-source: omv
       repo: default
     destination:
       server: https://kubernetes.default.svc

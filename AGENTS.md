@@ -5,7 +5,7 @@ GitOps-driven Kubernetes home infrastructure managed with ArgoCD.
 ## Repository Structure
 
 ```
-clusters/           # Cluster-specific configs (talos, omv)
+clusters/           # Cluster-specific configs
   talos/apps/       # ArgoCD application manifests (sync-wave ordered)
   talos/bootstrap/  # Cluster bootstrap (OS, Helm, Kustomize)
 components/         # Shared Kubernetes components by namespace
@@ -135,7 +135,7 @@ spec:
 
 ## Key Technologies
 
-- **Kubernetes**: Talos Linux (primary), K3s on OMV (secondary)
+- **Kubernetes**: Talos Linux
 - **GitOps**: ArgoCD with sync-waves for ordering
 - **Helm**: bjw-s app-template v4.6.2 for all apps
 - **Ingress**: Gateway API with HTTPRoute (not Ingress objects)

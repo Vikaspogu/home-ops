@@ -63,16 +63,6 @@ data:
               accountid: "{{HOMEPAGE_VAR_CLOUDFLARED_ACCOUNTID}}"
               tunnelid: "{{HOMEPAGE_VAR_CLOUDFLARED_TUNNELID}}"
               key: "{{HOMEPAGE_VAR_CLOUDFLARED_API_TOKEN}}"
-        - OMV-Loki:
-            href: http://omv-baymx.a113.internal:81
-            icon: openmediavault.png
-            description: openmediavault odin
-            widget:
-              type: openmediavault
-              url: {{HOMEPAGE_VAR_OMV_LOKI_IP}}
-              username: admin
-              password: {{HOMEPAGE_VAR_OMV_PASSWORD}}
-              method: services.getStatus
         - Proxmox:
             href: https://pxm-baymx.a113.internal:8006/
             icon: proxmox.png

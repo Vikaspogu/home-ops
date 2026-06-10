@@ -27,23 +27,21 @@ This repository contains Infrastructure as Code (IaC) for my home Kubernetes clu
 ## 🏗️ Architecture
 
 ```
-┌─────────────────┐    ┌─────────────────┐
-│   cluster01     │    │      omv        │
-│                 │    │                 │
-│  ┌───────────┐  │    │  ┌───────────┐  │
-│  │  ArgoCD   │◄─┼────┼──┤  ArgoCD   │  │
-│  └───────────┘  │    │  └───────────┘  │
-│                 │    │                 │
-│  Applications   │    │  Applications   │
-└─────────────────┘    └─────────────────┘
-         ▲                       ▲
-         │                       │
-         └───────────────────────┘
-                     │
-              ┌─────────────┐
-              │   Git Repo  │
-              │ (home-ops)  │
-              └─────────────┘
+┌─────────────────────────┐
+│    Talos Cluster        │
+│                         │
+│    ┌───────────┐        │
+│    │  ArgoCD   │        │
+│    └─────┬─────┘        │
+│          │              │
+│    Applications         │
+└──────────┼──────────────┘
+           │
+           ▼
+    ┌─────────────┐
+    │  Git Repo   │
+    │ (home-ops)  │
+    └─────────────┘
 ```
 
 ## 📁 Repository Structure
@@ -51,11 +49,9 @@ This repository contains Infrastructure as Code (IaC) for my home Kubernetes clu
 ```
 .
 ├── 📂 clusters/                    # Cluster-specific configurations
-│   ├── 📂 cluster01/              # Primary cluster
-│   │   ├── 📂 apps/               # Applications for cluster01
-│   │   └── 📂 bootstrap/          # Bootstrap configurations
-│   └── 📂 omv/                   # Secondary cluster
-│       └── 📂 apps/               # Applications for omv
+│   └── 📂 talos/                  # Primary Talos cluster
+│       ├── 📂 apps/               # Application manifests
+│       └── 📂 bootstrap/          # Bootstrap configurations
 ├── 📂 components/                 # Shared Kubernetes components
 │   ├── 📂 argo-system/           # ArgoCD configuration
 │   ├── 📂 cert-manager/          # Certificate management
@@ -120,11 +116,8 @@ brew install budimanjojo/tap/talhelper
 
 1. **Bootstrap cluster applications:**
    ```bash
-   # Bootstrap cluster01
-   task bootstrap:apps CLUSTER_NAME=cluster01
-
-   # Bootstrap omv cluster
-   task bootstrap:apps CLUSTER_NAME=omv
+   # Bootstrap Talos cluster
+   task bootstrap:apps CLUSTER_NAME=talos
    ```
 
 2. **Manual ArgoCD access (if needed):**
@@ -175,8 +168,7 @@ kubectl get nodes,pods --all-namespaces
 | **Longhorn** | Distributed storage | `longhorn-system` |
 | **Cilium** | Container networking | `kube-system` |
 | **Homepage** | Dashboard application | `default` |
-| **Syncthing** | File synchronization | `default` |
-| **Garage** | S3-compatible object storage | `default` |
+| **Garage-S3** | S3-compatible object storage | `default` |
 
 ## 🔐 Security
 
@@ -210,9 +202,15 @@ kubectl get nodes,pods --all-namespaces
 
 3. **Add to cluster configuration:**
    ```yaml
-   # clusters/cluster01/apps/kustomization.yaml
-   resources:
-     - ../../components/my-namespace/my-app
+   # clusters/talos/apps/20-applications.yaml
+   applications:
+     my-app:
+       annotations:
+         argocd.argoproj.io/sync-wave: "20"
+       destination:
+         namespace: my-namespace
+       source:
+         path: components/my-namespace/my-app
    ```
 
 ## 🔄 GitOps Workflow

@@ -7,6 +7,17 @@ machine:
           discard_unpacked_layers = false
         [plugins."io.containerd.cri.v1.runtime"]
           device_ownership_from_security_context = true
+        # Register the NVIDIA OCI runtime so pods with runtimeClassName: nvidia
+        # are wrapped by nvidia-container-runtime, which injects libnvidia-ml.so
+        # and friends from the Talos nvidia-container-toolkit-lts extension.
+        # Declared on every node but only used where the binary exists (k8s-4-dell).
+        [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.nvidia]
+          runtime_type = "io.containerd.runc.v2"
+          [plugins."io.containerd.cri.v1.runtime".containerd.runtimes.nvidia.options]
+            BinaryName = "/usr/local/bin/nvidia-container-runtime"
+            # Talos kubelet uses cgroupfs (not systemd) — match it here, else runc
+            # rejects the cgroupsPath kubelet hands in.
+            SystemdCgroup = false
     - op: overwrite
       path: /etc/nfsmount.conf
       permissions: 0o644
