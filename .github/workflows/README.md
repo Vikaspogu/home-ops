@@ -16,9 +16,8 @@ This workflow sends webhook payloads to different URLs based on which cluster is
 The workflow detects changes to:
 
 - **cluster01**: Changes in `clusters/cluster01/**` or `components/**`
-- **omv**: Changes in `clusters/omv/**` or `components/**`
 
-> Note: Changes to `components/**` affect both clusters since these are shared components.
+> Note: Changes to `components/**` affect all clusters since these are shared components.
 
 ### Setup
 
@@ -51,9 +50,9 @@ The workflow detects changes to:
      "repository": { ... },
      "sender": { ... },
      "installation": { ... },
-     "changed_files": {
-       "omv": "space-separated list of changed files"
-     }
+      "changed_files": {
+        "cluster01": "space-separated list of changed files"
+      }
    }
    ```
 

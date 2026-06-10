@@ -5,43 +5,34 @@ source "$(dirname "${0}")/lib/common.sh"
 
 export LOG_LEVEL="debug"
 export ROOT_DIR="$(git rev-parse --show-toplevel)"
-export CLUSTER_NAME="${1}"
 
 # Validate that CLUSTER_NAME is provided
-if [[ -z "${CLUSTER_NAME}" ]]; then
+if [[ $# -eq 0 ]]; then
     echo "ERROR: CLUSTER_NAME is required as the first argument"
     echo "Usage: $0 <cluster_name>"
     exit 1
 fi
 
-if [[ "${CLUSTER_NAME}" == "talos" ]]; then
-    # Prompt for variables when cluster is talos
-    read -p "Enter CLUSTER_DOMAIN: " CLUSTER_DOMAIN
-    export CLUSTER_DOMAIN
+export CLUSTER_NAME="${1}"
 
-    read -p "Enter EXTERNAL_IP_ADDRESS: " EXTERNAL_IP_ADDRESS
-    export EXTERNAL_IP_ADDRESS
+# Prompt for required environment variables
+read -p "Enter CLUSTER_DOMAIN: " CLUSTER_DOMAIN
+export CLUSTER_DOMAIN
 
-    read -p "Enter INTERNAL_IP_ADDRESS: " INTERNAL_IP_ADDRESS
-    export INTERNAL_IP_ADDRESS
+read -p "Enter EXTERNAL_IP_ADDRESS: " EXTERNAL_IP_ADDRESS
+export EXTERNAL_IP_ADDRESS
 
-    read -p "Enter GATEWAY_NAME: " GATEWAY_NAME
-    export GATEWAY_NAME
+read -p "Enter INTERNAL_IP_ADDRESS: " INTERNAL_IP_ADDRESS
+export INTERNAL_IP_ADDRESS
 
-    read -p "Enter GATEWAY_NAMESPACE: " GATEWAY_NAMESPACE
-    export GATEWAY_NAMESPACE
+read -p "Enter GATEWAY_NAME: " GATEWAY_NAME
+export GATEWAY_NAME
 
-    read -p "Enter GATEWAY_EXTERNAL: " GATEWAY_EXTERNAL
-    export GATEWAY_EXTERNAL
-else
-    # Read from 1Password for non-talos clusters
-    export CLUSTER_DOMAIN=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/CLUSTER_DOMAIN")
-    export EXTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/EXTERNAL_IP_ADDRESS")
-    export INTERNAL_IP_ADDRESS=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/INTERNAL_IP_ADDRESS")
-    export GATEWAY_NAME=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY")
-    export GATEWAY_NAMESPACE=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_NAMESPACE")
-    export GATEWAY_EXTERNAL=$(op read "op://kubernetes/${CLUSTER_NAME}/add more/GATEWAY_EXTERNAL")
-fi
+read -p "Enter GATEWAY_NAMESPACE: " GATEWAY_NAMESPACE
+export GATEWAY_NAMESPACE
+
+read -p "Enter GATEWAY_EXTERNAL: " GATEWAY_EXTERNAL
+export GATEWAY_EXTERNAL
 
 # Talos requires the nodes to be 'Ready=False' before applying resources
 function wait_for_nodes() {
@@ -113,9 +104,18 @@ function apply_sops_secrets() {
     done
 }
 
-# CRDs to be applied before the helmfile charts are installed
+# CRDs to be applied before ArgoCD and Helm operators are installed
+# These base CRDs are required for:
+# - Gateway API: Used by Envoy Gateway (network routing)
+# - Prometheus Operator: Used by kube-prometheus-stack (monitoring)
+# - External Secrets: Used by 1Password integration (secrets management)
+# - External DNS: Used by DNS automation (DNSEndpoint resources)
+#
+# Note: Installing these CRDs early avoids chicken-and-egg issues where ArgoCD
+# applications depend on CRDs that don't exist yet. The operators will manage
+# CRD updates after initial bootstrap.
 function apply_crds() {
-    log debug "Applying CRDs"
+    log debug "Applying bootstrap CRDs"
 
     local -r crds=(
         # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
@@ -129,14 +129,17 @@ function apply_crds() {
     )
 
     for crd in "${crds[@]}"; do
+        # Check if CRDs need updating
         if kubectl diff --filename "${crd}" &>/dev/null; then
-            log info "CRDs are up-to-date" "crd=${crd}"
+            log info "CRDs are up-to-date" "crd=$(basename "${crd}")"
             continue
         fi
+        
+        # Apply CRDs with server-side apply for proper field management
         if kubectl apply --server-side --filename "${crd}" &>/dev/null; then
-            log info "CRDs applied" "crd=${crd}"
+            log info "CRDs applied successfully" "crd=$(basename "${crd}")"
         else
-            log info "Failed to apply CRDs" "crd=${crd}"
+            log error "Failed to apply CRDs" "crd=$(basename "${crd}")"
         fi
     done
 }
@@ -184,7 +187,14 @@ function setup_argo_cd() {
         log error "Failed to apply environment variables secret" "secret=environment-variables"
     fi
 
-    if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone  --helm-command /opt/homebrew/opt/helm@3/bin/helm | envsubst | kubectl apply -f- --server-side --force-conflicts &>/dev/null; then
+    # Detect Helm binary location (prefer system path, fallback to Homebrew)
+    local helm_bin="${HELM_BIN:-$(command -v helm || echo /opt/homebrew/opt/helm@3/bin/helm)}"
+    if [[ ! -x "${helm_bin}" ]]; then
+        log error "Helm binary not found or not executable" "helm_bin=${helm_bin}"
+    fi
+    log debug "Using Helm binary" "helm_bin=${helm_bin}"
+
+    if ! kustomize build "${argo_cd_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone --helm-command "${helm_bin}" | envsubst | kubectl apply -f- --server-side --force-conflicts &>/dev/null; then
         log error "Failed to apply Argo CD"
     fi
 
@@ -209,7 +219,14 @@ function sync_argo_apps() {
         return 1
     fi
 
-    if ! kustomize build "${root_application_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone  --helm-command /opt/homebrew/opt/helm@3/bin/helm | kubectl apply -f- &>/dev/null; then
+    # Detect Helm binary location (prefer system path, fallback to Homebrew)
+    local helm_bin="${HELM_BIN:-$(command -v helm || echo /opt/homebrew/opt/helm@3/bin/helm)}"
+    if [[ ! -x "${helm_bin}" ]]; then
+        log error "Helm binary not found or not executable" "helm_bin=${helm_bin}"
+    fi
+    log debug "Using Helm binary" "helm_bin=${helm_bin}"
+
+    if ! kustomize build "${root_application_dir}" --enable-alpha-plugins --load-restrictor LoadRestrictionsNone --helm-command "${helm_bin}" | kubectl apply -f- &>/dev/null; then
         log error "Failed to apply Root Application"
     fi
 
