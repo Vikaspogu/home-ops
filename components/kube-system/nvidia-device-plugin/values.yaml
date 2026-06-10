@@ -17,20 +17,14 @@ affinity:
 # RuntimeClass for NVIDIA Container Runtime (uses containerd default runtime on Talos)
 runtimeClassName: ""
 
-# Device discovery strategy - use legacy mode for Talos
-config:
-  name: nvidia-device-plugin-config
-  default: |-
-    version: v1
-    flags:
-      migStrategy: none
-      failOnInitError: false
-      deviceDiscoveryStrategy: legacy
-      nvidiaDriverRoot: /
-      plugin:
-        passDeviceSpecs: true
-        deviceListStrategy: ["envvar"]
-        deviceIDStrategy: uuid
+# Use environment variables to configure device plugin for Talos
+env:
+  - name: DEVICE_DISCOVERY_STRATEGY
+    value: "legacy"
+  - name: PASS_DEVICE_SPECS
+    value: "true"
+  - name: FAIL_ON_INIT_ERROR
+    value: "false"
 
 # Resource limits for the plugin itself
 resources:
