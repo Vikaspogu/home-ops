@@ -5,30 +5,6 @@
 nodeSelector:
   kubernetes.io/hostname: k8s-4-dell
 
-# Runtime configuration for NVIDIA Container Runtime
-runtimeClassName: ""
-
-# Device plugin configuration
-config:
-  name: nvidia-device-plugin-config
-  # Default config - expose all GPUs
-  default: |-
-    version: v1
-    flags:
-      migStrategy: none
-      failOnInitError: true
-      nvidiaDriverRoot: /
-      plugin:
-        passDeviceSpecs: false
-        deviceListStrategy: envvar
-        deviceIDStrategy: uuid
-
-# Tolerations for control-plane taint (if needed)
-tolerations: []
-
-# Affinity rules - pin to nodes with NVIDIA GPUs
-affinity: {}
-
 # Resource limits for the plugin itself
 resources:
   requests:
@@ -36,10 +12,6 @@ resources:
     memory: 50Mi
   limits:
     memory: 100Mi
-
-# Security context
-securityContext:
-  privileged: true
 
 # Update strategy
 updateStrategy:
