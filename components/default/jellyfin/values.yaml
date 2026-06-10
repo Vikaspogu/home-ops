@@ -22,10 +22,13 @@ controllers:
           # mode and overrides any UUID/index here with "void", breaking access.
           NVIDIA_VISIBLE_DEVICES: all
           NVIDIA_DRIVER_CAPABILITIES: all
-          # Pin ffmpeg/CUDA to the RTX 3060. CUDA_VISIBLE_DEVICES is a
-          # userspace CUDA library filter — doesn't fight the device plugin's
-          # CDI flow. Index 1 = RTX 3060 (index 0 is the GT 1030).
-          CUDA_VISIBLE_DEVICES: "1"
+          # Pin ffmpeg/CUDA to the RTX 3060 by UUID. Index "1" is unreliable
+          # because CUDA's default order is FASTEST_FIRST, not PCI bus order
+          # — under FASTEST_FIRST index 1 is the slower GT 1030, which has
+          # no NVENC support at all (Pascal GP108) and fails with
+          # "OpenEncodeSessionEx failed: unsupported device". UUID survives
+          # both driver reorderings and CUDA_DEVICE_ORDER changes.
+          CUDA_VISIBLE_DEVICES: GPU-dbe22ad2-8707-a394-a7dd-5d865fc290f6
         securityContext:
           privileged: true
         resources:
