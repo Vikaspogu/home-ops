@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: argo-system
 resources:
   - ./config
+  - ./external-secret.yaml
 helmCharts:
   - name: argo-cd
     releaseName: argo-cd

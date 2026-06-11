@@ -14,7 +14,7 @@ applications:
     destination:
       namespace: argo-system
     source:
-      path: clusters/talos/apps/argo-system/kubechecks
+      path: components/argo-system/kubechecks
 
   reflector:
     annotations:

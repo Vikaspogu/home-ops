@@ -6,7 +6,7 @@ applications:
     destination:
       namespace: argo-system
     source:
-      path: clusters/talos/apps/argo-system/argo-cd
+      path: components/argo-system/argo-cd
 
   actual:
     annotations:
@@ -207,7 +207,7 @@ applications:
     destination:
       namespace: default
     source:
-      path: clusters/talos/apps/default/homepage
+      path: components/default/homepage
 
   influxdb:
     annotations:

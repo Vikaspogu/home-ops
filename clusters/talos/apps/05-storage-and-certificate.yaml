@@ -38,7 +38,7 @@ applications:
     destination:
       namespace: volsync-system
     source:
-      path: clusters/talos/apps/volsync-system/kopia
+      path: components/volsync-system/kopia
 
   volsync:
     annotations:
@@ -46,7 +46,7 @@ applications:
     destination:
       namespace: volsync-system
     source:
-      path: clusters/talos/apps/volsync-system/volsync
+      path: components/volsync-system/volsync
 
   cert-manager:
     annotations:

@@ -2,16 +2,19 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: kopia-maintenance
+  name: kopia-sync-to-s3
   namespace: volsync-system
+  labels:
+    app.kubernetes.io/name: kopia
+    app.kubernetes.io/component: sync
 spec:
-  schedule: "37 1-23/2 * * *"
+  schedule: "0 3 * * *"  # Daily at 3 AM
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
-      backoffLimit: 1
+      backoffLimit: 2
       template:
         spec:
           restartPolicy: OnFailure
@@ -21,6 +24,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             fsGroup: 1000
+            fsGroupChangePolicy: "OnRootMismatch"
             supplementalGroups:
               - 100
           initContainers:
@@ -39,37 +43,79 @@ spec:
                 - name: repository
                   mountPath: /repository
           containers:
-            - name: maintenance
+            - name: sync-to-s3
               image: ghcr.io/home-operations/kopia:0.23.0@sha256:76865b421548b1d7bb26a8268f0f0bc828be4eec3f8d8b9c8ece991c99878f94
               command:
                 - sh
                 - -c
                 - |
+                  set -e
+                  echo "Starting Kopia repository sync to S3 at $(date)"
+                  
+                  # Prepare Kopia config
                   mkdir -p /tmp/kopia/cache /tmp/kopia/logs
                   cp /config-ro/repository.config /tmp/kopia/repository.config
-                  kopia --config-file=/tmp/kopia/repository.config maintenance run --full
+                  
+                  # Sync repository to S3
+                  kopia --config-file=/tmp/kopia/repository.config repository sync-to s3 \
+                    --bucket="${S3_BUCKET}" \
+                    --endpoint="${S3_ENDPOINT}" \
+                    --access-key="${AWS_ACCESS_KEY_ID}" \
+                    --secret-access-key="${AWS_SECRET_ACCESS_KEY}" \
+                    --delete \
+                    --no-progress
+                  
+                  echo "Sync completed successfully at $(date)"
               env:
                 - name: KOPIA_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: kopia-secret
                       key: KOPIA_PASSWORD
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: kopia-s3-secret
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: kopia-s3-secret
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: kopia-s3-secret
+                      key: S3_ENDPOINT
+                - name: S3_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: kopia-s3-secret
+                      key: S3_BUCKET
                 - name: KOPIA_CACHE_DIRECTORY
                   value: /tmp/kopia/cache
                 - name: KOPIA_LOG_DIR
                   value: /tmp/kopia/logs
+                - name: TZ
+                  value: "America/New_York"
               resources:
                 requests:
-                  cpu: 50m
+                  cpu: 100m
                   memory: 512Mi
                 limits:
-                  memory: 4Gi
+                  memory: 2Gi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
               volumeMounts:
                 - name: config-ro
                   mountPath: /config-ro
                   readOnly: true
                 - name: repository
                   mountPath: /repository
+                  readOnly: true
                 - name: tmp
                   mountPath: /tmp
           volumes:
@@ -82,4 +128,4 @@ spec:
                 type: Directory
             - name: tmp
               emptyDir:
-                sizeLimit: 2Gi
+                sizeLimit: 4Gi

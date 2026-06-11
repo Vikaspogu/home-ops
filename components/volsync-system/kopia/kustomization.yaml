@@ -4,8 +4,10 @@ kind: Kustomization
 namespace: volsync-system
 resources:
   - external-secret.yaml
+  - s3-external-secret.yaml
   - http-route.yaml
   - maintenance-cronjob.yaml
+  - sync-to-s3-cronjob.yaml
 
 configMapGenerator:
   - name: kopia-repository-configmap

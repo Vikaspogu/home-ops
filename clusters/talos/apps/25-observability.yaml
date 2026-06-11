@@ -14,7 +14,7 @@ applications:
     destination:
       namespace: observability
     source:
-      path: clusters/talos/apps/observability/kube-prometheus-stack
+      path: components/observability/kube-prometheus-stack
       plugin:
         env:
           - name: STORAGE_CLASS

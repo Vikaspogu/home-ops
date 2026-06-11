@@ -5,6 +5,8 @@ namespace: default
 resources:
   - rbac.yaml
   - http-route.yaml
+  - configmap.yaml
+  - externalsecret.yaml
 generatorOptions:
   disableNameSuffixHash: true
 
