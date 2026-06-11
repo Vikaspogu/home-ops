@@ -20,6 +20,10 @@ controllers:
           tag: v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
         env:
           TZ: "America/New_York"
+          GARAGE_RPC_PUBLIC_ADDR:
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
           GARAGE_ADMIN_TOKEN:
             valueFrom:
               secretKeyRef:

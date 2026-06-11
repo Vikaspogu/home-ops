@@ -17,12 +17,12 @@ compression_level = 2
 
 rpc_bind_addr = "[::]:3901"
 # Important: This must be reachable by other Garage nodes
-# Using pod IP directly until we convert to StatefulSet
-rpc_public_addr = "10.69.1.45:3901"
+# Using pod IP injected via Downward API
+rpc_public_addr = "${GARAGE_RPC_PUBLIC_ADDR}:3901"
 rpc_secret = "${GARAGE_RPC_SECRET}"
 
-# Bootstrap from existing node1 (using pod IP)
-bootstrap_peers = ["10.69.4.201:3901"]
+# Bootstrap from existing node1 (Service DNS for discovery)
+bootstrap_peers = ["garage-s3.default.svc.cluster.local:3901"]
 
 [s3_api]
 s3_region = "garage"
