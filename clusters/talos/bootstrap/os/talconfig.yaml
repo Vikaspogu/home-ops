@@ -96,7 +96,7 @@ nodes:
     ipAddress: "10.30.30.24"
     installDiskSelector:
       model: "Samsung SSD 970 EVO 250GB"
-    talosImageURL: factory.talos.dev/installer/26f113405d8f80e8a9ce2d8c92d5114f7ee0b44589570568cfd3aa72f3dcef75
+    talosImageURL: factory.talos.dev/installer/13f30e2a2ec28774518ed9d8882464b2eb0493fa3ba523005b56383464910f73
     controlPlane: false
     patches:
       - "@./patches/k8s-4-dell/user-volumes.yaml"
@@ -109,6 +109,7 @@ nodes:
       customization:
         systemExtensions:
           officialExtensions:
+            - siderolabs/kata-containers
             - siderolabs/nfsrahead
             - siderolabs/nonfree-kmod-nvidia-lts
             - siderolabs/nvidia-container-toolkit-lts
@@ -127,7 +128,7 @@ nodes:
     ipAddress: "10.30.30.25"
     installDiskSelector:
       model: "SAMSUNG MZ7TE128"
-    talosImageURL: factory.talos.dev/installer/4b3cd373a192c8469e859b7a0cfbed3ecc3577c4a2d346a37b0aeff9cd17cdb0
+    talosImageURL: factory.talos.dev/installer/ff8c3db93bf598f6368cf325c923c274775a161703c4e03bcb7f12bb4917d983
     controlPlane: false
     patches:
       - "@./patches/k8s-5-1u/garage-storage.yaml"
@@ -137,6 +138,7 @@ nodes:
           officialExtensions:
             - siderolabs/i915
             - siderolabs/intel-ucode
+            - siderolabs/kata-containers
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "00:1e:67:e9:a6:1b"

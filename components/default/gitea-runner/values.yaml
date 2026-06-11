@@ -36,24 +36,16 @@ controllers:
       daemon:
         image:
           repository: docker
-          tag: dind-rootless
+          tag: dind
         env:
           DOCKER_TLS_CERTDIR: ""
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: true
-          readOnlyRootFilesystem: false
-          # RuntimeDefault seccomp (kubelet seccompDefault=true) blocks the
-          # clone/unshare CLONE_NEWUSER syscalls rootlesskit needs, causing
-          # "fork/exec /proc/self/exe: operation not permitted". Unconfined is
-          # required for rootless DinD; daemon still runs as non-root UID 1000.
-          seccompProfile:
-            type: Unconfined
-          capabilities:
-            add:
-              - SETUID
-              - SETGID
+          # Standard (root) Docker-in-Docker. dockerd needs full privileges to
+          # manage cgroups, the bridge network and overlayfs for image builds,
+          # so the daemon runs privileged. Isolation is at the node level only;
+          # Kata VM sandboxing was ruled out (incompatible with this cluster's
+          # Cilium netkit-L3 datapath — kata-containers/kata-containers#12159).
+          privileged: true
         resources:
           requests:
             cpu: 500m
@@ -74,18 +66,6 @@ persistence:
       app:
         daemon:
           - path: /var/lib/docker
-  # slirp4netns (rootlesskit default net driver) creates a tap device and
-  # needs /dev/net/tun. The dind-rootless image lacks it, causing
-  # "setting up tap tap0 ... exit status 1". Mount the host char device.
-  dev-net-tun:
-    enabled: true
-    type: hostPath
-    hostPath: /dev/net/tun
-    hostPathType: CharDevice
-    advancedMounts:
-      app:
-        daemon:
-          - path: /dev/net/tun
   config:
     enabled: true
     type: configMap
