@@ -6,10 +6,10 @@ kind: SecurityPolicy
 metadata:
   name: kubechecks-github-ip-whitelist
 spec:
-  targetRefs:
-    - group: gateway.networking.k8s.io
-      kind: HTTPRoute
-      name: kubechecks
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: kubechecks
   authorization:
     defaultAction: Deny
     rules:
