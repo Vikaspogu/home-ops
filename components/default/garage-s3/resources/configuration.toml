@@ -21,7 +21,8 @@ compression_level = 2
 
 rpc_bind_addr = "[::]:3901"
 # Public address must be reachable by other Garage nodes
-rpc_public_addr = "garage-s3.default.svc.cluster.local:3901"
+# Using pod IP directly until we convert to StatefulSet
+rpc_public_addr = "10.69.4.201:3901"
 rpc_secret = "${GARAGE_RPC_SECRET}"
 
 [s3_api]
