@@ -112,9 +112,10 @@ persistence:
     type: configMap
     name: garage-s3-node2-configmap
     advancedMounts:
-      envsubst:
-        - path: /etc/garage-template.toml
-          subPath: configuration.toml
+      garage-s3-node2:
+        envsubst:
+          - path: /etc/garage-template.toml
+            subPath: configuration.toml
   # Final config written by initContainer
   config:
     type: emptyDir
