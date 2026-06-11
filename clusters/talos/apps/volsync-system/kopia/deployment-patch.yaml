@@ -22,7 +22,7 @@ spec:
             - name: repository
               mountPath: /repository
         - name: chown-repo
-          image: public.ecr.aws/docker/library/busybox:1.37.0
+          image: public.ecr.aws/docker/library/busybox:1.38.0
           command: ["chown", "-R", "1000:1000", "/repository"]
           securityContext:
             runAsUser: 0
