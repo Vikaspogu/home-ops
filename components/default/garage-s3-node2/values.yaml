@@ -1,0 +1,96 @@
+---
+controllers:
+  garage-s3-node2:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: dxflrs/garage
+          tag: v2.3.0@sha256:866bd13ed2038ba7e7190e840482bc27234c4afaf77be8cfa439ae088c1e4690
+        env:
+          TZ: "America/New_York"
+          GARAGE_ADMIN_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: garage-s3-secret
+                key: GARAGE_ADMIN_TOKEN
+          GARAGE_RPC_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: garage-s3-secret
+                key: GARAGE_RPC_SECRET
+          GARAGE_METRICS_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: garage-s3-secret
+                key: GARAGE_METRICS_TOKEN
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+
+service:
+  app:
+    controller: garage-s3-node2
+    ports:
+      s3:
+        port: 3900
+      api:
+        port: 3903
+
+persistence:
+  # k8s-3-4u has 4x 4TB HDDs for Garage backup
+  data1:
+    type: hostPath
+    hostPath: /var/mnt/backup-garage/data1
+    globalMounts:
+      - path: /data1
+  data2:
+    type: hostPath
+    hostPath: /var/mnt/backup-garage/data2
+    globalMounts:
+      - path: /data2
+  data3:
+    type: hostPath
+    hostPath: /var/mnt/backup-garage/data3
+    globalMounts:
+      - path: /data3
+  data4:
+    type: hostPath
+    hostPath: /var/mnt/backup-garage/data4
+    globalMounts:
+      - path: /data4
+
+  # Metadata on HDD3's backup-garage mount
+  meta:
+    type: hostPath
+    hostPath: /var/mnt/backup-garage/meta
+    globalMounts:
+      - path: /meta
+
+  # Configuration from ConfigMap
+  config:
+    type: configMap
+    name: garage-s3-node2-configmap
+    globalMounts:
+      - path: /etc/garage.toml
+        subPath: configuration.toml
+
+# Node affinity to pin to k8s-3-4u
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - k8s-3-4u

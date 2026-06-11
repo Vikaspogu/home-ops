@@ -15,12 +15,13 @@ data_dir = [
 db_engine = "lmdb"
 metadata_auto_snapshot_interval = "6h"
 
-replication_factor = 1
+replication_factor = 2
 
 compression_level = 2
 
 rpc_bind_addr = "[::]:3901"
-rpc_public_addr = "127.0.0.1:3901"
+# Public address must be reachable by other Garage nodes
+rpc_public_addr = "garage-s3.default.svc.cluster.local:3901"
 rpc_secret = "${GARAGE_RPC_SECRET}"
 
 [s3_api]
