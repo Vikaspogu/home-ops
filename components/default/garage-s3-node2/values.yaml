@@ -3,6 +3,16 @@ controllers:
   garage-s3-node2:
     annotations:
       reloader.stakater.com/auto: "true"
+    pod:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-3-4u
     containers:
       app:
         image:
@@ -41,6 +51,8 @@ service:
   app:
     controller: garage-s3-node2
     ports:
+      rpc:
+        port: 3901
       s3:
         port: 3900
       api:
@@ -83,14 +95,3 @@ persistence:
     globalMounts:
       - path: /etc/garage.toml
         subPath: configuration.toml
-
-# Node affinity to pin to k8s-3-4u
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-        - matchExpressions:
-            - key: kubernetes.io/hostname
-              operator: In
-              values:
-                - k8s-3-4u
