@@ -13,25 +13,6 @@ controllers:
                     operator: In
                     values:
                       - k8s-3-4u
-    initContainers:
-      envsubst:
-        image:
-          repository: bhgedigital/envsubst
-          tag: latest@sha256:d0c5c4ff8cf69f75e43c923c012930f55c5c6c87e3ed327e1e7c1add83c50f6a
-        command:
-          - sh
-          - -c
-          - "envsubst < /etc/garage-template.toml > /etc/garage.toml"
-        env:
-          POD_IP:
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          capabilities:
-            drop: ["ALL"]
     containers:
       app:
         image:
@@ -107,18 +88,10 @@ persistence:
     globalMounts:
       - path: /meta
 
-  # Configuration template for envsubst
-  config-template:
+  # Configuration from ConfigMap
+  config:
     type: configMap
     name: garage-s3-node2-configmap
-    advancedMounts:
-      garage-s3-node2:
-        envsubst:
-          - path: /etc/garage-template.toml
-            subPath: configuration.toml
-  # Final config written by initContainer
-  config:
-    type: emptyDir
     globalMounts:
       - path: /etc/garage.toml
-        subPath: garage.toml
+        subPath: configuration.toml
