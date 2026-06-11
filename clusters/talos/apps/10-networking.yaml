@@ -6,7 +6,7 @@ applications:
     destination:
       namespace: kube-system
     source:
-      path: clusters/talos/apps/kube-system/cilium
+      path: components/kube-system/cilium
 
   coredns:
     annotations:

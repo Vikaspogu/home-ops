@@ -1,5 +1,14 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: kube-system
 resources:
-  - ./config
+  - ./networking.yaml
+
+helmCharts:
+  - name: cilium
+    releaseName: cilium
+    namespace: kube-system
+    repo: https://helm.cilium.io
+    version: 1.19.4
+    valuesFile: values.yaml
