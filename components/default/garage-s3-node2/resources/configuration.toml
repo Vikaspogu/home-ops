@@ -16,12 +16,11 @@ replication_factor = 1
 compression_level = 2
 
 rpc_bind_addr = "[::]:3901"
-# Important: This must be reachable by other Garage nodes
-# Using pod IP substituted by envsubst initContainer
-rpc_public_addr = "${POD_IP}:3901"
+# Public address using Service FQDN
+rpc_public_addr = "garage-s3-node2.default.svc.cluster.local:3901"
 rpc_secret = "${GARAGE_RPC_SECRET}"
 
-# Bootstrap from existing node1 (Service DNS for discovery)
+# Bootstrap from existing node1
 bootstrap_peers = ["garage-s3.default.svc.cluster.local:3901"]
 
 [s3_api]
