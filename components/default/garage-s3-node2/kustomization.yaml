@@ -7,7 +7,7 @@ helmCharts:
     releaseName: garage-s3-node2
     namespace: default
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "4.6.2"
+    version: "5.0.1"
     valuesFile: values.yaml
 configMapGenerator:
   - name: garage-s3-node2-configmap
