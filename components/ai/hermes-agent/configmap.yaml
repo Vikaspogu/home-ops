@@ -100,7 +100,7 @@ data:
       inactivity_timeout: 120
       command_timeout: 60
     dashboard:
-      theme: amber-terminal
+      theme: mono
     goals:
       max_turns: 20
     agent:
