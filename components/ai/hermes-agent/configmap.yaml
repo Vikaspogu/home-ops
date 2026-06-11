@@ -163,7 +163,6 @@ data:
         - codex
         - coder-kanban-workflow
         - comfyui
-        - dashboard-usability-review
         - debugging-hermes-tui-commands
         - design-md
         - dogfood
@@ -176,12 +175,11 @@ data:
         - heartmula
         - himalaya
         - huggingface-hub
-        - humanizer
-        - ideation
         - jupyter-live-kernel
         - kanban-codex-lane
         - kanban-orchestrator
         - kanban-worker
+        - linear
         - llama-cpp
         - manim-video
         - minecraft-modpack-server
