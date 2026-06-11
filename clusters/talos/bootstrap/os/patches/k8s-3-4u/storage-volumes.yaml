@@ -1,16 +1,30 @@
 ---
 # Storage configuration for k8s-3-4u
-# 4× 3.6TB HDDs for media replication and kopia repo
+# 4× 4.0TB HDDs for backup/replication from k8s-4-dell and k8s-5-1u
+#
+# Purpose: Centralized backup node
+# - Replicate media from k8s-4-dell
+# - Replicate downloads from k8s-4-dell
+# - Backup Garage S3 data from k8s-5-1u
+# - Backup Kopia repositories
 #
 # IMPORTANT: These disks are ALREADY formatted and contain data.
 # We mount them WITHOUT provisioning to prevent Talos from reformatting on boot.
 machine:
   disks:
-    # Media replication target (rsync destination from k8s-4-dell)
-    - device: /dev/sda
+    # HDD 1 - Media replication from k8s-4-dell
+    - device: /dev/disk/by-id/wwn-0x5000cca0bc75f620
       partitions:
-        - mountpoint: /var/mnt/media
-    # Kopia backup repository (relocated from k8s-4-dell)
-    - device: /dev/sdb
+        - mountpoint: /var/mnt/backup-media
+    # HDD 2 - Downloads replication from k8s-4-dell
+    - device: /dev/disk/by-id/wwn-0x5000cca0bc6e0cc0
+      partitions:
+        - mountpoint: /var/mnt/backup-downloads
+    # HDD 3 - Garage S3 backup from k8s-5-1u
+    - device: /dev/disk/by-id/wwn-0x5000cca097de6224
+      partitions:
+        - mountpoint: /var/mnt/backup-garage
+    # HDD 4 - Kopia backup repositories
+    - device: /dev/disk/by-id/wwn-0x5000cca0bc767184
       partitions:
         - mountpoint: /var/mnt/kopia
