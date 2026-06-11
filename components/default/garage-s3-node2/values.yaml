@@ -27,6 +27,11 @@ controllers:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop: ["ALL"]
     containers:
       app:
         image:
