@@ -62,6 +62,7 @@ spec:
                     --endpoint="${S3_ENDPOINT}" \
                     --access-key="${AWS_ACCESS_KEY_ID}" \
                     --secret-access-key="${AWS_SECRET_ACCESS_KEY}" \
+                    --disable-tls \
                     --delete \
                     --no-progress
                   
