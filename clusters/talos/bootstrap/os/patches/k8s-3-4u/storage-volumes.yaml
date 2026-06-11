@@ -1,20 +1,16 @@
 ---
 # Storage configuration for k8s-3-4u
 # 4× 3.6TB HDDs for media replication and kopia repo
+#
+# IMPORTANT: These disks are ALREADY formatted and contain data.
+# We mount them WITHOUT provisioning to prevent Talos from reformatting on boot.
 machine:
   disks:
     # Media replication target (rsync destination from k8s-4-dell)
     - device: /dev/sda
       partitions:
         - mountpoint: /var/mnt/media
-  volumes:
-    # Kopia backup repository (relocate from k8s-4-dell)
-    - name: kopia
-      provisioning:
-        filesystem: xfs
-        grow: true
-      mount:
-        device: /dev/sdb
-        path: /var/mnt/kopia
-        options:
-          - noatime
+    # Kopia backup repository (relocated from k8s-4-dell)
+    - device: /dev/sdb
+      partitions:
+        - mountpoint: /var/mnt/kopia

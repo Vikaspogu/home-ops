@@ -1,92 +1,40 @@
 ---
 # Garage S3 storage volumes for k8s-5-1u
 # Uses 8x 900GB SAS drives for multi-HDD Garage deployment
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd1
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca02278736c' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
----
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd2
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca07194d828' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
----
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd3
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca0576b90f0' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
----
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd4
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca0430361b0' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
----
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd5
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca07111a7cc' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
----
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd6
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca0719b81d8' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
----
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd7
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca071478cf0' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
----
-apiVersion: v1alpha1
-kind: UserVolumeConfig
-name: garage-hdd8
-provisioning:
-  diskSelector:
-    match: "'/dev/disk/by-id/wwn-0x5000cca07147a3c0' in disk.symlinks"
-  minSize: 800GB
-  grow: true
-filesystem:
-  type: xfs
-# Note: garage-meta removed - system disk (128GB) has insufficient free space
-# Metadata will be stored on garage-hdd1 alongside data
+#
+# IMPORTANT: These disks are ALREADY formatted with XFS and contain data.
+# We mount them WITHOUT provisioning to prevent Talos from reformatting on boot.
+machine:
+  disks:
+    # Garage HDD 1 - contains metadata + data
+    - device: /dev/disk/by-id/wwn-0x5000cca02278736c
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd1
+    # Garage HDD 2
+    - device: /dev/disk/by-id/wwn-0x5000cca07194d828
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd2
+    # Garage HDD 3
+    - device: /dev/disk/by-id/wwn-0x5000cca0576b90f0
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd3
+    # Garage HDD 4
+    - device: /dev/disk/by-id/wwn-0x5000cca0430361b0
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd4
+    # Garage HDD 5
+    - device: /dev/disk/by-id/wwn-0x5000cca07111a7cc
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd5
+    # Garage HDD 6
+    - device: /dev/disk/by-id/wwn-0x5000cca0719b81d8
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd6
+    # Garage HDD 7
+    - device: /dev/disk/by-id/wwn-0x5000cca071478cf0
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd7
+    # Garage HDD 8
+    - device: /dev/disk/by-id/wwn-0x5000cca07147a3c0
+      partitions:
+        - mountpoint: /var/mnt/garage-hdd8
