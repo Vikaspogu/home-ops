@@ -20,8 +20,8 @@ rpc_bind_addr = "[::]:3901"
 rpc_public_addr = "garage-s3-node2.default.svc.cluster.local:3901"
 rpc_secret = "${GARAGE_RPC_SECRET}"
 
-# Bootstrap from existing node1
-bootstrap_peers = ["garage-s3.default.svc.cluster.local:3901"]
+# bootstrap_peers not needed - nodes persist connection info in metadata
+# Initial connection done via: garage node connect <node-id>@<ip>:3901
 
 [s3_api]
 s3_region = "garage"
