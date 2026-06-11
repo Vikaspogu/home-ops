@@ -17,8 +17,8 @@ compression_level = 2
 
 rpc_bind_addr = "[::]:3901"
 # Important: This must be reachable by other Garage nodes
-# Using pod IP injected via Downward API
-rpc_public_addr = "${GARAGE_RPC_PUBLIC_ADDR}:3901"
+# Using pod IP substituted by envsubst initContainer
+rpc_public_addr = "${POD_IP}:3901"
 rpc_secret = "${GARAGE_RPC_SECRET}"
 
 # Bootstrap from existing node1 (Service DNS for discovery)
