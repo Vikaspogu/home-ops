@@ -1,8 +1,8 @@
 [env]
 _.python.venv = { path = "{{config_root}}/.venv", create = true }
 KUBECONFIG = "{{config_root}}/kubeconfig"
-SOPS_AGE_KEY_FILE = "{{config_root}}/age.key"
-TALOSCONFIG = "{{config_root}}/talos/clusterconfig/talosconfig"
+SOPS_AGE_KEY_FILE = "~/.config/sops/age/age-key.txt"
+TALOSCONFIG = "{{config_root}}/clusters/talos/bootstrap/os/clusterconfig/talosconfig"
 
 [tasks.deps]
 description = "Install Helm dependencies"
@@ -13,10 +13,8 @@ run = [
 
 [tools]
 "python" = "3.14.6"
-"pipx:makejinja" = "2.8.2"
 "aqua:argoproj/argo-cd" = "3.4.3"
 "aqua:budimanjojo/talhelper" = "3.1.11"
-"aqua:cilium/cilium-cli" = "0.19.4"
 "aqua:cli/cli" = "2.94.0"
 "aqua:cloudflare/cloudflared" = "2026.6.0"
 "aqua:FiloSottile/age" = "1.3.1"

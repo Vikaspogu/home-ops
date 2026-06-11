@@ -211,7 +211,7 @@ function setup_argo_cd() {
 function sync_argo_apps() {
     log debug "Sync Argo Applications"
 
-    local -r root_application_dir="${ROOT_DIR}/clusters/${CLUSTER_NAME}/apps/argo-system/root-application"
+    local -r root_application_dir="${ROOT_DIR}/components/argo-system/root-application"
 
     # Check if the Argo CD directory exists
     if [[ ! -d "${root_application_dir}" ]]; then
