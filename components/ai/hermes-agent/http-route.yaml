@@ -10,7 +10,7 @@ metadata:
     gethomepage.dev/href: "https://hermes.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Ingress
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/nanoclaw.svg
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/hermes-agent.png
     gethomepage.dev/name: Hermes Agent
     gethomepage.dev/description: Hermes Agent dashboard
     gethomepage.dev/app: hermes-agent

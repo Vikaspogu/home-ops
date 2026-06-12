@@ -10,10 +10,10 @@ metadata:
   annotations:
     gethomepage.dev/href: "https://agentmemory.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: AI
+    gethomepage.dev/group: Ingress
     gethomepage.dev/name: agentmemory
     gethomepage.dev/description: "Persistent cross-agent memory"
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/agentmemory.png
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/basic-memory.png
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
