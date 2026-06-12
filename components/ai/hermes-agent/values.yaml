@@ -13,7 +13,7 @@ controllers:
       hermes-bootstrap:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260612202241-6c9faca-oci
+          tag: 20260612215000-f1bfd3d-oci
         command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -36,13 +36,13 @@ controllers:
           capabilities: {drop: ["ALL"]}
       seed-config:
         image:
-          tag: 20260612202241-6c9faca-oci
+          tag: 20260612215000-f1bfd3d-oci
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
     containers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260612202241-6c9faca-oci
+          tag: 20260612215000-f1bfd3d-oci
         args:
         - gateway
         - run
