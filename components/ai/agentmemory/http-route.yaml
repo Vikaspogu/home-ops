@@ -32,6 +32,14 @@ spec:
       backendRefs:
         - name: *app
           port: 3112
+    # API + MCP traffic → API server (port 3111)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /agentmemory/
+      backendRefs:
+        - name: *app
+          port: 3111
     # All other traffic → viewer (port 3113)
     - matches:
         - path:
