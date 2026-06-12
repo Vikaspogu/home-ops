@@ -1,5 +1,8 @@
 mac_url: http://mac-api.ai.svc.cluster.local:8000
 
+memory:
+  provider: agentmemory
+
 plugins:
   - name: mac
     repo: https://github.com/Vikaspogu/mac.git
