@@ -53,16 +53,7 @@ controllers:
           TZ: America/New_York
           PYTHONUNBUFFERED: "1"
           MAC_BIND_HOST: "0.0.0.0"
-          # Virtual reviewer role-agents are registered by bootstrap and
-          # never heartbeat, so the default 300s staleness gate makes them
-          # ineligible and tasks stall in needs_review. Treat them as
-          # always-available (orchestrator re-bootstraps on restart).
           MAC_DEFAULT_REVIEWER_STALE_AFTER_SECONDS: "86400"
-          # In-mac model router (ADR 0003): mac-api becomes the OpenAI front
-          # door at /v1. key=INFERENCE_HUB_API_KEY reads the upstream key from
-          # the container env (sourced from mac-secret via ExternalSecret) — so
-          # the key stays out of the opencode task-job pods, which now hit the
-          # router with only their MAC_WORKER_TOKEN. Fully GitOps (no escrow).
           MAC_ROUTER_BACKEND: inproc
           MAC_ROUTER_PROVIDERS: "nvidia=https://inference-api.nvidia.com/v1,0,key=INFERENCE_HUB_API_KEY"
           MAC_ROUTER_DEFAULT_MODEL: "aws/anthropic/bedrock-claude-opus-4-8"

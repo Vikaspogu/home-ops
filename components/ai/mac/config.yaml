@@ -20,12 +20,6 @@ dispatcher:
   agent:
     agent_id: mac-runner
     name: mac-runner
-    # The dispatcher must NOT carry `review` — it's the orchestrator, not
-    # a reviewer. _select_default_reviewer picks any agent with `review`
-    # in its capabilities, and mac-runner being eligible meant the verdict
-    # nudge landed in the dispatcher's mailbox, which the review_loop in
-    # this same agent does NOT poll for itself. Reviewer roles
-    # (python-reviewer / python-reviewer-opencode) are the real targets.
     capabilities: [ops, python, hermes]
 
 role_machines:
@@ -41,7 +35,7 @@ roles:
     name: mac-worker-python-coder
     machine_id: mac-worker-machine
     capabilities: [python, ops]
-    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:dd4913e-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:503b270-codex
     executor: /usr/local/bin/mac-task-executor-codex
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -51,7 +45,7 @@ roles:
     name: mac-worker-python-reviewer
     machine_id: mac-worker-machine
     capabilities: [review, python]
-    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:dd4913e-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:503b270-codex
     executor: /usr/local/bin/mac-task-executor-codex-review
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -61,7 +55,7 @@ roles:
     name: mac-worker-python-coder-opencode
     machine_id: mac-worker-machine
     capabilities: [python, ops]
-    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:dd4913e-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:503b270-codex
     executor: /usr/local/bin/mac-task-executor-opencode-build
     attestation_key_secret:
       name: mac-agent-attestation-keys
@@ -71,7 +65,7 @@ roles:
     name: mac-worker-python-reviewer-opencode
     machine_id: mac-worker-machine
     capabilities: [review, python]
-    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:dd4913e-codex
+    image: gitea.${CLUSTER_DOMAIN}/vpogu/mac-codex-runner:503b270-codex
     executor: /usr/local/bin/mac-task-executor-opencode-review
     attestation_key_secret:
       name: mac-agent-attestation-keys
