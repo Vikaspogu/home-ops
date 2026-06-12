@@ -543,6 +543,7 @@ applications:
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 15Gi
+
   agentmemory:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -550,6 +551,16 @@ applications:
       namespace: ai
     source:
       path: components/ai/agentmemory
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 5Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 8Gi
 
   valetudopng:
     annotations:
