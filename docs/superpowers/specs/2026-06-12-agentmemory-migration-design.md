@@ -28,8 +28,8 @@ Replace the self-hosted mem0 memory backend with agentmemory across all agents. 
 │                        └────────────────────────┘   │
 │                                 ▲                    │
 │           HTTPRoutes:           │                    │
-│   agentmemory.${CLUSTER_DOMAIN} → :3111             │
-│   agentmemory-viewer.${CLUSTER_DOMAIN} → :3113      │
+│   agentmemory.${CLUSTER_DOMAIN} → :3111 (API/MCP)  │
+│   agentmemory-viewer.${CLUSTER_DOMAIN} → :3113 (UI) │
 └─────────────────────────────────────────────────────┘
                           │ HTTPS (internal FQDN)
 ┌─────────────────────────▼───────────────────────────┐
@@ -61,7 +61,7 @@ Replace the self-hosted mem0 memory backend with agentmemory across all agents. 
 
 - Run `scripts/migrate-mem0-to-agentmemory.sh` in agent-platform-custom
 - Script: GET all memories from mem0 → POST each to agentmemory `/remember`
-- Verify migrated memories searchable in viewer at `agentmemory-viewer.${CLUSTER_DOMAIN}`
+- Verify migrated memories searchable in viewer at `https://agentmemory-viewer.${CLUSTER_DOMAIN}`
 
 ### Phase 3 — Cut Hermes over
 
@@ -89,7 +89,8 @@ Replace the self-hosted mem0 memory backend with agentmemory across all agents. 
 - namespace: ai
 - resources: externalsecret.yaml, http-route.yaml
 - components: volsync-replication (for SQLite persistence)
-- plugin env vars: `STORAGE_CLASS=ceph-block`, `VOLUME_SNAPSHOT_CLASS=csi-ceph-blockpool`, `VOLSYNC_CAPACITY=5Gi`
+- plugin env vars: `STORAGE_CLASS=ceph-block`, `VOLUME_SNAPSHOT_CLASS=csi-ceph-blockpool`, `VOLSYNC_CAPACITY=5Gi`, `VOLSYNC_CACHE_CAPACITY=5Gi`
+  - mem0's data volume was 2Gi (history SQLite only; memories lived in PostgreSQL). agentmemory stores everything in SQLite + vector index on disk, so 5Gi gives adequate headroom with room to grow.
 
 **`values.yaml`**
 - Single controller `app`, single container `app`
@@ -104,11 +105,11 @@ Replace the self-hosted mem0 memory backend with agentmemory across all agents. 
 - `strategy: Recreate` (SQLite is single-writer)
 
 **`http-route.yaml`**
-- Two separate HTTPRoute resources:
-  - `agentmemory` → hostname `agentmemory.${CLUSTER_DOMAIN}` → service port 3111
-  - `agentmemory-viewer` → hostname `agentmemory-viewer.${CLUSTER_DOMAIN}` → service port 3113
+- Single HTTPRoute with two hostnames / two rule sets:
+  - `agentmemory.${CLUSTER_DOMAIN}` → service port 3111 (API + MCP — used by Hermes, OpenCode, migration script)
+  - `agentmemory-viewer.${CLUSTER_DOMAIN}` → service port 3113 (browser viewer UI)
 - Both use `${GATEWAY_NAME}` / `${GATEWAY_NAMESPACE}` / sectionName: https
-- Homepage annotations on the viewer route
+- Homepage annotations on the viewer hostname rule
 
 **`externalsecret.yaml`**
 - Name: `agentmemory`
@@ -117,7 +118,8 @@ Replace the self-hosted mem0 memory backend with agentmemory across all agents. 
 - ClusterSecretStore: `onepassword-connect`
 
 **`clusters/talos/apps/20-applications.yaml`**
-- Add agentmemory entry at sync-wave "20"
+- Add agentmemory entry at sync-wave **"23"** (same as mem0 — must be running before hermes-agent at wave 24)
+  - `VOLSYNC_CAPACITY=5Gi`, `VOLSYNC_CACHE_CAPACITY=5Gi`
 - Remove mem0 entry (Phase 4)
 
 ### 2. home-ops — hermes-agent changes (Phase 3)
