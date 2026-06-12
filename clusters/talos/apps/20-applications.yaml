@@ -68,14 +68,6 @@ applications:
     source:
       path: components/default/authentik
 
-  agentmemory:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: default
-    source:
-      path: components/default/agentmemory
-
   bazarr:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -551,6 +543,13 @@ applications:
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 15Gi
+  agentmemory:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/agentmemory
 
   valetudopng:
     annotations:
