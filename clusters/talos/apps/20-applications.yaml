@@ -68,6 +68,14 @@ applications:
     source:
       path: components/default/authentik
 
+  agentmemory:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/agentmemory
+
   bazarr:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

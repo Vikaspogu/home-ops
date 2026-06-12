@@ -1,0 +1,42 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/datreeio/CRDs-catalog/refs/heads/main/gateway.networking.k8s.io/httproute_v1.json
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: &app agentmemory
+  labels:
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
+  annotations:
+    gethomepage.dev/href: "https://agentmemory.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: AI
+    gethomepage.dev/name: agentmemory
+    gethomepage.dev/description: "Persistent cross-agent memory"
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/agentmemory.png
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["agentmemory.${CLUSTER_DOMAIN}"]
+  rules:
+    # WebSocket upgrade → stream worker (port 3112)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+          headers:
+            - name: Upgrade
+              value: websocket
+      backendRefs:
+        - name: *app
+          port: 3112
+    # All other traffic → viewer (port 3113)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: *app
+          port: 3113

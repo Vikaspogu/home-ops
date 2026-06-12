@@ -1,0 +1,108 @@
+---
+controllers:
+  agentmemory:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+    containers:
+      app:
+        image:
+          repository: gitea.${CLUSTER_DOMAIN}/vpogu/agentmemory
+          tag: latest-oci
+        command:
+          - /usr/bin/catatonit
+          - --
+          - /bin/sh
+          - -c
+          - |
+            PREFS_HOME="${HOME:-/home/node}"
+            mkdir -p "$PREFS_HOME/.agentmemory"
+            if [ ! -s "$PREFS_HOME/.agentmemory/preferences.json" ]; then
+              printf '%s\n' '{"schemaVersion":1,"lastAgent":null,"lastAgents":[],"lastProvider":null,"skipSplash":true,"skipNpxHint":true,"skipGlobalInstall":true,"skipConsoleInstall":true,"firstRunAt":"1970-01-01T00:00:00.000Z"}' > "$PREFS_HOME/.agentmemory/preferences.json"
+            fi
+            exec /entrypoint.sh
+        env:
+          TZ: America/New_York
+          III_REST_PORT: "3111"
+          RUST_LOG: warn
+          AGENTMEMORY_DROP_STALE_INDEX: "true"
+          VIEWER_ALLOWED_HOSTS: "agentmemory.${CLUSTER_DOMAIN}"
+          VIEWER_ALLOWED_ORIGINS: "https://agentmemory.${CLUSTER_DOMAIN}"
+        envFrom:
+          - secretRef:
+              name: agentmemory-secret
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /agentmemory/livez
+                port: &apiPort 3111
+              failureThreshold: 60
+              periodSeconds: 5
+              timeoutSeconds: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /agentmemory/livez
+                port: *apiPort
+              failureThreshold: 3
+              periodSeconds: 10
+              timeoutSeconds: 5
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /agentmemory/livez
+                port: *apiPort
+              failureThreshold: 3
+              periodSeconds: 30
+              timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+
+service:
+  app:
+    controller: agentmemory
+    ports:
+      api:
+        port: 3111
+      stream:
+        port: 3112
+      viewer:
+        port: 3113
+
+persistence:
+  data:
+    existingClaim: agentmemory
+    globalMounts:
+      - path: /data
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
