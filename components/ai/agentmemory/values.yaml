@@ -38,6 +38,7 @@ controllers:
           III_REST_PORT: "3111"
           RUST_LOG: warn
           AGENTMEMORY_DROP_STALE_INDEX: "true"
+          AGENTMEMORY_VIEWER_HOST: "0.0.0.0"
           VIEWER_ALLOWED_HOSTS: "agentmemory.${CLUSTER_DOMAIN}"
           VIEWER_ALLOWED_ORIGINS: "https://agentmemory.${CLUSTER_DOMAIN}"
         envFrom:
