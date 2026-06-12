@@ -40,6 +40,7 @@ controllers:
           AGENTMEMORY_VIEWER_HOST: "0.0.0.0"
           VIEWER_ALLOWED_HOSTS: "agentmemory.${CLUSTER_DOMAIN}"
           VIEWER_ALLOWED_ORIGINS: "https://agentmemory.${CLUSTER_DOMAIN}"
+          GRAPH_EXTRACTION_ENABLED: "true"
         envFrom:
         - secretRef:
             name: agentmemory-secret
