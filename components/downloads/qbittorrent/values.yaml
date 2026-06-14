@@ -11,14 +11,31 @@ controllers:
       secret.reloader.stakater.com/reload: qbittorrent-secret
     pod:
       securityContext:
-        fsGroup: 2000
+        fsGroup: 1000
         fsGroupChangePolicy: "OnRootMismatch"
         supplementalGroups:
           - 100
-          - 65542
       terminationGracePeriodSeconds: 120
 
     initContainers:
+      # One-time ownership migration: qbittorrent previously ran as UID 2000, so
+      # its config PVC and completed downloads are owned by 2000. Re-own them to
+      # 1000 (the shared *arr UID) so imports work without group-write
+      # workarounds. Idempotent once ownership matches; safe to leave in place.
+      chown-data:
+        image:
+          repository: public.ecr.aws/docker/library/busybox
+          tag: "1.37.0"
+        command:
+          - sh
+          - -c
+          - |
+            chown -R 1000:1000 /config
+            chown -R 1000:1000 /nfs-nas-pvc/downloads/qbittorrent /nfs-nas-pvc/downloads/incomplete 2>/dev/null || true
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+          runAsNonRoot: false
       dnsdist:
         image:
           repository: docker.io/powerdns/dnsdist-20
@@ -75,7 +92,7 @@ controllers:
           tag: 5.2.1@sha256:8d58d9ad18a1fb5e556e68bde7ac06046847cc97069257f01d2e1ec0d27ff019
         nameOverride: qbittorrent
         env:
-          UMASK: "022"
+          UMASK: "002"
           QBT_WEBUI_PORT: 8080
           QBT_BitTorrent__Session__Interface: wg0
           QBT_BitTorrent__Session__InterfaceAddress: 0.0.0.0
@@ -99,8 +116,8 @@ controllers:
           limits:
             memory: 10Gi
         securityContext:
-          runAsUser: 2000
-          runAsGroup: 2000
+          runAsUser: 1000
+          runAsGroup: 1000
           runAsNonRoot: true
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -130,6 +147,8 @@ persistence:
       qbittorrent:
         app:
           - path: /config
+        chown-data:
+          - path: /config
   addons:
     type: emptyDir
     globalMounts:
@@ -146,6 +165,8 @@ persistence:
     advancedMounts:
       qbittorrent:
         app:
+          - path: /nfs-nas-pvc
+        chown-data:
           - path: /nfs-nas-pvc
   gluetun-data:
     type: emptyDir

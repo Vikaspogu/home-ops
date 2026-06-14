@@ -3,16 +3,35 @@ defaultPodOptions:
   nodeSelector:
     kubernetes.io/hostname: k8s-4-dell
   securityContext:
-    runAsUser: 568
-    runAsGroup: 568
-    fsGroup: 568
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: "OnRootMismatch"
     supplementalGroups:
       - 100
-      - 65536
 controllers:
   sabnzbd:
     annotations:
       configmap.reloader.stakater.com/reload: sabnzbd-scripts
+    initContainers:
+      # One-time ownership migration: sabnzbd previously ran as UID 568, so its
+      # config PVC and completed downloads are owned by 568. Re-own them to 1000
+      # (the shared *arr UID) so imports work without group-write workarounds.
+      # Safe to leave in place: chown is idempotent once ownership matches.
+      chown-data:
+        image:
+          repository: public.ecr.aws/docker/library/busybox
+          tag: "1.37.0"
+        command:
+          - sh
+          - -c
+          - |
+            chown -R 1000:1000 /config
+            chown -R 1000:1000 /nfs-nas-pvc/downloads/complete /nfs-nas-pvc/downloads/incomplete 2>/dev/null || true
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+          runAsNonRoot: false
     containers:
       app:
         image:
@@ -20,6 +39,7 @@ controllers:
           tag: 5.0.4@sha256:0c78c4752607d6d3fca43817af3540dad515c48dbab2c980ef7ef5bc27849b2b
         env:
           TZ: America/New_York
+          UMASK: "002"
           SABNZBD__PORT: &port 80
           SABNZBD__HOST_WHITELIST_ENTRIES: >-
             sabnzbd,
