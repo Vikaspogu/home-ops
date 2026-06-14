@@ -9,7 +9,7 @@ media tree (`/var/mnt/media`), behind authenticated access.
 
 ## App
 
-- **Image:** `ghcr.io/gtsteffaniak/filebrowser:v1.3.3-stable` (FileBrowser
+- **Image:** `ghcr.io/gtsteffaniak/filebrowser:1.3.3-stable` (FileBrowser
   Quantum fork — SQLite indexed search, built-in user/auth management).
 - **Why Quantum (vs classic filebrowser):** real-time indexed search across a
   large library, richer media thumbnails, single static binary, `config.yaml`
