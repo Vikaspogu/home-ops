@@ -1,0 +1,74 @@
+---
+defaultPodOptions:
+  nodeSelector:
+    kubernetes.io/hostname: k8s-4-dell
+controllers:
+  app:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+        supplementalGroups:
+          - 100
+    containers:
+      app:
+        image:
+          repository: ghcr.io/gtsteffaniak/filebrowser
+          tag: v1.3.3-stable
+        env:
+          TZ: "America/New_York"
+          FILEBROWSER_CONFIG: /home/filebrowser/data/config.yaml
+        envFrom:
+          - secretRef:
+              name: filebrowser-secret
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: &port 80
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 25m
+            memory: 128Mi
+          limits:
+            memory: 1Gi
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  config:
+    enabled: true
+    existingClaim: filebrowser
+    globalMounts:
+      - path: /home/filebrowser/data
+  config-file:
+    enabled: true
+    type: configMap
+    name: filebrowser-configmap
+    globalMounts:
+      - path: /home/filebrowser/data/config.yaml
+        subPath: config.yaml
+        readOnly: true
+  media:
+    type: hostPath
+    hostPath: /var/mnt/media
+    globalMounts:
+      - path: /media

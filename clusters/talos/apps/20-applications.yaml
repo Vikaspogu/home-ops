@@ -86,6 +86,24 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
+  filebrowser:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/filebrowser
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 5Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 8Gi
+
   flaresolverr:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
