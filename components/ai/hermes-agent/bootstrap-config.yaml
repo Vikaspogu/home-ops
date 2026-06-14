@@ -5,7 +5,7 @@ memory:
 
 plugins:
   - name: mac
-    repo: https://github.com/Vikaspogu/mac.git
+    repo: https://github.com/jordanhubbard/mac.git
     ref: main
     path: plugin
   - name: ivan-personal
