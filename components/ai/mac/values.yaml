@@ -36,7 +36,7 @@ controllers:
       app:
         image: &macImage
           repository: gitea.a113.casa/vpogu/mac
-          tag: "20260615160812-4128583"
+          tag: "20260615220856-945dca5"
         command: ["uvicorn"]
         args:
         - mac.api:create_app
