@@ -23,9 +23,8 @@ controllers:
           GITEA__ACTIONS__ENABLED: "true"
           GITEA__ACTIONS__DEFAULT_ACTIONS_URL: "https://gitea.com"
           GITEA__PACKAGES__ENABLED: "true"
-          GITEA__cron.cleanup_packages__ENABLED: "true"
-          GITEA__cron.cleanup_packages__SCHEDULE: "0 */6 * * *"
-          GITEA__cron.cleanup_packages__OLDER_THAN: "48h"
+          # Disabled in favor of custom CronJob that keeps latest 3 tags
+          GITEA__cron.cleanup_packages__ENABLED: "false"
           GITEA__database__DB_TYPE: "postgres"
           GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
           GITEA__REPOSITORY__DEFAULT_BRANCH: "main"

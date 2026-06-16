@@ -5,6 +5,8 @@ components:
   - ../../volsync-system/volsync-replication
 resources:
   - ./external-secret.yaml
+  - ./cleanup-externalsecret.yaml
+  - ./package-cleanup-cronjob.yaml
   - ./http-route.yaml
 
 helmCharts:

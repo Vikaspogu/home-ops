@@ -1,0 +1,130 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: gitea-package-cleanup
+  namespace: default
+spec:
+  schedule: "0 */12 * * *"  # Every 12 hours
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: gitea-package-cleanup
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+          - name: cleanup
+            image: ghcr.io/curl/curl-container/curl:8.12.0
+            command:
+            - sh
+            - -c
+            - |
+              set -e
+              
+              GITEA_URL="http://gitea:3000"
+              KEEP_COUNT=3
+              
+              echo "=== Gitea Package Cleanup Started at $(date) ==="
+              echo "Configuration: Keep latest ${KEEP_COUNT} versions per package"
+              echo "Gitea URL: ${GITEA_URL}"
+              echo "User: ${GITEA_USER}"
+              echo ""
+              
+              # Get all packages for the user
+              echo "Fetching packages..."
+              packages=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
+                "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=container" || echo "[]")
+              
+              if [ "$packages" = "[]" ] || [ -z "$packages" ]; then
+                echo "No packages found or API error"
+                exit 0
+              fi
+              
+              package_count=$(echo "$packages" | jq -r 'length')
+              echo "Found ${package_count} packages"
+              echo ""
+              
+              # Process each package
+              echo "$packages" | jq -r '.[].name' | while read -r pkg_name; do
+                echo "--- Processing package: ${pkg_name} ---"
+                
+                # Get all versions for this package, sorted by created date (newest first)
+                versions=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
+                  "${GITEA_URL}/api/v1/packages/${GITEA_USER}/container/${pkg_name}" | \
+                  jq -r '.versions | sort_by(.created_at) | reverse | .[] | "\(.version)|\(.created_at)"')
+                
+                if [ -z "$versions" ]; then
+                  echo "  No versions found for ${pkg_name}"
+                  echo ""
+                  continue
+                fi
+                
+                version_count=$(echo "$versions" | wc -l | tr -d ' ')
+                echo "  Found ${version_count} version(s)"
+                
+                if [ "$version_count" -le "$KEEP_COUNT" ]; then
+                  echo "  Keeping all ${version_count} version(s) (≤ ${KEEP_COUNT})"
+                  echo ""
+                  continue
+                fi
+                
+                # Process versions
+                count=0
+                echo "$versions" | while IFS='|' read -r version created_at; do
+                  count=$((count + 1))
+                  
+                  if [ $count -le $KEEP_COUNT ]; then
+                    echo "  ✓ Keeping #${count}: ${version} (created: ${created_at})"
+                  else
+                    echo "  ✗ Deleting #${count}: ${version} (created: ${created_at})"
+                    
+                    delete_response=$(curl -sf -w "\n%{http_code}" -X DELETE \
+                      -H "Authorization: token ${GITEA_API_TOKEN}" \
+                      "${GITEA_URL}/api/v1/packages/${GITEA_USER}/container/${pkg_name}/${version}" 2>&1 || echo "000")
+                    
+                    http_code=$(echo "$delete_response" | tail -n1)
+                    
+                    if [ "$http_code" = "204" ] || [ "$http_code" = "200" ]; then
+                      echo "    → Deleted successfully"
+                    else
+                      echo "    → Failed to delete (HTTP ${http_code})"
+                    fi
+                  fi
+                done
+                
+                echo ""
+              done
+              
+              echo "=== Gitea Package Cleanup Completed at $(date) ==="
+            env:
+            - name: GITEA_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: gitea-cleanup-secret
+                  key: api-token
+            - name: GITEA_USER
+              value: "vpogu"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 64Mi
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+              runAsNonRoot: true
+              runAsUser: 65534
