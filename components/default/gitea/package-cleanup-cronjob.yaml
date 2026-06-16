@@ -25,12 +25,15 @@ spec:
               type: RuntimeDefault
           containers:
           - name: cleanup
-            image: curlimages/curl:8.12.0
+            image: alpine:3.21
             command:
             - sh
             - -c
             - |
               set -e
+              
+              # Install required tools
+              apk add --no-cache curl jq
               
               GITEA_URL="http://gitea:3000"
               KEEP_COUNT=3
