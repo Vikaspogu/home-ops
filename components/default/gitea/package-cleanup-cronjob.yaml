@@ -61,10 +61,14 @@ spec:
               echo "$packages" | jq -r '.[].name' | while read -r pkg_name; do
                 echo "--- Processing package: ${pkg_name} ---"
                 
-                # Get all versions for this package, sorted by created date (newest first)
-                versions=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
-                  "${GITEA_URL}/api/v1/packages/${GITEA_USER}/container/${pkg_name}" | \
-                  jq -r '.versions | sort_by(.created_at) | reverse | .[] | "\(.version)|\(.created_at)"')
+                # Get all versions for this package from the owner's packages endpoint filtered by name
+                all_versions=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
+                  "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=container&q=${pkg_name}")
+                
+                # Extract version info, sorted by created date (newest first)
+                versions=$(echo "$all_versions" | \
+                  jq -r --arg pkg "$pkg_name" '.[] | select(.name == $pkg) | .version + "|" + .created_at' | \
+                  sort -t'|' -k2 -r)
                 
                 if [ -z "$versions" ]; then
                   echo "  No versions found for ${pkg_name}"
