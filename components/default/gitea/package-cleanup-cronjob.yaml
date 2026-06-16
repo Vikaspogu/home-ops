@@ -18,19 +18,21 @@ spec:
         spec:
           restartPolicy: OnFailure
           securityContext:
-            runAsNonRoot: true
-            runAsUser: 65534
-            fsGroup: 65534
+            runAsNonRoot: false
+            runAsUser: 0
             seccompProfile:
               type: RuntimeDefault
           containers:
           - name: cleanup
-            image: ghcr.io/home-operations/kubectl:1.32.1@sha256:fb77ea5bc9779f9fe9eac2b7d4b65d2e4db25adc6ef492f18bbac24b90fa05e9
+            image: alpine:3.21
             command:
             - sh
             - -c
             - |
               set -e
+              
+              # Install required tools
+              apk add --no-cache curl jq
               
               GITEA_URL="http://gitea:3000"
               KEEP_COUNT=3
@@ -123,8 +125,8 @@ spec:
                 memory: 64Mi
             securityContext:
               allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
+              readOnlyRootFilesystem: false
               capabilities:
                 drop: ["ALL"]
-              runAsNonRoot: true
-              runAsUser: 65534
+              runAsNonRoot: false
+              runAsUser: 0
