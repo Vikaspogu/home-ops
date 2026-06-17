@@ -27,19 +27,11 @@ controllers:
         env:
           TZ: America/New_York
           HEADROOM_HOST: "0.0.0.0"
-          HEADROOM_PORT: &apiPort "8787"
+          HEADROOM_PORT: "8787"
           HEADROOM_LOG_LEVEL: INFO
           HEADROOM_DEFAULT_MODE: optimize
-          # Anonymous telemetry off for a self-hosted deployment.
           HEADROOM_TELEMETRY: "off"
-          # OPENAI_TARGET_API_URL (upstream aggregator) and OPENAI_API_KEY are
-          # injected from the headroom-secret via envFrom below. The proxy forwards
-          # all OpenAI-compatible traffic there; inference-hub fans out to the real
-          # vendors (Anthropic/OpenAI/Google) per model, model field untouched.
-          # Per-model context limits for the model IDs opencode + Hermes use, so
-          # compression budgets are exact instead of pattern-inferred.
           HEADROOM_MODEL_LIMITS: /config/models.json
-          # Durable savings + CCR store live on the volsync-backed /data PVC.
           HEADROOM_SAVINGS_PATH: /data/.headroom/proxy_savings.json
           HEADROOM_STORE_URL: sqlite:////data/.headroom/headroom.db
           HOME: /data
@@ -53,7 +45,7 @@ controllers:
             spec:
               httpGet:
                 path: /health
-                port: *apiPort
+                port: 8787
               failureThreshold: 30
               periodSeconds: 5
               timeoutSeconds: 5
@@ -63,7 +55,7 @@ controllers:
             spec:
               httpGet:
                 path: /health
-                port: *apiPort
+                port: 8787
               failureThreshold: 3
               periodSeconds: 10
               timeoutSeconds: 5
@@ -73,7 +65,7 @@ controllers:
             spec:
               httpGet:
                 path: /health
-                port: *apiPort
+                port: 8787
               failureThreshold: 3
               periodSeconds: 30
               timeoutSeconds: 5
@@ -96,10 +88,6 @@ service:
       http:
         port: 8787
 persistence:
-  # CCR reversibility: the compression store (originals) + durable savings live
-  # here. Backed by a volsync-replicated PVC (see kustomization.yaml component)
-  # so the CCR cache and stats survive pod restarts/reschedules. Single replica
-  # because the CCR store is local SQLite/LRU and retrieval must hit the same pod.
   data:
     existingClaim: headroom
     globalMounts:
