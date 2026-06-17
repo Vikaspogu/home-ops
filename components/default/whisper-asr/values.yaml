@@ -1,0 +1,66 @@
+---
+defaultPodOptions:
+  nodeSelector:
+    kubernetes.io/hostname: k8s-4-dell
+controllers:
+  app:
+    containers:
+      app:
+        image:
+          repository: mccloud/subgen
+          tag: latest@sha256:0e5a9beb1c7b3c45e6828846d9a2f9ff4e47146b5bdf47a57a9efaa36d90ce57
+        env:
+          TZ: "America/New_York"
+          # Core Whisper settings
+          TRANSCRIBE_DEVICE: cuda
+          WHISPER_MODEL: large-v3-turbo
+          CONCURRENT_TRANSCRIPTIONS: "1"
+          WHISPER_THREADS: "4"
+          COMPUTE_TYPE: auto
+          CLEAR_VRAM_ON_COMPLETE: "True"
+          MODEL_CLEANUP_DELAY: "30"
+          # Processing triggers (disable webhooks, Bazarr only)
+          PROCADDEDMEDIA: "False"
+          PROCMEDIAONPLAY: "False"
+          # Subtitle settings
+          TRANSCRIBE_OR_TRANSLATE: transcribe
+          SUBTITLE_LANGUAGE_NAME: en
+          LRC_FOR_AUDIO_FILES: "True"
+          APPEND: "False"
+          NAMESUBLANG: ai
+          # Logging
+          DEBUG: "True"
+          # API port
+          WEBHOOKPORT: "9000"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 2Gi
+            nvidia.com/gpu: 1
+          limits:
+            memory: 8Gi
+            nvidia.com/gpu: 1
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop: ["ALL"]
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: 9000
+
+persistence:
+  models:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /subgen/models
+  cache:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /root/.cache

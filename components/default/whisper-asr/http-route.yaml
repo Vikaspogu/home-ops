@@ -1,0 +1,24 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: &app whisper-asr
+  labels:
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
+  annotations:
+    gethomepage.dev/href: "https://whisper-asr.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "false"
+    gethomepage.dev/group: Media
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/openai.png
+    gethomepage.dev/name: Whisper ASR
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["whisper-asr.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: *app
+          port: 9000
