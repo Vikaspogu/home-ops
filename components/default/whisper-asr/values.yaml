@@ -41,10 +41,10 @@ controllers:
             memory: 8Gi
             nvidia.com/gpu: 1
         securityContext:
-          allowPrivilegeEscalation: false
+          # SubGen entrypoint needs to chown, then drops to PUID/PGID
+          runAsNonRoot: false
+          allowPrivilegeEscalation: true
           readOnlyRootFilesystem: false
-          capabilities:
-            drop: ["ALL"]
 
 service:
   app:
