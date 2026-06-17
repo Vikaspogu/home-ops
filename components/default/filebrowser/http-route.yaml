@@ -9,8 +9,8 @@ metadata:
   annotations:
     gethomepage.dev/href: "https://filebrowser.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: Media
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/filebrowser.png
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/filebrowser-quantum.svg
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}

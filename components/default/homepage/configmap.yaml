@@ -77,13 +77,6 @@ data:
             widget:
               type: kopia
               url: http://kopia.volsync-system.svc.cluster.local:80
-        - Authentik:
-            href: https://id.{{HOMEPAGE_VAR_DOMAIN_NAME}}
-            icon: authentik.png
-            widget:
-              type: authentik
-              url: http://authentik-server.default:80
-              key: {{HOMEPAGE_VAR_AUTHENTIK_API_TOKEN}}
         - Scrutiny:
             href: https://scrutiny.{{HOMEPAGE_VAR_DOMAIN_NAME}}
             icon: scrutiny.png
