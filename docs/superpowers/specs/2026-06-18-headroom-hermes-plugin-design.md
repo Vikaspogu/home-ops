@@ -29,33 +29,28 @@ Hermes calls `headroom_retrieve(hash="abc123")` whenever it encounters a CCR mar
 
 ## Changes
 
-### 1. `agent-platform-custom` — New plugin files
+### 1. `agent-platform-custom` — Containerfile
 
-**`images/hermes-agent/plugins/headroom/headroom_retrieve/__init__.py`**
-
-Copy verbatim from upstream (`chopratejas/headroom` `plugins/hermes/headroom_retrieve/__init__.py`) with one patch:
-
-```python
-# Before (upstream)
-_PROXY_URL = "http://127.0.0.1:8787"
-
-# After (patched)
-_PROXY_URL = os.environ.get("HEADROOM_PROXY_URL", "http://127.0.0.1:8787")
-```
-
-This is the only divergence from upstream. The env var falls back to localhost so the plugin still works in local/dev contexts.
-
-**`images/hermes-agent/plugins/headroom/headroom_retrieve/plugin.yaml`**
-
-New plugin manifest (copy from upstream `plugins/hermes/headroom_retrieve/plugin.yaml`).
-
-### 2. `agent-platform-custom` — Containerfile
-
-Add one `COPY` line after the existing agentmemory plugin copy:
+Add a build ARG pinning the headroom commit SHA, clone the repo in a dedicated `RUN` stage, apply the one-line `_PROXY_URL` patch via `sed`, then copy the plugin into place. A `# renovate:` comment enables automatic SHA bump PRs.
 
 ```dockerfile
-COPY plugins/headroom/headroom_retrieve /opt/hermes/plugins/headroom/headroom_retrieve
+# renovate: datasource=github-commits depName=chopratejas/headroom
+ARG HEADROOM_PLUGIN_SHA=<current-main-sha>
+
+RUN git clone --no-checkout https://github.com/chopratejas/headroom.git /tmp/headroom \
+    && git -C /tmp/headroom checkout "${HEADROOM_PLUGIN_SHA}" -- plugins/hermes/headroom_retrieve \
+    && sed -i 's|_PROXY_URL = "http://127.0.0.1:8787"|_PROXY_URL = os.environ.get("HEADROOM_PROXY_URL", "http://127.0.0.1:8787")|' \
+         /tmp/headroom/plugins/hermes/headroom_retrieve/__init__.py \
+    && cp -r /tmp/headroom/plugins/hermes/headroom_retrieve \
+         /opt/hermes/plugins/headroom/headroom_retrieve \
+    && rm -rf /tmp/headroom
 ```
+
+- No plugin files live in the `agent-platform-custom` repo — they come entirely from upstream at build time.
+- The pinned SHA makes builds fully reproducible. Renovate opens a PR to bump the SHA when a new commit lands on `main`.
+- The `sed` patch is the only divergence from upstream: it makes `_PROXY_URL` read from the `HEADROOM_PROXY_URL` env var (falling back to localhost for dev contexts).
+
+### 2. `agent-platform-custom` — `defaults/config.yaml`
 
 ### 3. `agent-platform-custom` — `defaults/config.yaml`
 
@@ -113,16 +108,17 @@ HEADROOM_EXCLUDE_TOOLS: "read_file,headroom_retrieve"
 - Hermes bootstrap process (`bootstrap.py`, `bootstrap-config.yaml`) — plugin is image-baked, not git-cloned at runtime
 - No new Kubernetes resources (Services, ConfigMaps, Secrets, RBAC)
 - Headroom's existing proxy behavior for all other tools is unaffected
+- `rtk-rewrite` plugin remains enabled — it rewrites outgoing tool call arguments (correctness), which is independent of headroom's tool output compression (token reduction). The two do not conflict.
 
 ## Upgrade Path
 
-To update the plugin to a newer upstream version:
-1. Copy the new `__init__.py` from upstream into `plugins/headroom/headroom_retrieve/`
-2. Re-apply the one-line `os.environ.get("HEADROOM_PROXY_URL", ...)` patch
-3. Rebuild and push the image; Renovate handles the tag bump in home-ops
+Renovate monitors `chopratejas/headroom` commits and opens a PR bumping `HEADROOM_PLUGIN_SHA` in the Containerfile. The `sed` patch is re-applied automatically on each build — no manual intervention needed. Review the Renovate PR diff to check for upstream changes to `__init__.py` that might affect the patch line.
 
 ## Alternatives Rejected
 
+- **Plugin files in repo (original approach)** — requires manual copy + re-apply of patch on each upstream update; replaced by Dockerfile clone with pinned SHA
+- **Clone `main` HEAD in Dockerfile** — non-deterministic; two builds a week apart could produce different behavior with no repo change; rejected in favour of pinned SHA + Renovate
 - **Runtime bootstrap clone** — adds git clone latency at pod startup; build-time is simpler and matches existing agentmemory pattern
 - **PyPI package import** — couples image build to PyPI; inconsistent with existing plugin pattern; harder to audit
-- **Hardcode cluster URL in plugin source** — works but loses portability and makes upgrading slightly more error-prone than an env var
+- **Hardcode cluster URL in plugin source** — works but loses portability; env var is cleaner
+- **Disable `rtk-rewrite`** — not needed; RTK rewrites tool inputs, headroom compresses tool outputs; they operate at different points in the pipeline and do not conflict
