@@ -68,6 +68,7 @@ controllers:
           API_SERVER_PORT: "8642"
           AGENTMEMORY_URL: http://agentmemory.ai.svc.cluster.local:3111
           TZ: America/New_York
+          HEADROOM_PROXY_URL: http://headroom.ai.svc.cluster.local:8787
         envFrom:
         - secretRef:
             name: hermes-agent-secret

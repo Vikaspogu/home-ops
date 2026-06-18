@@ -36,6 +36,7 @@ controllers:
           HEADROOM_SAVINGS_PATH: /data/.headroom/proxy_savings.json
           HEADROOM_STORE_URL: sqlite:////data/.headroom/headroom.db
           HOME: /data
+          HEADROOM_EXCLUDE_TOOLS: "read_file,headroom_retrieve"
         envFrom:
           - secretRef:
               name: headroom-secret
