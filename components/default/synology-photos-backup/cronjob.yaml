@@ -1,0 +1,143 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: &app synology-backup
+  namespace: default
+spec:
+  schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          initContainers:
+            - name: create-bucket
+              image: rclone/rclone:1.69.1
+              command:
+                - /bin/sh
+                - -c
+                - rclone mkdir garage:synology-backup || true
+              env:
+                - name: RCLONE_CONFIG_GARAGE_TYPE
+                  value: s3
+                - name: RCLONE_CONFIG_GARAGE_PROVIDER
+                  value: Other
+                - name: RCLONE_CONFIG_GARAGE_ENDPOINT
+                  value: "http://garage-s3.default.svc.cluster.local:3900"
+                - name: RCLONE_CONFIG_GARAGE_REGION
+                  value: garage
+                - name: RCLONE_CONFIG_GARAGE_FORCE_PATH_STYLE
+                  value: "true"
+                - name: RCLONE_CONFIG_GARAGE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: synology-backup-secret
+                      key: RCLONE_S3_ACCESS_KEY_ID
+                - name: RCLONE_CONFIG_GARAGE_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: synology-backup-secret
+                      key: RCLONE_S3_SECRET_ACCESS_KEY
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 64Mi
+                limits:
+                  memory: 128Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+          containers:
+            - name: rclone
+              image: rclone/rclone:1.69.1
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+                  echo "==> Syncing /volume1/photo to garage:synology-backup/photo"
+                  rclone sync /mnt/photo garage:synology-backup/photo \
+                    --transfers=4 \
+                    --checkers=8 \
+                    --log-level=INFO \
+                    --stats=60s
+                  echo "==> Syncing /volume1/media/k8s-data to garage:synology-backup/k8s-data"
+                  rclone sync /mnt/k8s-data garage:synology-backup/k8s-data \
+                    --transfers=4 \
+                    --checkers=8 \
+                    --log-level=INFO \
+                    --stats=60s
+                  echo "==> Backup complete."
+              env:
+                - name: RCLONE_CONFIG_GARAGE_TYPE
+                  value: s3
+                - name: RCLONE_CONFIG_GARAGE_PROVIDER
+                  value: Other
+                - name: RCLONE_CONFIG_GARAGE_ENDPOINT
+                  value: "http://garage-s3.default.svc.cluster.local:3900"
+                - name: RCLONE_CONFIG_GARAGE_REGION
+                  value: garage
+                - name: RCLONE_CONFIG_GARAGE_FORCE_PATH_STYLE
+                  value: "true"
+                - name: RCLONE_CONFIG_GARAGE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: synology-backup-secret
+                      key: RCLONE_S3_ACCESS_KEY_ID
+                - name: RCLONE_CONFIG_GARAGE_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: synology-backup-secret
+                      key: RCLONE_S3_SECRET_ACCESS_KEY
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  memory: 512Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop: ["ALL"]
+              volumeMounts:
+                - name: photo
+                  mountPath: /mnt/photo
+                  readOnly: true
+                - name: k8s-data
+                  mountPath: /mnt/k8s-data
+                  readOnly: true
+                - name: rclone-cache
+                  mountPath: /.cache
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: photo
+              nfs:
+                server: synology.a113.internal
+                path: /volume1/photo
+                readOnly: true
+            - name: k8s-data
+              nfs:
+                server: synology.a113.internal
+                path: /volume1/media/k8s-data
+                readOnly: true
+            - name: rclone-cache
+              emptyDir: {}
+            - name: tmp
+              emptyDir: {}

@@ -476,6 +476,14 @@ applications:
     source:
       path: components/default/stirling-pdf
 
+  synology-photos-backup:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/synology-photos-backup
+
   switchbotmqtt:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
