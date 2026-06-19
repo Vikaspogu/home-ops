@@ -54,6 +54,18 @@ cephClusterSpec:
         enabled: true
       - name: rook
         enabled: true
+  placement:
+    mon:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - k8s-1-nab9
+                    - k8s-2-ser
+                    - k8s-3-4u
   network:
     provider: host
     connections:
