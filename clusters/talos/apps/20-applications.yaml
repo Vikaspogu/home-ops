@@ -506,7 +506,7 @@ applications:
     annotations:
       argocd.argoproj.io/sync-wave: "10"
     destination:
-      namespace: openshell
+      namespace: ai
     source:
       path: components/ai/openshell
 

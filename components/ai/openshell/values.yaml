@@ -12,7 +12,7 @@ server:
   auth:
     allowUnauthenticatedUsers: false
   disableTls: false
-  grpcEndpoint: openshell.openshell.svc.cluster.local:9090
+  grpcEndpoint: openshell.ai.svc.cluster.local:9090
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway
