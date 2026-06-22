@@ -2,8 +2,7 @@
 # Garage S3 storage volumes for k8s-5-1u
 # Uses 8x 900GB SAS drives for multi-HDD Garage deployment
 #
-# IMPORTANT: These disks are ALREADY formatted with XFS and contain data.
-# We mount them WITHOUT provisioning to prevent Talos from reformatting on boot.
+# IMPORTANT: disks are already XFS-formatted with data; mount without provisioning to prevent Talos reformatting on boot.
 machine:
   disks:
     # Garage HDD 1 - contains metadata + data

@@ -6,8 +6,7 @@
 # - sdb / MARSHAL MAL38000: failed SMART evidence (do not use)
 # - nvme0n1 / KINGSTON SNV3S1000G: reserved as future raw Rook/Ceph OSD
 #
-# IMPORTANT: These disks are ALREADY formatted and contain data.
-# We mount them WITHOUT provisioning to prevent Talos from reformatting on boot.
+# IMPORTANT: disks are already formatted with data; mount without provisioning to prevent Talos reformatting on boot.
 machine:
   disks:
     # Media storage (3TB+ HDD)

@@ -1,30 +1,18 @@
 ---
-# Storage configuration for k8s-3-4u
-# 4× 4.0TB HDDs for backup/replication from k8s-4-dell and k8s-5-1u
-#
-# Purpose: Centralized backup node
-# - Replicate media from k8s-4-dell
-# - Replicate downloads from k8s-4-dell
-# - Backup Garage S3 data from k8s-5-1u
-# - Backup Kopia repositories
-#
-# IMPORTANT: These disks are ALREADY formatted and contain data.
-# We mount them WITHOUT provisioning to prevent Talos from reformatting on boot.
-machine:
-  disks:
-    # HDD 1 - Media replication from k8s-4-dell
-    - device: /dev/disk/by-id/wwn-0x5000cca0bc75f620
-      partitions:
-        - mountpoint: /var/mnt/backup-media
-    # HDD 2 - Downloads replication from k8s-4-dell
-    - device: /dev/disk/by-id/wwn-0x5000cca0bc6e0cc0
-      partitions:
-        - mountpoint: /var/mnt/backup-downloads
-    # HDD 3 - Garage S3 backup from k8s-5-1u
-    - device: /dev/disk/by-id/wwn-0x5000cca097de6224
-      partitions:
-        - mountpoint: /var/mnt/backup-garage
-    # HDD 4 - Kopia backup repositories
-    - device: /dev/disk/by-id/wwn-0x5000cca0bc767184
-      partitions:
-        - mountpoint: /var/mnt/kopia
+# Storage configuration for k8s-3-4u: backup/replication node, 4x 4.0TB HGST SAS HDDs behind AVAGO 3108 MegaRAID.
+# Controller rejects GPT writes on raw JBOD passthrough, so each HDD is wrapped in a single-drive RAID-0 VD.
+# VDs get NEW controller-assigned wwids (naa.600304...), not the raw-drive wwids.
+# Two drives are PI-4K formatted (Unconfigured Bad); they need PI stripped before forming a VD. Only sdi/sdj exist now.
+# UserVolumeConfig provisions+formats a partition spanning the VD on first apply, then mounts at /var/mnt/<name>.
+# Pinned by wwid; minSize satisfies talhelper validation; grow:true with no maxSize consumes the disk.
+# Working VDs: sdi naa.6003048018df230131c997a634685c1d -> backup-garage. sdj naa.6003048018df230131c998b2446bbbb0 -> reserved.
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup-garage
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.6003048018df230131c997a634685c1d'
+  minSize: 100GB
+  grow: true
+filesystem:
+  type: xfs

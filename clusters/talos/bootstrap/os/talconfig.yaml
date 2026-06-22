@@ -72,8 +72,8 @@ nodes:
       wwid: "naa.5002538d00000000"
     talosImageURL: factory.talos.dev/installer/398cb142982a474381a3601ea2551e89aadb2ab6e88b9c6c02bf9642ec399eed
     controlPlane: true
-    # patches:
-    #   - "@./patches/k8s-3-4u/storage-volumes.yaml"
+    patches:
+      - "@./patches/k8s-3-4u/storage-volumes.yaml"
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "0c:c4:7a:d3:fd:25"
