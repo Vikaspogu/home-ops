@@ -1,0 +1,27 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: &app forge-orchestrator
+  labels:
+    app.kubernetes.io/instance: *app
+    app.kubernetes.io/name: *app
+  annotations:
+    gethomepage.dev/href: "https://forge.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: AI
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/workflow.svg
+    gethomepage.dev/name: Forge
+    gethomepage.dev/description: Autonomous dev loop orchestrator
+    gethomepage.dev/app: forge-orchestrator
+    gethomepage.dev/pod-selector: app.kubernetes.io/instance=forge-orchestrator
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["forge.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: *app
+          port: 8080
