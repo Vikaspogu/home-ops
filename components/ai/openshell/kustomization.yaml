@@ -1,16 +1,15 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: ai
 resources:
   - ./sandbox-namespace.yaml
   - ./externalsecret.yaml
 
 helmCharts:
-  - name: openshell
+  - name: helm-chart
     releaseName: openshell
     namespace: ai
-    repo: oci://ghcr.io/nvidia/openshell/helm-chart
+    repo: oci://ghcr.io/nvidia/openshell
     version: "0.0.0-dev"
     valuesFile: values.yaml
     includeCRDs: false
