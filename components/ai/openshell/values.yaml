@@ -1,0 +1,31 @@
+replicaCount: 1
+
+workload:
+  kind: Deployment
+
+server:
+  sandboxNamespace: openshell-sandboxes
+  sandboxImage: ghcr.io/nvidia/openshell/sandbox:latest
+  supervisorImage: ghcr.io/nvidia/openshell/supervisor:latest
+  appArmorProfile: Unconfined
+  externalDbSecret: openshell-db-secret
+  auth:
+    allowUnauthenticatedUsers: false
+  disableTls: false
+  grpcEndpoint: openshell.openshell.svc.cluster.local:9090
+
+image:
+  repository: ghcr.io/nvidia/openshell/gateway
+  tag: latest
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
+
+service:
+  type: ClusterIP
+  port: 8080
