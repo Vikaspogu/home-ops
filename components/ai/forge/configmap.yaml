@@ -14,14 +14,6 @@ data:
         test_command: "cd service && uv run pytest && uv run ruff check ."
         format_command: "cd service && uv run ruff format --check ."
         description: "Ivan personal data service — fitness, bar, drink/dining/travel journals"
-      mac:
-        full_name: Vikaspogu/mac
-        host: github
-        default_branch: main
-        project_type: python-service
-        test_command: "pytest && ruff check ."
-        format_command: "ruff format --check ."
-        description: "MAC Kanban task orchestration system"
       home-ops:
         full_name: Vikaspogu/home-ops
         host: github

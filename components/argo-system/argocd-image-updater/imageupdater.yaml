@@ -67,15 +67,15 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
-    - namePattern: "mac"
+    - namePattern: "forge"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
         gitConfig:
           branch: main
           writeBackTarget: "helmvalues:./values.yaml"
       images:
-        - alias: mac
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/mac"
+        - alias: forge
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/forge"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}$'
           manifestTargets:
