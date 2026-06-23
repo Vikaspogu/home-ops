@@ -518,6 +518,14 @@ applications:
     source:
       path: components/ai/ivan-dashboard
 
+  agent-sandbox:
+    annotations:
+      argocd.argoproj.io/sync-wave: "05"
+    destination:
+      namespace: agent-sandbox-system
+    source:
+      path: components/ai/agent-sandbox
+
   holmesgpt:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
