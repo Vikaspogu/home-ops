@@ -19,7 +19,7 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.omv.a113.casa/vpogu/forge
+          repository: gitea.a113.casa/vpogu/forge
           tag: 20260623201220-e03fdb5
         env:
           TZ: America/New_York
