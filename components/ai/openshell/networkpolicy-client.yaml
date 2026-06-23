@@ -1,0 +1,27 @@
+# Restricts ingress on the gateway client API (8080) to the Forge orchestrator.
+# The chart's built-in NetworkPolicy only covers sandbox SSH (2222), leaving the
+# client API open. With allowUnauthenticatedUsers=true this is the auth boundary
+# until iteration 2 moves to OIDC via Authelia.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: openshell-gateway-client-api
+  namespace: ai
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: openshell
+      app.kubernetes.io/instance: openshell
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: forge
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: forge-orchestrator
+      ports:
+        - protocol: TCP
+          port: 8080

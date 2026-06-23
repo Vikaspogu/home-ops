@@ -502,6 +502,14 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
+  openshell:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/openshell
+
   ivan-personal-service:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -517,6 +525,14 @@ applications:
       namespace: ai
     source:
       path: components/ai/ivan-dashboard
+
+  agent-sandbox:
+    annotations:
+      argocd.argoproj.io/sync-wave: "05"
+    destination:
+      namespace: agent-sandbox-system
+    source:
+      path: components/ai/agent-sandbox
 
   holmesgpt:
     annotations:

@@ -37,6 +37,17 @@ controllers:
           HEADROOM_STORE_URL: sqlite:////data/.headroom/headroom.db
           HOME: /data
           HEADROOM_EXCLUDE_TOOLS: "read_file,headroom_retrieve"
+          # Kompress ML text compression. Image lacks torch, but onnxruntime +
+          # the int8 model are present on the PVC; pin the ONNX/CPU backend so it
+          # never looks for torch. Validated working in-pod (onnx_cpu, no torch).
+          HEADROOM_FORCE_KOMPRESS: "1"
+          HEADROOM_KOMPRESS_BACKEND: onnx_cpu
+          # Output-token reduction: trims model's response (Opus output is 5x
+          # input cost). Effort router dials thinking down on tool-result resumes.
+          # 10% holdout keeps a control group so savings are measured, not estimated.
+          HEADROOM_OUTPUT_SHAPER: "1"
+          HEADROOM_EFFORT_ROUTER: "1"
+          HEADROOM_OUTPUT_HOLDOUT: "0.1"
         envFrom:
           - secretRef:
               name: headroom-secret
@@ -74,9 +85,12 @@ controllers:
         resources:
           requests:
             cpu: 100m
-            memory: 1Gi
+            # Kompress int8 ONNX model (~261MB) + onnxruntime session loads into
+            # the proxy process, which already sits ~1Gi without it. Bumped from
+            # 1Gi/2Gi to give the model load headroom under the limit.
+            memory: 1536Mi
           limits:
-            memory: 2Gi
+            memory: 3Gi
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true

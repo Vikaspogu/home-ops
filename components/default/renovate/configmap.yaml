@@ -29,4 +29,10 @@ data:
       labels: ["dependencies", "renovate"],
       dependencyDashboard: true,
       timezone: "America/New_York",
+      productLinks: {
+        homepage: "https://docs.renovatebot.com",
+        documentation: "https://docs.renovatebot.com",
+        help: "https://github.com/renovatebot/renovate/discussions",
+        logo: "https://avatars.githubusercontent.com/u/38656520?s=200&v=4",
+      },
     };

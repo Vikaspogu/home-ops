@@ -218,6 +218,10 @@ data:
         - web/ddgs
         - security-guidance
         - observability/langfuse
+    platforms:
+      telegram:
+        extra:
+          drop_pending_updates: true
     platform_toolsets:
       cli:
         - browser
