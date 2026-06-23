@@ -10,9 +10,8 @@ server:
   appArmorProfile: Unconfined
   externalDbSecret: openshell-db-secret
   auth:
-    allowUnauthenticatedUsers: false
+    allowUnauthenticatedUsers: true
   disableTls: false
-  grpcEndpoint: openshell.ai.svc.cluster.local:9090
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway

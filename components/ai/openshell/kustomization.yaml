@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ./sandbox-namespace.yaml
   - ./externalsecret.yaml
+  - ./networkpolicy-client.yaml
 
 patches:
   - patch: |-
