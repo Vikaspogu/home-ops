@@ -1,0 +1,123 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: forge-config
+data:
+  repos.yaml: |-
+    repos:
+      ivan-plugin:
+        full_name: vpogu/ivan-plugin
+        host: gitea
+        default_branch: main
+        project_type: python-service
+        test_command: "cd service && uv run pytest && uv run ruff check ."
+        format_command: "cd service && uv run ruff format --check ."
+        description: "Ivan personal data service — fitness, bar, drink/dining/travel journals"
+      mac:
+        full_name: Vikaspogu/mac
+        host: github
+        default_branch: main
+        project_type: python-service
+        test_command: "pytest && ruff check ."
+        format_command: "ruff format --check ."
+        description: "MAC Kanban task orchestration system"
+      home-ops:
+        full_name: Vikaspogu/home-ops
+        host: github
+        default_branch: main
+        project_type: gitops-flux
+        default_workflow: gitops-update
+        test_command: "kubeconform -strict -ignore-missing-schemas kubernetes/"
+        format_command: null
+        description: "Home lab GitOps repo — Flux, Helm charts, K8s manifests"
+
+  workflows/implement.yaml: |-
+    name: implement
+    description: Plan -> implement -> validate -> PR -> smart review
+    nodes:
+      - id: plan
+        type: agent
+        role: planner
+        description: Load repo context, write implementation plan
+        on_needs_input: pause
+      - id: implement
+        type: loop
+        role: implementer
+        depends_on: [plan]
+        description: Clone repo, write code, run tests
+        until: TESTS_PASS
+        max_attempts: 2
+        on_max_attempts: blocked
+      - id: open-pr
+        type: bash
+        depends_on: [implement]
+      - id: review
+        type: branch
+        depends_on: [open-pr]
+        routing:
+          small: fast_review
+          large: deep_review
+      - id: fast_review
+        type: agent
+        role: reviewer
+        description: Single-pass. Correctness + security only.
+        on_approved: done
+        on_needs_fix: fix-loop
+      - id: deep_review
+        type: agent
+        role: reviewer
+        description: Full pass — correctness, security, perf, plan alignment.
+        on_approved: done
+        on_needs_fix: fix-loop
+      - id: fix-loop
+        type: loop
+        role: implementer
+        until: APPROVED
+        max_attempts: 3
+        on_max_attempts: blocked
+        next_on_iteration: review
+
+  workflows/gitops-update.yaml: |-
+    name: gitops-update
+    description: GitOps workflow — no planner, no AI review. Tooling validates.
+    nodes:
+      - id: implement
+        type: loop
+        role: implementer
+        description: Apply the requested change to manifests/Helm values exactly as described.
+        until: VALIDATION_PASS
+        max_attempts: 2
+        on_max_attempts: blocked
+      - id: validate
+        type: bash
+        depends_on: [implement]
+        run: kubeconform -strict -ignore-missing-schemas kubernetes/
+      - id: open-pr
+        type: bash
+        depends_on: [validate]
+      - id: done
+        type: bash
+        depends_on: [open-pr]
+        run: echo done
+
+  workflows/conflict-resolution.yaml: |-
+    name: conflict-resolution
+    description: Rebase conflict -> analyze -> auto-resolve or escalate
+    nodes:
+      - id: analyze
+        type: agent
+        role: implementer
+        description: Read conflict diff. Classify AUTO-RESOLVABLE or NEEDS_HUMAN.
+        on_needs_input: pause
+      - id: resolve
+        type: loop
+        role: implementer
+        depends_on: [analyze]
+        until: TESTS_PASS
+        max_attempts: 2
+        on_max_attempts: blocked
+      - id: resume
+        type: bash
+        depends_on: [resolve]
+        run: echo resume_parent

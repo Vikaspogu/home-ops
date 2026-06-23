@@ -1,0 +1,83 @@
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      configmap.reloader.stakater.com/reload: forge-config
+      secret.reloader.stakater.com/reload: forge-secret
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.4.0@sha256:5086f94abc783f1147d7c2a32c01db00ab594820026e4f6a82ac2af3dbde7fc7
+        envFrom: &envFrom
+          - secretRef:
+              name: forge-secret
+    containers:
+      app:
+        image:
+          repository: gitea.omv.a113.casa/vpogu/forge
+          tag: 20260623201220-e03fdb5
+        env:
+          TZ: America/New_York
+          FORGE_API_PORT: &httpPort 8080
+          OPENSHELL_GATEWAY_URL: http://openshell.openshell.svc.cluster.local:8080
+          FORGE_WORKFLOWS_DIR: /app/config/workflows
+          FORGE_REPOS_CONFIG: /app/config/repos.yaml
+        envFrom: *envFrom
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *httpPort
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /readyz
+                port: *httpPort
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /readyz
+                port: *httpPort
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              failureThreshold: 30
+        securityContext:
+          allowPrivilegeEscalation: false
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *httpPort
+
+persistence:
+  config:
+    type: configMap
+    name: forge-config
+    advancedMounts:
+      app:
+        app:
+          - path: /app/config
+            readOnly: true
