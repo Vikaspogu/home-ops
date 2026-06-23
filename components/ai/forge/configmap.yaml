@@ -32,7 +32,7 @@ data:
         format_command: null
         description: "Home lab GitOps repo — Flux, Helm charts, K8s manifests"
 
-  workflows/implement.yaml: |-
+  implement.yaml: |-
     name: implement
     description: Plan -> implement -> validate -> PR -> smart review
     nodes:
@@ -78,7 +78,7 @@ data:
         on_max_attempts: blocked
         next_on_iteration: review
 
-  workflows/gitops-update.yaml: |-
+  gitops-update.yaml: |-
     name: gitops-update
     description: GitOps workflow — no planner, no AI review. Tooling validates.
     nodes:
@@ -101,7 +101,7 @@ data:
         depends_on: [open-pr]
         run: echo done
 
-  workflows/conflict-resolution.yaml: |-
+  conflict-resolution.yaml: |-
     name: conflict-resolution
     description: Rebase conflict -> analyze -> auto-resolve or escalate
     nodes:

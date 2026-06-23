@@ -25,7 +25,7 @@ controllers:
           TZ: America/New_York
           FORGE_API_PORT: &httpPort 8080
           OPENSHELL_GATEWAY_URL: http://openshell.openshell.svc.cluster.local:8080
-          FORGE_WORKFLOWS_DIR: /app/config/workflows
+          FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
         envFrom: *envFrom
         resources:
