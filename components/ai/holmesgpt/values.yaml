@@ -146,7 +146,7 @@ customClusterRoleRules:
 
 initContainers:
   - name: install-cilium-cli
-    image: curlimages/curl:8.20.0
+    image: curlimages/curl:8.21.0
     command:
       - sh
       - -c
