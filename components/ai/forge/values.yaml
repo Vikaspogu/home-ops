@@ -4,7 +4,7 @@ controllers:
     strategy: Recreate
     annotations:
       configmap.reloader.stakater.com/reload: forge-config
-      secret.reloader.stakater.com/reload: forge-secret
+      secret.reloader.stakater.com/reload: forge-secret,openshell-client-tls
     pod:
       imagePullSecrets:
         - name: gitea-registry-secret
@@ -24,7 +24,10 @@ controllers:
         env:
           TZ: America/New_York
           FORGE_API_PORT: &httpPort 8080
-          OPENSHELL_GATEWAY_URL: http://openshell.openshell.svc.cluster.local:8080
+          OPENSHELL_GATEWAY_URL: https://openshell.ai.svc.cluster.local:8080
+          OPENSHELL_CLIENT_CA_PATH: /etc/openshell-tls/client/ca.crt
+          OPENSHELL_CLIENT_CERT_PATH: /etc/openshell-tls/client/tls.crt
+          OPENSHELL_CLIENT_KEY_PATH: /etc/openshell-tls/client/tls.key
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
         envFrom: *envFrom
@@ -80,4 +83,12 @@ persistence:
       app:
         app:
           - path: /app/config
+            readOnly: true
+  openshell-client-tls:
+    type: secret
+    name: openshell-client-tls
+    advancedMounts:
+      app:
+        app:
+          - path: /etc/openshell-tls/client
             readOnly: true
