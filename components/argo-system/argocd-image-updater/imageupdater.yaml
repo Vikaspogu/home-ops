@@ -80,8 +80,8 @@ spec:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}$'
           manifestTargets:
             helm:
-              name: controllers.api.containers.app.image.repository
-              tag: controllers.api.containers.app.image.tag
+              name: controllers.app.containers.app.image.repository
+              tag: controllers.app.containers.app.image.tag
     - namePattern: "hermes-agent"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
