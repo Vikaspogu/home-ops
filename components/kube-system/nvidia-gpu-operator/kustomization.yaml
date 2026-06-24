@@ -5,7 +5,7 @@ namespace: kube-system
 helmCharts:
   - name: gpu-operator
     repo: https://helm.ngc.nvidia.com/nvidia
-    version: v26.3.2
+    version: v26.3.3
     releaseName: gpu-operator
     namespace: kube-system
     valuesFile: values.yaml
