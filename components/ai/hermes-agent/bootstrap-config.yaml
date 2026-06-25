@@ -12,6 +12,10 @@ plugins:
     repo: https://gitea.a113.casa/vpogu/ivan-plugin.git
     ref: main
     path: plugin
+  - name: forge
+    repo: https://gitea.a113.casa/vpogu/forge.git
+    ref: main
+    path: plugin
 
 mac_identities:
   - tenant_id: personal
