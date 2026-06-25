@@ -67,7 +67,7 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
-    - namePattern: "forge"
+    - namePattern: "forge-orchestrator"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
         gitConfig:
