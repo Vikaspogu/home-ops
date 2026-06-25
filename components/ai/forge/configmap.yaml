@@ -26,49 +26,34 @@ data:
 
   implement.yaml: |-
     name: implement
-    description: Plan -> implement -> validate -> PR -> smart review
+    description: Plan -> implement -> review loop
     nodes:
       - id: plan
         type: agent
         role: planner
-        description: Load repo context, write implementation plan
-        on_needs_input: pause
       - id: implement
         type: loop
-        role: implementer
         depends_on: [plan]
-        description: Clone repo, write code, run tests
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
-      - id: open-pr
-        type: bash
-        depends_on: [implement]
+        body:
+          type: agent
+          role: implementer
       - id: review
-        type: branch
-        depends_on: [open-pr]
-        routing:
-          small: fast_review
-          large: deep_review
-      - id: fast_review
-        type: agent
-        role: reviewer
-        description: Single-pass. Correctness + security only.
-        on_approved: done
-        on_needs_fix: fix-loop
-      - id: deep_review
-        type: agent
-        role: reviewer
-        description: Full pass — correctness, security, perf, plan alignment.
-        on_approved: done
-        on_needs_fix: fix-loop
+        type: approval
+        depends_on: [implement]
+        message: "Implementation complete. Review the PR and approve or reject."
+        timeout_minutes: 1440
       - id: fix-loop
         type: loop
-        role: implementer
-        until: APPROVED
+        depends_on: [review]
+        until: TESTS_PASS
         max_attempts: 3
         on_max_attempts: blocked
-        next_on_iteration: review
+        body:
+          type: agent
+          role: implementer
 
   gitops-update.yaml: |-
     name: gitops-update
@@ -76,11 +61,12 @@ data:
     nodes:
       - id: implement
         type: loop
-        role: implementer
-        description: Apply the requested change to manifests/Helm values exactly as described.
         until: VALIDATION_PASS
         max_attempts: 2
         on_max_attempts: blocked
+        body:
+          type: agent
+          role: implementer
       - id: validate
         type: bash
         depends_on: [implement]
@@ -88,10 +74,7 @@ data:
       - id: open-pr
         type: bash
         depends_on: [validate]
-      - id: done
-        type: bash
-        depends_on: [open-pr]
-        run: echo done
+        run: echo "PR opened by agent during implement phase"
 
   conflict-resolution.yaml: |-
     name: conflict-resolution

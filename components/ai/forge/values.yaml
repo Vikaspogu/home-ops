@@ -28,6 +28,7 @@ controllers:
           OPENSHELL_CLIENT_CA_PATH: /etc/openshell-tls/client/ca.crt
           OPENSHELL_CLIENT_CERT_PATH: /etc/openshell-tls/client/tls.crt
           OPENSHELL_CLIENT_KEY_PATH: /etc/openshell-tls/client/tls.key
+          FORGE_RUNNER: openshell
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
         envFrom: *envFrom
