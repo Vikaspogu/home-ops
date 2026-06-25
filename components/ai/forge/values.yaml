@@ -7,20 +7,20 @@ controllers:
       secret.reloader.stakater.com/reload: forge-secret,openshell-client-tls
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
+      - name: gitea-registry-secret
     initContainers:
       init-db:
         image:
           repository: ghcr.io/home-operations/postgres-init
           tag: 18.4.0@sha256:ebd9d30add17acdf935d73eb004758c7dfd9388aaa605fda70ad74378ab92aec
         envFrom: &envFrom
-          - secretRef:
-              name: forge-secret
+        - secretRef:
+            name: forge-secret
     containers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/forge
-          tag: 20260625183327-cde82fd
+          tag: 20260625185847-2f6cc98
         env:
           TZ: America/New_York
           FORGE_API_PORT: &httpPort 8080
@@ -68,14 +68,12 @@ controllers:
               failureThreshold: 30
         securityContext:
           allowPrivilegeEscalation: false
-
 service:
   app:
     controller: app
     ports:
       http:
         port: *httpPort
-
 persistence:
   config:
     type: configMap
@@ -83,13 +81,13 @@ persistence:
     advancedMounts:
       app:
         app:
-          - path: /app/config
-            readOnly: true
+        - path: /app/config
+          readOnly: true
   openshell-client-tls:
     type: secret
     name: openshell-client-tls
     advancedMounts:
       app:
         app:
-          - path: /etc/openshell-tls/client
-            readOnly: true
+        - path: /etc/openshell-tls/client
+          readOnly: true
