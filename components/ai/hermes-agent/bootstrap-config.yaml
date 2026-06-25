@@ -15,7 +15,7 @@ plugins:
   - name: forge
     repo: https://gitea.a113.casa/vpogu/forge.git
     ref: main
-    path: plugin/hermes
+    path: plugins/hermes
 
 mac_identities:
   - tenant_id: personal
