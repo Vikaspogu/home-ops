@@ -1,11 +1,8 @@
 {
   "anthropic": {
     "context_limits": {
-      "aws/anthropic/bedrock-claude-opus-4-8": 200000,
       "azure/anthropic/claude-opus-4-8": 200000,
-      "azure/anthropic/claude-sonnet-4-5": 200000,
-      "aws/anthropic/bedrock-claude-sonnet-4-6": 200000,
-      "aws/anthropic/bedrock-claude-opus-4-7": 200000
+      "azure/anthropic/claude-sonnet-4-6": 200000
     }
   },
   "openai": {
