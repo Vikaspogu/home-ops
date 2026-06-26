@@ -100,9 +100,9 @@ toolsets:
   robusta:
     enabled: false
   runbook:
-    enabled: true
+    enabled: false
   connectivity_check:
-    enabled: true
+    enabled: false
 
 crdPermissions:
   argo: true
