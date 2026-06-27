@@ -5,10 +5,21 @@ metadata:
   name: forge-config
 data:
   repos.yaml: |-
+    instances:
+      gitea-home:
+        dialect: gitea
+        base_url: https://gitea.a113.casa
+        token_env: GITEA_TOKEN
+        provider_ref: gitea-home
+      github:
+        dialect: github
+        base_url: https://github.com
+        token_env: GH_TOKEN
+        provider_ref: github
     repos:
       ivan-plugin:
         full_name: vpogu/ivan-plugin
-        host: gitea
+        instance: gitea-home
         default_branch: main
         project_type: python-service
         test_command: "cd service && uv run pytest && uv run ruff check ."
@@ -16,7 +27,7 @@ data:
         description: "Ivan personal data service — fitness, bar, drink/dining/travel journals"
       home-ops:
         full_name: Vikaspogu/home-ops
-        host: github
+        instance: github
         default_branch: main
         project_type: gitops-flux
         default_workflow: gitops-update
