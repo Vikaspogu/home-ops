@@ -5,8 +5,7 @@ workload:
 
 server:
   sandboxNamespace: openshell-sandboxes
-  sandboxImage: ghcr.io/nvidia/openshell/sandbox:latest
-  supervisorImage: ghcr.io/nvidia/openshell/supervisor:latest
+  sandboxImage: ghcr.io/nvidia/openshell-community/sandboxes/base:latest
   appArmorProfile: Unconfined
   externalDbSecret: openshell-db-secret
   auth:
