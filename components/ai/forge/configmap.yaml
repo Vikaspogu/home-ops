@@ -10,7 +10,7 @@ data:
         dialect: gitea
         base_url: https://gitea.a113.casa
         token_env: GITEA_TOKEN
-        provider_ref: gitea-home
+        provider_ref: gitea
       github:
         dialect: github
         base_url: https://github.com

@@ -5,6 +5,7 @@ resources:
   - ./sandbox-namespace.yaml
   - ./externalsecret.yaml
   - ./networkpolicy-client.yaml
+  - ./reflect-client-tls.yaml
 
 patches:
   - patch: |-
