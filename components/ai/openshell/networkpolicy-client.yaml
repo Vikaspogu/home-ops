@@ -23,12 +23,11 @@ spec:
           podSelector:
             matchLabels:
               app.kubernetes.io/name: forge-orchestrator
+        # Sandbox pods carry only agents.x-k8s.io/sandbox-name-hash (unique per pod),
+        # not openshell.ai/managed-by, so gate on the dedicated namespace alone.
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: openshell-sandboxes
-          podSelector:
-            matchLabels:
-              openshell.ai/managed-by: openshell
+              openshell.io/sandbox-namespace: "true"
       ports:
         - protocol: TCP
           port: 8080
