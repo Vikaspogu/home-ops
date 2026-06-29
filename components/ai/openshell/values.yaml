@@ -11,6 +11,7 @@ server:
   auth:
     allowUnauthenticatedUsers: true
   disableTls: false
+  logLevel: debug
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway
