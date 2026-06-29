@@ -22,7 +22,7 @@ image:
 # pullPolicy Always so the floating latest supervisor build is re-pulled instead of a stale node cache.
 supervisor:
   image:
-    tag: latest
+    tag: "0.0.72"
     pullPolicy: Always
 
 resources:
