@@ -54,7 +54,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: kubectl
-          image: registry.k8s.io/kubectl:v1.34.6@sha256:6caded2d48c26684fb0208384f80678adf538c136032f88ed5ce35b1779880fa
+          image: registry.k8s.io/kubectl:v1.36.2@sha256:b0d792e0d8dfb9bb1b922b78b23137e2a34bb6f9667640353a9d2aadd1fd7761
           command:
             - kubectl
             - annotate
