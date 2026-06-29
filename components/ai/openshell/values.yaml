@@ -5,7 +5,7 @@ workload:
 
 server:
   sandboxNamespace: openshell-sandboxes
-  sandboxImage: ghcr.io/nvidia/openshell-community/sandboxes/base:latest
+  sandboxImage: gitea.a113.casa/vpogu/openshell-sandbox:opencode-1.17.11
   appArmorProfile: Unconfined
   externalDbSecret: openshell-db-secret
   auth:
