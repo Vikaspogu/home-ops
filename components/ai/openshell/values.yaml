@@ -12,6 +12,10 @@ server:
     allowUnauthenticatedUsers: true
   disableTls: false
   logLevel: debug
+  # ttlSecs=0 disables JWT expiry; supervisor never calls RefreshSandboxToken, avoiding the
+  # gateway v0.0.72 bug where RefreshSandboxToken returns a JWT with an invalid trailing byte.
+  sandboxJwt:
+    ttlSecs: 0
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway
