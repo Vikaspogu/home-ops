@@ -27,3 +27,11 @@ resources:
 service:
   type: ClusterIP
   port: 8080
+
+# Pin server cert SANs to ns ai; default SANs hardcode ns openshell so sandbox agents fail TLS to openshell.ai.svc.cluster.local.
+pkiInitJob:
+  serverDnsNames:
+    - openshell
+    - openshell.ai.svc
+    - openshell.ai.svc.cluster.local
+    - localhost
