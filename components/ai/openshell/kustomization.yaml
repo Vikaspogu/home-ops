@@ -8,10 +8,6 @@ resources:
   - ./reflect-client-tls.yaml
 
 patches:
-  - path: configmap-gateway-jwt-patch.yaml
-    target:
-      kind: ConfigMap
-      name: openshell-config
   - patch: |-
       apiVersion: apps/v1
       kind: Deployment

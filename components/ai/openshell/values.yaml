@@ -5,18 +5,12 @@ workload:
 
 server:
   sandboxNamespace: openshell-sandboxes
-  sandboxImage: gitea.a113.casa/vpogu/openshell-sandbox:opencode-1.17.11
   appArmorProfile: Unconfined
   externalDbSecret: openshell-db-secret
   auth:
     allowUnauthenticatedUsers: true
   disableTls: false
-  logLevel: debug
-  # ttlSecs=86400: kustomize configmap patch overrides this to the literal value anyway (Helm
-  # default filter treats 0 as falsy). Large TTL tests whether the supervisor refresh timer is
-  # TTL-relative (3600/360=10s crash, 86400/360=240s would be ~4min before crash).
-  sandboxJwt:
-    ttlSecs: 86400
+  logLevel: info
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway
