@@ -12,10 +12,11 @@ server:
     allowUnauthenticatedUsers: true
   disableTls: false
   logLevel: debug
-  # ttlSecs=0 disables JWT expiry; supervisor never calls RefreshSandboxToken, avoiding the
-  # gateway v0.0.72 bug where RefreshSandboxToken returns a JWT with an invalid trailing byte.
+  # ttlSecs=86400: kustomize configmap patch overrides this to the literal value anyway (Helm
+  # default filter treats 0 as falsy). Large TTL tests whether the supervisor refresh timer is
+  # TTL-relative (3600/360=10s crash, 86400/360=240s would be ~4min before crash).
   sandboxJwt:
-    ttlSecs: 0
+    ttlSecs: 86400
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway

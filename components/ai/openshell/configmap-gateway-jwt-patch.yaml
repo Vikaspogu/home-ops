@@ -1,9 +1,9 @@
-# Patch: force ttl_secs = 0 in the gateway TOML regardless of Helm template rendering.
-# Helm `default` treats 0 as falsy so `ttlSecs: 0` in values.yaml silently falls
-# back to 3600 in older chart builds. With ttl_secs = 0 the gateway issues
-# non-expiring JWTs; the supervisor never schedules RefreshSandboxToken, which
-# avoids the gateway v0.0.72 bug where that RPC returns a JWT with an invalid
-# trailing byte causing an immediate supervisor crash at t+10s.
+# Patch: force ttl_secs = 86400 (24h) in the gateway TOML regardless of Helm template rendering.
+# Helm `default` treats 0 as falsy so `ttlSecs: 0` in values.yaml silently falls back to 3600.
+# With ttl_secs = 0 the gateway returns a trailers-only gRPC error for IssueSandboxToken (bootstrap
+# fails immediately). With ttl_secs = 3600 the supervisor crashes at t+10s via RefreshSandboxToken.
+# Hypothesis: supervisor refresh timer = TTL/360, so 3600/360 = 10s crash. Setting 86400 pushes
+# the refresh to t+240s - verifying TTL-relative timer. Will bump to 31536000 (1yr) once confirmed.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -38,7 +38,7 @@ data:
     public_key_path  = "/etc/openshell-jwt/public.pem"
     kid_path         = "/etc/openshell-jwt/kid"
     gateway_id       = "openshell"
-    ttl_secs         = 0
+    ttl_secs         = 86400
 
     [openshell.drivers.kubernetes]
     grpc_endpoint                = "https://openshell.ai.svc.cluster.local:8080"
