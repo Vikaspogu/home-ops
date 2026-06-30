@@ -14,7 +14,7 @@ server:
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway
-  tag: "v0.0.72"
+  tag: "0.0.72"
   pullPolicy: Always
 
 # Supervisor tag defaults to chart appVersion (dev); pin to latest to match gateway:latest or the bootstrap handshake fails (version skew).
