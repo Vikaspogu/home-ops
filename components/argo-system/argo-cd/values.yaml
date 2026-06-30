@@ -1,4 +1,7 @@
 fullnameOverride: "argocd"
+global:
+  networkPolicy:
+    create: false
 crds:
   install: true
   # -- Keep CRDs on chart uninstall
