@@ -11,6 +11,10 @@ server:
     allowUnauthenticatedUsers: true
   disableTls: false
   logLevel: info
+  sandboxImage: gitea.a113.casa/vpogu/openshell-sandbox:opencode-1.17.11
+  sandboxImagePullPolicy: Always
+  sandboxImagePullSecrets:
+    - name: gitea-registry-secret
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway
