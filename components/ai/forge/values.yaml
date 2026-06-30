@@ -31,6 +31,7 @@ controllers:
           FORGE_RUNNER: openshell
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
+          FORGE_DEFAULT_MODEL: azure/anthropic/claude-sonnet-4-6
         envFrom: *envFrom
         resources:
           requests:
