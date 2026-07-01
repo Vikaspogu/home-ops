@@ -32,9 +32,11 @@ kustomize build --enable-helm "${NTFY_COMPONENT}" >"${manifest}"
 
 service_count="$(resource_count Service)"
 deployment_count="$(resource_count Deployment)"
+http_route_count="$(resource_count HTTPRoute)"
 
 [[ "${service_count}" == "1" ]] || fail "rendered ntfy Service is missing or ambiguous"
 [[ "${deployment_count}" == "1" ]] || fail "rendered ntfy Deployment is missing or ambiguous"
+[[ "${http_route_count}" == "1" ]] || fail "rendered ntfy HTTPRoute is missing or ambiguous"
 [[ "$(ntfy_container_count)" == "1" ]] || fail "rendered ntfy container is missing or ambiguous"
 
 [[ "$(
@@ -47,6 +49,22 @@ deployment_count="$(resource_count Deployment)"
         | .value
     ' "${manifest}"
 )" == ":8080" ]] || fail "rendered ntfy Deployment must set NTFY_LISTEN_HTTP to :8080"
+[[ "$(
+    yq ea -r '
+        select(.kind == "Deployment" and .metadata.name == "ntfy")
+        | .spec.template.spec.securityContext.runAsNonRoot
+    ' "${manifest}"
+)" == "true" ]] || fail "rendered ntfy Deployment pod security context must set runAsNonRoot to true"
+
+[[ "$(
+    yq ea -r '
+        select(.kind == "HTTPRoute" and .metadata.name == "ntfy")
+        | .spec.rules[]?.backendRefs[]?
+        | [.name, .port]
+        | @tsv
+    ' "${manifest}"
+)" == $'ntfy\t80' ]] || fail "rendered ntfy HTTPRoute backend must target ntfy Service port 80"
+
 
 [[ "$(
     yq ea -r '
@@ -76,4 +94,4 @@ deployment_count="$(resource_count Deployment)"
     ' "${manifest}"
 )" == "8080" ]] || fail "rendered ntfy readiness HTTP probe must target port 8080"
 
-printf 'PASS: rendered ntfy listener, Service, and probe ports are consistent\n'
+printf 'PASS: rendered ntfy listener, Service, HTTPRoute, pod security context, and probe ports are consistent\n'
