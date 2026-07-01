@@ -31,7 +31,7 @@ data:
         default_branch: main
         project_type: gitops-flux
         default_workflow: gitops-update
-        test_command: "kubeconform -strict -ignore-missing-schemas kubernetes/"
+        test_command: "./scripts/kubeconform.sh"
         format_command: null
         description: "Home lab GitOps repo — Flux, Helm charts, K8s manifests"
 
@@ -87,7 +87,7 @@ data:
         type: bash
         depends_on: [implement]
         model: aws/anthropic/claude-haiku-4-5-v1
-        run: kubeconform -strict -ignore-missing-schemas kubernetes/
+        run: ./scripts/kubeconform.sh
       - id: open-pr
         type: bash
         depends_on: [validate]
