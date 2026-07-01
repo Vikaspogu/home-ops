@@ -23,7 +23,8 @@ controllers:
           GITEA__ACTIONS__ENABLED: "true"
           GITEA__ACTIONS__DEFAULT_ACTIONS_URL: "https://gitea.com"
           GITEA__PACKAGES__ENABLED: "true"
-          # Native garbage collection removes unreferenced blobs; version retention stays in the custom CronJob.
+          # Native cleanup applies enabled database rules before collecting unreferenced blobs.
+          # Keep those rules disabled because version retention stays in the custom CronJob.
           GITEA__cron.cleanup_packages__ENABLED: "true"
           GITEA__cron.cleanup_packages__RUN_AT_START: "true"
           GITEA__cron.cleanup_packages__SCHEDULE: "@midnight"
