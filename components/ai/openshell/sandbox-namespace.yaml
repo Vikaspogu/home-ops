@@ -5,3 +5,4 @@ metadata:
   name: openshell-sandboxes
   labels:
     openshell.io/sandbox-namespace: "true"
+    pod-security.kubernetes.io/enforce: privileged
