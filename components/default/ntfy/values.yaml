@@ -1,0 +1,64 @@
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    pod:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+    containers:
+      app:
+        image:
+          repository: binwiederhier/ntfy
+          tag: v2.25.0
+        args: ["serve"]
+        env:
+          NTFY_BASE_URL: "https://ntfy.${CLUSTER_DOMAIN}"
+          NTFY_BEHIND_PROXY: "true"
+          NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+          NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+          NTFY_AUTH_DEFAULT_ACCESS: deny-all
+        envFrom:
+          - secretRef:
+              name: ntfy-secret
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /v1/health
+                port: &port 80
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        resources:
+          requests:
+            cpu: 10m
+            memory: 250Mi
+          limits:
+            memory: 500Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  data:
+    enabled: true
+    existingClaim: ntfy
+    globalMounts:
+      - path: /var/lib/ntfy
