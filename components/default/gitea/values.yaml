@@ -23,8 +23,11 @@ controllers:
           GITEA__ACTIONS__ENABLED: "true"
           GITEA__ACTIONS__DEFAULT_ACTIONS_URL: "https://gitea.com"
           GITEA__PACKAGES__ENABLED: "true"
-          # Disabled in favor of custom CronJob that keeps latest 3 tags
-          GITEA__cron.cleanup_packages__ENABLED: "false"
+          # Native garbage collection removes unreferenced blobs; version retention stays in the custom CronJob.
+          GITEA__cron.cleanup_packages__ENABLED: "true"
+          GITEA__cron.cleanup_packages__RUN_AT_START: "true"
+          GITEA__cron.cleanup_packages__SCHEDULE: "@midnight"
+          GITEA__cron.cleanup_packages__OLDER_THAN: "24h"
           GITEA__database__DB_TYPE: "postgres"
           GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
           GITEA__REPOSITORY__DEFAULT_BRANCH: "main"
