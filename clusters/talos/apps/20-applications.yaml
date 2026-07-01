@@ -159,13 +159,13 @@ applications:
           - name: VOLSYNC_SCHEDULE
             value: "40 */6 * * *"
 
-  gotify:
+  ntfy:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
     destination:
       namespace: default
     source:
-      path: components/default/gotify
+      path: components/default/ntfy
       plugin:
         env:
           - name: STORAGE_CLASS

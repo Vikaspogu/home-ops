@@ -2,21 +2,21 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: &app gotify
+  name: &app ntfy
   labels:
     app.kubernetes.io/instance: *app
     app.kubernetes.io/name: *app
   annotations:
-    gethomepage.dev/href: "https://gotify.${CLUSTER_DOMAIN}"
+    gethomepage.dev/href: "https://ntfy.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Ingress
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/gotify.png
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/ntfy.png
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
       namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
-  hostnames: ["gotify.${CLUSTER_DOMAIN}"]
+  hostnames: ["ntfy.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
         - name: *app
