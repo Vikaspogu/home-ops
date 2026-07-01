@@ -24,6 +24,7 @@ configMap:
     KUBECHECKS_VCS_EMAIL: "vikaspoguadf@gmail.com"
     KUBECHECKS_VCS_WEBHOOK_SECRET_KEY: "KUBECHECKS_WEBHOOK_SECRET"
     KUBECHECKS_TIDY_OUTDATED_COMMENTS_MODE: "hide" # other options delete
+    KUBECHECKS_REPLAN_COMMENT_MSG: "/recheck"
     GRPC_ENFORCE_ALPN_ENABLED: "false"
     KUBECHECKS_ENABLE_PREUPGRADE: "false"
     KUBECHECKS_ENABLE_KUBECONFORM: "false"
@@ -42,7 +43,7 @@ deployment:
   image:
     pullPolicy: Always
     name: "ghcr.io/zapier/kubechecks"
-    tag: "v3.0.0-rc1"
+    tag: "v3.2.0"
   env: []
   envFrom:
     - secretRef:
