@@ -29,24 +29,25 @@ Before syncing the Argo applications, create or review the `ntfy` item in the 1P
 | `NTFY_AUTH_TOKENS` | ntfy server | Server-side token definitions |
 | `ALERTMANAGER_PUBLISH_TOKEN` | Alertmanager ExternalSecret | Publish only to `infra-alerts` |
 | `ARGOCD_PUBLISH_TOKEN` | Argo CD ExternalSecret | Publish only to `argocd-events` |
-| `HERMES_PUBLISH_TOKEN` | Hermes ExternalSecret | Publish only to `hermes-out` |
+| `HERMES_PUBLISH_TOKEN` | Hermes ExternalSecret | Hermes adapter token (legacy name): read only from `hermes-in` and publish only to `hermes-out` |
+| `HERMES_INBOUND_PUBLISH_TOKEN` | Protected operator/client runtime state | Publish only to `hermes-in` |
 | `MEDIA_PUBLISH_TOKEN` | Protected media application settings | Publish only to `media-events` |
 
 Use ntfy's documented access-control syntax when composing the three server-side fields. The repository intentionally supplies only the field names; credentials and ACL values remain in 1Password. Validate the item has every listed field before the first sync, because a missing field prevents External Secrets from rendering its target Secret.
 
 ### Topic ACL model
 
-Start from deny-by-default. Grant only the following capabilities, using distinct identities or tokens rather than sharing a broad operator credential:
+Start from deny-by-default. Grant only the following capabilities. Despite its legacy name, `HERMES_PUBLISH_TOKEN` is the Hermes adapter identity and has one explicit two-topic entitlement: read-only access to `hermes-in` and write-only access to `hermes-out`. Use the distinct `HERMES_INBOUND_PUBLISH_TOKEN` operator/client identity for write-only publishing to `hermes-in`.
 
 | Topic | Read access | Write access | Required restriction |
 | --- | --- | --- | --- |
 | `infra-alerts` | Operators and alert subscribers | Alertmanager publisher only | The publisher is write-only and cannot read alerts or publish to another topic. |
 | `argocd-events` | Operators and Argo CD event subscribers | Argo CD publisher only | The publisher is write-only and cannot read events or publish to another topic. |
 | `media-events` | Operators and media-event subscribers | Media publisher only | The publisher is write-only and cannot read event history or publish elsewhere. |
-| `hermes-in` | Hermes inbound-message subscriber and designated operators, only when required | Hermes input publisher only | Do not give a general subscriber or output publisher write access to this control boundary. |
-| `hermes-out` | Operators and Hermes notification subscribers | Hermes publisher only | The Hermes publisher is write-only and cannot publish to `hermes-in` or other topics. |
+| `hermes-in` | Hermes adapter and designated operators, only when required | Designated operator/client inbound publisher only | `HERMES_PUBLISH_TOKEN` lets the Hermes adapter read this control boundary only; `HERMES_INBOUND_PUBLISH_TOKEN` lets the separate operator/client identity write to it only. |
+| `hermes-out` | Operators and Hermes notification subscribers | Hermes adapter only | `HERMES_PUBLISH_TOKEN` lets the Hermes adapter publish here only; it cannot publish to `hermes-in` or another topic. |
 
-An operator/subscriber identity should have read access only to the topics it needs. Each publishing identity must be least-privilege, write-only, and limited to its single topic. Do not give a publisher wildcard topic permissions, read permission, or administrative authority. Keep the credential material only in the 1Password item and protected application settings.
+An operator/subscriber identity should have read access only to the topics it needs. Other than the Hermes adapter's explicit read-only `hermes-in` access, each publishing identity must be write-only and limited to its single topic. Do not give a publishing identity wildcard topic permissions or administrative authority. Keep credential material only in the 1Password item and protected application settings.
 
 ## Sync and transport verification
 
@@ -60,14 +61,14 @@ After the 1Password item is complete, sync the ntfy, Alertmanager, Argo CD, and 
 
 2. Confirm the authorization default is effective. From an unauthenticated client, attempt an intentionally unauthorized publish and record that the request is denied (HTTP 401 or 403 is acceptable). Do not turn off authentication, weaken the default ACL, or use a production publishing token in logs to make this pass.
 
-3. Confirm authorized publishing for each configured publisher with a benign, uniquely identifiable test message. Supply the corresponding write-only credential from protected runtime state, use an `Authorization: Bearer` header, and set `Content-Type: text/plain`. Do not use a token in a URL, command history, ticket, or captured output.
+3. Confirm authorized publishing for each configured publisher with a benign, uniquely identifiable test message. Supply the corresponding least-privilege credential from protected runtime state: use `HERMES_INBOUND_PUBLISH_TOKEN` only for the `hermes-in` operator/client test, and verify `HERMES_PUBLISH_TOKEN` only publishes to `hermes-out`. Use an `Authorization: Bearer` header and set `Content-Type: text/plain`. Do not use a token in a URL, command history, ticket, or captured output.
 
-4. While authenticated as the appropriate read-only subscriber, subscribe to each tested topic and confirm delivery of its matching message. Verify that a subscriber cannot publish and that each publisher cannot read. Treat the message body as operational data and remove test messages or use a dedicated non-production window according to local retention practice.
+4. While authenticated as the appropriate read-only subscriber, subscribe to each tested topic and confirm delivery of its matching message. Verify that a subscriber cannot publish, each write-only publisher cannot read, and the Hermes adapter can read only `hermes-in` and publish only to `hermes-out`. Treat the message body as operational data and remove test messages or use a dedicated non-production window according to local retention practice.
 
 5. Verify the configured integrations individually:
    - Alertmanager: trigger or observe a safe test alert and its resolved transition on `infra-alerts`; the configured receiver uses the Alertmanager webhook template and sends resolved notifications.
    - Argo CD: cause or observe a non-disruptive notification condition and confirm its event reaches `argocd-events` through the native webhook notifier.
-   - Hermes: send a benign, non-action message to `hermes-in` only through its designated inbound publisher, and verify the expected message-handling path. Confirm that Hermes continues to use Telegram as its privileged control surface. Its ntfy tool allowlist is limited to `clarify`, `cronjob`, `delegation`, `memory`, `messaging`, `session_search`, `skills`, `todo`, `tts`, `vision`, and `web`; it has no ntfy known-plugin toolset and no browser, code execution, computer-use, terminal, file, or Ivan tools on the ntfy surface. A successful ntfy test must never be interpreted as permission to perform privileged Hermes actions.
+   - Hermes: send a benign, non-action message to `hermes-in` only through the designated operator/client identity using `HERMES_INBOUND_PUBLISH_TOKEN`, and verify the expected message-handling path. Confirm that Hermes continues to use Telegram as its privileged control surface. Its ntfy tool allowlist is limited to `clarify`, `cronjob`, `delegation`, `memory`, `messaging`, `session_search`, `skills`, `todo`, `tts`, `vision`, and `web`; it has no ntfy known-plugin toolset and no browser, code execution, computer-use, terminal, file, or Ivan tools on the ntfy surface. A successful ntfy test must never be interpreted as permission to perform privileged Hermes actions.
 
 If a check fails, inspect Argo application health, ExternalSecret reconciliation status, route/TLS health, and the relevant ACL **without printing Secret values**. Correct the missing field or over-broad/insufficient permission in 1Password, then resync and repeat the complete authorization and delivery checks.
 
@@ -95,7 +96,7 @@ Do not configure Jellyfin or qBittorrent as part of this cutover. Their plugin/e
 
 HolmesGPT remains Slack-only. The deployed/current upstream destinations support Slack and PagerDuty, not ntfy; do not claim a HolmesGPT-to-ntfy integration or introduce an adapter to work around that limitation.
 
-Gotify is not automatically removed by this cutover. Before any decommissioning, audit all publishers, user clients, and operational dependencies for Gotify, and preserve a rollback decision until ntfy delivery has been proven for every migrated use case. Homepage currently consumes a Gotify token through `HOMEPAGE_VAR_GOTIFY_API_TOKEN`; after the audit confirms that token is unused, remove that Homepage ExternalSecret mapping in a dedicated Git-reviewed change and rotate or retire the corresponding Gotify credential. Only then plan the separate Gotify service retirement. Do not remove the Homepage token mapping merely because ntfy is healthy.
+The GitOps Gotify application/component and Homepage mapping were removed in this branch. Before destroying any remaining Gotify data or 1Password item, audit all external publishers, user clients, and operational dependencies for Gotify, prove ntfy delivery for every migrated use case, and make an explicit rollback decision. Do not destroy remaining Gotify data or items merely because ntfy is healthy.
 
 ## Primary documentation
 
