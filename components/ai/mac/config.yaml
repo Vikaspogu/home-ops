@@ -90,7 +90,7 @@ notifier_channels:
     target:
       hermes_instance_id: hermes_ai
     metadata:
-      description: "Deliver MAC notifications to IVAN via Telegram"
+      description: "Task, fleet, and project events reach Hermes"
     enabled: true
 
 attestation_keys:
