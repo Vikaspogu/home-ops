@@ -19,6 +19,7 @@ controllers:
         args: ["serve"]
         env:
           NTFY_BASE_URL: "https://ntfy.${CLUSTER_DOMAIN}"
+          NTFY_LISTEN_HTTP: ":8080"
           NTFY_BEHIND_PROXY: "true"
           NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
           NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
@@ -33,7 +34,7 @@ controllers:
             spec:
               httpGet:
                 path: /v1/health
-                port: &port 80
+                port: 8080
               initialDelaySeconds: 0
               periodSeconds: 10
               timeoutSeconds: 1
@@ -54,7 +55,8 @@ service:
   app:
     ports:
       http:
-        port: *port
+        port: 80
+        targetPort: 8080
 
 persistence:
   data:
