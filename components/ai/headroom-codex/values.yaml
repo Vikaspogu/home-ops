@@ -1,0 +1,115 @@
+controllers:
+  headroom-codex:
+    replicas: 1
+    strategy: Recreate
+    pod:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        seccompProfile:
+          type: RuntimeDefault
+    containers:
+      app:
+        image:
+          repository: ghcr.io/chopratejas/headroom
+          tag: nonroot
+        # Image ENTRYPOINT is already `headroom proxy`; pass only flags here.
+        args:
+          - --host
+          - 0.0.0.0
+          - --port
+          - "8787"
+        env:
+          TZ: America/New_York
+          HEADROOM_HOST: "0.0.0.0"
+          HEADROOM_PORT: "8787"
+          HEADROOM_LOG_LEVEL: INFO
+          HEADROOM_DEFAULT_MODE: optimize
+          HEADROOM_TELEMETRY: "off"
+          HEADROOM_MODEL_LIMITS: /config/models.json
+          HEADROOM_SAVINGS_PATH: /data/.headroom/proxy_savings.json
+          HEADROOM_STORE_URL: sqlite:////data/.headroom/headroom.db
+          HOME: /data
+          # ChatGPT-OAuth passthrough for omp's openai-codex provider: NO
+          # OPENAI_API_KEY here — the client's bearer flows through untouched.
+          OPENAI_TARGET_API_URL: https://chatgpt.com/backend-api
+          # omp tool names (read, memory_*, dcp_compress) — read_file kept for
+          # Claude Code clients. Aligned with DCP's protectedTools.
+          HEADROOM_EXCLUDE_TOOLS: "read,read_file,memory_search,memory_save,dcp_compress,headroom_retrieve,mcp__headroom_codex_headroom_retrieve,mcp__headroom_hub_headroom_retrieve"
+          # Compress only content ≥3 turns old (protects provider cache prefix);
+          # file reads stay verbatim 4 turns (hashline edits, DCP purge window).
+          HEADROOM_COMPRESSION_STABLE_AFTER_TURN: "3"
+          HEADROOM_STALE_READ_COMPRESS_AFTER_TURNS: "4"
+          # No HEADROOM_FORCE_KOMPRESS here: the int8 ONNX model lives on the
+          # main headroom's PVC; this instance uses the built-in compressors.
+          HEADROOM_OUTPUT_SHAPER: "1"
+          HEADROOM_EFFORT_ROUTER: "1"
+          HEADROOM_OUTPUT_HOLDOUT: "0.1"
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 8787
+              failureThreshold: 30
+              periodSeconds: 5
+              timeoutSeconds: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 8787
+              failureThreshold: 3
+              periodSeconds: 10
+              timeoutSeconds: 5
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: 8787
+              failureThreshold: 3
+              periodSeconds: 30
+              timeoutSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+service:
+  app:
+    controller: headroom-codex
+    ports:
+      http:
+        port: 8787
+persistence:
+  # Savings stats and CCR cache only — ephemeral is acceptable; no PVC/volsync.
+  data:
+    type: emptyDir
+    globalMounts:
+      - path: /data
+  config:
+    type: configMap
+    name: headroom-codex-model-limits
+    globalMounts:
+      - path: /config
+        readOnly: true
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

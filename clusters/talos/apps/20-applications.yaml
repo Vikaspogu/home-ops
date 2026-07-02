@@ -604,6 +604,14 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
+  headroom-codex:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/headroom-codex
+
   valetudopng:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
