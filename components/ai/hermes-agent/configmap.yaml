@@ -214,10 +214,9 @@ data:
         - ivan-personal
         - disk-cleanup
         - rtk-rewrite
-        - mac
+        - forge
         - web/ddgs
         - security-guidance
-        - observability/langfuse
     platforms:
       telegram:
         extra:

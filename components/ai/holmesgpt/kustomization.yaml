@@ -6,7 +6,6 @@ resources:
   - ./namespace.yaml
   - ./externalsecret.yaml
   - ./http-route.yaml
-  - ./scheduled-healthchecks.yaml
 
 helmCharts:
   - name: holmes

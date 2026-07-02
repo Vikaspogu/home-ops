@@ -4,10 +4,6 @@ memory:
   provider: agentmemory
 
 plugins:
-  - name: mac
-    repo: https://github.com/jordanhubbard/mac.git
-    ref: main
-    path: plugin
   - name: ivan-personal
     repo: https://gitea.a113.casa/vpogu/ivan-plugin.git
     ref: main

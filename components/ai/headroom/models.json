@@ -9,8 +9,7 @@
     "context_limits": {
       "azure/openai/gpt-5.3-codex": 400000,
       "openai/openai/gpt-5.3-codex": 400000,
-      "openai/openai/gpt-5.5": 400000,
-      "nvidia/openai/gpt-oss-120b": 131072
+      "openai/openai/gpt-5.5": 400000
     }
   },
   "google": {

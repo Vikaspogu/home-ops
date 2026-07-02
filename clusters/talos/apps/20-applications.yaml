@@ -542,14 +542,6 @@ applications:
     source:
       path: components/ai/holmesgpt
 
-  mac:
-    annotations:
-      argocd.argoproj.io/sync-wave: "23"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/mac
-
   hermes-agent:
     annotations:
       argocd.argoproj.io/sync-wave: "24"
