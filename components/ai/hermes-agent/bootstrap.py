@@ -34,21 +34,6 @@ def _http(method: str, url: str, token: str, body=None):
         return e.code, e.read().decode("utf-8", "replace")
 
 
-def wait_for_mac_api(url: str) -> None:
-    for attempt in range(60):
-        try:
-            with urlopen(url.rstrip("/") + "/health", timeout=3) as r:
-                if r.status == 200:
-                    print(f"[ok] mac-api reachable at {url}")
-                    return
-        except (HTTPError, URLError, TimeoutError):
-            pass
-        print(f"[wait] mac-api /health not ready ({attempt+1}/60)...")
-        time.sleep(2)
-    print("FAIL: mac-api /health never became ready", file=sys.stderr)
-    sys.exit(1)
-
-
 def run_hermes_seed_config() -> None:
     print("[ok] running hermes-seed-config")
     subprocess.check_call(["hermes-seed-config"])
@@ -90,42 +75,8 @@ def install_plugin(name: str, repo: str, ref: str, sub_path: str) -> None:
     print(f"[ok] plugin {name} installed -> {target}")
 
 
-def register_mac_identities(identities: list, mac_url: str, mac_token: str) -> None:
-    base = mac_url.rstrip("/")
-    for ident in identities:
-        print(f"--- identity {ident['instance_id']} ---")
-        status, t = _http("POST", base + "/tenants", mac_token,
-                          {"name": ident["tenant_name"], "tenant_id": ident["tenant_id"]})
-        if status >= 400:
-            print(f"FAIL tenant: HTTP {status} {t}", file=sys.stderr); sys.exit(5)
-        print(f"[ok] tenant id={t.get('id')}")
-        status, p = _http("POST", base + "/personas", mac_token, {
-            "tenant_id": ident["tenant_id"], "name": ident["persona_name"],
-            "persona_id": ident["persona_id"],
-            "soul_ref": ident["soul_ref"], "memory_scope": ident["memory_scope"],
-        })
-        if status >= 400:
-            print(f"FAIL persona: HTTP {status} {p}", file=sys.stderr); sys.exit(6)
-        print(f"[ok] persona id={p.get('id')}")
-        status, h = _http("POST", base + "/hermes-instances", mac_token, {
-            "tenant_id": ident["tenant_id"], "name": ident["instance_name"],
-            "instance_id": ident["instance_id"], "persona_id": ident["persona_id"],
-            "home_ref": ident.get("home_ref", ""),
-        })
-        if status >= 400:
-            print(f"FAIL instance: HTTP {status} {h}", file=sys.stderr); sys.exit(7)
-        print(f"[ok] instance id={h.get('id')}")
-
-
 def main() -> int:
     cfg = yaml.safe_load(Path(CONFIG_PATH).read_text()) or {}
-    mac_url = os.environ.get("MAC_URL") or cfg.get("mac_url", "")
-    mac_token = os.environ.get("MAC_WORKER_TOKEN", "")
-    if not mac_url or not mac_token:
-        print("FAIL: MAC_URL and MAC_WORKER_TOKEN are required", file=sys.stderr)
-        return 2
-
-    wait_for_mac_api(mac_url)
     run_hermes_seed_config()
 
     PLUGINS_ROOT.mkdir(parents=True, exist_ok=True)
@@ -137,7 +88,6 @@ def main() -> int:
             sub_path=plugin.get("path", "plugin"),
         )
 
-    register_mac_identities(cfg.get("mac_identities") or [], mac_url, mac_token)
     print("\n✓ hermes-bootstrap complete")
     return 0
 
