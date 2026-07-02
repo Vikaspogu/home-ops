@@ -76,7 +76,9 @@ data:
     nodes:
       - id: implement
         type: loop
-        until: VALIDATION_PASS
+        # TESTS_PASS is the agent contract's success outcome (checks green +
+        # PR opened); VALIDATION_PASS here made the loop ignore success (task 69).
+        until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
         model: azure/anthropic/claude-sonnet-4-6
