@@ -1,0 +1,80 @@
+---
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      runner:
+        image:
+          repository: gitea/act_runner
+          tag: 0.6.1@sha256:b5c35d6bdbb9bb25e531230bfc7cc663cb751406cbec90a2a891b85fea54de86
+        command:
+          - sh
+          - -c
+          - |
+            while ! nc -z localhost 2375 </dev/null; do
+              echo 'waiting for docker daemon...'
+              sleep 5
+            done
+            /sbin/tini -- run.sh
+        env:
+          DOCKER_HOST: tcp://localhost:2375
+          GITEA_INSTANCE_URL: "https://gitea.${CLUSTER_DOMAIN}"
+          GITEA_RUNNER_LABELS: "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-24.04,ubuntu-24.04:docker://docker.gitea.com/runner-images:ubuntu-24.04,ubuntu-22.04:docker://docker.gitea.com/runner-images:ubuntu-22.04"
+          CONFIG_FILE: /config/config.yaml
+        envFrom:
+          - secretRef:
+              name: gitea-runner-burst-secret
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+      daemon:
+        image:
+          repository: docker
+          tag: dind
+        env:
+          DOCKER_TLS_CERTDIR: ""
+        securityContext:
+          # Standard (root) Docker-in-Docker. dockerd needs full privileges to
+          # manage cgroups, the bridge network and overlayfs for image builds,
+          # so the daemon runs privileged. Isolation is at the node level only;
+          # Kata VM sandboxing was ruled out (incompatible with this cluster's
+          # Cilium netkit-L3 datapath — kata-containers/kata-containers#12159).
+          privileged: true
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            memory: 2Gi
+
+persistence:
+  docker-certs:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /certs
+  docker-data:
+    enabled: true
+    existingClaim: gitea-runner-burst-docker
+    advancedMounts:
+      app:
+        daemon:
+          - path: /var/lib/docker
+  config:
+    enabled: true
+    type: configMap
+    name: gitea-runner-burst-config
+    globalMounts:
+      - path: /config
+        readOnly: true
+  data:
+    enabled: true
+    existingClaim: gitea-runner-burst
+    globalMounts:
+      - path: /data

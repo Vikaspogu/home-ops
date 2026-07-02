@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gitea-runner-config
+  name: gitea-runner-burst-config
 data:
   config.yaml: |
     log:
@@ -10,7 +10,7 @@ data:
 
     runner:
       file: /data/.runner
-      capacity: 2
+      capacity: 1
       timeout: 3h
       insecure: false
       fetch_timeout: 5s
