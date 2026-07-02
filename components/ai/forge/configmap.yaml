@@ -76,8 +76,6 @@ data:
     nodes:
       - id: implement
         type: loop
-        # TESTS_PASS is the agent contract's success outcome (checks green +
-        # PR opened); VALIDATION_PASS here made the loop ignore success (task 69).
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
@@ -85,9 +83,6 @@ data:
         body:
           type: agent
           role: implementer
-      # validate node removed: kustomize remote resources cannot be fetched
-      # inside the sandbox, and agent-driven bash is not deterministic
-      # validation (task 70). Deterministic validation returns with Part B.
 
   conflict-resolution.yaml: |-
     name: conflict-resolution
