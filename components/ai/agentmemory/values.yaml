@@ -37,6 +37,13 @@ controllers:
           III_REST_PORT: "3111"
           RUST_LOG: warn
           AGENTMEMORY_DROP_STALE_INDEX: "true"
+          # Consolidation LLM via in-cluster headroom; OPENAI_API_KEY comes from
+          # the secret. Consolidation activates when a key is present.
+          OPENAI_BASE_URL: http://headroom.ai.svc.cluster.local:8787/v1
+          OPENAI_MODEL: gcp/google/gemini-3.5-flash
+          # Compress on consolidation cadence only, not per observation — omp's
+          # per-tool capture would otherwise trigger an LLM call per tool result.
+          AGENTMEMORY_AUTO_COMPRESS: "false"
           AGENTMEMORY_VIEWER_HOST: "0.0.0.0"
           VIEWER_ALLOWED_HOSTS: "agentmemory.${CLUSTER_DOMAIN}"
           VIEWER_ALLOWED_ORIGINS: "https://agentmemory.${CLUSTER_DOMAIN}"
