@@ -36,7 +36,13 @@ controllers:
           HEADROOM_SAVINGS_PATH: /data/.headroom/proxy_savings.json
           HEADROOM_STORE_URL: sqlite:////data/.headroom/headroom.db
           HOME: /data
-          HEADROOM_EXCLUDE_TOOLS: "read_file,headroom_retrieve"
+          # omp tool names (read, memory_*, dcp_compress) — read_file kept for
+          # Claude Code clients. Aligned with DCP's protectedTools.
+          HEADROOM_EXCLUDE_TOOLS: "read,read_file,memory_search,memory_save,dcp_compress,headroom_retrieve,mcp__headroom_codex_headroom_retrieve,mcp__headroom_hub_headroom_retrieve"
+          # Compress only content ≥3 turns old (protects prompt-cache prefix);
+          # file reads stay verbatim 4 turns (hashline edits, DCP purge window).
+          HEADROOM_COMPRESSION_STABLE_AFTER_TURN: "3"
+          HEADROOM_STALE_READ_COMPRESS_AFTER_TURNS: "4"
           # Kompress ML text compression. Image lacks torch, but onnxruntime +
           # the int8 model are present on the PVC; pin the ONNX/CPU backend so it
           # never looks for torch. Validated working in-pod (onnx_cpu, no torch).
