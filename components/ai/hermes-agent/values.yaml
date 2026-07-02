@@ -67,6 +67,7 @@ controllers:
           API_SERVER_HOST: "127.0.0.1"
           API_SERVER_PORT: "8642"
           AGENTMEMORY_URL: http://agentmemory.ai.svc.cluster.local:3111
+          HERMES_NEMO_RELAY_PLUGINS_TOML: /opt/data/nemo-relay-plugins.toml
           TZ: America/New_York
           HEADROOM_PROXY_URL: http://headroom.ai.svc.cluster.local:8787
         envFrom:
@@ -105,6 +106,10 @@ persistence:
         hermes-bootstrap:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
+          readOnly: true
+        app:
+        - path: /opt/data/nemo-relay-plugins.toml
+          subPath: nemo-relay-plugins.toml
           readOnly: true
   bootstrap:
     type: configMap
