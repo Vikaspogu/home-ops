@@ -8,6 +8,8 @@ on:
     paths:
       - "components/**"
       - "clusters/**"
+      - "scripts/**"
+      - ".github/workflows/kubeconform.yml"
   issue_comment:
     types: [created]
 
@@ -44,7 +46,7 @@ jobs:
 
       - name: Setup Workflow Tools
         shell: bash
-        run: brew install kubernetes-cli kustomize gettext
+        run: brew install kubernetes-cli kustomize gettext helm yq
 
       - name: Setup kubeconform
         shell: bash
@@ -55,3 +57,7 @@ jobs:
       - name: Run kubeconform
         shell: bash
         run: bash ./scripts/kubeconform.sh
+
+      - name: Run Gitea runner pool contract test
+        shell: bash
+        run: bash ./scripts/test-gitea-runner-pool-rendered-manifest.sh
