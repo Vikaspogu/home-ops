@@ -1,0 +1,51 @@
+---
+fullnameOverride: tempo
+replicas: 1
+tempo:
+  memBallastSizeMbs: 0
+  reportingEnabled: false
+  retention: 168h
+  metricsGenerator:
+    enabled: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 1Gi
+  server:
+    http_listen_port: 3200
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+      wal:
+        path: /var/tempo/wal
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "0.0.0.0:4317"
+        http:
+          endpoint: "0.0.0.0:4318"
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities: { drop: ["ALL"] }
+securityContext:
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  runAsNonRoot: true
+serviceAccount:
+  automountServiceAccountToken: false
+
+service:
+  type: ClusterIP
+serviceMonitor:
+  enabled: true
+persistence:
+  enabled: true
+  storageClassName: ceph-block
+  accessModes: [ReadWriteOnce]
+  size: 10Gi

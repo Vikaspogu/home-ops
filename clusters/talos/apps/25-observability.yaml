@@ -28,13 +28,21 @@ applications:
     source:
       path: components/observability/loki
 
-  promtail:
+  alloy:
     annotations:
       argocd.argoproj.io/sync-wave: "25"
     destination:
       namespace: observability
     source:
-      path: components/observability/promtail
+      path: components/observability/alloy
+
+  tempo:
+    annotations:
+      argocd.argoproj.io/sync-wave: "24"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/tempo
 
   scrutiny-app:
     annotations:
