@@ -88,11 +88,6 @@ data:
         depends_on: [implement]
         model: aws/anthropic/claude-haiku-4-5-v1
         run: ./scripts/kubeconform.sh
-      - id: open-pr
-        type: bash
-        depends_on: [validate]
-        model: aws/anthropic/claude-haiku-4-5-v1
-        run: echo "PR opened by agent during implement phase"
 
   conflict-resolution.yaml: |-
     name: conflict-resolution
