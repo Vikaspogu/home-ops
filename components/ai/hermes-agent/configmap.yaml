@@ -222,7 +222,6 @@ data:
       telegram:
         extra:
           drop_pending_updates: true
-      ntfy: {}
     platform_toolsets:
       cli:
         - browser
@@ -282,18 +281,6 @@ data:
         - session_search
         - skills
         - terminal
-        - todo
-        - tts
-        - vision
-        - web
-      ntfy:
-        - clarify
-        - cronjob
-        - delegation
-        - memory
-        - messaging
-        - session_search
-        - skills
         - todo
         - tts
         - vision
