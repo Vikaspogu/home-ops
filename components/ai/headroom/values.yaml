@@ -29,7 +29,9 @@ controllers:
           TZ: America/New_York
           HEADROOM_HOST: "0.0.0.0"
           HEADROOM_PORT: "8787"
-          HEADROOM_LOG_LEVEL: INFO
+          # DEBUG temporarily: diagnosing 400s on /backend-api/codex/responses
+          # for omp's OAuth codex traffic. Revert to INFO once confirmed working.
+          HEADROOM_LOG_LEVEL: DEBUG
           HEADROOM_DEFAULT_MODE: optimize
           HEADROOM_TELEMETRY: "off"
           HEADROOM_MODEL_LIMITS: /config/models.json
