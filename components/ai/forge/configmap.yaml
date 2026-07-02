@@ -22,6 +22,7 @@ data:
         instance: gitea-home
         default_branch: main
         project_type: python-service
+        default_workflow: implement
         test_command: "cd service && uv run pytest && uv run ruff check ."
         format_command: "cd service && uv run ruff format --check ."
         description: "Ivan personal data service — fitness, bar, drink/dining/travel journals"
