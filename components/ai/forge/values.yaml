@@ -38,7 +38,8 @@ controllers:
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           # api.github.com: mise's aqua backend resolves release metadata there;
           # release-assets.githubusercontent.com serves the actual downloads.
-          FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io
+          # Sigstore TUF root metadata enables mise artifact signature verification.
+          FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev
         envFrom: *envFrom
         resources:
           requests:
