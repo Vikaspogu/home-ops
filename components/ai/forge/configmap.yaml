@@ -85,11 +85,9 @@ data:
         body:
           type: agent
           role: implementer
-      - id: validate
-        type: bash
-        depends_on: [implement]
-        model: aws/anthropic/claude-haiku-4-5-v1
-        run: ./scripts/kubeconform.sh
+      # validate node removed: kustomize remote resources cannot be fetched
+      # inside the sandbox, and agent-driven bash is not deterministic
+      # validation (task 70). Deterministic validation returns with Part B.
 
   conflict-resolution.yaml: |-
     name: conflict-resolution
