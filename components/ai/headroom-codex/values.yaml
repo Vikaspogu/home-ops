@@ -98,9 +98,13 @@ service:
       http:
         port: 8787
 persistence:
-  # Savings stats and CCR cache only — ephemeral is acceptable; no PVC/volsync.
+  # Savings history + CCR cache survive restarts. Plain PVC — no volsync
+  # backup; the data is rebuildable stats/cache, it just should not vanish
+  # on every pod restart.
   data:
-    type: emptyDir
+    type: persistentVolumeClaim
+    accessMode: ReadWriteOnce
+    size: 5Gi
     globalMounts:
       - path: /data
   config:
