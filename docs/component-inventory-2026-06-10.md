@@ -49,7 +49,7 @@
 - ✓ `default/garage-s3` - Wave 20
 - ✓ `default/gitea` - Wave 20
 - ✓ `default/gitea-runner` - Wave 20
-- ✓ `default/gotify` - Wave 20
+- ✓ `default/ntfy` - Wave 20 (bjw-s app-template v5.0.1 with VolSync replication)
 - ✓ `default/govee2mqtt` - Wave 20
 - ✓ `default/home-assistant` - Wave 20
 - ⚠️  `default/homepage` - **Cluster-specific:** `clusters/talos/apps/default/homepage`

@@ -322,33 +322,54 @@ notifications:
   secret:
     create: false
   notifiers:
-    service.slack: |
-      token: $slack-token
+    service.webhook.ntfy: |
+      url: https://ntfy.${CLUSTER_DOMAIN}/argocd-events
+      headers:
+        - name: Authorization
+          value: Bearer $ntfy-publisher-token
+        - name: Content-Type
+          value: text/plain
+        - name: Title
+          value: Argo CD
+        - name: Priority
+          value: high
+        - name: Tags
+          value: argo-cd
   templates:
     template.app-health-degraded: |
-      message: |
-        {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} has degraded.
-        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
+      webhook:
+        ntfy:
+          method: POST
+          body: |
+            Application {{.app.metadata.name}} has degraded.
+            Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
     template.app-sync-failed: |
-      message: |
-        {{if eq .serviceType "slack"}}:exclamation:{{end}}  The sync operation of application {{.app.metadata.name}} has failed at {{.app.status.operationState.finishedAt}} with the following error: {{.app.status.operationState.message}}
-        Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+      webhook:
+        ntfy:
+          method: POST
+          body: |
+            The sync operation of application {{.app.metadata.name}} has failed at {{.app.status.operationState.finishedAt}} with the following error: {{.app.status.operationState.message}}
+            Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
     template.app-sync-status-unknown: |
-      message: |
-        {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} sync is 'Unknown'.
-        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
-        {{if ne .serviceType "slack"}}
-        {{range $c := .app.status.conditions}}
-            * {{$c.message}}
-        {{end}}
-        {{end}}
+      webhook:
+        ntfy:
+          method: POST
+          body: |
+            Application {{.app.metadata.name}} sync is 'Unknown'.
+            Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+            {{range $c := .app.status.conditions}}
+                * {{$c.message}}
+            {{end}}
     template.app-comparison-error: |
-      message: |
-        :warning: Application {{.app.metadata.name}} has a comparison error.
-        {{range $c := .app.status.conditions}}
-        * {{$c.message}}
-        {{end}}
-        Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
+      webhook:
+        ntfy:
+          method: POST
+          body: |
+            :warning: Application {{.app.metadata.name}} has a comparison error.
+            {{range $c := .app.status.conditions}}
+            * {{$c.message}}
+            {{end}}
+            Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}
 
   triggers:
     trigger.on-health-degraded: |

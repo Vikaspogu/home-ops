@@ -1,15 +1,15 @@
----
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: default
 resources:
+  - ./externalsecret.yaml
   - ./http-route.yaml
 components:
   - ../../volsync-system/volsync-replication
 
 helmCharts:
   - name: app-template
-    releaseName: gotify
+    releaseName: ntfy
     namespace: default
     repo: oci://ghcr.io/bjw-s-labs/helm
     version: "5.0.1"

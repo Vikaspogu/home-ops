@@ -48,12 +48,6 @@
       "allowedVersions": ["v2.18.0"]
     },
     {
-      "description": ["Pin gotify/server to 2.6.3"],
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["ghcr.io/gotify/server"],
-      "allowedVersions": ["2.6.3"]
-    },
-    {
       description: ["Pin viaductoss/ksops to v4.3.3"],
       matchDatasources: ["docker"],
       matchPackageNames: ["viaductoss/ksops"],
