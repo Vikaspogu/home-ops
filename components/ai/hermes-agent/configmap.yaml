@@ -217,6 +217,7 @@ data:
         - forge
         - web/ddgs
         - security-guidance
+        - observability/nemo_relay
     platforms:
       telegram:
         extra:
@@ -313,3 +314,24 @@ data:
         - ivan_paperless
         - ivan_synology
         - ivan_travel
+  nemo-relay-plugins.toml: |-
+    version = 1
+
+    [[components]]
+    kind = "observability"
+    enabled = true
+
+    [components.config]
+    version = 1
+
+    [components.config.openinference]
+    enabled = true
+    transport = "http_binary"
+    endpoint = "http://alloy.observability.svc.cluster.local:4318/v1/traces"
+    service_name = "hermes-agent"
+    service_namespace = "ai"
+    instrumentation_scope = "hermes-nemo-relay"
+    timeout_millis = 3000
+
+    [components.config.openinference.resource_attributes]
+    "deployment.environment" = "talos"
