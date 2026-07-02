@@ -632,6 +632,14 @@ applications:
     source:
       path: components/ai/headroom-codex
 
+  searxng:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/searxng
+
   valetudopng:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

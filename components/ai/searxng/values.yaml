@@ -1,0 +1,117 @@
+controllers:
+  searxng:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      configmap.reloader.stakater.com/reload: searxng-settings
+      secret.reloader.stakater.com/reload: searxng-secret
+    pod:
+      securityContext:
+        fsGroup: 977
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 977
+        runAsNonRoot: true
+        runAsUser: 977
+        seccompProfile:
+          type: RuntimeDefault
+    initContainers:
+      render-settings:
+        image:
+          repository: public.ecr.aws/docker/library/busybox
+          tag: 1.38.0
+        command:
+          - /bin/sh
+          - -c
+          - umask 077; escaped_secret=$(printf '%s' "$SEARXNG_SECRET" | sed 's/[\/&\\]/\\&/g'); sed "s/__SEARXNG_SECRET__/${escaped_secret}/g" /config-template/settings.yml > /runtime-config/settings.yml
+        env:
+          SEARXNG_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: searxng-secret
+                key: SEARXNG_SECRET
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+    containers:
+      app:
+        image:
+          repository: ghcr.io/searxng/searxng
+          tag: 2026.7.2-67973783d
+        env:
+          SEARXNG_SETTINGS_PATH: /runtime-config/settings.yml
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8080
+              failureThreshold: 30
+              periodSeconds: 5
+              timeoutSeconds: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8080
+              failureThreshold: 3
+              periodSeconds: 10
+              timeoutSeconds: 5
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8080
+              failureThreshold: 3
+              periodSeconds: 30
+              timeoutSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+service:
+  app:
+    controller: searxng
+    type: ClusterIP
+    ports:
+      http:
+        port: 8080
+persistence:
+  config-template:
+    type: configMap
+    name: searxng-settings
+    advancedMounts:
+      searxng:
+        render-settings:
+          - path: /config-template
+            readOnly: true
+  runtime-config:
+    type: emptyDir
+    advancedMounts:
+      searxng:
+        render-settings:
+          - path: /runtime-config
+        app:
+          - path: /runtime-config
+  config:
+    type: emptyDir
+    advancedMounts:
+      searxng:
+        app:
+          - path: /etc/searxng
+  cache:
+    type: emptyDir
+    advancedMounts:
+      searxng:
+        app:
+          - path: /var/cache/searxng

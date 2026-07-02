@@ -1,0 +1,20 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ai
+resources:
+  - ./externalsecret.yaml
+  - ./http-route.yaml
+helmCharts:
+  - name: app-template
+    releaseName: searxng
+    namespace: ai
+    repo: oci://ghcr.io/bjw-s-labs/helm
+    version: "5.0.1"
+    valuesFile: values.yaml
+configMapGenerator:
+  - name: searxng-settings
+    files:
+      - settings.yml
+generatorOptions:
+ disableNameSuffixHash: true
