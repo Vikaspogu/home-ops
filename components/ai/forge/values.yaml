@@ -36,7 +36,9 @@ controllers:
           # Image must stay digest-pinned; allowlist without image fails config validation.
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox@sha256:785e4ecd56074108828762ff6801dc7c314ca4ac220ed93436ea5d93f30e833f
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
-          FORGE_TOOL_MIRROR_HOSTS: github.com,objects.githubusercontent.com,nodejs.org,dl.k8s.io
+          # api.github.com: mise's aqua backend resolves release metadata there;
+          # release-assets.githubusercontent.com serves the actual downloads.
+          FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io
         envFrom: *envFrom
         resources:
           requests:
