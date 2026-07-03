@@ -110,6 +110,13 @@ persistence:
         - path: /opt/data/nemo-relay-plugins.toml
           subPath: nemo-relay-plugins.toml
           readOnly: true
+        # The app container must see the ConfigMap content, not the PVC's
+        # stale placeholder at the same path — HERMES_NEMO_RELAY_PLUGINS_TOML
+        # points here and the plugin silently no-ops on an empty file.
+        app:
+        - path: /opt/data/nemo-relay-plugins.toml
+          subPath: nemo-relay-plugins.toml
+          readOnly: true
   bootstrap:
     type: configMap
     name: hermes-bootstrap

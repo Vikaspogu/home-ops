@@ -3,7 +3,9 @@ set -Eeuo pipefail
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly HERMES_COMPONENT="${ROOT_DIR}/components/ai/hermes-agent"
-readonly HERMES_IMAGE="gitea.a113.casa/vpogu/agent-platform-hermes-agent:20260702184336-85d48a6-oci"
+# Derive the image from values.yaml — a hardcoded tag rots on every
+# automatic image bump and the whole script silently stops guarding.
+readonly HERMES_IMAGE="$(yq -r '.controllers.app.containers.app.image | .repository + ":" + .tag' "${HERMES_COMPONENT}/values.yaml")"
 export HERMES_IMAGE
 readonly NEMO_RELAY_PLUGINS_PATH="/opt/data/nemo-relay-plugins.toml"
 export NEMO_RELAY_PLUGINS_PATH
