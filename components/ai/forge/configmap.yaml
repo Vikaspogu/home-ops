@@ -45,6 +45,15 @@ data:
         role: planner
         # Pick the model per node. Omit to use FORGE_DEFAULT_MODEL.
         model: aws/anthropic/bedrock-claude-opus-4-8
+        timeout_minutes: 10
+        prompt: |-
+          You are the planning node; a separate implementer node runs after you.
+          Produce an implementation plan only — do NOT change code, install
+          dependencies, run tests or builds, or open a PR. Clone the repository
+          and read the relevant code, then write a concise step-by-step plan
+          (files to change, exact defect location, test to add, verification
+          commands) into the notes field of result.json with status success.
+          Task: {{ context }}
       - id: implement
         type: loop
         depends_on: [plan]
@@ -52,6 +61,16 @@ data:
         max_attempts: 2
         on_max_attempts: blocked
         model: aws/anthropic/bedrock-claude-sonnet-4-6
+        timeout_minutes: 30
+        prompt: |-
+          Implement the following task on branch {{ branch_name }}. A planning
+          agent already explored the repository; follow its plan unless the
+          code contradicts it.
+
+          Plan:
+          {{ nodes.plan.output }}
+
+          Task: {{ context }}
         body:
           type: agent
           role: implementer
@@ -67,6 +86,7 @@ data:
         max_attempts: 3
         on_max_attempts: blocked
         model: aws/anthropic/bedrock-claude-sonnet-4-6
+        timeout_minutes: 30
         body:
           type: agent
           role: implementer
