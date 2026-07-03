@@ -44,14 +44,14 @@ data:
         type: agent
         role: planner
         # Pick the model per node. Omit to use FORGE_DEFAULT_MODEL.
-        model: azure/anthropic/claude-opus-4-8
+        model: aws/anthropic/bedrock-claude-opus-4-8
       - id: implement
         type: loop
         depends_on: [plan]
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
-        model: azure/anthropic/claude-sonnet-4-6
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
         body:
           type: agent
           role: implementer
@@ -66,7 +66,7 @@ data:
         until: TESTS_PASS
         max_attempts: 3
         on_max_attempts: blocked
-        model: azure/anthropic/claude-sonnet-4-6
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
         body:
           type: agent
           role: implementer
@@ -80,7 +80,7 @@ data:
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
-        model: azure/anthropic/claude-sonnet-4-6
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
         body:
           type: agent
           role: implementer
@@ -94,7 +94,7 @@ data:
         role: implementer
         description: Read conflict diff. Classify AUTO-RESOLVABLE or NEEDS_HUMAN.
         on_needs_input: pause
-        model: azure/anthropic/claude-opus-4-8
+        model: aws/anthropic/bedrock-claude-opus-4-8
       - id: resolve
         type: loop
         role: implementer
@@ -102,7 +102,7 @@ data:
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
-        model: azure/anthropic/claude-sonnet-4-6
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
       - id: resume
         type: bash
         depends_on: [resolve]

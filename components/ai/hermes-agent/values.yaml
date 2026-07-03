@@ -13,7 +13,7 @@ controllers:
       hermes-bootstrap:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260702233659-5b28eef-oci
+          tag: 20260702184336-85d48a6-oci
         command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -36,13 +36,13 @@ controllers:
           capabilities: {drop: ["ALL"]}
       seed-config:
         image:
-          tag: 20260702233659-5b28eef-oci
+          tag: 20260702184336-85d48a6-oci
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
     containers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260702233659-5b28eef-oci
+          tag: 20260702184336-85d48a6-oci
         args:
         - gateway
         - run
@@ -107,7 +107,6 @@ persistence:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
           readOnly: true
-        app:
         - path: /opt/data/nemo-relay-plugins.toml
           subPath: nemo-relay-plugins.toml
           readOnly: true
