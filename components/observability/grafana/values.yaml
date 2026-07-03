@@ -54,6 +54,11 @@ datasources:
         url: http://loki-headless.observability.svc.cluster.local:3100
         jsonData:
           maxLines: 250
+          derivedFields:
+            - name: TraceID
+              matcherRegex: "trace_id=(\\w+)"
+              url: "$${__value.raw}"
+              datasourceUid: tempo
       - name: Tempo
         type: tempo
         uid: tempo

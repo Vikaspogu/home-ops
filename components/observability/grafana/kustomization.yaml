@@ -4,6 +4,7 @@ namespace: observability
 resources:
   - ./externalsecret.yaml
   - ./http-route.yaml
+  - dashboards/forge.yaml
 
 helmCharts:
   - name: grafana
