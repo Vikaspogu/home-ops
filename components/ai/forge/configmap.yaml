@@ -96,6 +96,7 @@ data:
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
+        timeout_minutes: 30
         model: aws/anthropic/bedrock-claude-sonnet-4-6
         body:
           type: agent
