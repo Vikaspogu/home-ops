@@ -83,11 +83,9 @@ data:
           type: agent
           role: implementer
       - id: ai-review
-        type: loop
+        type: agent
+        role: reviewer
         depends_on: [implement]
-        until: VALIDATION_PASS
-        max_attempts: 2
-        on_max_attempts: blocked
         # Deliberately a different model than the implementer for fresh eyes.
         model: aws/anthropic/bedrock-claude-opus-4-8
         timeout_minutes: 20
@@ -98,32 +96,50 @@ data:
           default branch: correctness, test quality, scope creep, style
           consistency with the surrounding code.
 
-          If you find issues, FIX them directly on the branch, re-run the
-          repository's relevant tests/checks, and push the updates. Do NOT
-          open a PR — that is assigned to a later workflow node.
-
-          Use outcome VALIDATION_PASS when the branch is clean (with or
-          without your fixes) and checks pass; NEEDS_FIX only when another
-          full review attempt is needed; VALIDATION_FAIL when blocked.
-          Summarize your findings and any fixes you pushed in result.json
-          notes — a human reads them in the UI.
+          Do NOT change code or open a PR — a fix node runs after you and
+          applies your findings. Write your findings as a numbered list in
+          result.json notes (or state that the branch is clean), with
+          status success and outcome VALIDATION_PASS. Findings are input
+          for the fix node, not a failure; reserve VALIDATION_FAIL for
+          being unable to perform the review at all.
 
           Implementer's change summary:
           {{ nodes.implement.output }}
 
           Task: {{ context }}
+      - id: fix-loop
+        type: loop
+        depends_on: [ai-review]
+        until: TESTS_PASS
+        max_attempts: 3
+        on_max_attempts: blocked
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
+        timeout_minutes: 30
+        prompt: |-
+          A reviewer examined branch {{ branch_name }}; its findings are
+          below. Address every finding (skip any you can prove wrong, and
+          say why in your notes); if the reviewer found the branch clean,
+          just verify the repository's checks still pass. Push updates to
+          the same branch. Do NOT open a PR — that is assigned to a later
+          workflow node. Use outcome TESTS_PASS once checks pass and the
+          branch is pushed. Summarize what you changed in result.json notes.
+
+          Reviewer's findings:
+          {{ nodes.ai-review.output }}
+
+          Task: {{ context }}
         body:
           type: agent
-          role: reviewer
+          role: implementer
       - id: open-pr
         type: agent
         role: implementer
-        depends_on: [ai-review]
+        depends_on: [fix-loop]
         model: aws/anthropic/bedrock-claude-sonnet-4-6
         timeout_minutes: 10
         prompt: |-
-          Branch {{ branch_name }} is implemented and reviewed. Open (or
-          update, if one already exists for this branch) the PR from
+          Branch {{ branch_name }} is implemented, reviewed, and fixed up.
+          Open (or update, if one already exists for this branch) the PR from
           {{ branch_name }} into the default branch. The PR body must contain
           a Problem/Changes/Verification summary built from the notes below.
           Do not change any code. Write result.json with status success,
@@ -134,31 +150,9 @@ data:
 
           Reviewer's findings:
           {{ nodes.ai-review.output }}
-      - id: review
-        type: approval
-        depends_on: [open-pr]
-        message: "PR is open and AI-reviewed. Review the PR and approve or reject."
-        timeout_minutes: 1440
-      - id: fix-loop
-        type: loop
-        depends_on: [review]
-        until: TESTS_PASS
-        max_attempts: 3
-        on_max_attempts: blocked
-        model: aws/anthropic/bedrock-claude-sonnet-4-6
-        timeout_minutes: 30
-        prompt: |-
-          A human reviewed the PR for branch {{ branch_name }}
-          ({{ nodes.open-pr.pr_url }}). Address every open review comment on
-          the PR; if there are none, verify the branch still passes the
-          repository's checks. Push updates to the same branch (the PR follows
-          it) and use outcome TESTS_PASS when checks pass. Summarize what you
-          changed in result.json notes.
 
-          Task: {{ context }}
-        body:
-          type: agent
-          role: implementer
+          Fixes applied after review:
+          {{ nodes.fix-loop.output }}
 
   gitops-update.yaml: |-
     name: gitops-update
