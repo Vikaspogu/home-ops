@@ -20,7 +20,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/forge
-          tag: 20260703152509-7b5f782
+          tag: 20260703153237-80d2387
         env:
           TZ: America/New_York
           FORGE_API_PORT: &httpPort 8080
