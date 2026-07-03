@@ -38,7 +38,10 @@ data:
 
   implement.yaml: |-
     name: implement
-    description: Plan -> implement -> AI review+fix -> open PR -> human gate
+    description: Plan -> implement -> AI review -> fix -> open PR (autonomous)
+    # Structure only: node behavior comes from role profiles (bundled in the
+    # forge image; override via FORGE_AGENTS_DIR). depends_on selects which
+    # upstream outputs each node's message includes.
     nodes:
       - id: plan
         type: agent
@@ -46,16 +49,6 @@ data:
         # Pick the model per node. Omit to use FORGE_DEFAULT_MODEL.
         model: aws/anthropic/bedrock-claude-opus-4-8
         timeout_minutes: 10
-        prompt: |-
-          You are the planning node; a separate implementer node runs after you.
-          Produce an implementation plan only — do NOT change code, install
-          dependencies, run tests or builds, or open a PR. Clone the repository
-          and read the relevant code, then write a concise step-by-step plan
-          (files to change, exact defect location, test to add, verification
-          commands) into the notes field of result.json with status success.
-          The notes are shown to a human in the Forge UI — write them as a
-          readable numbered plan.
-          Task: {{ context }}
       - id: implement
         type: loop
         depends_on: [plan]
@@ -64,21 +57,6 @@ data:
         on_max_attempts: blocked
         model: aws/anthropic/bedrock-claude-sonnet-4-6
         timeout_minutes: 30
-        prompt: |-
-          Implement the following task on branch {{ branch_name }}. A planning
-          agent already explored the repository; follow its plan unless the
-          code contradicts it.
-
-          Do NOT open a PR — PR creation is assigned to a later workflow node.
-          Use outcome TESTS_PASS once all required checks pass and the branch
-          is pushed. Write a summary of WHAT CHANGED (files touched and why,
-          checks run) into result.json notes — a human reads it in the UI and
-          the next nodes rely on it.
-
-          Plan:
-          {{ nodes.plan.output }}
-
-          Task: {{ context }}
         body:
           type: agent
           role: implementer
@@ -89,24 +67,6 @@ data:
         # Deliberately a different model than the implementer for fresh eyes.
         model: aws/anthropic/bedrock-claude-opus-4-8
         timeout_minutes: 20
-        prompt: |-
-          You are the reviewer node — a different model than the implementer;
-          review its work with fresh eyes. Clone the repository, check out
-          branch {{ branch_name }}, and review the full diff against the
-          default branch: correctness, test quality, scope creep, style
-          consistency with the surrounding code.
-
-          Do NOT change code or open a PR — a fix node runs after you and
-          applies your findings. Write your findings as a numbered list in
-          result.json notes (or state that the branch is clean), with
-          status success and outcome VALIDATION_PASS. Findings are input
-          for the fix node, not a failure; reserve VALIDATION_FAIL for
-          being unable to perform the review at all.
-
-          Implementer's change summary:
-          {{ nodes.implement.output }}
-
-          Task: {{ context }}
       - id: fix-loop
         type: loop
         depends_on: [ai-review]
@@ -115,44 +75,17 @@ data:
         on_max_attempts: blocked
         model: aws/anthropic/bedrock-claude-sonnet-4-6
         timeout_minutes: 30
-        prompt: |-
-          A reviewer examined branch {{ branch_name }}; its findings are
-          below. Address every finding (skip any you can prove wrong, and
-          say why in your notes); if the reviewer found the branch clean,
-          just verify the repository's checks still pass. Push updates to
-          the same branch. Do NOT open a PR — that is assigned to a later
-          workflow node. Use outcome TESTS_PASS once checks pass and the
-          branch is pushed. Summarize what you changed in result.json notes.
-
-          Reviewer's findings:
-          {{ nodes.ai-review.output }}
-
-          Task: {{ context }}
         body:
           type: agent
           role: implementer
       - id: open-pr
         type: agent
-        role: implementer
-        depends_on: [fix-loop]
+        role: pr-opener
+        # implement + ai-review are already ancestors via fix-loop; the extra
+        # edges pull their notes into this node's message for the PR body.
+        depends_on: [implement, ai-review, fix-loop]
         model: aws/anthropic/bedrock-claude-sonnet-4-6
         timeout_minutes: 10
-        prompt: |-
-          Branch {{ branch_name }} is implemented, reviewed, and fixed up.
-          Open (or update, if one already exists for this branch) the PR from
-          {{ branch_name }} into the default branch. The PR body must contain
-          a Problem/Changes/Verification summary built from the notes below.
-          Do not change any code. Write result.json with status success,
-          outcome VALIDATION_PASS, and the PR URL as pr_url.
-
-          Implementer's change summary:
-          {{ nodes.implement.output }}
-
-          Reviewer's findings:
-          {{ nodes.ai-review.output }}
-
-          Fixes applied after review:
-          {{ nodes.fix-loop.output }}
 
   gitops-update.yaml: |-
     name: gitops-update
