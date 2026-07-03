@@ -34,7 +34,7 @@ controllers:
           FORGE_DEFAULT_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
           # Dynamic environments M1 (docs/forge/specs/2026-07-02-dynamic-environments-v2-design.md).
           # Image must stay digest-pinned; allowlist without image fails config validation.
-          FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox@sha256:32fb851355558f3096a7d65afd4682596ec70e3a1f554520e298ca9c00e18716
+          FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox@sha256:438915d6fef120278b6cf3e4256c1d5c0614648f85696fa5e39a2fb179fffeb1
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           # api.github.com: mise's aqua backend resolves release metadata there;
           # release-assets.githubusercontent.com serves the actual downloads.
@@ -42,6 +42,8 @@ controllers:
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev
           # Exact mise Node ELF in the digest-pinned sandbox image; npm registry egress is limited to it.
           # OTLP trace export; empty disables telemetry entirely.
+          # Per-sandbox nemo-relay gateway exports LLM spans here; empty disables gateway mode.
+          FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/22.22.1/bin/node
         envFrom: *envFrom
