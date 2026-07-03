@@ -7,7 +7,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/ivan-personal-dashboard
-          tag: 20260702145354-7d41ef8-oci
+          tag: 20260703114432-27ca751-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
