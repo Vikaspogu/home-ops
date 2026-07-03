@@ -218,6 +218,8 @@ data:
         - web/ddgs
         - security-guidance
         - observability/nemo_relay
+    web:
+      search_backend: searxng
     platforms:
       telegram:
         extra:
