@@ -115,3 +115,9 @@ persistence:
       searxng:
         app:
           - path: /var/cache/searxng
+  tmp:
+    type: emptyDir
+    advancedMounts:
+      searxng:
+        app:
+          - path: /tmp
