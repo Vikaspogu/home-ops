@@ -38,7 +38,7 @@ data:
 
   implement.yaml: |-
     name: implement
-    description: Plan -> implement -> review loop
+    description: Plan -> implement -> AI review+fix -> open PR -> human gate
     nodes:
       - id: plan
         type: agent
@@ -53,6 +53,8 @@ data:
           and read the relevant code, then write a concise step-by-step plan
           (files to change, exact defect location, test to add, verification
           commands) into the notes field of result.json with status success.
+          The notes are shown to a human in the Forge UI — write them as a
+          readable numbered plan.
           Task: {{ context }}
       - id: implement
         type: loop
@@ -67,6 +69,12 @@ data:
           agent already explored the repository; follow its plan unless the
           code contradicts it.
 
+          Do NOT open a PR — PR creation is assigned to a later workflow node.
+          Use outcome TESTS_PASS once all required checks pass and the branch
+          is pushed. Write a summary of WHAT CHANGED (files touched and why,
+          checks run) into result.json notes — a human reads it in the UI and
+          the next nodes rely on it.
+
           Plan:
           {{ nodes.plan.output }}
 
@@ -74,10 +82,62 @@ data:
         body:
           type: agent
           role: implementer
+      - id: ai-review
+        type: loop
+        depends_on: [implement]
+        until: VALIDATION_PASS
+        max_attempts: 2
+        on_max_attempts: blocked
+        # Deliberately a different model than the implementer for fresh eyes.
+        model: aws/anthropic/bedrock-claude-opus-4-8
+        timeout_minutes: 20
+        prompt: |-
+          You are the reviewer node — a different model than the implementer;
+          review its work with fresh eyes. Clone the repository, check out
+          branch {{ branch_name }}, and review the full diff against the
+          default branch: correctness, test quality, scope creep, style
+          consistency with the surrounding code.
+
+          If you find issues, FIX them directly on the branch, re-run the
+          repository's relevant tests/checks, and push the updates. Do NOT
+          open a PR — that is assigned to a later workflow node.
+
+          Use outcome VALIDATION_PASS when the branch is clean (with or
+          without your fixes) and checks pass; NEEDS_FIX only when another
+          full review attempt is needed; VALIDATION_FAIL when blocked.
+          Summarize your findings and any fixes you pushed in result.json
+          notes — a human reads them in the UI.
+
+          Implementer's change summary:
+          {{ nodes.implement.output }}
+
+          Task: {{ context }}
+        body:
+          type: agent
+          role: reviewer
+      - id: open-pr
+        type: agent
+        role: implementer
+        depends_on: [ai-review]
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
+        timeout_minutes: 10
+        prompt: |-
+          Branch {{ branch_name }} is implemented and reviewed. Open (or
+          update, if one already exists for this branch) the PR from
+          {{ branch_name }} into the default branch. The PR body must contain
+          a Problem/Changes/Verification summary built from the notes below.
+          Do not change any code. Write result.json with status success,
+          outcome VALIDATION_PASS, and the PR URL as pr_url.
+
+          Implementer's change summary:
+          {{ nodes.implement.output }}
+
+          Reviewer's findings:
+          {{ nodes.ai-review.output }}
       - id: review
         type: approval
-        depends_on: [implement]
-        message: "Implementation complete. Review the PR and approve or reject."
+        depends_on: [open-pr]
+        message: "PR is open and AI-reviewed. Review the PR and approve or reject."
         timeout_minutes: 1440
       - id: fix-loop
         type: loop
@@ -87,6 +147,15 @@ data:
         on_max_attempts: blocked
         model: aws/anthropic/bedrock-claude-sonnet-4-6
         timeout_minutes: 30
+        prompt: |-
+          A human reviewed the PR for branch {{ branch_name }}
+          ({{ nodes.open-pr.pr_url }}). Address every open review comment on
+          the PR; if there are none, verify the branch still passes the
+          repository's checks. Push updates to the same branch (the PR follows
+          it) and use outcome TESTS_PASS when checks pass. Summarize what you
+          changed in result.json notes.
+
+          Task: {{ context }}
         body:
           type: agent
           role: implementer
