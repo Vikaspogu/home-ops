@@ -41,6 +41,8 @@ controllers:
           # Sigstore TUF root metadata enables mise artifact signature verification.
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev
           # Exact mise Node ELF in the digest-pinned sandbox image; npm registry egress is limited to it.
+          # OTLP trace export; empty disables telemetry entirely.
+          FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/22.22.1/bin/node
         envFrom: *envFrom
         resources:
