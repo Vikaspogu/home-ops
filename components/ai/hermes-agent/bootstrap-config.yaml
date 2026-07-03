@@ -1,5 +1,3 @@
-mac_url: http://mac-api.ai.svc.cluster.local:8000
-
 memory:
   provider: agentmemory
 
@@ -13,13 +11,3 @@ plugins:
     ref: main
     path: plugins/hermes
 
-mac_identities:
-  - tenant_id: personal
-    tenant_name: personal
-    persona_id: persona_hermes_ai
-    persona_name: AssistantOne
-    soul_ref: hermes://personal/AssistantOne/SOUL.md
-    memory_scope: hermes://personal/AssistantOne/memory
-    instance_id: hermes_ai
-    instance_name: hermes-ai
-    home_ref: k8s://ai/hermes-agent

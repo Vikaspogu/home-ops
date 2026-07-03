@@ -17,7 +17,6 @@ controllers:
         command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
         env:
           PYTHONUNBUFFERED: "1"
-          MAC_URL: http://mac-api.ai.svc.cluster.local:8000
         envFrom:
         - secretRef:
             name: hermes-agent-secret
