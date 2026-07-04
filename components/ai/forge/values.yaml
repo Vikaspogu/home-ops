@@ -46,6 +46,7 @@ controllers:
           FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/22.22.1/bin/node
+          FORGE_SKILLS_CONFIG: /app/config/skills.yaml
         envFrom: *envFrom
         resources:
           requests:
