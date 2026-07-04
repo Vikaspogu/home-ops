@@ -1,7 +1,7 @@
 controllers:
   app:
     replicas: 1
-    strategy: Recreate
+    strategy: RollingUpdate
     annotations:
       configmap.reloader.stakater.com/reload: forge-config
       secret.reloader.stakater.com/reload: forge-secret,openshell-client-tls
