@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy-templates
+data:
+  infra-alerts.yml: |-
+    title: |
+      {{- $alert := first .alerts }}
+      {{- if eq .status "firing" }}🚨 {{ else }}✅ {{ end }}{{ $alert.labels.alertname }}
+    message: |
+      {{- range .alerts }}
+      Severity: {{ default "unknown" .labels.severity }}
+      {{- with .labels.namespace }}
+      Namespace: {{ . }}
+      {{- end }}
+      {{- with .labels.pod }}
+      Pod: {{ . }}
+      {{- end }}
+      {{- with .labels.container }}
+      Container: {{ . }}
+      {{- end }}
+      {{- with .labels.instance }}
+      Instance: {{ . }}
+      {{- end }}
+      {{- with .annotations.summary }}
+      Summary: {{ . }}
+      {{- end }}
+      {{- with .annotations.description }}
+      Description: {{ . }}
+      {{- end }}
+      {{- with .generatorURL }}
+      Source: {{ . }}
+      {{- end }}
+      {{- end }}
+    priority: |
+      {{- $severity := (first .alerts).labels.severity }}
+      {{- if eq $severity "critical" }}5
+      {{- else if eq $severity "warning" }}4
+      {{- else }}3
+      {{- end }}

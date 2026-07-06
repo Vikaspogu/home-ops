@@ -45,7 +45,7 @@ spec:
     - name: heartbeat
     - name: ntfy
       webhookConfigs:
-        - url: https://ntfy.${CLUSTER_DOMAIN}/infra-alerts?template=alertmanager
+        - url: http://ntfy.default.svc.cluster.local/infra-alerts?template=infra-alerts
           sendResolved: true
           httpConfig:
             authorization:

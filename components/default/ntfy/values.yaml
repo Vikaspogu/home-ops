@@ -24,6 +24,7 @@ controllers:
           NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
           NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
           NTFY_AUTH_DEFAULT_ACCESS: deny-all
+          NTFY_TEMPLATE_DIR: /etc/ntfy/templates
         envFrom:
           - secretRef:
               name: ntfy-secret
@@ -64,3 +65,9 @@ persistence:
     existingClaim: ntfy
     globalMounts:
       - path: /var/lib/ntfy
+  templates:
+    type: configMap
+    name: ntfy-templates
+    globalMounts:
+      - path: /etc/ntfy/templates
+        readOnly: true
