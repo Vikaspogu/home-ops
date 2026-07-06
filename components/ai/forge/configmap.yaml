@@ -26,14 +26,12 @@ data:
         test_command: "cd service && uv run pytest && uv run ruff check ."
         format_command: "cd service && uv run ruff format --check ."
         description: "Ivan personal data service — fitness, bar, drink/dining/travel journals"
-        skills: [ponytail, codebase-design]
       forge:
         full_name: vpogu/forge
         instance: gitea-home
         default_branch: main
         project_type: python-service
         default_workflow: implement
-        skills: [ponytail, codebase-design]
       home-ops:
         full_name: Vikaspogu/home-ops
         instance: github
@@ -43,7 +41,6 @@ data:
         test_command: "./scripts/kubeconform.sh"
         format_command: null
         description: "Home lab GitOps repo — Flux, Helm charts, K8s manifests"
-        skills: [ponytail]
 
   implement.yaml: |-
     name: implement
@@ -69,9 +66,11 @@ data:
         body:
           type: agent
           role: implementer
+          rules: [ponytail, codebase-design]
       - id: ai-review
         type: agent
         role: reviewer
+        rules: [codebase-design]
         depends_on: [implement]
         # Deliberately a different model than the implementer for fresh eyes.
         model: aws/anthropic/bedrock-claude-opus-4-8
@@ -87,6 +86,7 @@ data:
         body:
           type: agent
           role: implementer
+          rules: [ponytail, codebase-design]
       - id: open-pr
         type: agent
         role: pr-opener
@@ -110,6 +110,7 @@ data:
         body:
           type: agent
           role: implementer
+          rules: [ponytail, codebase-design]
 
   conflict-resolution.yaml: |-
     name: conflict-resolution
@@ -118,12 +119,14 @@ data:
       - id: analyze
         type: agent
         role: implementer
+        rules: [ponytail, codebase-design]
         description: Read conflict diff. Classify AUTO-RESOLVABLE or NEEDS_HUMAN.
         on_needs_input: pause
         model: aws/anthropic/bedrock-claude-opus-4-8
       - id: resolve
         type: loop
         role: implementer
+        rules: [ponytail, codebase-design]
         depends_on: [analyze]
         until: TESTS_PASS
         max_attempts: 2
@@ -137,6 +140,35 @@ data:
   skills.yaml: |-
     skills:
 
+      ponytail:
+        description: "Write the minimum code that solves the problem. One concern per commit."
+        content: |
+          Before writing code, stop at the first rung that holds:
+          1. Does this need to exist? No → skip it (YAGNI)
+          2. Already in this codebase? → reuse it, don't rewrite
+          3. Stdlib or platform does it? → use it
+          4. One line? → one line
+          5. Only then: the minimum that works
+
+          Never cut: validation, error handling, security, accessibility.
+          Never touch files the task doesn't require.
+          One logical concern per commit. Imperative subject line, 50 chars max.
+
+      codebase-design:
+        description: "Design deep modules: large behaviour behind a small interface at a clean seam."
+        content: |
+          Design deep modules — a lot of behaviour behind a small interface.
+
+          Before adding a new abstraction, ask:
+          - Can I reduce the number of methods?
+          - Can I hide more complexity inside?
+          - Does deleting this module make complexity disappear (pass-through) or reappear across callers (earning its keep)?
+
+          The interface is the test surface — callers and tests cross the same seam.
+          One adapter = hypothetical seam. Two adapters = real seam. Don't add a seam unless two adapters are justified.
+          Accept dependencies, don't create them. Return values, not side effects.
+  rules.yaml: |-
+    rules:
       ponytail:
         description: "Write the minimum code that solves the problem. One concern per commit."
         content: |
