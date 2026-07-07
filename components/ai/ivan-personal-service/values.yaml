@@ -15,7 +15,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/ivan-personal-service
-          tag: 20260707124544-3e23cf2-oci
+          tag: 20260707133350-7bb848a-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
