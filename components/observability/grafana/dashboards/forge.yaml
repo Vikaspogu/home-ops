@@ -126,6 +126,21 @@ data:
               "limit": 20
             }
           ]
+        },
+        {
+          "id": 6,
+          "type": "traces",
+          "title": "Recent sandbox agent traces",
+          "gridPos": { "h": 10, "w": 24, "x": 0, "y": 26 },
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "targets": [
+            {
+              "refId": "A",
+              "queryType": "traceql",
+              "query": "{resource.service.name=\"forge-sandbox-agent\"}",
+              "limit": 20
+            }
+          ]
         }
       ]
     }
