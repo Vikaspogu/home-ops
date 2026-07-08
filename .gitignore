@@ -32,6 +32,8 @@ wiki
 .vscode
 bgp.conf
 .superpowers
+# Local agent worktrees
+.worktrees/
 # Python
 __pycache__/
 *.py[cod]
