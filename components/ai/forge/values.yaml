@@ -31,7 +31,7 @@ controllers:
           FORGE_RUNNER: openshell
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
-          FORGE_DEFAULT_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
+          FORGE_DEFAULT_MODEL: aws/anthropic/bedrock-claude-sonnet-5
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox@sha256:438915d6fef120278b6cf3e4256c1d5c0614648f85696fa5e39a2fb179fffeb1
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org
