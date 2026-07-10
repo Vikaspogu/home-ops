@@ -8,5 +8,5 @@ helmCharts:
     releaseName: alloy
     namespace: observability
     repo: https://grafana.github.io/helm-charts
-    version: 1.10.0
+    version: 1.10.1
     valuesFile: values.yaml
