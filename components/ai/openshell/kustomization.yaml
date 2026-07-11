@@ -22,11 +22,11 @@ patches:
                 envFrom:
                   - secretRef:
                       name: openshell-db-secret
+helmGlobals:
+  chartHome: vendor
 helmCharts:
   - name: helm-chart
     releaseName: openshell
     namespace: ai
-    repo: oci://ghcr.io/nvidia/openshell
-    version: "0.0.0-dev"
     valuesFile: values.yaml
     includeCRDs: false

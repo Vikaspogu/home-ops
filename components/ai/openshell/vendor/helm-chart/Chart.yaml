@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+# Chart name determines the OCI image name: ghcr.io/nvidia/openshell/helm-chart:<version>
+name: helm-chart
+description: runtime environment for autonomous agents
+type: application
+# Vendored from NVIDIA/OpenShell v0.0.80 (709aa0fe3e9e4d2b5fea336b5d6e393b45481898).
+# Gateway, supervisor, and this chart must advance together.
+version: 0.0.80
+appVersion: "0.0.80"
