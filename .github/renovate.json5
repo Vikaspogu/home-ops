@@ -66,6 +66,18 @@
       },
       "separateMinorPatch": true
     },
+  {
+    "description": ["OpenShell bundle: gateway and supervisor must move together"],
+    "groupName": "OpenShell",
+    "matchDatasources": ["docker"],
+    "matchPackageNames": [
+      "ghcr.io/nvidia/openshell/gateway",
+      "ghcr.io/nvidia/openshell/supervisor"
+    ],
+    "group": {
+      "commitMessageTopic": "{{{groupName}}} group"
+    }
+  },
     // commit message topics
     {
       "matchDatasources": ["helm"],
