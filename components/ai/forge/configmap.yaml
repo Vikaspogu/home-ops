@@ -52,6 +52,7 @@ data:
       - id: plan
         type: agent
         role: planner
+        skills: [explore-first]
         # Pick the model per node. Omit to use FORGE_DEFAULT_MODEL.
         model: aws/anthropic/bedrock-claude-opus-4-8
         timeout_minutes: 10
@@ -67,10 +68,12 @@ data:
           type: agent
           role: implementer
           rules: [ponytail, codebase-design]
+          skills: [verify-loop, defensive-coding, secret-scan]
       - id: ai-review
         type: agent
         role: reviewer
         rules: [codebase-design]
+        skills: [security, impact-analysis]
         depends_on: [implement]
         # Deliberately a different model than the implementer for fresh eyes.
         model: nvidia/zai-org/glm-5.2
@@ -87,9 +90,11 @@ data:
           type: agent
           role: implementer
           rules: [ponytail, codebase-design]
+          skills: [verify-loop, secret-scan]
       - id: open-pr
         type: agent
         role: pr-opener
+        skills: [secret-scan]
         # implement + ai-review are already ancestors via fix-loop; the extra
         # edges pull their notes into this node's message for the PR body.
         depends_on: [implement, ai-review, fix-loop]
@@ -167,6 +172,68 @@ data:
           The interface is the test surface — callers and tests cross the same seam.
           One adapter = hypothetical seam. Two adapters = real seam. Don't add a seam unless two adapters are justified.
           Accept dependencies, don't create them. Return values, not side effects.
+
+      explore-first:
+        description: "Read → reproduce → root-cause → plan. No coding until root cause is confirmed."
+        content: |
+          Before writing a plan or proposing changes:
+          1. Read the task fully. Identify the symptom vs. the root cause.
+          2. Search the codebase for every caller/owner of the affected function or module.
+          3. Create a reproduction script or failing test to confirm the problem is real.
+          4. Identify the single correct layer where the behavior is defined — fix there,
+             not in all callers.
+          5. Output a short bullet plan: files to touch, approach, edge cases.
+             Do NOT start coding until the plan is written.
+
+      verify-loop:
+        description: "Rerun reproduction after every change. Never mark done until original failure is gone and no tests broke."
+        content: |
+          After every code change:
+          - Rerun the reproduction script or failing test. Never assume a fix worked.
+          - Do not suppress errors with try/except to make tests pass. Fix the root cause.
+          - Confirm: (a) original failure gone, (b) no existing tests newly broken,
+            (c) at least one edge case checked.
+          - Run targeted tests during iteration. Run full suite before final commit only.
+
+      defensive-coding:
+        description: "Validate at boundaries, implement __hash__ with __eq__, log silenced exceptions, normalize iterables before serialization."
+        content: |
+          - Validate and normalize inputs at the entry point, not deep in helpers.
+          - When implementing __eq__, always implement __hash__. Equal objects must hash equal.
+          - Normalize dict_keys/dict_values to list/tuple before deep-copy or serialization.
+          - Never bare except without logging the exception with exc_info=True.
+          - Provide clear error messages that include the offending value.
+          - Never assume an attribute or config value is present — check explicitly.
+
+      secret-scan:
+        description: "Scan the diff for hardcoded secrets before any commit or push."
+        content: |
+          Before committing or pushing, scan the full diff for:
+          - API keys, tokens, passwords, private keys (any string matching key/token/secret/password
+            patterns assigned a string literal)
+          - Credentials echoed into logs, result.json, or test fixtures
+          If found: remove the secret, use an environment variable or secret store instead.
+          Never commit a secret even in a test file.
+
+      impact-analysis:
+        description: "Trace all callers of modified functions — are sibling call sites also broken?"
+        content: |
+          For every function, method, or module changed in this diff:
+          1. Find all call sites in the codebase (grep/search).
+          2. Confirm the fix applies to ALL of them, not just the one the ticket named.
+          3. Flag any sibling call site where the same bug still exists after the patch.
+          A patch that fixes one caller and leaves all others broken is worse than no patch.
+
+      security:
+        description: "Review changes for security regressions before approval."
+        content: |
+          Review every change for security impact:
+          - Validate untrusted input at boundaries and reject unsafe values clearly.
+          - Do not log secrets, credentials, tokens, private data, or authorization headers.
+          - Preserve least privilege for filesystem, network, Kubernetes RBAC, and cloud access.
+          - Avoid injection vulnerabilities in shell commands, SQL, templates, YAML, and URLs.
+          - Fail closed on authorization, authentication, and policy checks.
+          - If a risk remains, call it out explicitly with the affected file and mitigation.
   rules.yaml: |-
     rules:
       ponytail:
