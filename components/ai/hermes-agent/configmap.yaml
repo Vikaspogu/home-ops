@@ -6,7 +6,7 @@ metadata:
 data:
   config.yaml: |-
     model:
-      default: "aws/anthropic/bedrock-claude-sonnet-4-6"
+      default: "aws/anthropic/bedrock-claude-opus-4-8"
       provider: "custom"
       api_key: "${HERMES_API_KEY}"
       base_url: "${HERMES_BASE_URL}"
