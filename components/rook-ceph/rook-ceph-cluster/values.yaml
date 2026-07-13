@@ -45,6 +45,12 @@ cephClusterSpec:
     ssl: false
     prometheusEndpoint: http://prometheus-operated.observability.svc.cluster.local:9090
   mgr:
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: 250m
+      limits:
+        memory: 2Gi
     modules:
       - name: diskprediction_local
         enabled: true
