@@ -10,5 +10,5 @@ helmCharts:
     namespace: kube-system
     includeCRDs: true
     repo: oci://registry.k8s.io/nfd/charts
-    version: 0.18.3
+    version: 0.19.0
     valuesFile: values.yaml
