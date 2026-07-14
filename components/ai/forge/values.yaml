@@ -38,6 +38,7 @@ controllers:
           FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/22.22.1/bin/node
+          FORGE_PYPI_REGISTRY_HOSTS: pypi.org,files.pythonhosted.org
           FORGE_SKILLS_CONFIG: /app/config/skills.yaml
           FORGE_RULES_CONFIG: /app/config/rules.yaml
           FORGE_COPILOT_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
