@@ -12,8 +12,8 @@ It does not repair Garage, provision a separate credential system, change Authen
 
 ## Existing Contract
 
-- `homelab-orchestrator/terraform/authentik/backend.tf` currently uses Garage through OpenTofu's S3 backend.
-- The backend cannot list Garage workspaces because the S3 request signature includes `accept-encoding` but Garage does not receive that signed header.
+- The Garage bucket is empty, so no remote state needs migration.
+- The Garage S3 endpoint currently rejects OpenTofu's signed `accept-encoding` header, but this does not block a fresh backend initialization.
 - `home-ops` deploys cluster components from `clusters/talos/apps/20-applications.yaml`; each default component lives at `components/default/<name>/`.
 - The selected durable kubeconfig context is `admin@home-kubernetes` in the Talos cluster configuration.
 - The Authentik Terraform root does not configure the Kubernetes provider, so it does not create the Kubernetes control plane that will host its state.
@@ -37,32 +37,30 @@ OpenTofu stores the default workspace state in the Secret named `tfstate-default
 - A new S3 service: retains the protocol compatibility boundary that failed with Garage.
 - PostgreSQL: viable, but introduces a separate database lifecycle when the existing cluster control plane already provides Secret storage and Lease locking.
 
-## Migration Gate
+## Fresh Initialization Guard
 
-Garage remains the source of truth until it is readable by one OpenTofu client. The current `ListObjectsV2` failure prevents `tofu init -migrate-state` from reading the source state.
+Garage contains no state to migrate. The Kubernetes backend starts empty.
 
-Before changing the active backend:
+Before the first apply:
 
-1. Restore read access to Garage by bypassing the S3 proxy path, testing a compatible OpenTofu version, or applying a Garage-compatible fix.
-2. Pull and verify a protected state backup from Garage.
-3. Confirm Argo CD has synchronized the `tofu-state` namespace.
-4. Change the backend and run `tofu init -migrate-state`.
-
-Do not initialize the new backend with an empty state. An empty state would cause a later apply to attempt to recreate existing Authentik resources.
+1. Confirm Argo CD has synchronized the `tofu-state` namespace.
+2. Change the backend and run `tofu init -reconfigure`; do not use `-migrate-state`.
+3. Run `tofu plan` and reconcile every proposed create against the Authentik server.
+4. Import any object that already exists in Authentik; do not apply through an `already exists` error.
 
 ## Verification
 
 1. Argo CD reports the `tofu-state` application synchronized and Kubernetes reports the Namespace active.
-2. `tofu init -migrate-state` completes after Garage state is readable.
+2. `tofu init -reconfigure` completes with the Kubernetes backend.
 3. The expected state Secret exists in `tofu-state`.
 4. A second concurrent OpenTofu process cannot acquire the Lease while the first holds it.
-5. `tofu plan` reports no unexpected Authentik resource creation or destruction.
+5. `tofu plan` reports only intentional creates; existing Authentik objects are imported before the first apply.
 
 ## Security and Limits
 
 Terraform state may contain sensitive provider values. Kubernetes Secrets are only base64-encoded and are unencrypted in etcd by default. The cluster must enforce encryption at rest, least-privilege Secret access, and encrypted backups.
 
-The Kubernetes backend stores state in a single Secret, which has a 1 MiB maximum size. Confirm the state remains below that limit before migration.
+The Kubernetes backend stores state in a single Secret, with a 1 MiB maximum size. Monitor state size before it approaches that limit.
 
 ## Sources
 
