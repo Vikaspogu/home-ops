@@ -496,6 +496,14 @@ applications:
     source:
       path: components/default/stirling-pdf
 
+  tofu-state:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: tofu-state
+    source:
+      path: components/default/tofu-state
+
   trek:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
