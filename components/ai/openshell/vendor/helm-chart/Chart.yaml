@@ -6,7 +6,7 @@ apiVersion: v2
 name: helm-chart
 description: runtime environment for autonomous agents
 type: application
-# Vendored from NVIDIA/OpenShell v0.0.80 (709aa0fe3e9e4d2b5fea336b5d6e393b45481898).
+# Vendored from NVIDIA/OpenShell v0.0.83 (e3d26dd3ae0dee247bbc5db368545832757ac493).
 # Gateway, supervisor, and this chart must advance together.
-version: 0.0.80
-appVersion: "0.0.80"
+version: 0.0.83
+appVersion: "0.0.83"

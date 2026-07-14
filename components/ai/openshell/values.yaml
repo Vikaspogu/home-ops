@@ -21,8 +21,7 @@ image:
   tag: "0.0.83"
   pullPolicy: Always
 
-# Supervisor tag defaults to chart appVersion (dev); pin to latest to match gateway:latest or the bootstrap handshake fails (version skew).
-# pullPolicy Always so the floating latest supervisor build is re-pulled instead of a stale node cache.
+# Pin supervisor and gateway to the same release; version skew breaks bootstrap.
 supervisor:
   image:
     repository: ghcr.io/nvidia/openshell/supervisor
