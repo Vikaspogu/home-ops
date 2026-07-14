@@ -53,9 +53,9 @@ spec:
     resources:
       requests:
         cpu: 50m
-        memory: 128Mi
+        memory: 512Mi
       limits:
-        memory: 256Mi
+        memory: 1Gi
   nodeAgent:
     image:
       name: ghcr.io/coroot/coroot-node-agent:1.34.2
