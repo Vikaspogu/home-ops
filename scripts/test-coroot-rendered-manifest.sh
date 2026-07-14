@@ -53,6 +53,7 @@ coroot_contract_count() {
       .spec.communityEdition.image.name == "ghcr.io/coroot/coroot:v1.23.3" and
       .spec.externalPrometheus.url == "http://prometheus-prometheus.observability.svc.cluster.local:9090" and
       .spec.externalPrometheus.remoteWriteURL == "http://prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write" and
+      .spec.storage.size == "10Gi" and .spec.storage.className == "ceph-block" and
       .spec.clickhouse.storage.className == "ceph-block" and .spec.clickhouse.storage.size == "100Gi" and
       .spec.clickhouse.keeper.storage.className == "ceph-block" and .spec.clickhouse.keeper.storage.size == "10Gi" and
       (.spec | has("externalClickhouse") | not) and (.spec.clickhouse | has("s3") | not) and

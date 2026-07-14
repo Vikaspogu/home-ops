@@ -15,6 +15,9 @@ spec:
   externalPrometheus:
     url: http://prometheus-prometheus.observability.svc.cluster.local:9090
     remoteWriteURL: http://prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write
+  storage:
+    size: 10Gi
+    className: ceph-block
   clickhouse:
     shards: 1
     replicas: 1
