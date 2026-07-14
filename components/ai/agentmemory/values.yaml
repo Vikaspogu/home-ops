@@ -86,7 +86,6 @@ controllers:
             cpu: 200m
             memory: 2Gi
           limits:
-            cpu: 500m
             memory: 6Gi
         securityContext:
           allowPrivilegeEscalation: false
