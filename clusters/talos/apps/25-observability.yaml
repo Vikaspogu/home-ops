@@ -1,5 +1,13 @@
 applications:
 
+  coroot-operator:
+    annotations:
+      argocd.argoproj.io/sync-wave: "23"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/coroot-operator
+
   grafana:
     annotations:
       argocd.argoproj.io/sync-wave: "25"
@@ -67,3 +75,11 @@ applications:
       namespace: observability
     source:
       path: components/observability/speedtest-exporter
+
+  coroot:
+    annotations:
+      argocd.argoproj.io/sync-wave: "26"
+    destination:
+      namespace: observability
+    source:
+      path: components/observability/coroot

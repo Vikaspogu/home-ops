@@ -5,6 +5,7 @@ readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly PROMETHEUS_COMPONENT="${ROOT_DIR}/components/observability/kube-prometheus-stack"
 readonly COROOT_OPERATOR_COMPONENT="${ROOT_DIR}/components/observability/coroot-operator"
 readonly COROOT_COMPONENT="${ROOT_DIR}/components/observability/coroot"
+readonly OBSERVABILITY_APPS="${ROOT_DIR}/clusters/talos/apps/25-observability.yaml"
 umask 077
 readonly manifest="$(mktemp)"
 trap 'rm -f -- "${manifest}"' EXIT
@@ -12,6 +13,21 @@ trap 'rm -f -- "${manifest}"' EXIT
 fail() {
   printf 'ERROR: %s\n' "$*" >&2
   exit 1
+}
+
+argo_registration_matches() {
+  local app="$1"
+  local path="$2"
+  local wave="$3"
+
+  yq ea -r "
+    (select(.applications) | .applications.\"${app}\" | to_json) ==
+    ({
+      \"annotations\": {\"argocd.argoproj.io/sync-wave\": \"${wave}\"},
+      \"destination\": {\"namespace\": \"observability\"},
+      \"source\": {\"path\": \"${path}\"}
+    } | to_json)
+  " "${OBSERVABILITY_APPS}"
 }
 
 remote_write_receiver_count() {
@@ -68,5 +84,10 @@ kustomize build "${COROOT_COMPONENT}" >"${manifest}"
 
 [[ "$(coroot_contract_count)" == "1" ]] || fail "rendered Coroot resource contract missing or ambiguous"
 [[ "$(coroot_https_route_count)" == "1" ]] || fail "rendered Coroot HTTPS route missing or ambiguous"
+
+[[ "$(argo_registration_matches coroot-operator components/observability/coroot-operator 23)" == "true" ]] \
+  || fail "Coroot operator ArgoCD registration must target observability at sync-wave 23"
+[[ "$(argo_registration_matches coroot components/observability/coroot 26)" == "true" ]] \
+  || fail "Coroot ArgoCD registration must target observability at sync-wave 26"
 
 printf 'Coroot rendered-manifest contract passed.\n'
