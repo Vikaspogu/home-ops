@@ -57,6 +57,7 @@ prometheus:
         gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/prometheus.png"
   prometheusSpec:
     externalUrl: https://prometheus.${CLUSTER_DOMAIN}
+    enableRemoteWriteReceiver: true
     image:
       registry: docker.io
       repository: prompp/prompp
