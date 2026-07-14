@@ -87,6 +87,18 @@ is_configmap_generator_file() {
     return 1  # File is not referenced in configMapGenerator
 }
 
+# Return true when a component directory belongs to a Helm chart.
+is_within_helm_chart() {
+    local directory="$1"
+
+    while [[ "${directory}" != "${ROOT_DIR}" ]]; do
+        [[ -f "${directory}/Chart.yaml" ]] && return 0
+        directory="$(dirname "${directory}")"
+    done
+
+    return 1
+}
+
 # Function to validate standalone YAML files
 validate_standalone_files() {
     local search_dir="$1"
@@ -135,7 +147,7 @@ if [[ -d "${ROOT_DIR}/components" ]]; then
         fi
 
         # Skip charts directories (contain Helm charts, not raw manifests)
-        if [[ "${dir}" == */charts || "${dir}" == */charts/* ]]; then
+        if [[ "${dir}" == */charts || "${dir}" == */charts/* ]] || is_within_helm_chart "${dir}"; then
             echo "Skipping ${dir#${ROOT_DIR}/} - charts directory"
             continue
         fi
@@ -151,7 +163,7 @@ if [[ -d "${ROOT_DIR}/components" ]]; then
         dir="${file%/${kustomize_config}}"
 
         # Skip kustomizations in charts directories
-        if [[ "${dir}" == */charts || "${dir}" == */charts/* ]]; then
+        if [[ "${dir}" == */charts || "${dir}" == */charts/* ]] || is_within_helm_chart "${dir}"; then
             echo "Skipping ${dir#${ROOT_DIR}/} - charts directory"
             continue
         fi
