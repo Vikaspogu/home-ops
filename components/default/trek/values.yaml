@@ -1,0 +1,102 @@
+---
+defaultPodOptions:
+  securityContext:
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    pod:
+      annotations:
+        reloader.stakater.com/auto: "true"
+    initContainers:
+      initialize-storage:
+        image:
+          repository: busybox
+          tag: "1.37.0"
+        command: ["sh", "-c", "mkdir -p /storage/data /storage/uploads"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            memory: 32Mi
+    containers:
+      app:
+        image:
+          repository: mauriceboe/trek
+          tag: "3.3.0"
+        env:
+          NODE_ENV: production
+          PORT: &port 3000
+          APP_URL: "https://trek.${CLUSTER_DOMAIN}"
+          ALLOWED_ORIGINS: "https://trek.${CLUSTER_DOMAIN}"
+          TRUST_PROXY: "1"
+          FORCE_HTTPS: "true"
+          OIDC_ISSUER: "https://id.${CLUSTER_DOMAIN}/application/o/trek/"
+          OIDC_DISCOVERY_URL: "https://id.${CLUSTER_DOMAIN}/application/o/trek/.well-known/openid-configuration"
+          OIDC_DISPLAY_NAME: Authentik
+          OIDC_SCOPE: "openid email profile groups"
+          OIDC_ADMIN_CLAIM: groups
+          OIDC_ADMIN_VALUE: trek-admins
+        envFrom:
+          - secretRef:
+              name: trek-secret
+        probes:
+          liveness: &healthProbe
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: *port
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness: *healthProbe
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: true
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop: ["ALL"]
+            add: ["CHOWN", "SETUID", "SETGID"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+
+service:
+  app:
+    ports:
+      http:
+        port: *port
+
+persistence:
+  storage:
+    existingClaim: trek
+    advancedMounts:
+      app:
+        initialize-storage:
+          - path: /storage
+        app:
+          - path: /app/data
+            subPath: data
+          - path: /app/uploads
+            subPath: uploads
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
