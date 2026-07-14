@@ -62,7 +62,7 @@ coroot_contract_count() {
       .spec.clickhouse.resources.requests.cpu == "500m" and .spec.clickhouse.resources.requests.memory == "1Gi" and .spec.clickhouse.resources.limits.memory == "2Gi" and
       .spec.clickhouse.keeper.resources.requests.cpu == "100m" and .spec.clickhouse.keeper.resources.requests.memory == "256Mi" and .spec.clickhouse.keeper.resources.limits.memory == "512Mi" and
       .spec.clusterAgent.resources.requests.cpu == "50m" and .spec.clusterAgent.resources.requests.memory == "128Mi" and .spec.clusterAgent.resources.limits.memory == "256Mi" and
-      .spec.nodeAgent.resources.requests.cpu == "50m" and .spec.nodeAgent.resources.requests.memory == "64Mi" and .spec.nodeAgent.resources.limits.memory == "512Mi"
+      .spec.nodeAgent.resources.requests.cpu == "50m" and .spec.nodeAgent.resources.requests.memory == "64Mi" and .spec.nodeAgent.resources.limits.memory == "1Gi"
     )] | length
   ' "${manifest}"
 }
