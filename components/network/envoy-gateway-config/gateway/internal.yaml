@@ -59,27 +59,3 @@ spec:
     - type: type.googleapis.com/envoy.config.listener.v3.Listener
       name: network/envoy-internal/https-quic
       operation: *operation
-
----
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/gateway.envoyproxy.io/envoypatchpolicy_v1alpha1.json
-apiVersion: gateway.envoyproxy.io/v1alpha1
-kind: EnvoyPatchPolicy
-metadata:
-  name: envoy-internal-s3-no-compression
-spec:
-  targetRef:
-    group: gateway.networking.k8s.io
-    kind: Gateway
-    name: envoy-internal
-  type: JSONPatch
-  jsonPatches:
-    - type: type.googleapis.com/envoy.config.route.v3.RouteConfiguration
-      name: network/envoy-internal/https
-      operation:
-        op: add
-        jsonPath: ..virtual_hosts[?(@.name=="network/envoy-internal/https/s3_a113_casa")]
-        path: typed_per_filter_config
-        value:
-          envoy.filters.http.compressor.zstd:
-            "@type": type.googleapis.com/envoy.extensions.filters.http.compressor.v3.CompressorPerRoute
-            disabled: true
