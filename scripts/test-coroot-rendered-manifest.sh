@@ -50,7 +50,7 @@ coroot_contract_count() {
   yq ea -r '
     [select(
       .apiVersion == "coroot.com/v1" and .kind == "Coroot" and .metadata.name == "coroot" and
-      .spec.communityEdition.image.name == "ghcr.io/coroot/coroot:v1.23.3" and
+      .spec.communityEdition.image.name == "ghcr.io/coroot/coroot:1.23.3" and
       .spec.externalPrometheus.url == "http://prometheus-prometheus.observability.svc.cluster.local:9090" and
       .spec.externalPrometheus.remoteWriteURL == "http://prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write" and
       .spec.storage.size == "10Gi" and .spec.storage.className == "ceph-block" and

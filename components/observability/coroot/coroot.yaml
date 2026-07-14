@@ -11,7 +11,7 @@ spec:
   profilesTTL: 7d
   communityEdition:
     image:
-      name: ghcr.io/coroot/coroot:v1.23.3
+      name: ghcr.io/coroot/coroot:1.23.3
   externalPrometheus:
     url: http://prometheus-prometheus.observability.svc.cluster.local:9090
     remoteWriteURL: http://prometheus-prometheus.observability.svc.cluster.local:9090/api/v1/write
