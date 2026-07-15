@@ -34,6 +34,10 @@ remote_write_receiver_count() {
   yq ea -r '[select(.kind == "Prometheus" and .spec.enableRemoteWriteReceiver == true and .spec.image == "quay.io/prometheus/prometheus:v2.53.2")] | length' "${manifest}"
 }
 
+prometheus_memory_limit_count() {
+  yq ea -r '[select(.kind == "Prometheus" and .spec.resources.limits.memory == "6Gi")] | length' "${manifest}"
+}
+
 coroot_crd_count() {
   yq ea -r '[select(.kind == "CustomResourceDefinition" and .metadata.name == "coroots.coroot.com")] | length' "${manifest}"
 }
@@ -74,6 +78,7 @@ coroot_https_route_count() {
 kustomize build --enable-helm "${PROMETHEUS_COMPONENT}" >"${manifest}"
 
 [[ "$(remote_write_receiver_count)" == "1" ]] || fail "rendered upstream Prometheus remote-write receiver missing or ambiguous"
+[[ "$(prometheus_memory_limit_count)" == "1" ]] || fail "rendered Prometheus memory limit must be 6Gi"
 
 kustomize build --enable-helm "${COROOT_OPERATOR_COMPONENT}" >"${manifest}"
 
