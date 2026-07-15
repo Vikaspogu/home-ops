@@ -31,7 +31,7 @@ argo_registration_matches() {
 }
 
 remote_write_receiver_count() {
-  yq ea -r '[select(.kind == "Prometheus" and .spec.enableRemoteWriteReceiver == true)] | length' "${manifest}"
+  yq ea -r '[select(.kind == "Prometheus" and .spec.enableRemoteWriteReceiver == true and .spec.image == "quay.io/prometheus/prometheus:v2.53.2")] | length' "${manifest}"
 }
 
 coroot_crd_count() {
@@ -73,7 +73,7 @@ coroot_https_route_count() {
 
 kustomize build --enable-helm "${PROMETHEUS_COMPONENT}" >"${manifest}"
 
-[[ "$(remote_write_receiver_count)" == "1" ]] || fail "rendered Prometheus remote-write receiver missing or ambiguous"
+[[ "$(remote_write_receiver_count)" == "1" ]] || fail "rendered upstream Prometheus remote-write receiver missing or ambiguous"
 
 kustomize build --enable-helm "${COROOT_OPERATOR_COMPONENT}" >"${manifest}"
 

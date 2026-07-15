@@ -59,9 +59,9 @@ prometheus:
     externalUrl: https://prometheus.${CLUSTER_DOMAIN}
     enableRemoteWriteReceiver: true
     image:
-      registry: docker.io
-      repository: prompp/prompp
-      tag: 2.53.2-0.4.0
+      registry: quay.io
+      repository: prometheus/prometheus
+      tag: v2.53.2
     securityContext:
       runAsNonRoot: true
       runAsUser: 64535
