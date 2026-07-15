@@ -9,8 +9,8 @@ metadata:
   annotations:
     gethomepage.dev/href: "https://forge.${CLUSTER_DOMAIN}"
     gethomepage.dev/enabled: "true"
-    gethomepage.dev/group: AI
-    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/workflow.svg
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/secureai-tools.png
     gethomepage.dev/name: Forge
     gethomepage.dev/description: Autonomous dev loop orchestrator
     gethomepage.dev/app: forge-orchestrator
