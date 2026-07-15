@@ -218,6 +218,25 @@ data:
         - web/ddgs
         - security-guidance
         - observability/nemo_relay
+    # TREK MCP: auth is client_credentials tokens kept fresh on disk by the
+    # trek-token-refresher sidecar; hermes reloads them via mtime watch.
+    # client_id/secret are only used for storage bootstrap, never a browser flow.
+    mcp_servers:
+      trek:
+        url: "https://trek.${CLUSTER_DOMAIN}/mcp"
+        auth: oauth
+        oauth:
+          client_id: "${TREK_OAUTH_CLIENT_ID}"
+          client_secret: "${TREK_OAUTH_CLIENT_SECRET}"
+      # Coroot MCP only supports the authorization_code grant, but the sidecar
+      # bootstraps it headlessly (login + consent POST with admin credentials).
+      # Hermes then rotates the 30-day refresh token on its own; the sidecar
+      # only re-bootstraps if the stored refresh token nears expiry.
+      coroot:
+        url: "https://coroot.${CLUSTER_DOMAIN}/mcp"
+        auth: oauth
+        oauth:
+          redirect_port: 8899
     web:
       search_backend: searxng
     platforms:
@@ -247,6 +266,8 @@ data:
         - ivan_paperless
         - ivan_synology
         - ivan_travel
+        - mcp-coroot
+        - mcp-trek
         - memory
         - messaging
         - session_search
@@ -278,6 +299,8 @@ data:
         - ivan_paperless
         - ivan_synology
         - ivan_travel
+        - mcp-coroot
+        - mcp-trek
         - memory
         - messaging
         - session_search

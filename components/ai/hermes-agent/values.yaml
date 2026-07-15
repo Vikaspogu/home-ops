@@ -37,6 +37,35 @@ controllers:
         image:
           tag: 20260715000636-fdb6d67-oci
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+      # Native sidecar: keeps MCP OAuth tokens fresh on the shared PVC so
+      # hermes never needs a browser flow (TREK hourly client_credentials,
+      # Coroot headless authorization_code bootstrap).
+      mcp-token-sidecar:
+        restartPolicy: Always
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260715000636-fdb6d67-oci
+        command: ["python", "/usr/local/bin/hermes-mcp-tokens"]
+        env:
+          PYTHONUNBUFFERED: "1"
+          TREK_URL: "https://trek.${CLUSTER_DOMAIN}"
+          COROOT_URL: "https://coroot.${CLUSTER_DOMAIN}"
+        envFrom:
+        - secretRef:
+            name: hermes-agent-secret
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities: {drop: ["ALL"]}
     containers:
       app:
         image:
@@ -96,6 +125,8 @@ persistence:
         hermes-bootstrap:
         - path: /opt/data
         app:
+        - path: /opt/data
+        mcp-token-sidecar:
         - path: /opt/data
   config:
     type: configMap

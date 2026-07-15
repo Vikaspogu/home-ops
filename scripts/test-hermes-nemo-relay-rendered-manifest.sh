@@ -135,11 +135,11 @@ kustomize build --enable-helm "${HERMES_COMPONENT}" >"${manifest}"
 [[ "$(resource_count ConfigMap hermes-agent-config)" == "1" ]] || fail "rendered Hermes ConfigMap is missing or ambiguous"
 [[ "$(hermes_app_container_count)" == "1" ]] || fail "rendered Hermes application container is missing or ambiguous"
 
-[[ "$(hermes_init_container_count)" == "2" ]] || fail "rendered Hermes init containers are missing or ambiguous"
+[[ "$(hermes_init_container_count)" == "3" ]] || fail "rendered Hermes init containers are missing or ambiguous"
 
 [[ "$(hermes_app_image_count)" == "1" ]] || fail "rendered Hermes application image must use ${HERMES_IMAGE} exactly once"
 
-[[ "$(hermes_init_image_count)" == "2" ]] || fail "rendered Hermes init containers must use ${HERMES_IMAGE}"
+[[ "$(hermes_init_image_count)" == "3" ]] || fail "rendered Hermes init containers must use ${HERMES_IMAGE}"
 [[ "$(hermes_nemo_relay_plugin_count)" == "1" ]] || fail "rendered Hermes configuration must enable observability/nemo_relay"
 [[ "$(
   yq ea -r '
