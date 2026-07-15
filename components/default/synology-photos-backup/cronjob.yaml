@@ -72,12 +72,14 @@ spec:
                   set -e
                   echo "==> Syncing /volume1/photo to garage:synology-backup/photo"
                   rclone sync /mnt/photo garage:synology-backup/photo \
+                  --exclude '**/@eaDir/**' \
                     --transfers=4 \
                     --checkers=8 \
                     --log-level=INFO \
                     --stats=60s
                   echo "==> Syncing /volume1/media/k8s-data to garage:synology-backup/k8s-data"
                   rclone sync /mnt/k8s-data garage:synology-backup/k8s-data \
+                  --exclude '**/@eaDir/**' \
                     --transfers=4 \
                     --checkers=8 \
                     --log-level=INFO \

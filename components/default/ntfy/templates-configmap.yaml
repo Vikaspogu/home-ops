@@ -9,29 +9,26 @@ data:
       {{- $alert := first .alerts }}
       {{- if eq .status "firing" }}🚨 {{ else }}✅ {{ end }}{{ $alert.labels.alertname }}
     message: |
-      {{- range .alerts }}
-      Severity: {{ default "unknown" .labels.severity }}
-      {{- with .labels.namespace }}
+      {{- $alert := first .alerts }}
+      Grouped alerts: {{ len .alerts }}
+      Severity: {{ default "unknown" $alert.labels.severity }}
+      {{- with $alert.labels.namespace }}
       Namespace: {{ . }}
       {{- end }}
-      {{- with .labels.pod }}
+      {{- with $alert.labels.pod }}
       Pod: {{ . }}
       {{- end }}
-      {{- with .labels.container }}
+      {{- with $alert.labels.container }}
       Container: {{ . }}
       {{- end }}
-      {{- with .labels.instance }}
+      {{- with $alert.labels.instance }}
       Instance: {{ . }}
       {{- end }}
-      {{- with .annotations.summary }}
+      {{- with $alert.annotations.summary }}
       Summary: {{ . }}
       {{- end }}
-      {{- with .annotations.description }}
+      {{- with $alert.annotations.description }}
       Description: {{ . }}
-      {{- end }}
-      {{- with .generatorURL }}
-      Source: {{ . }}
-      {{- end }}
       {{- end }}
     priority: |
       {{- $severity := (first .alerts).labels.severity }}

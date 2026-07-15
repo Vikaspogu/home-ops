@@ -5,7 +5,8 @@ readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly NTFY_COMPONENT="${ROOT_DIR}/components/default/ntfy"
 umask 077
 readonly manifest="$(mktemp)"
-trap 'rm -f -- "${manifest}"' EXIT
+readonly template="$(mktemp)"
+trap 'rm -f -- "${manifest}" "${template}"' EXIT
 
 fail() {
     printf 'FAIL: %s\n' "$1" >&2
@@ -95,3 +96,16 @@ http_route_count="$(resource_count HTTPRoute)"
 )" == "8080" ]] || fail "rendered ntfy readiness HTTP probe must target port 8080"
 
 printf 'PASS: rendered ntfy listener, Service, HTTPRoute, pod security context, and probe ports are consistent\n'
+
+ntfy_template="$(yq ea -r '
+  select(.kind == "ConfigMap" and .metadata.name == "ntfy-templates")
+  | .data["infra-alerts.yml"]
+' "${manifest}")"
+
+printf '%s\n' "${ntfy_template}" >"${template}"
+yq e '.message' "${template}" >/dev/null || fail "rendered ntfy template must be valid YAML"
+[[ "$(yq e -r '.message' "${template}")" != "null" ]] || fail "rendered ntfy template message must not be empty"
+
+[[ "${ntfy_template}" == *"len .alerts"* ]] || fail "rendered ntfy template must report grouped alert count"
+[[ "${ntfy_template}" != *"range .alerts"* ]] || fail "rendered ntfy template must not repeat every grouped alert"
+[[ "${ntfy_template}" != *".generatorURL"* ]] || fail "rendered ntfy template must not include unbounded generator URLs"
