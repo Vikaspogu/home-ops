@@ -75,7 +75,7 @@ Register both in `clusters/talos/apps/20-applications.yaml`:
 Create an ExternalSecret for Honcho that extracts:
 
 - Existing `inference-hub` item:
-  - `INFERENCE_HUB_API_KEY`
+  - `INFERENCE_HUB_CODING_KEY`
   - `INFERENCE_HUB_BASE_URL`
 - Existing `hermes` 1Password item:
   - `HONCHO_POSTGRES_PASSWORD`
@@ -89,11 +89,11 @@ Rendered Kubernetes secret data should include:
 - `CACHE_ENABLED=true`
 - `CACHE_URL=redis://valkey.default.svc.cluster.local:6379/6?suppress=true`
 - `AUTH_USE_AUTH=false`
-- `INFERENCE_HUB_API_KEY`, rendered from the `inference-hub` 1Password item
+- `INFERENCE_HUB_CODING_KEY`, rendered from the `inference-hub` 1Password item
 - `EMBEDDING_MODEL_CONFIG__TRANSPORT=openai`
 - `EMBEDDING_MODEL_CONFIG__MODEL=azure/openai/text-embedding-3-small`
 - `EMBEDDING_MODEL_CONFIG__OVERRIDES__BASE_URL`, rendered from `INFERENCE_HUB_BASE_URL` with `/v1`
-- `EMBEDDING_MODEL_CONFIG__OVERRIDES__API_KEY_ENV=INFERENCE_HUB_API_KEY`
+- `EMBEDDING_MODEL_CONFIG__OVERRIDES__API_KEY_ENV=INFERENCE_HUB_CODING_KEY`
 - `EMBEDDING_VECTOR_DIMENSIONS=1536`
 - `VECTOR_STORE_TYPE=pgvector`
 - `VECTOR_STORE_DIMENSIONS=1536`
@@ -115,7 +115,7 @@ Each should set:
 - `TRANSPORT=openai`
 - `MODEL=openai/openai/gpt-5.4-mini`
 - `OVERRIDES__BASE_URL`, rendered from `INFERENCE_HUB_BASE_URL` with `/v1`
-- `OVERRIDES__API_KEY_ENV=INFERENCE_HUB_API_KEY`
+- `OVERRIDES__API_KEY_ENV=INFERENCE_HUB_CODING_KEY`
 
 ## Hermes Configuration
 

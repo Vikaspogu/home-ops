@@ -342,7 +342,7 @@ spec:
         CACHE_URL: "redis://valkey.default.svc.cluster.local:6379/6?suppress=true"
         TELEMETRY_ENABLED: "false"
         METRICS_ENABLED: "false"
-        LLM_OPENAI_API_KEY: "{{ .INFERENCE_HUB_API_KEY }}"
+        LLM_OPENAI_API_KEY: "{{ .INFERENCE_HUB_CODING_KEY }}"
         EMBEDDING_MODEL_CONFIG__TRANSPORT: openai
         EMBEDDING_MODEL_CONFIG__MODEL: azure/openai/text-embedding-3-small
         EMBEDDING_MODEL_CONFIG__OVERRIDES__BASE_URL: "{{ trimSuffix \"/\" .INFERENCE_HUB_BASE_URL }}/v1"

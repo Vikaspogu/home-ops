@@ -12,7 +12,7 @@ resources:
     memory: 2Gi
 
 additionalEnvVars:
-  - name: NVIDIA_INFERENCE_HUB_API_KEY
+  - name: NVIDIA_INFERENCE_HUB_CODING_KEY
     valueFrom:
       secretKeyRef:
         name: holmesgpt-ai-provider
@@ -26,7 +26,7 @@ additionalEnvVars:
 modelList:
   gpt-5.5:
     model: custom_openai/openai/openai/gpt-5.5
-    api_key: "{{ env.NVIDIA_INFERENCE_HUB_API_KEY }}"
+    api_key: "{{ env.NVIDIA_INFERENCE_HUB_CODING_KEY }}"
     api_base: "{{ env.NVIDIA_INFERENCE_HUB_BASE_URL }}"
     temperature: 1
 
