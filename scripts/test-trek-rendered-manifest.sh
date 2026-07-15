@@ -55,6 +55,7 @@ kustomize build --enable-helm "${TREK_COMPONENT}" >"${manifest}"
 [[ "$(app_container_count | wc -l | tr -d ' ')" == "1" ]] || fail "rendered trek container is missing or ambiguous"
 
 assert_env APP_URL 'https://trek.${CLUSTER_DOMAIN}'
+assert_env NODE_OPTIONS '--max-old-space-size=384'
 assert_env ALLOWED_ORIGINS 'https://trek.${CLUSTER_DOMAIN}'
 assert_env TRUST_PROXY '1'
 assert_env FORCE_HTTPS 'true'

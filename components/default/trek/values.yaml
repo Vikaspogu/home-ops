@@ -35,6 +35,7 @@ controllers:
           tag: "3.3.0"
         env:
           NODE_ENV: production
+          NODE_OPTIONS: "--max-old-space-size=384"
           PORT: &port 3000
           APP_URL: "https://trek.${CLUSTER_DOMAIN}"
           ALLOWED_ORIGINS: "https://trek.${CLUSTER_DOMAIN}"
