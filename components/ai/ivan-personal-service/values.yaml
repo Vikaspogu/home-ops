@@ -31,7 +31,7 @@ controllers:
           WORKOUT_PLAN_TEMPERATURE: "0.2"
           WORKOUT_PLAN_MAX_REPAIR_ATTEMPTS: "2"
           WORKOUT_VIDEO_RERANKER: openai_compatible
-          WORKOUT_VIDEO_RERANK_MODEL: openai/openai/gpt-5-mini
+          WORKOUT_VIDEO_RERANK_MODEL: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
           IMAGE_SEARCH_USER_AGENT: "IvanPersonal/1.0 (https://ivan.${CLUSTER_DOMAIN}; journal image enrichment)"
         envFrom: *envFrom
         resources:

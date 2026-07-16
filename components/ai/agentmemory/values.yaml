@@ -40,7 +40,7 @@ controllers:
           # Consolidation LLM via in-cluster headroom; OPENAI_API_KEY comes from
           # the secret. Consolidation activates when a key is present.
           OPENAI_BASE_URL: http://headroom.ai.svc.cluster.local:8787/v1
-          OPENAI_MODEL: gcp/google/gemini-3.5-flash
+          OPENAI_MODEL: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
           # Compress on consolidation cadence only, not per observation — omp's
           # per-tool capture would otherwise trigger an LLM call per tool result.
           AGENTMEMORY_AUTO_COMPRESS: "false"

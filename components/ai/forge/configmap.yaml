@@ -68,7 +68,7 @@ data:
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
-        model: openai/openai/gpt-5.5
+        model: openai/openai/gpt-5.6-terra
         timeout_minutes: 30
         body:
           type: agent
@@ -104,7 +104,7 @@ data:
         # implement + ai-review are already ancestors via fix-loop; the extra
         # edges pull their notes into this node's message for the PR body.
         depends_on: [implement, ai-review, fix-loop]
-        model: gcp/google/gemini-3.5-flash
+        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
         timeout_minutes: 10
 
   gitops-update.yaml: |-
@@ -117,7 +117,7 @@ data:
         max_attempts: 2
         on_max_attempts: blocked
         timeout_minutes: 30
-        model: openai/openai/gpt-5.5
+        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
         body:
           type: agent
           role: implementer
@@ -142,12 +142,7 @@ data:
         until: TESTS_PASS
         max_attempts: 2
         on_max_attempts: blocked
-        model: aws/anthropic/bedrock-claude-sonnet-5
-      - id: resume
-        type: bash
-        depends_on: [resolve]
-        model: aws/anthropic/claude-haiku-4-5-v1
-        run: echo resume_parent
+        model: openai/openai/gpt-5.6-terra
   skills.yaml: |-
     skills:
 
