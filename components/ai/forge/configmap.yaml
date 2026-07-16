@@ -77,7 +77,7 @@ data:
         depends_on: [implement]
         # Deliberately a different model than the implementer for fresh eyes.
         model: nvidia/zai-org/glm-5.2
-        timeout_minutes: 20
+        timeout_minutes: 40
       - id: fix-loop
         type: loop
         depends_on: [ai-review]
