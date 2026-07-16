@@ -61,7 +61,7 @@ prometheus:
     image:
       registry: quay.io
       repository: prometheus/prometheus
-      tag: v2.53.2
+      tag: v2.55.1
     securityContext:
       runAsNonRoot: true
       runAsUser: 64535
