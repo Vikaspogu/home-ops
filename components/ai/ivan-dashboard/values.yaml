@@ -12,23 +12,23 @@ controllers:
           pullPolicy: Always
         env:
           TZ: America/New_York
-          IVAN_SERVICE_UPSTREAM: "http://ivan-personal-service.ai.svc.cluster.local:8080"
+          IVAN_SERVICE_URL: "http://ivan-personal-service.ai.svc.cluster.local:8080"
         envFrom:
         - secretRef:
             name: ivan-dashboard-secret
         resources:
           requests:
             cpu: 10m
-            memory: 32Mi
-          limits:
             memory: 128Mi
+          limits:
+            memory: 1Gi
         probes:
           liveness:
             enabled: true
             custom: true
             spec:
               httpGet:
-                path: /healthz
+                path: /api/healthz
                 port: &httpPort 8080
               periodSeconds: 30
               failureThreshold: 3
@@ -37,7 +37,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /healthz
+                path: /api/healthz
                 port: *httpPort
               periodSeconds: 10
           startup:
@@ -45,7 +45,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /healthz
+                path: /api/healthz
                 port: *httpPort
               initialDelaySeconds: 3
               periodSeconds: 3
