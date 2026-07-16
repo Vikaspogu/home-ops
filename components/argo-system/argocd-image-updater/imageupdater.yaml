@@ -14,29 +14,6 @@ spec:
     gitConfig:
       branch: main
   applicationRefs:
-    - namePattern: "ivan"
-      writeBackConfig:
-        method: "git:secret:argo-system/git-creds"
-        gitConfig:
-          branch: main
-          writeBackTarget: "helmvalues:./values.yaml"
-      images:
-        - alias: ivan
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-agent-v3"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.main.image.repository
-              tag: controllers.app.containers.main.image.tag
-        - alias: ivan-repo-worker
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-repo-worker"
-          commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}'
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.main.env.REPO_WORKER_IMAGE_REPOSITORY
-              tag: controllers.app.containers.main.env.REPO_WORKER_IMAGE_TAG
     - namePattern: "ivan-dashboard"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
@@ -45,7 +22,7 @@ spec:
           writeBackTarget: "helmvalues:./values.yaml"
       images:
         - alias: ivan-personal-dashboard
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-personal-dashboard"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/ivan-personal-dashboard-v2"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
