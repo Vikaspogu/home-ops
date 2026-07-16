@@ -32,6 +32,12 @@ data:
         default_branch: main
         project_type: python-service
         default_workflow: implement
+      agent-platform-custom:
+        full_name: vpogu/agent-platform-custom
+        instance: gitea-home
+        default_branch: main
+        project_type: container-images
+        default_workflow: implement
       home-ops:
         full_name: Vikaspogu/home-ops
         instance: github
