@@ -33,6 +33,7 @@ controllers:
           fi
           exec /entrypoint.sh
         env:
+          NODE_OPTIONS: --max-old-space-size=1024
           TZ: America/New_York
           III_REST_PORT: "3111"
           RUST_LOG: warn
