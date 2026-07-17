@@ -55,6 +55,12 @@ controllers:
           AGENTMEMORY_AUTO_COMPRESS: "true"
           # Surface recalled memories mid-conversation, not only at session start.
           AGENTMEMORY_INJECT_CONTEXT: "true"
+          # Print boot diagnostics (embedding provider, loaded index counts) to
+          # pod logs; without it they buffer invisibly.
+          AGENTMEMORY_VERBOSE: "true"
+          # Bigger rebuild batches = fewer embed requests against the ~40 RPM
+          # NVIDIA quota (429s are skipped, not retried, by the rebuild).
+          REBUILD_EMBED_BATCH_SIZE: "64"
           AGENTMEMORY_VIEWER_HOST: "0.0.0.0"
           VIEWER_ALLOWED_HOSTS: "agentmemory.${CLUSTER_DOMAIN}"
           VIEWER_ALLOWED_ORIGINS: "https://agentmemory.${CLUSTER_DOMAIN}"
