@@ -59,6 +59,14 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
+        - alias: openshell-sandbox
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/openshell-sandbox"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+            forceUpdate: true
+          manifestTargets:
+            helm:
+              spec: controllers.app.containers.app.env.FORGE_SANDBOX_IMAGE
     - namePattern: "hermes-agent"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
