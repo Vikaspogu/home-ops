@@ -60,9 +60,9 @@ spec:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
         - alias: openshell-sandbox
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/openshell-sandbox"
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/openshell-sandbox:latest-oci"
           commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+            updateStrategy: digest
             forceUpdate: true
           manifestTargets:
             helm:
