@@ -24,7 +24,7 @@ kustomize build --enable-helm "${TUPPR_COMPONENT}" >"${manifest}"
 [[ "$(yq ea -r '[select(.kind == "ServiceMonitor" and .metadata.name == "tuppr" and .spec.selector.matchLabels."app.kubernetes.io/name" == "tuppr" and .spec.selector.matchLabels."app.kubernetes.io/instance" == "tuppr")] | length' "${manifest}")" == "1" ]] || fail "Tuppr ServiceMonitor missing or does not select the metrics Service"
 
 kustomize build "${UPGRADE_COMPONENT}" >"${manifest}"
-[[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .metadata.annotations."tuppr.home-operations.com/suspend"' "${manifest}")" == "true" ]] || fail "TalosUpgrade must remain suspended"
+[[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | (.metadata.annotations."tuppr.home-operations.com/suspend" // "<absent>")' "${manifest}")" == "<absent>" ]] || fail "TalosUpgrade must be active"
 [[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .spec.parallelism' "${manifest}")" == "1" ]] || fail "TalosUpgrade must be sequential"
 [[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .spec.maintenance.windows[0] | [.start, .duration, .timezone] | join(",")' "${manifest}")" == "0 2 * * 0,4h,UTC" ]] || fail "TalosUpgrade maintenance window must be Sunday 02:00-06:00 UTC"
 [[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .spec.talos.version' "${manifest}")" == "v1.13.4" ]] || fail "TalosUpgrade version must match talenv"
@@ -33,4 +33,4 @@ kustomize build "${UPGRADE_COMPONENT}" >"${manifest}"
 [[ "$(yq -r '.applications.tuppr.annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS_FILE}")" == "35" ]] || fail "Tuppr must sync at wave 35"
 [[ "$(yq -r '.applications."talos-upgrade".annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS_FILE}")" == "40" ]] || fail "TalosUpgrade must sync at wave 40"
 
-printf 'PASS: Tuppr namespace, credential, and suspended upgrade policy are rendered\n'
+printf 'PASS: Tuppr namespace, credential, and active upgrade policy are rendered\n'
