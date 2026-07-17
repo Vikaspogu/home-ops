@@ -1,0 +1,16 @@
+apiVersion: tuppr.home-operations.com/v1alpha1
+kind: TalosUpgrade
+metadata:
+  name: cluster
+  annotations:
+    tuppr.home-operations.com/suspend: "true"
+spec:
+  talos:
+    # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+    version: v1.13.4
+  parallelism: 1
+  maintenance:
+    windows:
+      - start: "0 2 * * 0"
+        duration: 4h
+        timezone: UTC

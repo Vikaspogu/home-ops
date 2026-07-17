@@ -40,6 +40,30 @@ applications:
     source:
       path: components/kube-system/nvidia-gpu-operator
 
+  system-upgrade:
+    annotations:
+      argocd.argoproj.io/sync-wave: "30"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/namespace
+
+  tuppr:
+    annotations:
+      argocd.argoproj.io/sync-wave: "35"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/tuppr
+
+  talos-upgrade:
+    annotations:
+      argocd.argoproj.io/sync-wave: "40"
+    destination:
+      namespace: system-upgrade
+    source:
+      path: components/system-upgrade/talos-upgrade
+
   nvidia-gpu-cluster-policy:
     annotations:
       # Sync wave 31 — after nvidia-gpu-operator (wave 30) registers the
