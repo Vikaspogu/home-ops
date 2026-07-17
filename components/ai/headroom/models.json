@@ -25,7 +25,8 @@
   },
   "nvidia": {
     "context_limits": {
-      "nvidia/nvidia/Nemotron-3-Nano-30B-A3B": 1000000
+      "nvidia/nvidia/Nemotron-3-Nano-30B-A3B": 1000000,
+      "nvidia/qwen/qwen3-embedding-0.6b": 32768
     }
   }
 }
