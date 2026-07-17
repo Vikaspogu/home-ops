@@ -21,6 +21,7 @@ kustomize build --enable-helm "${TUPPR_COMPONENT}" >"${manifest}"
 [[ "$(yq ea -r '[select(.kind == "CustomResourceDefinition" and .metadata.name == "talosupgrades.tuppr.home-operations.com")] | length' "${manifest}")" == "1" ]] || fail "TalosUpgrade CRD missing or ambiguous"
 [[ "$(yq ea -r '[select(.apiVersion == "talos.dev/v1alpha1" and .kind == "ServiceAccount" and .metadata.name == "tuppr-talosconfig")] | length' "${manifest}")" == "1" ]] || fail "Tuppr Talos ServiceAccount missing or ambiguous"
 [[ "$(yq ea -r 'select(.kind == "Deployment" and .metadata.name == "tuppr") | .spec.template.spec.volumes[]?.secret.secretName | select(. == "tuppr-talosconfig")' "${manifest}")" == "tuppr-talosconfig" ]] || fail "Tuppr must mount its generated talosconfig"
+[[ "$(yq ea -r '[select(.kind == "ServiceMonitor" and .metadata.name == "tuppr" and .spec.selector.matchLabels."app.kubernetes.io/name" == "tuppr" and .spec.selector.matchLabels."app.kubernetes.io/instance" == "tuppr")] | length' "${manifest}")" == "1" ]] || fail "Tuppr ServiceMonitor missing or does not select the metrics Service"
 
 kustomize build "${UPGRADE_COMPONENT}" >"${manifest}"
 [[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .metadata.annotations."tuppr.home-operations.com/suspend"' "${manifest}")" == "true" ]] || fail "TalosUpgrade must remain suspended"

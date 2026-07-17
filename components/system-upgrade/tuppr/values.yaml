@@ -1,5 +1,9 @@
 talosServiceAccount:
   create: true
+monitoring:
+  serviceMonitor:
+    enabled: true
+
 resources:
   requests:
     cpu: 10m
