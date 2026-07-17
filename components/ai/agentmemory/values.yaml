@@ -40,7 +40,10 @@ controllers:
           # Consolidation LLM via in-cluster headroom; OPENAI_API_KEY comes from
           # the secret. Consolidation activates when a key is present.
           OPENAI_BASE_URL: http://headroom.ai.svc.cluster.local:8787/v1
-          OPENAI_MODEL: nvidia/nvidia/nemotron-3-super-v3
+          # Not nemotron-3-super-v3: agentmemory sends `tools: []` on every chat
+          # call and super's vLLM backend 400s on empty tools arrays; nano's
+          # backend accepts them (verified via in-pod probe against headroom).
+          OPENAI_MODEL: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
           # Embeddings for semantic recall. Model is not in agentmemory's
           # known-models table, so dimensions must be set explicitly.
           OPENAI_EMBEDDING_MODEL: nvidia/qwen/qwen3-embedding-0.6b
