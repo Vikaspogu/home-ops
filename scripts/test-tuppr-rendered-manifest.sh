@@ -18,6 +18,7 @@ kustomize build "${NAMESPACE_COMPONENT}" >"${manifest}"
 [[ "$(yq ea -r '[select(.kind == "Namespace" and .metadata.name == "system-upgrade")] | length' "${manifest}")" == "1" ]] || fail "system-upgrade Namespace missing or ambiguous"
 
 kustomize build --enable-helm "${TUPPR_COMPONENT}" >"${manifest}"
+[[ "$(yq ea -r '[select(.kind == "CustomResourceDefinition" and .metadata.name == "talosupgrades.tuppr.home-operations.com")] | length' "${manifest}")" == "1" ]] || fail "TalosUpgrade CRD missing or ambiguous"
 [[ "$(yq ea -r '[select(.apiVersion == "talos.dev/v1alpha1" and .kind == "ServiceAccount" and .metadata.name == "tuppr-talosconfig")] | length' "${manifest}")" == "1" ]] || fail "Tuppr Talos ServiceAccount missing or ambiguous"
 [[ "$(yq ea -r 'select(.kind == "Deployment" and .metadata.name == "tuppr") | .spec.template.spec.volumes[]?.secret.secretName | select(. == "tuppr-talosconfig")' "${manifest}")" == "tuppr-talosconfig" ]] || fail "Tuppr must mount its generated talosconfig"
 
