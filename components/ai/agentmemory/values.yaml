@@ -45,9 +45,13 @@ controllers:
           # known-models table, so dimensions must be set explicitly.
           OPENAI_EMBEDDING_MODEL: nvidia/qwen/qwen3-embedding-0.6b
           OPENAI_EMBEDDING_DIMENSIONS: "1024"
-          # Compress on consolidation cadence only, not per observation — omp's
-          # per-tool capture would otherwise trigger an LLM call per tool result.
-          AGENTMEMORY_AUTO_COMPRESS: "false"
+          # Entity/relation extraction into the knowledge graph at consolidation.
+          GRAPH_EXTRACTION_ENABLED: "true"
+          # Per-observation LLM compression: distills raw tool I/O into summaries.
+          # Costs one LLM call per captured tool result — watch headroom volume.
+          AGENTMEMORY_AUTO_COMPRESS: "true"
+          # Surface recalled memories mid-conversation, not only at session start.
+          AGENTMEMORY_INJECT_CONTEXT: "true"
           AGENTMEMORY_VIEWER_HOST: "0.0.0.0"
           VIEWER_ALLOWED_HOSTS: "agentmemory.${CLUSTER_DOMAIN}"
           VIEWER_ALLOWED_ORIGINS: "https://agentmemory.${CLUSTER_DOMAIN}"
