@@ -32,7 +32,7 @@ controllers:
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
           FORGE_DEFAULT_MODEL: aws/anthropic/bedrock-claude-sonnet-5
-          FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox@sha256:438915d6fef120278b6cf3e4256c1d5c0614648f85696fa5e39a2fb179fffeb1
+          FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox@sha256:8dc6bf27b3a7e48def637b694a8387b9cfa4b8570736a9603f600f0dd83ad2f6
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org
           FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
