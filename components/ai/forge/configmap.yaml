@@ -90,7 +90,7 @@ data:
         until: TESTS_PASS
         max_attempts: 3
         on_max_attempts: blocked
-        model: aws/anthropic/bedrock-claude-sonnet-5
+        model: openai/openai/gpt-5.6-terra
         timeout_minutes: 30
         body:
           type: agent
