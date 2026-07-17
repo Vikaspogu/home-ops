@@ -8,3 +8,4 @@ helmCharts:
     repo: oci://ghcr.io/home-operations/charts
     version: "0.3.2"
     valuesFile: values.yaml
+    includeCRDs: true
