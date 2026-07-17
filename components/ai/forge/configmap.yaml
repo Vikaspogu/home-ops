@@ -82,7 +82,7 @@ data:
         skills: [security, impact-analysis]
         depends_on: [implement]
         # Deliberately a different model than the implementer for fresh eyes.
-        model: nvidia/zai-org/glm-5.2
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
         timeout_minutes: 40
       - id: fix-loop
         type: loop
