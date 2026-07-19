@@ -23,7 +23,7 @@ controllers:
           tag: 20260719165304-e844a2a
         env:
           TZ: America/New_York
-          FORGE_API_PORT: &httpPort 8080
+          PORT: &httpPort 3000
           OPENSHELL_GATEWAY_URL: https://openshell:8080
           OPENSHELL_CLIENT_CA_PATH: /etc/openshell-tls/client/ca.crt
           OPENSHELL_CLIENT_CERT_PATH: /etc/openshell-tls/client/tls.crt
@@ -42,8 +42,6 @@ controllers:
           FORGE_SKILLS_CONFIG: /app/config/skills.yaml
           FORGE_RULES_CONFIG: /app/config/rules.yaml
           FORGE_COPILOT_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
-          # Staged review gate: reviewer fallback model (different family than
-          # the implementer) and the APPROVED-confidence floor.
           FORGE_REVIEWER_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
           FORGE_REVIEW_MIN_CONFIDENCE: "7"
         envFrom: *envFrom
@@ -59,7 +57,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /healthz
+                path: /
                 port: *httpPort
               periodSeconds: 30
               failureThreshold: 3
@@ -68,7 +66,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /readyz
+                path: /api/forge/healthz
                 port: *httpPort
               periodSeconds: 10
           startup:
@@ -76,7 +74,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /readyz
+                path: /
                 port: *httpPort
               initialDelaySeconds: 5
               periodSeconds: 5
