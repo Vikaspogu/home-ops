@@ -44,17 +44,32 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
-    - namePattern: "forge-orchestrator"
+    - namePattern: forge-orchestrator
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
         gitConfig:
           branch: main
           writeBackTarget: "helmvalues:./values.yaml"
       images:
-        - alias: forge
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/forge"
+        - alias: backend
+          imageName: gitea.${CLUSTER_DOMAIN}/vpogu/forge-backend
           commonUpdateSettings:
-            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}$'
+            allowTags: regexp:^[0-9]{14}-[a-f0-9]{7}-oci$
+          manifestTargets:
+            helm:
+              name: controllers.app.containers.app.image.repository
+              tag: controllers.app.containers.app.image.tag
+    - namePattern: forge-dashboard
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: dashboard
+          imageName: gitea.${CLUSTER_DOMAIN}/vpogu/forge-dashboard
+          commonUpdateSettings:
+            allowTags: regexp:^[0-9]{14}-[a-f0-9]{7}-oci$
           manifestTargets:
             helm:
               name: controllers.app.containers.app.image.repository

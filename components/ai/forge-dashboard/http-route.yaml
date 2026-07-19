@@ -2,7 +2,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: &app forge-orchestrator
+  name: &app forge-dashboard
   labels:
     app.kubernetes.io/instance: *app
     app.kubernetes.io/name: *app
@@ -13,8 +13,8 @@ metadata:
     gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/secureai-tools.png
     gethomepage.dev/name: Forge
     gethomepage.dev/description: Autonomous dev loop orchestrator
-    gethomepage.dev/app: forge-orchestrator
-    gethomepage.dev/pod-selector: app.kubernetes.io/instance=forge-orchestrator
+    gethomepage.dev/app: forge-dashboard
+    gethomepage.dev/pod-selector: app.kubernetes.io/instance=forge-dashboard
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
