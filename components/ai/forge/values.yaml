@@ -19,8 +19,8 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.a113.casa/vpogu/forge
-          tag: 20260719165304-e844a2a
+          repository: gitea.a113.casa/vpogu/forge-backend
+          tag: 20260719182341-dc2ba08
           pullPolicy: Always
         env:
           TZ: America/New_York
