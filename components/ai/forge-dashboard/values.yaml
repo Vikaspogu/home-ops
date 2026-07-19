@@ -1,0 +1,60 @@
+---
+controllers:
+  app:
+    replicas: 1
+    strategy: RollingUpdate
+    containers:
+      app:
+        image:
+          repository: gitea.a113.casa/vpogu/forge-dashboard
+          tag: latest-oci
+          pullPolicy: Always
+        env:
+          TZ: America/New_York
+          PORT: &httpPort 3000
+          FORGE_API_URL: http://forge-orchestrator.ai.svc.cluster.local:8080
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 1Gi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *httpPort
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *httpPort
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *httpPort
+              initialDelaySeconds: 3
+              periodSeconds: 3
+              failureThreshold: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+    pod:
+      imagePullSecrets:
+        - name: gitea-registry-secret
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: *httpPort

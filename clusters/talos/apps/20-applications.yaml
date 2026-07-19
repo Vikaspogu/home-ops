@@ -613,6 +613,13 @@ applications:
       namespace: ai
     source:
       path: components/ai/forge
+  forge-dashboard:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/forge-dashboard
 
   agentmemory:
     annotations:

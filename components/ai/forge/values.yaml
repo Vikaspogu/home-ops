@@ -19,11 +19,12 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.a113.casa/vpogu/forge
-          tag: 20260719165304-e844a2a
+          repository: gitea.a113.casa/vpogu/forge-backend
+          tag: latest-oci
+          pullPolicy: Always
         env:
           TZ: America/New_York
-          PORT: &httpPort 3000
+          FORGE_API_PORT: &httpPort 8080
           OPENSHELL_GATEWAY_URL: https://openshell:8080
           OPENSHELL_CLIENT_CA_PATH: /etc/openshell-tls/client/ca.crt
           OPENSHELL_CLIENT_CERT_PATH: /etc/openshell-tls/client/tls.crt
@@ -57,7 +58,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /
+                path: /healthz
                 port: *httpPort
               periodSeconds: 30
               failureThreshold: 3
@@ -66,7 +67,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /
+                path: /readyz
                 port: *httpPort
               periodSeconds: 10
           startup:
@@ -74,7 +75,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /
+                path: /readyz
                 port: *httpPort
               initialDelaySeconds: 5
               periodSeconds: 5
