@@ -19,8 +19,8 @@ controllers:
     containers:
       app:
         image:
-          repository: gitea.a113.casa/vpogu/forge-backend
-          tag: latest-oci
+          repository: gitea.a113.casa/vpogu/forge
+          tag: 20260719165304-e844a2a
           pullPolicy: Always
         env:
           TZ: America/New_York
