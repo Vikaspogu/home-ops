@@ -10,6 +10,9 @@ data:
         dialect: gitea
         base_url: https://gitea.a113.casa
         token_env: GITEA_TOKEN
+        # Read-only token for reviewer sandboxes (staged review gate).
+        # Gated workflows refuse to run when this is unset.
+        read_token_env: GITEA_TOKEN_RO
         provider_ref: gitea
       github:
         dialect: github
@@ -22,7 +25,12 @@ data:
         instance: gitea-home
         default_branch: main
         project_type: python-service
-        default_workflow: implement
+        default_workflow: feature
+        # Runner-executed in the sandbox after the agent; real exit codes gate
+        # the loop (staged review gate M1/M2.3). Applies to loop nodes only.
+        verify_commands:
+          - "cd service && uv run pytest"
+          - "cd service && uv run ruff check ."
         test_command: "cd service && uv run pytest && uv run ruff check ."
         format_command: "cd service && uv run ruff format --check ."
         description: "Ivan personal data service — fitness, bar, drink/dining/travel journals"
@@ -31,8 +39,14 @@ data:
         instance: gitea-home
         default_branch: main
         project_type: python-service
-        default_workflow: implement
+        default_workflow: feature
+        verify_commands:
+          - "uv run pytest"
+          - "uv run ruff check src/forge"
       agent-platform-custom:
+        # Stays on the legacy implement workflow: container-images repo has no
+        # test command, and a gated workflow without verify commands is
+        # refused at walk start by design.
         full_name: vpogu/agent-platform-custom
         instance: gitea-home
         default_branch: main
@@ -44,13 +58,57 @@ data:
         default_branch: main
         project_type: gitops-flux
         default_workflow: gitops-update
+        verify_commands:
+          - "./scripts/kubeconform.sh"
         test_command: "./scripts/kubeconform.sh"
         format_command: null
         description: "Home lab GitOps repo — Flux, Helm charts, K8s manifests"
 
+  feature.yaml: |-
+    # Deployment override of the bundled gated workflow: same structure, plus
+    # model pins (FORGE_WORKFLOWS_DIR wins over the image-bundled copy).
+    # verify commands come from repos.yaml per repo — never set verify here.
+    name: feature
+    nodes:
+      - id: plan
+        type: agent
+        role: planner
+        skills: [explore-first]
+        model: aws/anthropic/bedrock-claude-opus-4-8
+        timeout_minutes: 10
+      - id: implement
+        type: loop
+        until: APPROVED
+        max_attempts: 3
+        on_max_attempts: escalate
+        depends_on: [plan]
+        timeout_minutes: 30
+        body:
+          steps:
+            - role: implementer
+              model: openai/openai/gpt-5.6-terra
+              rules: [ponytail, codebase-design]
+              skills: [verify-loop, defensive-coding, secret-scan]
+            # Deliberately a different model family than the implementer:
+            # cross-model review catches shared blind spots.
+            - role: reviewer
+              model: aws/anthropic/bedrock-claude-sonnet-4-6
+              rules: [codebase-design]
+              skills: [security, impact-analysis]
+      - id: approval
+        type: approval
+        depends_on: [implement]
+      - id: open-pr
+        type: agent
+        role: pr-opener
+        skills: [secret-scan]
+        depends_on: [approval]
+        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        timeout_minutes: 10
+
   implement.yaml: |-
     name: implement
-    description: Plan -> implement -> AI review -> fix -> open PR (autonomous)
+    description: Legacy pre-gate workflow. Only agent-platform-custom uses it.
     # Structure only: node behavior comes from role profiles (bundled in the
     # forge image; override via FORGE_AGENTS_DIR). depends_on selects which
     # upstream outputs each node's message includes.
