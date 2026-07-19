@@ -1,4 +1,3 @@
----
 controllers:
   app:
     replicas: 1
@@ -7,12 +6,13 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/forge-dashboard
-          tag: latest-oci
+          tag: 20260719182341-dc2ba08-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
           PORT: &httpPort 3000
           FORGE_API_URL: http://forge-orchestrator.ai.svc.cluster.local:8080
+          FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:4e7a80666b07ecefbb0262664de850edc1e31cc0bb9ae7d8d3e8b541f313f966
         resources:
           requests:
             cpu: 10m
@@ -51,7 +51,7 @@ controllers:
           allowPrivilegeEscalation: false
     pod:
       imagePullSecrets:
-        - name: gitea-registry-secret
+      - name: gitea-registry-secret
 service:
   app:
     controller: app
