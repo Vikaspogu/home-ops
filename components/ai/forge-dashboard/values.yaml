@@ -6,7 +6,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/forge-dashboard
-          tag: 20260720173135-8adae15-oci
+          tag: 20260720185317-c6a7d0f-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
