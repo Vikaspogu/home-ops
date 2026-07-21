@@ -25,9 +25,9 @@ controllers:
         env:
           TZ: America/New_York
           FORGE_API_PORT: &httpPort 8080
-          # Keep key mode as the deployment-safe default; switch to oidc only after
-          # the OIDC fields below have been populated in forge-secret.
-          FORGE_AUTH_MODE: key
+          # OIDC authentication is active.
+          # OIDC fields below populated in forge-secret.
+          FORGE_AUTH_MODE: oidc
           FORGE_PUBLIC_URL: https://forge.${CLUSTER_DOMAIN}
           FORGE_OIDC_DISCOVERY_URL: https://id.${CLUSTER_DOMAIN}/application/o/forge/.well-known/openid-configuration
           FORGE_OIDC_CLIENT_ID: forge
