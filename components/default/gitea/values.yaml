@@ -30,6 +30,9 @@ controllers:
           GITEA__cron.cleanup_packages__SCHEDULE: "@midnight"
           GITEA__cron.cleanup_packages__OLDER_THAN: "24h"
           GITEA__database__DB_TYPE: "postgres"
+          # Fsync loose objects/packs before refs move: a pod/RBD interruption
+          # mid-push truncated vpogu/forge repo objects on 2026-07-21.
+          GITEA__git.config__core.fsync: "objects"
           GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
           GITEA__REPOSITORY__DEFAULT_BRANCH: "main"
           GITEA__SECURITY__INSTALL_LOCK: "True"
