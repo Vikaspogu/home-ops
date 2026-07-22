@@ -213,6 +213,14 @@ applications:
     source:
       path: components/default/garage-s3
 
+  garage-s3-backup:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: default
+    source:
+      path: components/default/garage-s3-backup
+
   home-assistant:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
