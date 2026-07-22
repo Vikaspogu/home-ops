@@ -1,15 +1,8 @@
-metadata_dir = "/meta"
+metadata_dir = "/storage/meta"
 
-# Multi-HDD configuration - 8x 900GB SAS drives
+# Single-disk configuration on existing backup-garage volume
 data_dir = [
-  { path = "/data1", capacity = "800GB" },
-  { path = "/data2", capacity = "800GB" },
-  { path = "/data3", capacity = "800GB" },
-  { path = "/data4", capacity = "800GB" },
-  { path = "/data5", capacity = "800GB" },
-  { path = "/data6", capacity = "800GB" },
-  { path = "/data7", capacity = "800GB" },
-  { path = "/data8", capacity = "800GB" },
+  { path = "/storage/data", capacity = "3TB" },
 ]
 
 db_engine = "lmdb"

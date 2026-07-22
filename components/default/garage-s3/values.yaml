@@ -12,7 +12,7 @@ controllers:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - k8s-5-1u
+                      - k8s-3-4u
     containers:
       app:
         image:
@@ -84,54 +84,12 @@ service:
         port: 3909
 
 persistence:
-  # Multi-HDD configuration - 8 drives
-  data1:
+  storage:
     type: hostPath
-    hostPath: /var/mnt/garage-hdd1
+    hostPath: /var/mnt/backup-garage/garage-single
+    hostPathType: DirectoryOrCreate
     globalMounts:
-      - path: /data1
-  data2:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd2
-    globalMounts:
-      - path: /data2
-  data3:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd3
-    globalMounts:
-      - path: /data3
-  data4:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd4
-    globalMounts:
-      - path: /data4
-  data5:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd5
-    globalMounts:
-      - path: /data5
-  data6:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd6
-    globalMounts:
-      - path: /data6
-  data7:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd7
-    globalMounts:
-      - path: /data7
-  data8:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd8
-    globalMounts:
-      - path: /data8
-
-  # Metadata on HDD1 (system disk has insufficient space)
-  meta:
-    type: hostPath
-    hostPath: /var/mnt/garage-hdd1/meta
-    globalMounts:
-      - path: /meta
+      - path: /storage
 
   # Configuration from ConfigMap
   config:
