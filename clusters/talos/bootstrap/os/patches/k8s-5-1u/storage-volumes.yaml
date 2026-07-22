@@ -1,0 +1,88 @@
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup1
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca02278736c'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup2
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca07194d828'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup3
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca0576b90f0'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup4
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca0430361b0'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup5
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca07111a7cc'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup6
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca0719b81d8'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup7
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca071478cf0'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: backup8
+provisioning:
+  diskSelector:
+    match: disk.wwid == 'naa.5000cca07147a3c0'
+  minSize: 800GB
+  grow: true
+filesystem:
+  type: xfs
