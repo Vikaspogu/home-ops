@@ -1,6 +1,6 @@
 ---
 controllers:
-  garage-s3-node2:
+  garage-s3-backup:
     annotations:
       reloader.stakater.com/auto: "true"
     pod:
@@ -12,7 +12,7 @@ controllers:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - k8s-3-4u
+                      - k8s-5-1u
     containers:
       app:
         image:
@@ -23,17 +23,17 @@ controllers:
           GARAGE_ADMIN_TOKEN:
             valueFrom:
               secretKeyRef:
-                name: garage-s3-secret
+                name: garage-s3-backup-secret
                 key: GARAGE_ADMIN_TOKEN
           GARAGE_RPC_SECRET:
             valueFrom:
               secretKeyRef:
-                name: garage-s3-secret
+                name: garage-s3-backup-secret
                 key: GARAGE_RPC_SECRET
           GARAGE_METRICS_TOKEN:
             valueFrom:
               secretKeyRef:
-                name: garage-s3-secret
+                name: garage-s3-backup-secret
                 key: GARAGE_METRICS_TOKEN
         securityContext:
           allowPrivilegeEscalation: false
@@ -49,7 +49,7 @@ controllers:
 
 service:
   app:
-    controller: garage-s3-node2
+    controller: garage-s3-backup
     ports:
       rpc:
         port: 3901
@@ -59,39 +59,57 @@ service:
         port: 3903
 
 persistence:
-  # k8s-3-4u has 4x 4TB HDDs for Garage backup
-  data1:
+  disk1:
     type: hostPath
-    hostPath: /var/mnt/backup-garage/data1
+    hostPath: /var/mnt/backup1
+    hostPathType: Directory
     globalMounts:
-      - path: /data1
-  data2:
+      - path: /storage/disk1
+  disk2:
     type: hostPath
-    hostPath: /var/mnt/backup-garage/data2
+    hostPath: /var/mnt/backup2
+    hostPathType: Directory
     globalMounts:
-      - path: /data2
-  data3:
+      - path: /storage/disk2
+  disk3:
     type: hostPath
-    hostPath: /var/mnt/backup-garage/data3
+    hostPath: /var/mnt/backup3
+    hostPathType: Directory
     globalMounts:
-      - path: /data3
-  data4:
+      - path: /storage/disk3
+  disk4:
     type: hostPath
-    hostPath: /var/mnt/backup-garage/data4
+    hostPath: /var/mnt/backup4
+    hostPathType: Directory
     globalMounts:
-      - path: /data4
-
-  # Metadata on HDD3's backup-garage mount
-  meta:
+      - path: /storage/disk4
+  disk5:
     type: hostPath
-    hostPath: /var/mnt/backup-garage/meta
+    hostPath: /var/mnt/backup5
+    hostPathType: Directory
     globalMounts:
-      - path: /meta
-
-  # Configuration from ConfigMap
+      - path: /storage/disk5
+  disk6:
+    type: hostPath
+    hostPath: /var/mnt/backup6
+    hostPathType: Directory
+    globalMounts:
+      - path: /storage/disk6
+  disk7:
+    type: hostPath
+    hostPath: /var/mnt/backup7
+    hostPathType: Directory
+    globalMounts:
+      - path: /storage/disk7
+  disk8:
+    type: hostPath
+    hostPath: /var/mnt/backup8
+    hostPathType: Directory
+    globalMounts:
+      - path: /storage/disk8
   config:
     type: configMap
-    name: garage-s3-node2-configmap
+    name: garage-s3-backup-configmap
     globalMounts:
       - path: /etc/garage.toml
         subPath: configuration.toml
