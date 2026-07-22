@@ -1,0 +1,114 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: garage-s3-backup-sync
+  namespace: default
+spec:
+  schedule: "0 4 * * *"
+  timeZone: America/New_York
+  concurrencyPolicy: Forbid
+  suspend: true
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - k8s-5-1u
+          containers:
+            - name: rclone
+              image: rclone/rclone:1.74.4
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  rclone lsf source: --dirs-only | while IFS= read -r bucket; do
+                    bucket=${bucket%/}
+                    rclone mkdir "backup:${bucket}"
+                    rclone sync "source:${bucket}" "backup:${bucket}" --checksum --fast-list
+                  done
+              env:
+                - name: RCLONE_CONFIG_SOURCE_TYPE
+                  value: s3
+                - name: RCLONE_CONFIG_SOURCE_PROVIDER
+                  value: Other
+                - name: RCLONE_CONFIG_SOURCE_ENDPOINT
+                  value: http://garage-s3.default.svc.cluster.local:3900
+                - name: RCLONE_CONFIG_SOURCE_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: garage-s3-backup-secret
+                      key: RCLONE_S3_REGION
+                - name: RCLONE_CONFIG_SOURCE_FORCE_PATH_STYLE
+                  value: "true"
+                - name: RCLONE_CONFIG_SOURCE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: garage-s3-backup-secret
+                      key: RCLONE_S3_ACCESS_KEY_ID
+                - name: RCLONE_CONFIG_SOURCE_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: garage-s3-backup-secret
+                      key: RCLONE_S3_SECRET_ACCESS_KEY
+                - name: RCLONE_CONFIG_BACKUP_TYPE
+                  value: s3
+                - name: RCLONE_CONFIG_BACKUP_PROVIDER
+                  value: Other
+                - name: RCLONE_CONFIG_BACKUP_ENDPOINT
+                  value: http://garage-s3-backup.default.svc.cluster.local:3900
+                - name: RCLONE_CONFIG_BACKUP_REGION
+                  valueFrom:
+                    secretKeyRef:
+                      name: garage-s3-backup-secret
+                      key: RCLONE_S3_REGION
+                - name: RCLONE_CONFIG_BACKUP_FORCE_PATH_STYLE
+                  value: "true"
+                - name: RCLONE_CONFIG_BACKUP_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: garage-s3-backup-secret
+                      key: RCLONE_S3_ACCESS_KEY_ID
+                - name: RCLONE_CONFIG_BACKUP_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: garage-s3-backup-secret
+                      key: RCLONE_S3_SECRET_ACCESS_KEY
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  memory: 512Mi
+              volumeMounts:
+                - name: tmp
+                  mountPath: /tmp
+                - name: rclone-cache
+                  mountPath: /.cache/rclone
+          volumes:
+            - name: tmp
+              emptyDir: {}
+            - name: rclone-cache
+              emptyDir: {}

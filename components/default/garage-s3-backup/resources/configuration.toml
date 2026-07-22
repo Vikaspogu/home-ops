@@ -1,0 +1,28 @@
+metadata_dir = "/storage/disk1/meta"
+data_dir = [
+  { path = "/storage/disk1/data", capacity = "800GB" },
+  { path = "/storage/disk2/data", capacity = "800GB" },
+  { path = "/storage/disk3/data", capacity = "800GB" },
+  { path = "/storage/disk4/data", capacity = "800GB" },
+  { path = "/storage/disk5/data", capacity = "800GB" },
+  { path = "/storage/disk6/data", capacity = "800GB" },
+  { path = "/storage/disk7/data", capacity = "800GB" },
+  { path = "/storage/disk8/data", capacity = "800GB" },
+]
+
+db_engine = "lmdb"
+metadata_auto_snapshot_interval = "6h"
+compression_level = 2
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "garage-s3-backup.default.svc.cluster.local:3901"
+rpc_secret = "${GARAGE_RPC_SECRET}"
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "${GARAGE_ADMIN_TOKEN}"

@@ -4,13 +4,16 @@ kind: Kustomization
 namespace: default
 helmCharts:
   - name: app-template
-    releaseName: garage-s3-node2
+    releaseName: garage-s3-backup
     namespace: default
     repo: oci://ghcr.io/bjw-s-labs/helm
     version: "5.0.1"
     valuesFile: values.yaml
+resources:
+  - ./externalsecret.yaml
+  - ./sync-cronjob.yaml
 configMapGenerator:
-  - name: garage-s3-node2-configmap
+  - name: garage-s3-backup-configmap
     files:
       - configuration.toml=./resources/configuration.toml
 generatorOptions:
