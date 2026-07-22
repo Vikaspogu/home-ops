@@ -33,7 +33,7 @@ data:
           - "cd service && uv run ruff check ."
         test_command: "cd service && uv run pytest && uv run ruff check ."
         format_command: "cd service && uv run ruff format --check ."
-        description: "Ivan personal data service — fitness, bar, drink/dining/travel journals"
+        description: "Ivan personal data service — bar, drink/dining/travel journals"
       forge:
         full_name: vpogu/forge
         instance: gitea-home

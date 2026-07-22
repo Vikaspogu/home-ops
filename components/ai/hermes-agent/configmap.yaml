@@ -260,7 +260,6 @@ data:
         - ivan_budget
         - ivan_dining
         - ivan_documents
-        - ivan_fitness
         - ivan_home_assistant
         - ivan_household
         - ivan_journal_images
@@ -291,7 +290,6 @@ data:
         - ivan_budget
         - ivan_dining
         - ivan_documents
-        - ivan_fitness
         - ivan_home_assistant
         - ivan_household
         - ivan_journal_images
@@ -315,7 +313,6 @@ data:
         - ivan_budget
         - ivan_dining
         - ivan_documents
-        - ivan_fitness
         - ivan_home_assistant
         - ivan_household
         - ivan_obsidian
@@ -326,7 +323,6 @@ data:
         - ivan_budget
         - ivan_dining
         - ivan_documents
-        - ivan_fitness
         - ivan_home_assistant
         - ivan_household
         - ivan_obsidian
