@@ -128,14 +128,15 @@ nodes:
     ipAddress: "10.30.30.25"
     installDiskSelector:
       model: "SAMSUNG MZ7TE128"
-    talosImageURL: factory.talos.dev/installer/ff8c3db93bf598f6368cf325c923c274775a161703c4e03bcb7f12bb4917d983
+    talosImageURL: factory.talos.dev/installer/c4a3308a8bf24794ddd3aac3823f780f02f46233060c3d26d423850f210cfe81
     controlPlane: false
     patches:
-      - "@./patches/k8s-5-1u/garage-storage.yaml"
+      - "@./patches/k8s-5-1u/btrfs-recovery.yaml"
     schematic:
       customization:
         systemExtensions:
           officialExtensions:
+            - siderolabs/btrfs
             - siderolabs/i915
             - siderolabs/intel-ucode
             - siderolabs/kata-containers
