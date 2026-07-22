@@ -59,9 +59,11 @@ data:
         provider: spark
         model: qwen3-coder:30b
         timeout: 600
+      # Curator writes durable memory; nano beats the spark coder model on
+      # summarization quality and matches the agentmemory consolidation model.
       curator:
-        provider: spark
-        model: qwen3-coder:30b
+        provider: main
+        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
         timeout: 900
     compression:
       enabled: true
@@ -111,9 +113,10 @@ data:
       timeout: 300
       max_tool_calls: 50
     file_read_max_chars: 100000
+    # Sized for the 200k-context main model per upstream large-model guidance.
     tool_output:
-      max_bytes: 50000
-      max_lines: 2000
+      max_bytes: 150000
+      max_lines: 5000
       max_line_length: 2000
     checkpoints:
       enabled: true
