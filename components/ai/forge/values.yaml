@@ -30,7 +30,6 @@ controllers:
           FORGE_AUTH_MODE: oidc
           FORGE_PUBLIC_URL: https://forge.${CLUSTER_DOMAIN}
           FORGE_OIDC_DISCOVERY_URL: https://id.${CLUSTER_DOMAIN}/application/o/forge/.well-known/openid-configuration
-          FORGE_OIDC_CLIENT_ID: forge
           OPENSHELL_GATEWAY_URL: https://openshell:8080
           OPENSHELL_CLIENT_CA_PATH: /etc/openshell-tls/client/ca.crt
           OPENSHELL_CLIENT_CERT_PATH: /etc/openshell-tls/client/tls.crt
