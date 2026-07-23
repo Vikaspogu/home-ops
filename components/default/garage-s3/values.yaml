@@ -3,7 +3,9 @@ controllers:
   garage-s3:
     annotations:
       reloader.stakater.com/auto: "true"
+    strategy: Recreate
     pod:
+      terminationGracePeriodSeconds: 120
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -13,6 +15,26 @@ controllers:
                     operator: In
                     values:
                       - k8s-3-4u
+    initContainers:
+      verify-storage:
+        image:
+          repository: public.ecr.aws/docker/library/busybox
+          tag: "1.38.0"
+        command:
+          - /bin/sh
+          - -c
+          - test -s /storage/meta/node_key && test -s /storage/meta/db.sqlite && test -d /storage/data
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          requests:
+            cpu: 5m
+            memory: 8Mi
+          limits:
+            memory: 16Mi
     containers:
       app:
         image:
@@ -87,7 +109,7 @@ persistence:
   storage:
     type: hostPath
     hostPath: /var/mnt/backup-garage/garage-single
-    hostPathType: DirectoryOrCreate
+    hostPathType: Directory
     globalMounts:
       - path: /storage
 
