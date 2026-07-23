@@ -18,14 +18,14 @@ server:
 
 image:
   repository: ghcr.io/nvidia/openshell/gateway
-  tag: "0.0.89"
+  tag: "0.0.90"
   pullPolicy: Always
 
 # Pin supervisor and gateway to the same release; version skew breaks bootstrap.
 supervisor:
   image:
     repository: ghcr.io/nvidia/openshell/supervisor
-    tag: "0.0.89"
+    tag: "0.0.90"
     pullPolicy: Always
 
 resources:
