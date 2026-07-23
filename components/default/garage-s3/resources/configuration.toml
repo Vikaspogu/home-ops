@@ -5,8 +5,9 @@ data_dir = [
   { path = "/storage/data", capacity = "3TB" },
 ]
 
-db_engine = "lmdb"
-metadata_auto_snapshot_interval = "6h"
+db_engine = "sqlite"
+metadata_fsync = true
+metadata_auto_snapshot_interval = "1h"
 
 replication_factor = 1
 
