@@ -64,6 +64,49 @@ data:
         format_command: null
         description: "Home lab GitOps repo — Flux, Helm charts, K8s manifests"
 
+  council.yaml: |-
+    name: council
+    entry_state: todo
+    description: Refine vague todo into an operator-approved specification
+    nodes:
+      - id: analyze
+        type: agent
+        role: council-analyst
+        read_only: true
+        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        verify:
+          - "git diff --exit-code && git diff --cached --exit-code"
+      - id: investigate
+        type: agent
+        role: council-investigator
+        read_only: true
+        model: openai/openai/gpt-5.6-terra
+        verify:
+          - "git diff --exit-code && git diff --cached --exit-code"
+        depends_on: [analyze]
+      - id: critique
+        type: agent
+        role: council-critic
+        read_only: true
+        model: aws/anthropic/bedrock-claude-sonnet-4-6
+        verify:
+          - "git diff --exit-code && git diff --cached --exit-code"
+        depends_on: [analyze, investigate]
+      - id: decide
+        type: agent
+        role: council-judge
+        read_only: true
+        model: aws/anthropic/bedrock-claude-opus-4-8
+        verify:
+          - "git diff --exit-code && git diff --cached --exit-code"
+        depends_on: [analyze, investigate, critique]
+      - id: council-approval
+        type: approval
+        on_approve:
+          state: ready
+          workflow: feature
+        depends_on: [decide]
+
   feature.yaml: |-
     # Deployment override of the bundled gated workflow: same structure, plus
     # model pins (FORGE_WORKFLOWS_DIR wins over the image-bundled copy).
