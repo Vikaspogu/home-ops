@@ -6,6 +6,7 @@ metadata:
 spec:
   suspend: false
   schedule: "0 2 * * 0"
+  startingDeadlineSeconds: 7200
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   concurrencyPolicy: Forbid
