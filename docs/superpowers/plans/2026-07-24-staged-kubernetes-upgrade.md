@@ -93,7 +93,7 @@ for ip in 10.30.30.21 10.30.30.22 10.30.30.23 10.30.30.24; do
     registry.k8s.io/kube-proxy:v1.35.7 \
     ghcr.io/siderolabs/kubelet:v1.35.7; do
     talosctl --talosconfig clusters/talos/bootstrap/os/clusterconfig/talosconfig \
-      --nodes "${ip}" images pull "${image}"
+      --nodes "${ip}" image pull "${image}"
   done
 done
 ```
