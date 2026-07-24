@@ -8,7 +8,7 @@ spec:
   schedule: "0 4 * * *"
   timeZone: America/New_York
   concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 300
+  startingDeadlineSeconds: 7200
   suspend: false
   jobTemplate:
     spec:
