@@ -28,7 +28,7 @@
 - Consumes: reachable API server and Talos control plane at `10.30.30.21`
 - Produces: a timestamped local etcd snapshot and a recorded pre-upgrade baseline
 
-- [ ] **Step 1: Verify API, node, and disruption readiness**
+- [ ] **Step 1: Verify API, node, and disruption baseline**
 
 Run:
 
@@ -41,7 +41,7 @@ KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
 kubectl get poddisruptionbudgets --all-namespaces
 ```
 
-Expected: `/readyz?verbose` succeeds, all five nodes are `Ready`, and every relevant replicated workload PDB permits one disruption.
+Expected: `/readyz?verbose` succeeds and all five nodes are `Ready`. Record PDBs and primary placement; do not drain nodes during this upgrade.
 
 - [ ] **Step 2: Save an etcd snapshot before live mutation**
 
@@ -67,34 +67,19 @@ kubectl get node k8s-5-1u -o wide
 
 Expected: `k8s-5-1u` remains `Ready` at `v1.36.2`; do not drain, patch, reboot, or include `10.30.30.25` in a stage-one command.
 
-### Task 2: Declare and apply the targeted v1.35.7 stage
+### Task 2: Apply the targeted v1.35.7 stage
 
 **Files:**
-- Modify: `clusters/talos/bootstrap/os/talenv.yaml:4`
+- Modify: none
 - Test: Talos component image and Kubernetes readiness checks
 
 **Interfaces:**
 - Consumes: baseline from Task 1 and Talos manual component patch API
 - Produces: control plane and `k8s-4-dell` running Kubernetes `v1.35.7`; `k8s-5-1u` remains `v1.36.2`
 
-- [ ] **Step 1: Set the declared intermediate target**
+The manual stage uses explicit `v1.35.7` image references. Keep `clusters/talos/bootstrap/os/talenv.yaml` at its final `v1.36.3` target to prevent a generated configuration from downgrading `k8s-5-1u`.
 
-Change `clusters/talos/bootstrap/os/talenv.yaml`:
-
-```yaml
-kubernetesVersion: v1.35.7
-```
-
-Commit:
-
-```bash
-git add clusters/talos/bootstrap/os/talenv.yaml
-git commit -m "chore: stage Kubernetes v1.35.7 upgrade"
-```
-
-Expected: repository declaration matches the active intermediate stage before live component updates.
-
-- [ ] **Step 2: Pre-pull v1.35.7 images only on stage-one nodes**
+- [ ] **Step 1: Pre-pull v1.35.7 images only on stage-one nodes**
 
 Run:
 
@@ -115,7 +100,7 @@ done
 
 Expected: all five images are available on the four target nodes. The loop does not include `10.30.30.25`.
 
-- [ ] **Step 3: Upgrade the API server on each control-plane node**
+- [ ] **Step 2: Upgrade the API server on each control-plane node**
 
 Run:
 
@@ -133,7 +118,7 @@ done
 
 Expected: API readiness succeeds after each static-pod replacement.
 
-- [ ] **Step 4: Upgrade controller managers, schedulers, and proxy configuration**
+- [ ] **Step 3: Upgrade controller managers, schedulers, and proxy configuration**
 
 Run:
 
@@ -158,7 +143,7 @@ done
 
 Expected: each component updates across the control plane in Talos' documented order; API readiness remains successful after every patch.
 
-- [ ] **Step 5: Reconcile bootstrap manifests and verify the proxy image**
+- [ ] **Step 4: Reconcile bootstrap manifests and verify the proxy image**
 
 Run:
 
@@ -174,7 +159,7 @@ kubectl apply -f /tmp/talos-v1.35.7-manifests.yaml
 
 Expected: the diff shows `kube-proxy:v1.35.7`, then bootstrap resources apply without errors.
 
-- [ ] **Step 6: Upgrade kubelets one node at a time, excluding k8s-5-1u**
+- [ ] **Step 5: Upgrade kubelets one node at a time, excluding k8s-5-1u**
 
 Run:
 
