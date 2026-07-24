@@ -8,7 +8,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/hsakoh/switchbotmqtt-amd64
-          tag: 1.1.3
+          tag: 1.1.4
         env:
           TZ: "America/New_York"
         resources:
