@@ -188,8 +188,13 @@ for target in \
     --nodes "${ip}" patch mc --mode=no-reboot -p 'machine:
   kubelet:
     image: ghcr.io/siderolabs/kubelet:v1.35.7'
-  KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
-    kubectl wait --for=condition=Ready "node/${node}" --timeout=10m
+  for attempt in {1..60}; do
+    version=$(KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
+      kubectl get node "${node}" -o jsonpath='{.status.nodeInfo.kubeletVersion}')
+    test "${version}" = v1.35.7 && break
+    test "${attempt}" -eq 60 && exit 1
+    sleep 5
+  done
   KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
     kubectl get node "${node}" -o wide
 done
@@ -220,22 +225,15 @@ Expected: `k8s-1-nab9`, `k8s-2-ser`, `k8s-3-4u`, and `k8s-4-dell` show `v1.35.7`
 - Consumes: successful Task 2 state with no node below `v1.35.7`
 - Produces: all five nodes on Kubernetes `v1.36.3`
 
-- [ ] **Step 1: Set the final declared target**
+- [ ] **Step 1: Confirm the final declared target**
 
-Change `clusters/talos/bootstrap/os/talenv.yaml`:
+Confirm `clusters/talos/bootstrap/os/talenv.yaml` already declares:
 
 ```yaml
 kubernetesVersion: v1.36.3
 ```
 
-Commit:
-
-```bash
-git add clusters/talos/bootstrap/os/talenv.yaml
-git commit -m "chore: upgrade Kubernetes v1.36.3"
-```
-
-Expected: Git declares the final converged version before the repository task reads it.
+Expected: no file change is needed; the repository already declares the final converged version.
 
 - [ ] **Step 2: Preview the final all-node operation**
 
@@ -243,7 +241,8 @@ Run:
 
 ```bash
 talosctl --talosconfig clusters/talos/bootstrap/os/clusterconfig/talosconfig \
-  --nodes 10.30.30.21 upgrade-k8s --to v1.36.3 --dry-run
+  --nodes 10.30.30.21 upgrade-k8s --to v1.36.3 \
+  --dry-run --pre-pull-images=false
 ```
 
 Expected: discovery includes all five nodes and contains no downgrade. In particular, `k8s-5-1u` must only transition from `v1.36.2` to `v1.36.3`.
@@ -256,7 +255,17 @@ Run:
 task talos:upgrade-k8s
 ```
 
-Expected: Talos pre-pulls images, updates control-plane components, reconciles bootstrap manifests, and upgrades kubelets on every node. If interrupted, rerun the same command; Talos resumes the documented upgrade workflow.
+Expected: Talos updates control-plane components, reconciles bootstrap manifests, and upgrades kubelets on every node.
+
+If the command exits with `124` during Talos' automatic pre-pull despite images already being cached, rerun the same resumable upgrade without the redundant pre-pull:
+
+```bash
+talosctl --talosconfig clusters/talos/bootstrap/os/clusterconfig/talosconfig \
+  --nodes 10.30.30.21 upgrade-k8s --to v1.36.3 \
+  --pre-pull-images=false
+```
+
+If that command exits with `124` while waiting for a component, wait for `/readyz?verbose` to pass, then rerun the same command. Do not continue on any other exit status.
 
 - [ ] **Step 4: Verify the final cluster state**
 
