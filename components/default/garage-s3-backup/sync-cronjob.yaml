@@ -8,7 +8,7 @@ spec:
   schedule: "0 4 * * *"
   timeZone: America/New_York
   concurrencyPolicy: Forbid
-  suspend: true
+  suspend: false
   jobTemplate:
     spec:
       template:
