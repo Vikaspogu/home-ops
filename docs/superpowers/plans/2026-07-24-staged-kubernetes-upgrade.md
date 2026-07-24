@@ -111,8 +111,14 @@ for ip in 10.30.30.21 10.30.30.22 10.30.30.23; do
     --nodes "${ip}" patch mc --mode=no-reboot -p 'cluster:
   apiServer:
     image: registry.k8s.io/kube-apiserver:v1.35.7'
-  KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
-    kubectl get --raw='/readyz?verbose'
+  for attempt in {1..60}; do
+    if KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
+      kubectl get --raw='/readyz?verbose'; then
+      break
+    fi
+    test "${attempt}" -eq 60 && exit 1
+    sleep 5
+  done
 done
 ```
 
@@ -135,8 +141,14 @@ for component in controllerManager scheduler proxy; do
       --nodes "${ip}" patch mc --mode=no-reboot -p "cluster:
   ${component}:
     image: ${image}"
-    KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
-      kubectl get --raw='/readyz?verbose'
+    for attempt in {1..60}; do
+      if KUBECONFIG=/Users/vikaspogu/.kube/configs/talos-cluster-config \
+        kubectl get --raw='/readyz?verbose'; then
+        break
+      fi
+      test "${attempt}" -eq 60 && exit 1
+      sleep 5
+    done
   done
 done
 ```
