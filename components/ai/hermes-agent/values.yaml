@@ -13,7 +13,7 @@ controllers:
       hermes-bootstrap:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260724202516-f0767a9-oci
+          tag: 20260727121950-e57aa7d-oci
         command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -35,7 +35,7 @@ controllers:
           capabilities: {drop: ["ALL"]}
       seed-config:
         image:
-          tag: 20260724202516-f0767a9-oci
+          tag: 20260727121950-e57aa7d-oci
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
       # Native sidecar: keeps MCP OAuth tokens fresh on the shared PVC so
       # hermes never needs a browser flow (TREK hourly client_credentials,
@@ -70,7 +70,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260724202516-f0767a9-oci
+          tag: 20260727121950-e57aa7d-oci
         args:
         - gateway
         - run
