@@ -580,13 +580,6 @@ applications:
     source:
       path: components/ai/agent-sandbox
 
-  holmesgpt:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/holmesgpt
 
   hermes-agent:
     annotations:
