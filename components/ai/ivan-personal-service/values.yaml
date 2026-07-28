@@ -27,6 +27,7 @@ controllers:
           OBSIDIAN_S3_BUCKET: obsidian-notes
           VALKEY_URL: "redis://valkey.default.svc.cluster.local:6379/6"
           IMAGE_SEARCH_USER_AGENT: "IvanPersonal/1.0 (https://ivan.${CLUSTER_DOMAIN}; journal image enrichment)"
+          TREK_SCHEDULING_ENABLED: "true"
         envFrom: *envFrom
         resources:
           requests:
