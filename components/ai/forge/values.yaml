@@ -20,7 +20,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/forge-backend
-          tag: 20260727123755-27d6340-oci
+          tag: 20260728145908-9790de1-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
