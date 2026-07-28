@@ -153,7 +153,7 @@ persistence:
     advancedMounts:
       app:
         00-restore-permissions:
-          - path: /opt/data
+        - path: /opt/data
         hermes-bootstrap:
         - path: /opt/data
         app:
