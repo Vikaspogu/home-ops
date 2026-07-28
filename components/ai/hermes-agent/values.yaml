@@ -10,7 +10,7 @@ controllers:
         fsGroup: 10000
         fsGroupChangePolicy: OnRootMismatch
     initContainers:
-      restore-permissions:
+      00-restore-permissions:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260727121950-e57aa7d-oci
@@ -152,8 +152,8 @@ persistence:
     existingClaim: hermes-agent
     advancedMounts:
       app:
-        restore-permissions:
-        - path: /opt/data
+        00-restore-permissions:
+          - path: /opt/data
         hermes-bootstrap:
         - path: /opt/data
         app:

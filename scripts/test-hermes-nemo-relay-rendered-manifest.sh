@@ -81,7 +81,7 @@ hermes_restore_permissions_container_count() {
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")
   | .spec.template.spec.initContainers[]?
   | select(
-      (.name == "restore-permissions")
+      (.name == "00-restore-permissions")
       and (.image == strenv(HERMES_IMAGE))
       and (.command[0] == "python")
       and (.command[1] == "-c")
@@ -96,6 +96,15 @@ hermes_restore_permissions_container_count() {
       and ([.volumeMounts[]? | select(.name == "app-data" and .mountPath == "/opt/data")] | length == 1)
     )
 ] | length
+
+' "${manifest}"
+}
+
+hermes_first_init_container_name() {
+  yq ea -r '
+
+select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+| .spec.template.spec.initContainers[0].name
 
 ' "${manifest}"
 }
@@ -167,6 +176,7 @@ kustomize build --enable-helm "${HERMES_COMPONENT}" >"${manifest}"
 
 [[ "$(hermes_init_image_count)" == "3" ]] || fail "rendered Hermes init containers must retain their configured image tags"
 [[ "$(hermes_restore_permissions_container_count)" == "1" ]] || fail "rendered Hermes restore-permissions init container must repair restored GOG config ownership"
+[[ "$(hermes_first_init_container_name)" == "00-restore-permissions" ]] || fail "rendered Hermes ownership repair must run before bootstrap"
 [[ "$(hermes_nemo_relay_plugin_count)" == "1" ]] || fail "rendered Hermes configuration must enable observability/nemo_relay"
 [[ "$(
   yq ea -r '
