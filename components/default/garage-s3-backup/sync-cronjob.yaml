@@ -42,7 +42,7 @@ spec:
                   rclone lsf source: --dirs-only | while IFS= read -r bucket; do
                     bucket=${bucket%/}
                     rclone mkdir "backup:${bucket}"
-                    rclone sync "source:${bucket}" "backup:${bucket}" --checksum --fast-list --transfers 1
+                    rclone sync "source:${bucket}" "backup:${bucket}" --checksum --fast-list
                   done
               env:
                 - name: RCLONE_CONFIG_SOURCE_TYPE
