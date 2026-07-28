@@ -10,6 +10,36 @@ controllers:
         fsGroup: 10000
         fsGroupChangePolicy: OnRootMismatch
     initContainers:
+      restore-permissions:
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260727121950-e57aa7d-oci
+        command:
+          - python
+          - -c
+          - |
+            import os
+
+            path = "/opt/data/.config/gogcli"
+            if os.path.lexists(path):
+                for root, dirs, files in os.walk(path, followlinks=False):
+                    os.chown(root, 10000, 10000, follow_symlinks=False)
+                    for name in dirs + files:
+                        os.chown(os.path.join(root, name), 10000, 10000, follow_symlinks=False)
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsUser: 0
+          runAsGroup: 0
+          capabilities:
+            drop: ["ALL"]
+            add: ["CHOWN"]
       hermes-bootstrap:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
@@ -122,12 +152,14 @@ persistence:
     existingClaim: hermes-agent
     advancedMounts:
       app:
+        restore-permissions:
+          - path: /opt/data
         hermes-bootstrap:
-        - path: /opt/data
+          - path: /opt/data
         app:
-        - path: /opt/data
+          - path: /opt/data
         mcp-token-sidecar:
-        - path: /opt/data
+          - path: /opt/data
   config:
     type: configMap
     name: hermes-agent-config
