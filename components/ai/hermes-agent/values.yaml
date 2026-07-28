@@ -15,17 +15,17 @@ controllers:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260727121950-e57aa7d-oci
         command:
-          - python
-          - -c
-          - |
-            import os
+        - python
+        - -c
+        - |
+          import os
 
-            path = "/opt/data/.config/gogcli"
-            if os.path.lexists(path):
-                for root, dirs, files in os.walk(path, followlinks=False):
-                    os.chown(root, 10000, 10000, follow_symlinks=False)
-                    for name in dirs + files:
-                        os.chown(os.path.join(root, name), 10000, 10000, follow_symlinks=False)
+          path = "/opt/data/.config/gogcli"
+          if os.path.lexists(path):
+              for root, dirs, files in os.walk(path, followlinks=False):
+                  os.chown(root, 10000, 10000, follow_symlinks=False)
+                  for name in dirs + files:
+                      os.chown(os.path.join(root, name), 10000, 10000, follow_symlinks=False)
         resources:
           requests:
             cpu: 10m
@@ -153,13 +153,13 @@ persistence:
     advancedMounts:
       app:
         restore-permissions:
-          - path: /opt/data
+        - path: /opt/data
         hermes-bootstrap:
-          - path: /opt/data
+        - path: /opt/data
         app:
-          - path: /opt/data
+        - path: /opt/data
         mcp-token-sidecar:
-          - path: /opt/data
+        - path: /opt/data
   config:
     type: configMap
     name: hermes-agent-config
