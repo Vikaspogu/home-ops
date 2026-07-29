@@ -18,7 +18,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/renovatebot/renovate
-          tag: "43.285.5@sha256:5530da188a1268c1a5967aae707784756008fa3858c498e8716df779a795e2c1"
+          tag: "43.288.0@sha256:3b72fc4274c56f65f53dcd4dcbed3143289358e0a2d96f7af215e6cf1923e5f6"
         env:
           RENOVATE_CONFIG_FILE: /config/config.js
           LOG_LEVEL: info
