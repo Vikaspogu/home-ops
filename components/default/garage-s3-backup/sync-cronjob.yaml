@@ -4,6 +4,8 @@ kind: CronJob
 metadata:
   name: garage-s3-backup-sync
   namespace: default
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
 spec:
   schedule: "0 4 * * *"
   timeZone: America/New_York
