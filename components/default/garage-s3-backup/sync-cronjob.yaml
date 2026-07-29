@@ -9,7 +9,7 @@ spec:
   timeZone: America/New_York
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 7200
-  suspend: false
+  suspend: true
   jobTemplate:
     spec:
       template:
