@@ -50,7 +50,7 @@ cephClusterSpec:
         memory: 1Gi
         cpu: 250m
       limits:
-        memory: 4Gi
+        memory: 8Gi
   mgr:
     modules:
       - name: diskprediction_local
