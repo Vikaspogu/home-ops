@@ -100,7 +100,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260715000636-fdb6d67-oci
+          tag: 20260731174021-9984450-oci
         args:
         - gateway
         - run
