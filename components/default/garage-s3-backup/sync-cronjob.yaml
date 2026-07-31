@@ -35,7 +35,7 @@ spec:
                           - k8s-5-1u
           containers:
             - name: rclone
-              image: rclone/rclone:1.74.4
+              image: rclone/rclone:1.75.0
               command:
                 - /bin/sh
                 - -c
