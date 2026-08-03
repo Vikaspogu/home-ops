@@ -11,7 +11,7 @@ server:
     allowUnauthenticatedUsers: true
   disableTls: false
   logLevel: info
-  sandboxImage: gitea.a113.casa/vpogu/openshell-sandbox:20260727121950-e57aa7d-oci
+  sandboxImage: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci
   sandboxImagePullPolicy: Always
   sandboxImagePullSecrets:
     - name: gitea-registry-secret
