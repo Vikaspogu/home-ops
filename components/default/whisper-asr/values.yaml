@@ -8,7 +8,7 @@ controllers:
       app:
         image:
           repository: mccloud/subgen
-          tag: latest@sha256:0bc5f52d6022a32ddcf7501c3e02b11b4bae84da012263536951395af3d33e87
+          tag: latest@sha256:2841515a3b409677669f0a10d77d49160bffb8111db91640fb33a4db06b3396c
         env:
           TZ: "America/New_York"
           # Core Whisper settings
