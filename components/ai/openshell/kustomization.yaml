@@ -23,15 +23,15 @@ patches:
                 envFrom:
                   - secretRef:
                       name: openshell-db-secret
-      containers:
-        - name: openshell-gateway
-          volumeMounts:
-            - name: state
-              mountPath: /.local/state/openshell
-      volumes:
-        - name: state
-          persistentVolumeClaim:
-            claimName: openshell-state
+            containers:
+              - name: openshell-gateway
+                volumeMounts:
+                  - name: state
+                    mountPath: /.local/state/openshell
+            volumes:
+              - name: state
+                persistentVolumeClaim:
+                  claimName: openshell-state
 helmGlobals:
   chartHome: vendor
 helmCharts:
