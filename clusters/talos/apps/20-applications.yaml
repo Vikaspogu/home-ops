@@ -624,31 +624,31 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
 
-  headroom:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/headroom
-      plugin:
-        env:
-          - name: STORAGE_CLASS
-            value: ceph-block
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: csi-ceph-blockpool
-          - name: VOLSYNC_CAPACITY
-            value: 5Gi
-          - name: VOLSYNC_CACHE_CAPACITY
-            value: 8Gi
+  # headroom:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: ai
+  #   source:
+  #     path: components/ai/headroom
+  #     plugin:
+  #       env:
+  #         - name: STORAGE_CLASS
+  #           value: ceph-block
+  #         - name: VOLUME_SNAPSHOT_CLASS
+  #           value: csi-ceph-blockpool
+  #         - name: VOLSYNC_CAPACITY
+  #           value: 5Gi
+  #         - name: VOLSYNC_CACHE_CAPACITY
+  #           value: 8Gi
 
-  headroom-codex:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/headroom-codex
+  # headroom-codex:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "20"
+  #   destination:
+  #     namespace: ai
+  #   source:
+  #     path: components/ai/headroom-codex
 
   searxng:
     annotations:
