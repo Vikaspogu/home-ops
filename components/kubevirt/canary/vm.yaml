@@ -40,6 +40,10 @@ spec:
           cloudInitNoCloud:
             userData: |
               #cloud-config
+              users:
+                - name: canary
+                  ssh_authorized_keys:
+                    - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHKi2R97fAR+Z1MqpR7140RnjVsktlq9X6NqXuc2Uo58 kubevirt-canary
               runcmd:
                 - |
                   set -eu

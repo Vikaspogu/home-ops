@@ -33,5 +33,7 @@ render "${ROOT_DIR}/components/kubevirt/canary" "${canary_manifest}"
     || fail "canary VM must not use persistent storage"
 [[ "$(yq ea -r 'select(.kind == "VirtualMachine") | .spec.template.spec.volumes[] | select(.name == "cloudinitdisk") | has("cloudInitNoCloud")' "${canary_manifest}")" == "true" ]] \
     || fail "canary VM must include its DNS, Service, and egress check"
+[[ "$(yq ea -r 'select(.kind == "VirtualMachine") | .spec.template.spec.volumes[] | select(.name == "cloudinitdisk") | .cloudInitNoCloud.userData | contains("name: canary")' "${canary_manifest}")" == "true" ]] \
+    || fail "canary VM must allow its networking check over SSH"
 
 printf 'PASS: KubeVirt and CDI render, and the VM canary is constrained and ephemeral\n'
