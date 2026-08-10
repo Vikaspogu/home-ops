@@ -31,5 +31,7 @@ render "${ROOT_DIR}/components/kubevirt/canary" "${canary_manifest}"
     || fail "canary VM MAC address changed"
 [[ "$(yq ea -r '[select(.kind == "VirtualMachine") | .spec.template.spec.volumes[]? | select(has("persistentVolumeClaim") or has("dataVolume"))] | length' "${canary_manifest}")" == "0" ]] \
     || fail "canary VM must not use persistent storage"
+[[ "$(yq ea -r 'select(.kind == "VirtualMachine") | .spec.template.spec.volumes[] | select(.name == "cloudinitdisk") | has("cloudInitNoCloud")' "${canary_manifest}")" == "true" ]] \
+    || fail "canary VM must include its DNS, Service, and egress check"
 
 printf 'PASS: KubeVirt and CDI render, and the VM canary is constrained and ephemeral\n'

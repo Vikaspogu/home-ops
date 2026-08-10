@@ -15,6 +15,9 @@ spec:
             - name: rootdisk
               disk:
                 bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
           interfaces:
             - name: default
               masquerade: {}
@@ -33,3 +36,19 @@ spec:
         - name: rootdisk
           containerDisk:
             image: quay.io/containerdisks/fedora:44@sha256:1217dcc8c58dbc3ca08e0323929b86f609506121adb01d0fd892232f2c0544f6
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              runcmd:
+                - |
+                  set -eu
+                  if ! getent hosts kubernetes.default.svc.cluster.local >/dev/null; then
+                    echo CANARY_DNS_FAILED >/dev/ttyS0
+                  elif ! timeout 10 bash -c '</dev/tcp/kubernetes.default.svc.cluster.local/443'; then
+                    echo CANARY_SERVICE_FAILED >/dev/ttyS0
+                  elif ! timeout 10 bash -c '</dev/tcp/1.1.1.1/443'; then
+                    echo CANARY_EGRESS_FAILED >/dev/ttyS0
+                  else
+                    echo CANARY_NETWORK_OK >/dev/ttyS0
+                  fi
