@@ -4,11 +4,11 @@ metadata:
   name: kubevirt
   namespace: kubevirt
 spec:
-  configuration:
-    developerConfiguration:
-      featureGates:
-        - LiveMigration
-        - Snapshot
-  workloadUpdateStrategy:
-    workloadUpdateMethods:
-      - LiveMigrate
+  infra:
+    nodePlacement:
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+  workloads:
+    nodePlacement:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-5-1u
