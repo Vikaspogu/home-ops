@@ -80,4 +80,4 @@ securityContext:
       - SYS_RESOURCE
 socketLB:
   enabled: true
-  hostNamespaceOnly: false
+  hostNamespaceOnly: true
