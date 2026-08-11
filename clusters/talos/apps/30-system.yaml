@@ -121,19 +121,6 @@ applications:
       retry:
         limit: 5
 
-  arc-runner-template:
-    annotations:
-      argocd.argoproj.io/sync-wave: "34"
-    destination:
-      namespace: actions-runner-templates
-    source:
-      path: components/actions-runner-templates/kubevirt-runner
-    syncPolicy:
-      syncOptions:
-        - CreateNamespace=true
-      retry:
-        limit: 5
-
   arc-kubevirt-runner:
     annotations:
       # The manual VM template is intentionally Suspended in ArgoCD; keep this

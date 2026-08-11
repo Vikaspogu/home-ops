@@ -2,7 +2,6 @@ apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
 metadata:
   name: ubuntu-runner-base
-  namespace: actions-runner-templates
 spec:
   source:
     registry:

@@ -6,7 +6,7 @@ controllerServiceAccount:
 
 runnerScaleSetName: kubevirt
 minRunners: 0
-maxRunners: 0
+maxRunners: 1
 
 listenerTemplate:
   spec:
@@ -30,7 +30,7 @@ template:
           - name: KUBEVIRT_VM_TEMPLATE
             value: ubuntu-runner
           - name: KUBEVIRT_VM_TEMPLATE_NAMESPACE
-            value: actions-runner-templates
+            value: actions-runners
           - name: RUNNER_NAME
             valueFrom:
               fieldRef:
