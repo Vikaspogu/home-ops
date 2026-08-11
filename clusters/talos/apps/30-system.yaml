@@ -107,3 +107,16 @@ applications:
       namespace: kubevirt
     source:
       path: components/kubevirt/canary
+
+  arc-controller:
+    annotations:
+      argocd.argoproj.io/sync-wave: "33"
+    destination:
+      namespace: actions-runner-system
+    source:
+      path: components/actions-runner-system/arc-controller
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+      retry:
+        limit: 5
