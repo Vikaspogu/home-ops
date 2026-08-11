@@ -6,7 +6,7 @@ controllerServiceAccount:
 
 runnerScaleSetName: kubevirt
 minRunners: 0
-maxRunners: 1
+maxRunners: 0
 
 listenerTemplate:
   spec:
