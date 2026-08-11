@@ -21,6 +21,8 @@ count() {
 
 [[ "$(count Namespace actions-runner-system)" == "1" ]] || fail "ARC controller namespace is missing"
 [[ "$(yq ea -r 'select(.kind == "Namespace" and .metadata.name == "actions-runner-system") | .metadata.annotations."argocd.argoproj.io/sync-wave"' "${MANIFEST}")" == "-1" ]] || fail "ARC controller namespace must sync first"
+[[ "$(count CustomResourceDefinition ephemeralrunnersets.actions.github.com)" == "1" ]] || fail "ARC EphemeralRunnerSet CRD is missing"
+[[ "$(count CustomResourceDefinition autoscalingrunnersets.actions.github.com)" == "1" ]] || fail "ARC AutoScalingRunnerSet CRD is missing"
 [[ "$(count Deployment arc-controller-gha-rs-controller)" == "1" ]] || fail "ARC controller Deployment is missing"
 [[ "$(count ExternalSecret github-arc)" == "1" ]] || fail "GitHub App ExternalSecret is missing"
 [[ "$(yq ea -r 'select(.kind == "ExternalSecret" and .metadata.name == "github-arc") | .metadata.namespace' "${MANIFEST}")" == "actions-runners" ]] || fail "GitHub App ExternalSecret must be in actions-runners"
