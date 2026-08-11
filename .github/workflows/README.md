@@ -1,9 +1,5 @@
 # GitHub Actions Workflows
 
-## ARC KubeVirt Smoke (`arc-kubevirt-smoke.yml`)
-
-A temporary smoke test for the repository's `kubevirt` ARC runner scale set. It runs on its own addition to `main` or manually, and verifies an ephemeral KubeVirt VM runner can execute an unprivileged shell command and clean up afterward.
-
 ## PR Webhook Notifications (`pr-webhook.yaml`)
 
 This workflow sends webhook payloads to different URLs based on which cluster is affected by changes in a pull request.
