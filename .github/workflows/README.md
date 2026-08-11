@@ -2,7 +2,7 @@
 
 ## ARC KubeVirt Smoke (`arc-kubevirt-smoke.yml`)
 
-A manual-only smoke test for the repository's `kubevirt` ARC runner scale set. It verifies an ephemeral KubeVirt VM runner can execute an unprivileged shell command and clean up afterward.
+A temporary smoke test for the repository's `kubevirt` ARC runner scale set. It runs on its own addition to `main` or manually, and verifies an ephemeral KubeVirt VM runner can execute an unprivileged shell command and clean up afterward.
 
 ## PR Webhook Notifications (`pr-webhook.yaml`)
 

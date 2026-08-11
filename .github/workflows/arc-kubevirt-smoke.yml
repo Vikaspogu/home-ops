@@ -2,6 +2,10 @@
 name: ARC KubeVirt smoke
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/arc-kubevirt-smoke.yml"
   workflow_dispatch:
 
 jobs:
