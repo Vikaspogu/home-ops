@@ -120,3 +120,29 @@ applications:
         - CreateNamespace=true
       retry:
         limit: 5
+
+  arc-runner-template:
+    annotations:
+      argocd.argoproj.io/sync-wave: "34"
+    destination:
+      namespace: actions-runner-templates
+    source:
+      path: components/actions-runner-templates/kubevirt-runner
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+      retry:
+        limit: 5
+
+  arc-kubevirt-runner:
+    annotations:
+      argocd.argoproj.io/sync-wave: "35"
+    destination:
+      namespace: actions-runners
+    source:
+      path: components/actions-runners/kubevirt-runner
+    syncPolicy:
+      syncOptions:
+        - CreateNamespace=true
+      retry:
+        limit: 5

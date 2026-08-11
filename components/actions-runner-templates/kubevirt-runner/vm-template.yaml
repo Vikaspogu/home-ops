@@ -1,0 +1,92 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: ubuntu-runner
+  namespace: actions-runner-templates
+spec:
+  dataVolumeTemplates:
+    - metadata:
+        name: ubuntu-runner
+      spec:
+        source:
+          pvc:
+            name: ubuntu-runner-base
+            namespace: actions-runner-templates
+        storage:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+          storageClassName: ceph-block
+  runStrategy: Manual
+  template:
+    spec:
+      terminationGracePeriodSeconds: 30
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          disks:
+            - name: rootdisk
+              disk:
+                bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+          filesystems:
+            - name: runner-info
+              virtiofs: {}
+          interfaces:
+            - name: default
+              masquerade: {}
+              macAddress: "02:00:00:00:05:03"
+        resources:
+          requests:
+            cpu: "2"
+            memory: 4Gi
+          limits:
+            cpu: "2"
+            memory: 4Gi
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: rootdisk
+          dataVolume:
+            name: ubuntu-runner
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |
+              #cloud-config
+              mounts:
+                - [runner-info, /runner-info, virtiofs, "rw,relatime"]
+              users:
+                - name: runner
+                  shell: /bin/bash
+              write_files:
+                - path: /usr/local/sbin/bootstrap-actions-runner
+                  permissions: "0755"
+                  content: |
+                    #!/bin/bash
+                    set -euo pipefail
+                    # ponytail: bootstrap per job; bake this into the base disk when startup time matters.
+                    apt-get update
+                    apt-get install --yes --no-install-recommends ca-certificates curl jq
+                    install -d -o runner -g runner /opt/runner
+                    curl --fail --location --proto '=https' --tlsv1.2 \
+                      --output /tmp/actions-runner.tar.gz \
+                      https://github.com/actions/runner/releases/download/v2.336.0/actions-runner-linux-x64-2.336.0.tar.gz
+                    echo '04cf0be1aff4c3ec3554466c39124ca250e3effd8873bb7e8d68535aa9505d5d  /tmp/actions-runner.tar.gz' | sha256sum --check
+                    tar --extract --gzip --file /tmp/actions-runner.tar.gz --directory /opt/runner
+                    /opt/runner/bin/installdependencies.sh
+                    chown -R runner:runner /opt/runner
+              runcmd:
+                - /usr/local/sbin/bootstrap-actions-runner
+                - runuser -u runner -- /opt/runner/run.sh --jitconfig "$(jq -r '.jitconfig' /runner-info/runner-info.json)"
+              power_state:
+                delay: now
+                mode: poweroff
+                message: Runner completed
+                timeout: 2
+                condition: true
