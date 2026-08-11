@@ -41,6 +41,6 @@ count() {
 [[ "$(yq ea -r 'select(.kind == "AutoscalingRunnerSet" and .metadata.name == "kubevirt") | .spec.template.spec.containers[] | select(.name == "runner") | .env[] | select(.name == "KUBEVIRT_VM_TEMPLATE_NAMESPACE") | .value' "${RUNNER_MANIFEST}")" == "actions-runner-templates" ]] || fail "runner must use the dedicated template namespace"
 
 [[ "$(yq ea -r '.applications."arc-runner-template".annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS}")" == "34" ]] || fail "runner template ArgoCD application must sync after ARC controller"
-[[ "$(yq ea -r '.applications."arc-kubevirt-runner".annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS}")" == "35" ]] || fail "runner scale-set ArgoCD application must sync after the template"
+[[ "$(yq ea -r '.applications."arc-kubevirt-runner".annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS}")" == "34" ]] || fail "runner scale-set ArgoCD application must share the template sync wave"
 
 printf 'PASS: ARC KubeVirt runner template, scale set, and ArgoCD registration render correctly\n'

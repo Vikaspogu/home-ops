@@ -136,7 +136,9 @@ applications:
 
   arc-kubevirt-runner:
     annotations:
-      argocd.argoproj.io/sync-wave: "35"
+      # The manual VM template is intentionally Suspended in ArgoCD; keep this
+      # app in the same wave so it does not block scale-set registration.
+      argocd.argoproj.io/sync-wave: "34"
     destination:
       namespace: actions-runners
     source:
