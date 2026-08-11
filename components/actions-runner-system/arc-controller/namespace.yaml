@@ -1,4 +1,11 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: actions-runner-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: actions-runners

@@ -19,6 +19,8 @@ count() {
     yq ea -r "[select(.kind == \"$1\" and .metadata.name == \"$2\")] | length" "${MANIFEST}"
 }
 
+[[ "$(count Namespace actions-runner-system)" == "1" ]] || fail "ARC controller namespace is missing"
+[[ "$(yq ea -r 'select(.kind == "Namespace" and .metadata.name == "actions-runner-system") | .metadata.annotations."argocd.argoproj.io/sync-wave"' "${MANIFEST}")" == "-1" ]] || fail "ARC controller namespace must sync first"
 [[ "$(count Deployment arc-controller-gha-rs-controller)" == "1" ]] || fail "ARC controller Deployment is missing"
 [[ "$(count ExternalSecret github-arc)" == "1" ]] || fail "GitHub App ExternalSecret is missing"
 [[ "$(yq ea -r 'select(.kind == "ExternalSecret" and .metadata.name == "github-arc") | .metadata.namespace' "${MANIFEST}")" == "actions-runners" ]] || fail "GitHub App ExternalSecret must be in actions-runners"
