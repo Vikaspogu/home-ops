@@ -39,6 +39,12 @@ template:
             value: 30m
           - name: KAR_CLEANUP_TIMEOUT
             value: 5m
+          - name: KAR_TELEMETRY_ENABLED
+            value: "true"
+          - name: KAR_TELEMETRY_EXPORT_TYPE
+            value: otlp
+          - name: KAR_TELEMETRY_OTLP_ENDPOINT
+            value: http://alloy.observability.svc.cluster.local:4318
         resources:
           requests:
             cpu: 100m
