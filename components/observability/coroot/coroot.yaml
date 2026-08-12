@@ -46,7 +46,7 @@ spec:
       cpu: 100m
       memory: 1Gi
     limits:
-      memory: 2Gi
+      memory: 3Gi
   clusterAgent:
     image:
       name: ghcr.io/coroot/coroot-cluster-agent:1.7.1
