@@ -28,12 +28,10 @@ servers:
       - name: autopath
         parameters: "@kubernetes"
       # Cluster is single-stack IPv4 (pod/svc nets 10.69.0.0/16 & 10.96.0.0/16,
-      # nodes IPv4-only, Cilium ipv4NativeRoutingCIDR). Upstream home DNS returns
-      # AAAA records for external names (e.g. googleapis.com), which IPv4-only
-      # pods cannot route to -> "dial tcp [v6]: network is unreachable" for clients
-      # that don't do Happy Eyeballs fallback (Go binaries such as gog). Synthesize
-      # an empty NODATA (NOERROR, no answer) reply for all AAAA queries so clients
-      # use the A record only. Remove this block if the cluster ever goes dual-stack.
+      # nodes IPv4-only, Cilium ipv4NativeRoutingCIDR). CoreDNS runs template
+      # before kubernetes and forward, regardless of this config's order. Synthesize
+      # an empty NODATA (NOERROR, no answer) reply for all AAAA queries, including
+      # cluster.local, so clients use A records only. Remove if the cluster goes dual-stack.
       - name: template
         parameters: IN AAAA
         configBlock: |-
