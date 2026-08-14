@@ -13,7 +13,7 @@ run = [
 
 [tools]
 "python" = "3.14.7"
-"aqua:argoproj/argo-cd" = "3.5.0"
+"aqua:argoproj/argo-cd" = "3.5.1"
 "aqua:budimanjojo/talhelper" = "3.1.16"
 "aqua:cli/cli" = "2.97.0"
 "aqua:cloudflare/cloudflared" = "2026.8.1"
