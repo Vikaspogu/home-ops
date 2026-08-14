@@ -27,6 +27,15 @@ servers:
           fallthrough in-addr.arpa ip6.arpa
       - name: autopath
         parameters: "@kubernetes"
+      # Cluster is single-stack IPv4 (pod/svc nets 10.69.0.0/16 & 10.96.0.0/16,
+      # nodes IPv4-only, Cilium ipv4NativeRoutingCIDR). CoreDNS runs template
+      # before kubernetes and forward, regardless of this config's order. Synthesize
+      # an empty NODATA (NOERROR, no answer) reply for all AAAA queries, including
+      # cluster.local, so clients use A records only. Remove if the cluster goes dual-stack.
+      - name: template
+        parameters: IN AAAA
+        configBlock: |-
+          rcode NOERROR
       - name: forward
         parameters: . /etc/resolv.conf
       - name: cache
