@@ -8,7 +8,7 @@ helmCharts:
     releaseName: onepassword-connect
     namespace: external-secrets
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "5.0.1"
+    version: "5.1.0"
     valuesFile: values.yaml
 
 generators:

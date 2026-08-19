@@ -9,7 +9,7 @@ helmCharts:
     releaseName: headroom-codex
     namespace: ai
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "5.0.1"
+    version: "5.1.0"
     valuesFile: values.yaml
 configMapGenerator:
   - name: headroom-codex-model-limits
