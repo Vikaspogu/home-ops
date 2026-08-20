@@ -19,7 +19,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agentmemory
-          tag: latest-oci
+          tag: 20260820143120-301872b-oci
         command:
         - /usr/bin/catatonit
         - --
