@@ -65,6 +65,10 @@ data:
         provider: main
         model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
         timeout: 900
+    curator:
+      backup:
+        enabled: true
+        keep: 10
     compression:
       enabled: true
       threshold: 0.75
@@ -105,6 +109,11 @@ data:
       theme: mono
     goals:
       max_turns: 20
+    session_reset:
+      mode: both
+      at_hour: 4
+      timezone: America/New_York
+      idle_minutes: 1440
     agent:
       max_turns: 90
       api_max_retries: 3
@@ -142,6 +151,8 @@ data:
       user_profile_enabled: true
       memory_char_limit: 2200
       user_char_limit: 2200
+      nudge_interval: 15
+      flush_min_turns: 3
       provider: agentmemory
     terminal:
       backend: local
