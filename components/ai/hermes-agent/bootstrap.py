@@ -34,11 +34,6 @@ def _http(method: str, url: str, token: str, body=None):
         return e.code, e.read().decode("utf-8", "replace")
 
 
-def run_hermes_seed_config() -> None:
-    print("[ok] running hermes-seed-config")
-    subprocess.check_call(["hermes-seed-config"])
-
-
 def _authed_clone_url(url: str) -> str:
     """Inject GITEA_TOKEN into gitea HTTPS URLs."""
     token = os.environ.get("GITEA_TOKEN", "")
@@ -77,7 +72,6 @@ def install_plugin(name: str, repo: str, ref: str, sub_path: str) -> None:
 
 def main() -> int:
     cfg = yaml.safe_load(Path(CONFIG_PATH).read_text()) or {}
-    run_hermes_seed_config()
 
     PLUGINS_ROOT.mkdir(parents=True, exist_ok=True)
     for plugin in cfg.get("plugins") or []:

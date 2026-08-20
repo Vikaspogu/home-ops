@@ -7,6 +7,8 @@ readonly HERMES_COMPONENT="${ROOT_DIR}/components/ai/hermes-agent"
 # automatic image bump and the whole script silently stops guarding.
 readonly HERMES_IMAGE="$(yq -r '.controllers.app.containers.app.image | .repository + ":" + .tag' "${HERMES_COMPONENT}/values.yaml")"
 export HERMES_IMAGE
+readonly HERMES_RESTORE_PERMISSIONS_IMAGE="$(yq -r '.controllers.app.initContainers."00-restore-permissions".image | .repository + ":" + .tag' "${HERMES_COMPONENT}/values.yaml")"
+export HERMES_RESTORE_PERMISSIONS_IMAGE
 readonly NEMO_RELAY_PLUGINS_PATH="/opt/data/nemo-relay-plugins.toml"
 export NEMO_RELAY_PLUGINS_PATH
 readonly NEMO_RELAY_PLUGINS_TOML=$'version = 1\n\n[[components]]\nkind = "observability"\nenabled = true\n\n[components.config]\nversion = 1\n\n[components.config.openinference]\nenabled = true\ntransport = "http_binary"\nendpoint = "http://alloy.observability.svc.cluster.local:4318/v1/traces"\nservice_name = "hermes-agent"\nservice_namespace = "ai"\ninstrumentation_scope = "hermes-nemo-relay"\ntimeout_millis = 3000\n\n[components.config.openinference.resource_attributes]\n"deployment.environment" = "talos"'
@@ -82,7 +84,7 @@ hermes_restore_permissions_container_count() {
   | .spec.template.spec.initContainers[]?
   | select(
       (.name == "00-restore-permissions")
-      and (.image == strenv(HERMES_IMAGE))
+      and (.image == strenv(HERMES_RESTORE_PERMISSIONS_IMAGE))
       and (.command[0] == "python")
       and (.command[1] == "-c")
       and (.command[2] | contains("path = \"/opt/data/.config/gogcli\""))
@@ -94,6 +96,35 @@ hermes_restore_permissions_container_count() {
       and (.securityContext.capabilities.drop | contains(["ALL"]))
       and (.securityContext.capabilities.add | contains(["CHOWN"]))
       and ([.volumeMounts[]? | select(.name == "app-data" and .mountPath == "/opt/data")] | length == 1)
+    )
+] | length
+
+' "${manifest}"
+}
+
+hermes_seed_config_container_count() {
+  yq ea -r '
+
+[
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | .spec.template.spec.initContainers[]?
+  | select(
+      (.name == "seed-config")
+      and (.image == strenv(HERMES_IMAGE))
+      and (.command | length == 1)
+      and (.command[0] == "hermes-seed-config")
+      and (.securityContext.runAsNonRoot == true)
+      and (.securityContext.runAsUser == 10000)
+      and (.securityContext.runAsGroup == 10000)
+      and (.securityContext.allowPrivilegeEscalation == false)
+      and (.securityContext.readOnlyRootFilesystem == true)
+      and (.securityContext.capabilities.drop | contains(["ALL"]))
+      and (.resources.requests.cpu == "10m")
+      and (.resources.requests.memory == "64Mi")
+      and (.resources.limits.memory == "256Mi")
+      and ([.envFrom[]? | select(.secretRef.name == "hermes-agent-secret")] | length == 1)
+      and ([.volumeMounts[]? | select(.name == "app-data" and .mountPath == "/opt/data")] | length == 1)
+      and ([.volumeMounts[]? | select(.name == "config" and .mountPath == "/opt/bootstrap/config.yaml" and .subPath == "config.yaml" and .readOnly == true)] | length == 1)
     )
 ] | length
 
@@ -185,10 +216,14 @@ kustomize build --enable-helm "${HERMES_COMPONENT}" >"${manifest}"
 
 [[ "$(hermes_app_image_count)" == "1" ]] || fail "rendered Hermes application image must use ${HERMES_IMAGE} exactly once"
 
-[[ "$(hermes_init_image_count)" == "3" ]] || fail "rendered Hermes init containers must retain their configured image tags"
+[[ "$(hermes_init_image_count)" == "2" ]] || fail "rendered Hermes primary init containers must retain the application image tag"
 [[ "$(hermes_restore_permissions_container_count)" == "1" ]] || fail "rendered Hermes restore-permissions init container must repair restored GOG config ownership"
+[[ "$(hermes_seed_config_container_count)" == "1" ]] || fail "rendered Hermes seed-config init container must run the seeder against the mounted configuration and PVC as uid 10000"
 [[ "$(hermes_first_init_container_name)" == "00-restore-permissions" ]] || fail "rendered Hermes ownership repair must run before bootstrap"
 hermes_restore_permissions_script | python3 -c 'import sys; compile(sys.stdin.read(), "restore-permissions", "exec")'
+if grep -q 'run_hermes_seed_config' "${HERMES_COMPONENT}/bootstrap.py"; then
+  fail "hermes-bootstrap must not duplicate the dedicated seed-config init container"
+fi
 [[ "$(hermes_nemo_relay_plugin_count)" == "1" ]] || fail "rendered Hermes configuration must enable observability/nemo_relay"
 [[ "$(
   yq ea -r '

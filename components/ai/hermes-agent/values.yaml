@@ -40,6 +40,27 @@ controllers:
           capabilities:
             drop: ["ALL"]
             add: ["CHOWN"]
+      seed-config:
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260820124603-49a1293-oci
+        command: ["hermes-seed-config"]
+        envFrom:
+        - secretRef:
+            name: hermes-agent-secret
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities: {drop: ["ALL"]}
       hermes-bootstrap:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
@@ -63,10 +84,6 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-      seed-config:
-        image:
-          tag: 20260820124603-49a1293-oci
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
       # Native sidecar: keeps MCP OAuth tokens fresh on the shared PVC so
       # hermes never needs a browser flow (TREK hourly client_credentials,
       # Coroot headless authorization_code bootstrap).
@@ -154,6 +171,8 @@ persistence:
       app:
         00-restore-permissions:
         - path: /opt/data
+        seed-config:
+        - path: /opt/data
         hermes-bootstrap:
         - path: /opt/data
         app:
@@ -165,6 +184,10 @@ persistence:
     name: hermes-agent-config
     advancedMounts:
       app:
+        seed-config:
+        - path: /opt/bootstrap/config.yaml
+          subPath: config.yaml
+          readOnly: true
         hermes-bootstrap:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
