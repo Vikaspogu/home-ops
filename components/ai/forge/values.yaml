@@ -38,7 +38,7 @@ controllers:
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
           FORGE_DEFAULT_MODEL: openai/openai/gpt-5.6-terra
-          FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:cf48b274e50e6bd48788d74bf3c2de6170966e59ab75baf5e462dc8bee1cdbf2
+          FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:45533ed25538e1fbcb8fb5fc499af00a254dd849422c479c9b8a09ccc350d339
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org,mise-versions.jdx.dev,registry.npmjs.org
           FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
