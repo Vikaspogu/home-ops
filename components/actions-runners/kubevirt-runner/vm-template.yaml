@@ -2,6 +2,8 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: ubuntu-runner
+  annotations:
+    argocd.argoproj.io/ignore-healthcheck: "true"
 spec:
   dataVolumeTemplates:
     - metadata:

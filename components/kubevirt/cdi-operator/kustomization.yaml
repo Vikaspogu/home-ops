@@ -3,3 +3,13 @@ kind: Kustomization
 resources:
   - https://github.com/kubevirt/containerized-data-importer/releases/download/v1.64.0/cdi-operator.yaml
   - cdi-cr.yaml
+patches:
+  # The CDI operator removes the deprecated v1alpha1 CRD version after startup.
+  - target:
+      group: apiextensions.k8s.io
+      version: v1
+      kind: CustomResourceDefinition
+      name: cdis.cdi.kubevirt.io
+    patch: |-
+      - op: remove
+        path: /spec/versions/0
