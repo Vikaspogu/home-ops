@@ -30,15 +30,12 @@ strip_envsub_defaults() {
     sed -E 's/\$\{([A-Za-z_][A-Za-z0-9_]*)-[^}]*\}/${\1}/g'
 }
 
-kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins")
+kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins" "--enable-helm")
 kustomize_config="kustomization.yaml"
+kubeconform_skip="Secret,ExternalSecret,SecretStore,ClusterSecretStore,HelmChart,HelmChartConfig,ImageUpdater"
 kubeconform_args=(
     "-strict"
     "-ignore-missing-schemas"
-    "-skip"
-    # The public ImageUpdater schema requires spec.namespace, but the installed
-    # CRD rejects it and Argo CD server-side diff fails when it is present.
-    "Secret,ExternalSecret,SecretStore,ClusterSecretStore,HelmChart,HelmChartConfig,ImageUpdater"
     "-schema-location"
     "default"
     "-schema-location"
@@ -55,14 +52,12 @@ validate_kustomization() {
 
     echo "=== Validating kustomization in ${relative_path} ==="
 
-    # Check if directory contains helmCharts (skip these as they need Helm to render)
-    if grep -q "helmCharts:" "${dir}/kustomization.yaml" 2>/dev/null; then
-        echo "Skipping ${relative_path} - contains helmCharts (requires Helm rendering)"
-        return 0
-    fi
+    local skip="${kubeconform_skip}"
+    # The public CephCluster schema lags Rook v1.20.6's CephX keyType field.
+    [[ "${relative_path}" == "components/rook-ceph/rook-ceph-cluster" ]] && skip+=",CephCluster"
 
     # Build and validate the kustomization (process env vars with envsubst)
-    if ! kustomize build "${dir}" "${kustomize_args[@]}" | strip_envsub_defaults | envsubst | kubeconform "${kubeconform_args[@]}"; then
+    if ! kustomize build "${dir}" "${kustomize_args[@]}" | strip_envsub_defaults | envsubst | kubeconform "${kubeconform_args[@]}" -skip "${skip}"; then
         echo "❌ Validation failed for ${relative_path}"
         return 1
     fi
@@ -126,7 +121,7 @@ validate_standalone_files() {
         fi
 
         echo "Validating ${file_relative}"
-        if ! strip_envsub_defaults < "${file}" | envsubst | kubeconform "${kubeconform_args[@]}"; then
+        if ! strip_envsub_defaults < "${file}" | envsubst | kubeconform "${kubeconform_args[@]}" -skip "${kubeconform_skip}"; then
             echo "❌ Validation failed for ${file_relative}"
             exit 1
         fi

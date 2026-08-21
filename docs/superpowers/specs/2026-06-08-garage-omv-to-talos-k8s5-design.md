@@ -299,7 +299,7 @@ persistence:
     hostPath: /mnt/garage-hdd8
     globalMounts:
       - path: /data8
-  
+
   metadata:
     type: hostPath
     hostPath: /mnt/garage-meta
@@ -361,7 +361,7 @@ api_bind_addr = "[::]:3903"
 **Deployment Steps:**
 
 1. **Prepare hostPaths on k8s-5-1u (via Talos machine config patch):**
-   
+
    Create `clusters/talos/bootstrap/os/patches/worker/k8s-5-1u-storage.yaml`:
    ```yaml
    machine:
@@ -434,7 +434,7 @@ api_bind_addr = "[::]:3903"
    talhelper genconfig
    talosctl apply-config --nodes 10.30.30.25 \
      --file clusterconfig/home-kubernetes-k8s-5-1u.yaml
-   
+
    # Wait for reboot and mount verification
    talosctl -n 10.30.30.25 get mounts | grep garage
    ```
@@ -443,7 +443,7 @@ api_bind_addr = "[::]:3903"
    ```bash
    # Add to clusters/talos/apps/20-applications.yaml
    kubectl apply -f components/default/garage-s3/
-   
+
    # Wait for pod ready
    kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=garage-s3 \
      -n default --timeout=180s
@@ -452,10 +452,10 @@ api_bind_addr = "[::]:3903"
 4. **Initialize Garage cluster:**
    ```bash
    POD=$(kubectl get pod -n default -l app.kubernetes.io/name=garage-s3 -o name | head -1)
-   
+
    # Check status
    kubectl exec -n default $POD -c app -- /garage status
-   
+
    # Should show single-node cluster with 8 data paths
    ```
 
@@ -463,13 +463,13 @@ api_bind_addr = "[::]:3903"
    ```bash
    # Create key (save access/secret for later)
    kubectl exec -n default $POD -c app -- /garage key create main
-   
+
    # Create buckets
    kubectl exec -n default $POD -c app -- /garage bucket create reactive-resume
    kubectl exec -n default $POD -c app -- /garage bucket create obsidian-notes
    kubectl exec -n default $POD -c app -- /garage bucket create tofu-state
    kubectl exec -n default $POD -c app -- /garage bucket create postgres
-   
+
    # Grant permissions
    kubectl exec -n default $POD -c app -- /garage bucket allow reactive-resume --read --write --key main
    kubectl exec -n default $POD -c app -- /garage bucket allow obsidian-notes --read --write --key main
@@ -518,7 +518,7 @@ kubectl exec -n default $POD -c app -- /garage stats -a
    secret_access_key = eb5f2cddf3048ba85cde67b2bc36036a6152dc6da30f57e1af5b72eb37214c43
    endpoint = http://garage.default.svc.cluster.local:3900
    region = garage
-   
+
    [talos-garage]
    type = s3
    provider = Other
@@ -536,12 +536,12 @@ kubectl exec -n default $POD -c app -- /garage stats -a
      --restart=Never -- \
      --config /tmp/rclone.conf \
      sync omv-garage:reactive-resume talos-garage:reactive-resume -vv
-   
+
    kubectl run rclone-migrate --rm -i --image=rclone/rclone:latest \
      --restart=Never -- \
      --config /tmp/rclone.conf \
      sync omv-garage:obsidian-notes talos-garage:obsidian-notes -vv
-   
+
    kubectl run rclone-migrate --rm -i --image=rclone/rclone:latest \
      --restart=Never -- \
      --config /tmp/rclone.conf \
@@ -552,7 +552,7 @@ kubectl exec -n default $POD -c app -- /garage stats -a
    ```bash
    # Check object counts match
    kubectl exec -n default $POD -c app -- /garage stats -a
-   
+
    # Test S3 access
    kubectl run aws-test --rm -i --image=amazon/aws-cli:latest \
      --restart=Never --env AWS_ACCESS_KEY_ID=<NEW_KEY> \
@@ -561,7 +561,7 @@ kubectl exec -n default $POD -c app -- /garage stats -a
    ```
 
 4. **Update application endpoints:**
-   
+
    **reactive-resume:**
    Edit `components/default/reactive-resume/values.yaml`:
    ```yaml
@@ -570,7 +570,7 @@ kubectl exec -n default $POD -c app -- /garage stats -a
    # To:
    STORAGE_ENDPOINT: garage-s3.default.svc.cluster.local:3900
    ```
-   
+
    Apply and verify app works.
 
 5. **Delete from old Garage (optional, can wait):**
@@ -781,7 +781,7 @@ ssh root@omv-baymx 'kubectl scale deploy/garage -n default --replicas=1'
 **Steps:**
 
 1. **Create HTTPRoute for new Garage:**
-   
+
    Edit `components/default/garage-s3/http-route.yaml`:
    ```yaml
    apiVersion: gateway.networking.k8s.io/v1
@@ -835,11 +835,11 @@ ssh root@omv-baymx 'kubectl scale deploy/garage -n default --replicas=1'
    ```bash
    # Option A: DNS update (if you control DNS)
    # Point s3.omv.a113.casa to new Talos ingress IP
-   
+
    # Option B: Use Gateway API (recommended)
    # HTTPRoute already created above, just apply
    kubectl apply -f components/default/garage-s3/http-route.yaml
-   
+
    # Verify routing
    curl -I https://s3.a113.casa
    # Should hit new Garage
@@ -852,13 +852,13 @@ ssh root@omv-baymx 'kubectl scale deploy/garage -n default --replicas=1'
      --restart=Never --env AWS_ACCESS_KEY_ID=<KEY> \
      --env AWS_SECRET_ACCESS_KEY=<SECRET> -- \
      s3 ls --endpoint-url https://s3.a113.casa s3://reactive-resume/
-   
+
    # Test postgres bucket
    kubectl run test-s3 --rm -i --image=amazon/aws-cli:latest \
      --restart=Never --env AWS_ACCESS_KEY_ID=<KEY> \
      --env AWS_SECRET_ACCESS_KEY=<SECRET> -- \
      s3 ls --endpoint-url https://s3.a113.casa s3://postgres/ | grep -E "postgres17-talos-1|pg17-omv-02|pgvector17-talos-1"
-   
+
    # All 3 folders should be present
    ```
 
@@ -866,7 +866,7 @@ ssh root@omv-baymx 'kubectl scale deploy/garage -n default --replicas=1'
    ```bash
    # Check reactive-resume
    kubectl logs -n default -l app.kubernetes.io/name=reactive-resume --tail=50 | grep -i s3
-   
+
    # Check postgres backups
    kubectl get backups -n default --sort-by=.metadata.creationTimestamp | tail -5
    kubectl describe backup <latest-backup> -n default | grep -i "phase\|error"
@@ -877,7 +877,7 @@ ssh root@omv-baymx 'kubectl scale deploy/garage -n default --replicas=1'
    ```bash
    POD=$(kubectl get pod -n default -l app.kubernetes.io/name=garage-s3 -o name)
    kubectl exec -n default $POD -c app -- /garage stats -a
-   
+
    # Check that data is spreading across all 8 HDDs
    # This can take 30-60 minutes for 113 GB
    ```

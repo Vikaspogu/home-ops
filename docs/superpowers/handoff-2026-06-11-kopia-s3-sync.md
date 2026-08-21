@@ -61,13 +61,13 @@ From `https://kopia.io/docs/advanced/synchronization/`:
    # Get access to garage-s3 pod
    export KUBECONFIG=/path/to/kubeconfig
    POD=$(kubectl get pod -n default -l app.kubernetes.io/instance=garage-s3 -o name | head -1)
-   
+
    # Create bucket (via API or Web UI)
    kubectl exec -n default $POD -c app -- /garage bucket create kopia-backup
-   
+
    # Create access key for Kopia
    kubectl exec -n default $POD -c app -- /garage key create kopia-backup-key
-   
+
    # Grant permissions
    kubectl exec -n default $POD -c app -- /garage bucket allow \
      --read --write kopia-backup --key kopia-backup-key
@@ -146,11 +146,11 @@ spec:
                 - |
                   set -e
                   echo "Starting Kopia repository sync to S3 at $(date)"
-                  
+
                   # Prepare Kopia config
                   mkdir -p /tmp/kopia/cache /tmp/kopia/logs
                   cp /config-ro/repository.config /tmp/kopia/repository.config
-                  
+
                   # Sync repository to S3
                   kopia --config-file=/tmp/kopia/repository.config repository sync-to s3 \
                     --bucket="${S3_BUCKET}" \
@@ -159,7 +159,7 @@ spec:
                     --secret-access-key="${AWS_SECRET_ACCESS_KEY}" \
                     --delete \
                     --no-progress
-                  
+
                   echo "Sync completed successfully at $(date)"
               env:
                 - name: KOPIA_PASSWORD
@@ -287,7 +287,7 @@ helmCharts:
    ```bash
    # Check job status
    kubectl get job test-sync-001 -n volsync-system
-   
+
    # Verify blobs in S3 bucket via Garage
    POD=$(kubectl get pod -n default -l app.kubernetes.io/instance=garage-s3 -o name | head -1)
    kubectl exec -n default $POD -c app -- /garage bucket info kopia-backup

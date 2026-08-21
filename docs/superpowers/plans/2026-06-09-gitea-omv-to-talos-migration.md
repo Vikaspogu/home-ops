@@ -365,7 +365,7 @@ Expected: runner shows `idle`/online in gitea Admin → Actions → Runners.
 
 - [ ] **Step 5: Confirm runner executes a job**
 
-Trigger any repo's Actions workflow (or push a trivial commit to a repo with a workflow). 
+Trigger any repo's Actions workflow (or push a trivial commit to a repo with a workflow).
 Expected: the job is picked up by the Talos runner and completes.
 
 - [ ] **Step 6: Confirm a new VolSync backup succeeds from Talos**

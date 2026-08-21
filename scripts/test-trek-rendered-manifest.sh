@@ -22,7 +22,7 @@ app_container() {
     yq ea -r '
         select(.kind == "Deployment" and .metadata.name == "trek")
         | .spec.template.spec.containers[]?
-        | select(.image == "mauriceboe/trek:3.3.0")
+        | select(.image == "mauriceboe/trek:3.4.1")
     ' "${manifest}"
 }
 app_container_count() {
@@ -38,7 +38,7 @@ assert_env() {
     actual="$(NAME="${name}" yq ea -r '
         select(.kind == "Deployment" and .metadata.name == "trek")
         | .spec.template.spec.containers[]
-        | select(.image == "mauriceboe/trek:3.3.0")
+        | select(.image == "mauriceboe/trek:3.4.1")
         | .env[]
         | select(.name == env(NAME))
         | .value

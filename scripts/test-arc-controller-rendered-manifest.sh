@@ -39,6 +39,6 @@ count() {
 [[ "$(yq ea -r '.applications."arc-controller".source.path' "${APPLICATIONS}")" == "components/actions-runner-system/arc-controller" ]] || fail "ARC controller ArgoCD application is missing"
 [[ "$(yq ea -r '.applications."arc-controller".destination.namespace' "${APPLICATIONS}")" == "actions-runner-system" ]] || fail "ARC controller must target actions-runner-system"
 [[ "$(yq ea -r '.applications."arc-controller".annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS}")" == "33" ]] || fail "ARC controller must sync after the KubeVirt canary"
-[[ "$(yq ea -r '.applications."arc-controller".syncPolicy.syncOptions[]' "${APPLICATIONS}")" == "CreateNamespace=true" ]] || fail "ARC controller must create its namespace"
+[[ "$(yq ea -r '.applications."arc-controller".syncOptions[]' "${APPLICATIONS}")" == "CreateNamespace=true" ]] || fail "ARC controller must create its namespace"
 
 printf 'PASS: ARC controller, GitHub App secret projection, runner RBAC, and ArgoCD registration render correctly\n'

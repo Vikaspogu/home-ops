@@ -397,7 +397,7 @@ kubectl exec -n default jellyfin-restore -- sh -c '
 5. ⏳ Create SSH key in 1Password for rsync
 6. ⏳ Configure Prometheus alerts for NFS server pod
 
-**Recommendation:** 
+**Recommendation:**
 - Finish Garage migration today (15-30 min remaining)
 - Start media migration tomorrow (fresh, 5-6 hour block needed)
 

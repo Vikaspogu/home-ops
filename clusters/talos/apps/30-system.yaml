@@ -81,11 +81,10 @@ applications:
       namespace: kubevirt
     source:
       path: components/kubevirt/operator
-    syncPolicy:
-      syncOptions:
-        - CreateNamespace=true
-      retry:
-        limit: 5
+    syncOptions:
+      - CreateNamespace=true
+    syncPolicyRetry:
+      limit: 5
 
   cdi-operator:
     annotations:
@@ -94,11 +93,10 @@ applications:
       namespace: cdi
     source:
       path: components/kubevirt/cdi-operator
-    syncPolicy:
-      syncOptions:
-        - CreateNamespace=true
-      retry:
-        limit: 5
+    syncOptions:
+      - CreateNamespace=true
+    syncPolicyRetry:
+      limit: 5
 
   kubevirt-canary:
     annotations:
@@ -115,11 +113,10 @@ applications:
       namespace: actions-runner-system
     source:
       path: components/actions-runner-system/arc-controller
-    syncPolicy:
-      syncOptions:
-        - CreateNamespace=true
-      retry:
-        limit: 5
+    syncOptions:
+      - CreateNamespace=true
+    syncPolicyRetry:
+      limit: 5
 
   arc-kubevirt-runner:
     annotations:
@@ -130,8 +127,7 @@ applications:
       namespace: actions-runners
     source:
       path: components/actions-runners/kubevirt-runner
-    syncPolicy:
-      syncOptions:
-        - CreateNamespace=true
-      retry:
-        limit: 5
+    syncOptions:
+      - CreateNamespace=true
+    syncPolicyRetry:
+      limit: 5

@@ -6,7 +6,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/silvenga/redlib
-          tag: latest
+          tag: 0.36.0@sha256:5b7b92744ca153c75bef1f5b6b5ffb6985a230c91019d722a88ec758b15f502d
         env:
           REDLIB_ROBOTS_DISABLE_INDEXING: "on"
           REDLIB_DEFAULT_THEME: "dracula"

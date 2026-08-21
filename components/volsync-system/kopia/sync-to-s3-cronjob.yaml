@@ -51,11 +51,11 @@ spec:
                 - |
                   set -e
                   echo "Starting Kopia repository sync to S3 at $(date)"
-                  
+
                   # Prepare Kopia config
                   mkdir -p /tmp/kopia/cache /tmp/kopia/logs
                   cp /config-ro/repository.config /tmp/kopia/repository.config
-                  
+
                   # Sync repository to S3
                   kopia --config-file=/tmp/kopia/repository.config repository sync-to s3 \
                     --bucket="${S3_BUCKET}" \
@@ -65,7 +65,7 @@ spec:
                     --disable-tls \
                     --delete \
                     --no-progress
-                  
+
                   echo "Sync completed successfully at $(date)"
               env:
                 - name: KOPIA_PASSWORD

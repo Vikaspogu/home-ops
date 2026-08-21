@@ -134,7 +134,7 @@ function apply_crds() {
             log info "CRDs are up-to-date" "crd=$(basename "${crd}")"
             continue
         fi
-        
+
         # Apply CRDs with server-side apply for proper field management
         if kubectl apply --server-side --filename "${crd}" &>/dev/null; then
             log info "CRDs applied successfully" "crd=$(basename "${crd}")"

@@ -16,7 +16,12 @@ on:
 jobs:
   kubeconform:
     name: Kubeconform
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    env:
+      HELM_VERSION: v4.2.4
+      KUBECONFORM_VERSION: v0.8.0
+      KUSTOMIZE_VERSION: v5.8.1
+      YQ_VERSION: v4.53.6
     if: >-
       github.event_name == 'pull_request' ||
       github.event_name == 'workflow_dispatch' ||
@@ -41,23 +46,63 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           ref: ${{ github.event_name == 'issue_comment' && steps.pr.outputs.sha || '' }}
-      - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Setup Workflow Tools
-        shell: bash
-        run: brew install kubernetes-cli kustomize gettext helm yq
-
-      - name: Setup kubeconform
+      - name: Setup workflow tools
         shell: bash
         run: |
-          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
-          sudo mv kubeconform /usr/local/bin
+          set -Eeuo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf -- "${tmp}"' EXIT
+
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends gettext-base
+
+          curl --fail --location --retry 3 \
+            "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" \
+            --output "${tmp}/kustomize.tar.gz"
+          echo "029a7f0f4e1932c52a0476cf02a0fd855c0bb85694b82c338fc648dcb53a819d  ${tmp}/kustomize.tar.gz" | sha256sum --check
+          tar -xzf "${tmp}/kustomize.tar.gz" -C "${tmp}"
+          sudo install -m 0755 "${tmp}/kustomize" /usr/local/bin/kustomize
+
+          curl --fail --location --retry 3 \
+            "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz" \
+            --output "${tmp}/helm.tar.gz"
+          echo "c306b46f719b0a4da32d0f78ee21bf90ce8d602f15b22ab753f0674d1670a7f3  ${tmp}/helm.tar.gz" | sha256sum --check
+          tar -xzf "${tmp}/helm.tar.gz" -C "${tmp}"
+          sudo install -m 0755 "${tmp}/linux-amd64/helm" /usr/local/bin/helm
+
+          curl --fail --location --retry 3 \
+            "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64.tar.gz" \
+            --output "${tmp}/yq.tar.gz"
+          echo "38b907b21b1b04327fb9481c595331d925a67c6ee1aabd0ef419d0b7d12dfb3d  ${tmp}/yq.tar.gz" | sha256sum --check
+          tar -xzf "${tmp}/yq.tar.gz" -C "${tmp}"
+          sudo install -m 0755 "${tmp}/yq_linux_amd64" /usr/local/bin/yq
+
+          curl --fail --location --retry 3 \
+            "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            --output "${tmp}/kubeconform.tar.gz"
+          echo "9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883  ${tmp}/kubeconform.tar.gz" | sha256sum --check
+          tar -xzf "${tmp}/kubeconform.tar.gz" -C "${tmp}"
+          sudo install -m 0755 "${tmp}/kubeconform" /usr/local/bin/kubeconform
+
+          envsubst --version | head -n 1
+          helm version --short
+          kubeconform -v
+          kustomize version
+          yq --version
 
       - name: Run kubeconform
         shell: bash
         run: bash ./scripts/kubeconform.sh
 
-      - name: Run Gitea runner pool contract test
+      - name: Run rendered-manifest contract tests
         shell: bash
-        run: bash ./scripts/test-gitea-runner-pool-rendered-manifest.sh
+        run: |
+          set -Eeuo pipefail
+          for test in ./scripts/test-*-rendered-manifest.sh; do
+            echo "Running ${test}"
+            bash "${test}"
+          done
+
+      - name: Report app-template policy drift
+        shell: bash
+        run: bash ./scripts/audit-app-template-policy.sh

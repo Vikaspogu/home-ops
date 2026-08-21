@@ -170,7 +170,7 @@ Node2: a70b49764f124b676bcdabdf99a1234eb8d1e556daddfc1b366f2aaae9768e88
 1. `components/default/garage-s3/resources/configuration.toml`
    - Changed: `rpc_public_addr` from `127.0.0.1:3901` to DNS name
    - Kept: `replication_factor = 1` (tried to change to 2, but Garage rejected it)
-   
+
 2. `clusters/talos/apps/20-applications.yaml`
    - Added: garage-s3-node2 ArgoCD application entry
 
@@ -257,15 +257,15 @@ machine:
 3. **Connect nodes and apply layout**
    ```bash
    # After node2 is on k8s-3-4u and RPC is working:
-   
+
    # Connect node2 to cluster (via API or fixed CLI)
    curl -X POST -H "Authorization: Bearer 2LY8t69M-KZ2NNNwyB" \
      -d '{"nodeId": "a70b...", "address": "..."}' \
      http://garage-s3:3903/v2/ConnectClusterNodes
-   
+
    # Assign node2 to layout
    garage layout assign -z dc1 -c 14TB -t gateway,storage a70b...
-   
+
    # Apply layout version 2 (starts rebalancing)
    garage layout apply --version 2
    ```

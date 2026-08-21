@@ -88,7 +88,7 @@ spec:
       - LiveMigrate
 ```
 
-**Rationale:** 
+**Rationale:**
 - `LiveMigration`: Enables VM migration between nodes (requires shared storage — we have Ceph ✓)
 - `Snapshot`: Enables VM disk snapshots via VolumeSnapshot API (ceph-block supports this ✓)
 - `workloadUpdateMethods: [LiveMigrate]`: Prefer live migration for virt-handler updates (minimizes VM downtime)
@@ -444,7 +444,7 @@ virtctl console test-cirros
 ```
 
 **Expected:**
-- Console prompt appears: `login:` 
+- Console prompt appears: `login:`
 - Login: `cirros` / password: `gocubsgo`
 - Inside VM shell appears: `$ `
 
@@ -707,7 +707,7 @@ rm /tmp/test-cirros-vm.yaml /tmp/test-pvc-vm.yaml
 kubectl top pods -n kubevirt
 ```
 
-**Expected:** 
+**Expected:**
 - `virt-operator`: ~10-50m CPU, ~100Mi memory
 - `virt-api`: ~50-100m CPU, ~200Mi memory (2 replicas)
 - `virt-controller`: ~100-200m CPU, ~250Mi memory (2 replicas)
@@ -1150,10 +1150,10 @@ Replace in `docs/superpowers/handoff-2026-06-09-media-kopia-migration-state.md`:
 
 ```diff
  ## Work Stream 2: KubeVirt + Gitea Runner Fix (Design Phase)
- 
+
 -**Status:** Research complete, design approved, ready for spec writing
 +**Status:** ✅ COMPLETE — KubeVirt deployed + validated, gitea-runner migrated to rootless DinD
- 
+
  **Goals:**
  1. Deploy KubeVirt for VM workloads on Talos cluster (k8s-4-dell + k8s-5-1u now, k8s-6-omv in Phase 2)
 -2. Fix gitea-runner's privileged Docker-in-Docker issues

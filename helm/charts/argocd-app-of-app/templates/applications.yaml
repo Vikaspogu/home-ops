@@ -56,6 +56,9 @@ spec:
   syncPolicy:
     automated:
       selfHeal: true
+      {{- if (hasKey $val "autoSyncAllowEmpty" | ternary $val.autoSyncAllowEmpty $.Values.default.app.autoSyncAllowEmpty) }}
+      allowEmpty: true
+      {{- end }}
       {{- if (hasKey $val "autoSyncPrune" | ternary $val.autoSyncPrune $.Values.default.app.autoSyncPrune) }}
       prune: true
       {{- end }}

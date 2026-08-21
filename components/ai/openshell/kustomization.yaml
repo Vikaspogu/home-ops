@@ -32,11 +32,11 @@ patches:
               - name: state
                 persistentVolumeClaim:
                   claimName: openshell-state
-helmGlobals:
-  chartHome: vendor
 helmCharts:
   - name: helm-chart
     releaseName: openshell
     namespace: ai
+    repo: oci://ghcr.io/nvidia/openshell
+    version: "0.0.110"
     valuesFile: values.yaml
     includeCRDs: false

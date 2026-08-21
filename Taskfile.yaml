@@ -6,10 +6,8 @@ set: [pipefail]
 shopt: [globstar]
 
 vars:
-  KUBERNETES_DIR: '{{.ROOT_DIR}}/clusters'
   SCRIPTS_DIR: '{{.ROOT_DIR}}/scripts'
   TALOS_DIR: '{{.ROOT_DIR}}/clusters/talos/bootstrap/os'
-  PRIVATE_DIR: '{{.ROOT_DIR}}/.private'
   TALOSCONFIG: '{{.ROOT_DIR}}/clusters/talos/bootstrap/os/clusterconfig/talosconfig'
 
 env:

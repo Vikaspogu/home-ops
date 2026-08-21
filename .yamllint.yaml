@@ -5,12 +5,15 @@ ignore: |
   .private/
   .vscode/
   *.sops.*
-  *helm/charts/*
+  **/charts/**
+  components/ai/openshell/vendor/**
   ansible/roles/xanmanning.k3s/
 
 extends: default
 
 rules:
+  document-start: disable
+
   truthy:
     allowed-values: ["true", "false", "on"]
 
@@ -27,4 +30,5 @@ rules:
     min-spaces-inside: 0
     max-spaces-inside: 0
 
-  indentation: enable
+  indentation:
+    indent-sequences: whatever

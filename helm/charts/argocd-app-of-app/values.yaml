@@ -3,6 +3,7 @@ default:
 
   app:
     enableAutoSync: null
+    autoSyncAllowEmpty: false
     autoSyncPrune: true
     destination:
       namespace: null

@@ -1,67 +1,59 @@
 # Renovate on Gitea
 
-Renovate runs as a suspended Kubernetes CronJob in the OMV cluster and targets the self-hosted Gitea API at `https://gitea.a113.casa/api/v1/`.
+Renovate runs as a Kubernetes CronJob in the Talos cluster and targets the self-hosted Gitea API at `https://gitea.${CLUSTER_DOMAIN}/api/v1/`.
 
-## Secrets
+## Configuration
 
-The deployment expects an ExternalSecret backed by the 1Password item `renovate` with field `RENOVATE_TOKEN`. The token must belong to the `renovate-bot` Gitea account and have write access to the target `vpogu/*` repositories.
+- Component: `components/default/renovate`
+- Argo CD registration: `clusters/talos/apps/20-applications.yaml`
+- Schedule: `0 3 * * *` in `America/New_York`
+- Concurrency policy: `Forbid`
+- Repository discovery: `vpogu/*`
+- Pull-request limits: 2 per hour and 5 concurrent
 
-No token value belongs in Git, ArgoCD application values, logs, or merge request text.
+The ExternalSecret reads:
 
-## Initial rollout
+- `RENOVATE_TOKEN` from the 1Password item `renovate`
+- `GHCR_TOKEN` from the 1Password item `Github`
 
-The CronJob is intentionally committed with `suspend: true` so the first live run can be started manually after the ExternalSecret is healthy.
+The Gitea token belongs to the `renovate-bot` account and requires write access only to the repositories Renovate manages. No token value belongs in Git, logs, or pull-request text.
 
-After the GitOps change is synced and the ExternalSecret is healthy:
+## Validate the deployment
 
 ```bash
 kubectl -n default get externalsecret renovate
 kubectl -n default get secret renovate-secret
 kubectl -n default get cronjob renovate
-kubectl -n default create job --from=cronjob/renovate renovate-run-$(date +%Y%m%d%H%M)
-kubectl -n default logs -l app.kubernetes.io/instance=renovate --tail=200
+kubectl -n default get jobs --sort-by=.metadata.creationTimestamp | grep renovate
 ```
 
-Expected first-run evidence:
-
-- logs show `platform=gitea` and the Gitea endpoint
-- repository discovery is limited to `vpogu/*`
-- onboarding or update pull requests are created for eligible repositories
-- no repositories outside the autodiscovery filter are processed
-
-## Enable scheduled writes
-
-Only after reviewing the first live run:
-
-1. Set `controllers.app.cronjob.suspend` to `false`.
-2. Merge and sync the GitOps change.
-3. Watch the next scheduled run logs and onboarding/update pull requests.
-
-The deployment keeps write volume conservative at both the CronJob and Renovate levels:
-
-- CronJob schedule: `0 3 * * *` in `America/New_York`
-- `concurrencyPolicy: Forbid`
-- Renovate timezone: `America/New_York`
-- top-level `prHourlyLimit: 2`
-- top-level `prConcurrentLimit: 5`
-- onboarding schedule for new repo configs: `after 10pm and before 6am every weekday` plus `every weekend`
-- onboarding labels: `dependencies`, `renovate`
-
-## Inspect operations
+Inspect a completed or running job:
 
 ```bash
-kubectl -n default get cronjob renovate
-kubectl -n default get jobs --sort-by=.metadata.creationTimestamp | grep renovate
 kubectl -n default logs job/<job-name> --tail=200
 kubectl -n default describe job/<job-name>
 ```
 
-## Pause or disable
+Expected logs show `platform=gitea`, the configured endpoint, and repository discovery limited to `vpogu/*`.
 
-Preferred pause:
+## Run Renovate manually
 
-1. Set `controllers.app.cronjob.suspend` to `true` in `components/default/renovate/values.yaml`.
-2. Merge and sync.
+```bash
+kubectl -n default create job \
+  --from=cronjob/renovate \
+  renovate-run-$(date +%Y%m%d%H%M)
+```
+
+Review its logs and created pull requests before changing schedules, limits, or repository filters.
+
+## Pause or resume
+
+Preferred GitOps pause:
+
+1. Set `controllers.app.cronjob.suspend: true` in `components/default/renovate/values.yaml`.
+2. Commit, merge, and let Argo CD sync.
+
+Resume by setting the value to `false` or removing it.
 
 Emergency pause:
 
@@ -69,8 +61,8 @@ Emergency pause:
 kubectl -n default patch cronjob renovate -p '{"spec":{"suspend":true}}'
 ```
 
-Revoke or rotate the Gitea bot token if Renovate must be disabled immediately.
+Follow an emergency patch with the equivalent Git change so Argo CD does not undo it.
 
-## Rollback
+## Rollback or disable
 
-Revert the GitOps commit or remove the `renovate` application registration from `clusters/omv/apps/20-applications.yaml`. Then close any unwanted Renovate onboarding/update pull requests and revoke the bot token if needed.
+Revert the relevant GitOps change or remove the `renovate` registration from `clusters/talos/apps/20-applications.yaml`. Close unwanted Renovate pull requests and revoke the Gitea token if writes must stop immediately.

@@ -31,7 +31,7 @@ argo_registration_matches() {
 }
 
 remote_write_receiver_count() {
-  yq ea -r '[select(.kind == "Prometheus" and .spec.enableRemoteWriteReceiver == true and .spec.image == "quay.io/prometheus/prometheus:v2.53.2")] | length' "${manifest}"
+  yq ea -r '[select(.kind == "Prometheus" and .spec.enableRemoteWriteReceiver == true and .spec.image == "quay.io/prometheus/prometheus:v3.14.0")] | length' "${manifest}"
 }
 
 prometheus_memory_limit_count() {
@@ -62,11 +62,11 @@ coroot_contract_count() {
       .spec.clickhouse.keeper.storage.className == "ceph-block" and .spec.clickhouse.keeper.storage.size == "10Gi" and
       (.spec | has("externalClickhouse") | not) and (.spec.clickhouse | has("s3") | not) and
       .spec.cacheTTL == "30d" and .spec.tracesTTL == "7d" and .spec.logsTTL == "7d" and .spec.profilesTTL == "7d" and
-      .spec.resources.requests.cpu == "100m" and .spec.resources.requests.memory == "512Mi" and .spec.resources.limits.memory == "1Gi" and
+      .spec.resources.requests.cpu == "100m" and .spec.resources.requests.memory == "1Gi" and .spec.resources.limits.memory == "4Gi" and
       .spec.clickhouse.resources.requests.cpu == "500m" and .spec.clickhouse.resources.requests.memory == "1Gi" and .spec.clickhouse.resources.limits.memory == "2Gi" and
-      .spec.clickhouse.keeper.resources.requests.cpu == "100m" and .spec.clickhouse.keeper.resources.requests.memory == "256Mi" and .spec.clickhouse.keeper.resources.limits.memory == "512Mi" and
-      .spec.clusterAgent.resources.requests.cpu == "50m" and .spec.clusterAgent.resources.requests.memory == "128Mi" and .spec.clusterAgent.resources.limits.memory == "256Mi" and
-      .spec.nodeAgent.resources.requests.cpu == "50m" and .spec.nodeAgent.resources.requests.memory == "64Mi" and .spec.nodeAgent.resources.limits.memory == "1Gi"
+      .spec.clickhouse.keeper.resources.requests.cpu == "100m" and .spec.clickhouse.keeper.resources.requests.memory == "1Gi" and .spec.clickhouse.keeper.resources.limits.memory == "2Gi" and
+      .spec.clusterAgent.resources.requests.cpu == "50m" and .spec.clusterAgent.resources.requests.memory == "1Gi" and .spec.clusterAgent.resources.limits.memory == "2Gi" and
+      .spec.nodeAgent.resources.requests.cpu == "50m" and .spec.nodeAgent.resources.requests.memory == "1Gi" and .spec.nodeAgent.resources.limits.memory == "2Gi"
     )] | length
   ' "${manifest}"
 }

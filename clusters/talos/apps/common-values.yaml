@@ -7,6 +7,7 @@ default:
       notifications.argoproj.io/subscribe.on-comparison-error.ntfy: ""
     enabled: true
     enableAutoSync: true
+    autoSyncAllowEmpty: true
     autoSyncPrune: true
     project: default
     finalizers:
@@ -18,17 +19,12 @@ default:
     source:
       repoURL: https://github.com/Vikaspogu/home-ops.git
       targetRevision: HEAD
-    syncPolicy:
-      automated:
-        allowEmpty: true
-        prune: true
-        selfHeal: true
-      retry:
-        limit: 10
-        backoff:
-          duration: 10s
-          factor: 2
-          maxDuration: 3m
+    syncPolicyRetry:
+      limit: 10
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m
     syncOptions:
       - ApplyOutOfSyncOnly=true
       - PrunePropagationPolicy=foreground
@@ -36,4 +32,3 @@ default:
       - ServerSideApply=true
       - FailOnSharedResource=true
       - RespectIgnoreDifferences=true
-      - CreateNamespace=false

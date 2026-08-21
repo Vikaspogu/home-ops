@@ -4,9 +4,12 @@ workload:
   kind: Deployment
 
 server:
+  telemetryEnabled: false
   sandboxNamespace: openshell-sandboxes
   appArmorProfile: Unconfined
   externalDbSecret: openshell-db-secret
+  credentialStorage:
+    existingSecret: openshell-db-secret
   auth:
     allowUnauthenticatedUsers: true
   disableTls: false

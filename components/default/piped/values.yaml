@@ -64,7 +64,6 @@ controllers:
           capabilities:
             drop:
               - ALL
-          # readOnlyRootFilesystem: true
   ytproxy:
     strategy: RollingUpdate
     containers:

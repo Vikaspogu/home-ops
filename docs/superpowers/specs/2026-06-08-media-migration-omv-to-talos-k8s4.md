@@ -118,7 +118,7 @@ sdc:      4TB HDD (WDC WD40EZAZ)            → /var/mnt/media ✅
 1. **Check k8s-4-dell storage:**
    ```bash
    export KUBECONFIG=/tmp/talos-kubeconfig
-   
+
    # Verify mounts exist
    talosctl -n 10.30.30.24 get mounts | grep -E "media|downloads"
    # Should show:
@@ -149,7 +149,7 @@ sdc:      4TB HDD (WDC WD40EZAZ)            → /var/mnt/media ✅
          }]
        }
      }' | grep "/mnt/"
-   
+
    # Expected output:
    # /dev/sdc1        3.6T   71.3G   3.6T   2%   /mnt/media
    # /dev/nvme0n1p1   476.6G  9.2G  467.4G  2%   /mnt/downloads
@@ -402,29 +402,29 @@ data:
   rsync-media.sh: |
     #!/bin/sh
     set -e
-    
+
     echo "Starting media rsync from OMV to k8s-4-dell..."
     echo "Source: root@omv-baymx:/export/storage0/media/"
     echo "Target: /mnt/media/"
-    
+
     # Rsync Shows and Movies (exclude downloads for now)
     rsync -avP --stats --exclude='downloads/' \
       root@omv-baymx:/export/storage0/media/ /mnt/media/
-    
+
     echo "Media rsync complete!"
-    
+
   rsync-downloads.sh: |
     #!/bin/sh
     set -e
-    
+
     echo "Starting downloads rsync from OMV to k8s-4-dell..."
     echo "Source: root@omv-baymx:/export/storage0/media/downloads/"
     echo "Target: /mnt/downloads/"
-    
+
     # Rsync downloads directory
     rsync -avP --stats \
       root@omv-baymx:/export/storage0/media/downloads/ /mnt/downloads/
-    
+
     echo "Downloads rsync complete!"
 ```
 

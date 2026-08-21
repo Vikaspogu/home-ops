@@ -121,7 +121,7 @@ dashboards:
       datasource:
         - { name: DS_PROMETHEUS, value: Prometheus }
     proxmox:
-      gnetId: 15356 #https://grafana.com/grafana/dashboards/15356
+      gnetId: 15356 # https://grafana.com/grafana/dashboards/15356
       revision: 13
       datasource:
         - { name: DS_INFLUX.MEPHIS.TO-PROXMOX-FLUX, value: InfluxDB }

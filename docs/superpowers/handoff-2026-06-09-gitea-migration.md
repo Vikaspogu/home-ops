@@ -26,7 +26,7 @@ snapshotPolicy: none
 snapshotPolicy: volumeSnapshot
 ```
 
-**VERIFIED**: 
+**VERIFIED**:
 - RBD CSI ctrlplugin now has `csi-snapshotter` sidecar (6/6 containers, was 5/5)
 - New snapshots reach `readyToUse=true` in seconds
 - VolSync destination snapshot `volsync-gitea-dst-dest-20260609140108` succeeded
@@ -210,7 +210,7 @@ ssh root@10.30.30.54 'kubectl scale deploy gitea -n default --replicas=1'
 
 **Key Constraint**: User wants gitea Actions runner working, not just gitea itself.
 
-**Starting Point**: 
+**Starting Point**:
 - Gitea is fully functional for git operations (push/pull/web UI)
 - Focus needed: Fix runner registration to enable GitHub Actions-style CI/CD
 - Consider: This might be a gitea 1.26 + act_runner 0.6.1 incompatibility requiring version changes

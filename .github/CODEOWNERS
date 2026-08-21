@@ -4,7 +4,6 @@
 * @vikaspogu
 
 # Renovate bot configuration
-renovate.json @vikaspogu
 .github/renovate.json5 @vikaspogu
 
 # Critical infrastructure components

@@ -30,77 +30,77 @@ spec:
             - -c
             - |
               set -e
-              
+
               # Install required tools
               apk add --no-cache curl jq
-              
+
               GITEA_URL="http://gitea:3000"
               KEEP_COUNT=3
-              
+
               echo "=== Gitea Package Cleanup Started at $(date) ==="
               echo "Configuration: Keep latest ${KEEP_COUNT} versions per package"
               echo "Gitea URL: ${GITEA_URL}"
               echo "User: ${GITEA_USER}"
               echo ""
-              
+
               # Get all packages for the user
               echo "Fetching packages..."
               packages=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
                 "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=container" || echo "[]")
-              
+
               if [ "$packages" = "[]" ] || [ -z "$packages" ]; then
                 echo "No packages found or API error"
                 exit 0
               fi
-              
+
               package_count=$(echo "$packages" | jq -r 'length')
               echo "Found ${package_count} packages"
               echo ""
-              
+
               # Process each package
               echo "$packages" | jq -r '.[].name' | while read -r pkg_name; do
                 echo "--- Processing package: ${pkg_name} ---"
-                
+
                 # Get all versions for this package from the owner's packages endpoint filtered by name
                 all_versions=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
                   "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=container&q=${pkg_name}")
-                
+
                 # Extract version info, sorted by created date (newest first)
                 versions=$(echo "$all_versions" | \
                   jq -r --arg pkg "$pkg_name" '.[] | select(.name == $pkg) | .version + "|" + .created_at' | \
                   sort -t'|' -k2 -r)
-                
+
                 if [ -z "$versions" ]; then
                   echo "  No versions found for ${pkg_name}"
                   echo ""
                   continue
                 fi
-                
+
                 version_count=$(echo "$versions" | wc -l | tr -d ' ')
                 echo "  Found ${version_count} version(s)"
-                
+
                 if [ "$version_count" -le "$KEEP_COUNT" ]; then
                   echo "  Keeping all ${version_count} version(s) (≤ ${KEEP_COUNT})"
                   echo ""
                   continue
                 fi
-                
+
                 # Process versions
                 count=0
                 echo "$versions" | while IFS='|' read -r version created_at; do
                   count=$((count + 1))
-                  
+
                   if [ $count -le $KEEP_COUNT ]; then
                     echo "  ✓ Keeping #${count}: ${version} (created: ${created_at})"
                   else
                     echo "  ✗ Deleting #${count}: ${version} (created: ${created_at})"
-                    
+
                     delete_response=$(curl -sf -w "\n%{http_code}" -X DELETE \
                       -H "Authorization: token ${GITEA_API_TOKEN}" \
                       "${GITEA_URL}/api/v1/packages/${GITEA_USER}/container/${pkg_name}/${version}" 2>&1 || echo "000")
-                    
+
                     http_code=$(echo "$delete_response" | tail -n1)
-                    
+
                     if [ "$http_code" = "204" ] || [ "$http_code" = "200" ]; then
                       echo "    → Deleted successfully"
                     else
@@ -108,10 +108,10 @@ spec:
                     fi
                   fi
                 done
-                
+
                 echo ""
               done
-              
+
               echo "=== Gitea Package Cleanup Completed at $(date) ==="
             env:
             - name: GITEA_API_TOKEN

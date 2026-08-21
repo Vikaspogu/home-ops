@@ -17,4 +17,4 @@ configMapGenerator:
     files:
       - settings.yml
 generatorOptions:
- disableNameSuffixHash: true
+  disableNameSuffixHash: true

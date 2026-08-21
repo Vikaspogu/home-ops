@@ -20,7 +20,7 @@ spec:
     labels:
       helm.sh/chart: gpu-operator-v26.3.1
       app.kubernetes.io/managed-by: gpu-operator
-    tolerations: 
+    tolerations:
       - effect: NoSchedule
         key: nvidia.com/gpu
         operator: Exists
@@ -36,7 +36,7 @@ spec:
     plugin:
       env: []
     driver:
-      env: 
+      env:
         - name: DISABLE_DEV_CHAR_SYMLINK_CREATION
           value: "true"
   mig:
@@ -54,7 +54,7 @@ spec:
     image: driver
     version: "580.126.20"
     imagePullPolicy: IfNotPresent
-    startupProbe: 
+    startupProbe:
       failureThreshold: 120
       initialDelaySeconds: 60
       periodSeconds: 10
@@ -67,21 +67,21 @@ spec:
       image: k8s-driver-manager
       version: "v0.10.0"
       imagePullPolicy: IfNotPresent
-    repoConfig: 
+    repoConfig:
       configMapName: ""
-    certConfig: 
+    certConfig:
       name: ""
-    licensingConfig: 
+    licensingConfig:
       nlsEnabled: true
       secretName: ""
-    virtualTopology: 
+    virtualTopology:
       config: ""
-    kernelModuleConfig: 
+    kernelModuleConfig:
       name: ""
     upgradePolicy:
       autoUpgrade: true
       maxParallelUpgrades: 1
-      maxUnavailable : 25%
+      maxUnavailable: 25%
       waitForCompletion:
         timeoutSeconds: 0
       podDeletion:
@@ -97,7 +97,7 @@ spec:
     enabled: false
     image: vgpu-manager
     imagePullPolicy: IfNotPresent
-    kernelModuleConfig: 
+    kernelModuleConfig:
       name: ""
     driverManager:
       repository: nvcr.io/nvidia/cloud-native
@@ -124,7 +124,7 @@ spec:
     image: vgpu-device-manager
     version: "v0.4.2"
     imagePullPolicy: IfNotPresent
-    config: 
+    config:
       default: default
       name: ""
   ccManager:
@@ -159,13 +159,13 @@ spec:
     image: dcgm-exporter
     version: "4.5.1-4.8.0-distroless"
     imagePullPolicy: IfNotPresent
-    serviceMonitor: 
+    serviceMonitor:
       additionalLabels: {}
       enabled: false
       honorLabels: false
       interval: 15s
       relabelings: []
-    service: 
+    service:
       internalTrafficPolicy: Cluster
   gfd:
     enabled: true
@@ -181,7 +181,7 @@ spec:
     imagePullPolicy: IfNotPresent
     config:
       default: "all-disabled"
-    gpuClientsConfig: 
+    gpuClientsConfig:
       name: ""
   nodeStatusExporter:
     enabled: false
