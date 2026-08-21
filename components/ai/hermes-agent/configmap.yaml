@@ -46,11 +46,6 @@ data:
         provider: spark
         model: qwen3-coder:30b
         timeout: 90
-      session_search:
-        provider: spark
-        model: qwen3-coder:30b
-        timeout: 120
-        max_concurrency: 1
       compression:
         provider: spark
         model: qwen3-coder:30b
@@ -134,18 +129,15 @@ data:
       max_file_size_mb: 10
       auto_prune: true
       retention_days: 7
-      delete_orphans: true
       min_interval_hours: 24
     security:
       redact_secrets: true
     updates:
       pre_update_backup: false
-      backup_keep: 5
       non_interactive_local_changes: stash
     kanban:
       enabled: false
       dispatch_in_gateway: false
-      dispatch_interval_seconds: 60
     memory:
       memory_enabled: true
       user_profile_enabled: true
@@ -258,7 +250,7 @@ data:
         extra:
           drop_pending_updates: true
     platform_toolsets:
-      cli:
+      cli: &platform-toolsets
         - browser
         - clarify
         - code_execution
@@ -288,38 +280,9 @@ data:
         - tts
         - vision
         - web
-      telegram:
-        - browser
-        - clarify
-        - code_execution
-        - computer_use
-        - cronjob
-        - delegation
-        - file
-        - image_gen
-        - ivan_bartender
-        - ivan_budget
-        - ivan_dining
-        - ivan_documents
-        - ivan_home_assistant
-        - ivan_household
-        - ivan_journal_images
-        - ivan_obsidian
-        - ivan_paperless
-        - ivan_synology
-        - mcp-coroot
-        - mcp-trek
-        - memory
-        - messaging
-        - session_search
-        - skills
-        - terminal
-        - todo
-        - tts
-        - vision
-        - web
+      telegram: *platform-toolsets
     known_plugin_toolsets:
-      cli:
+      cli: &known-plugin-toolsets
         - ivan_bartender
         - ivan_budget
         - ivan_dining
@@ -329,16 +292,7 @@ data:
         - ivan_obsidian
         - ivan_paperless
         - ivan_synology
-      telegram:
-        - ivan_bartender
-        - ivan_budget
-        - ivan_dining
-        - ivan_documents
-        - ivan_home_assistant
-        - ivan_household
-        - ivan_obsidian
-        - ivan_paperless
-        - ivan_synology
+      telegram: *known-plugin-toolsets
   nemo-relay-plugins.toml: |-
     version = 1
 

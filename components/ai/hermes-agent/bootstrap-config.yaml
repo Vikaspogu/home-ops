@@ -1,6 +1,3 @@
-memory:
-  provider: agentmemory
-
 plugins:
   - name: ivan-personal
     repo: https://gitea.a113.casa/vpogu/ivan-plugin.git
