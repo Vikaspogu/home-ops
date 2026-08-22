@@ -4,6 +4,7 @@ set -Eeuo pipefail
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly COMPONENT="${ROOT_DIR}/components/actions-runners/kubevirt-runner"
 readonly APPLICATIONS="${ROOT_DIR}/clusters/talos/apps/30-system.yaml"
+readonly WORKFLOW="${ROOT_DIR}/.github/workflows/kubeconform.yml"
 readonly MANIFEST="$(mktemp)"
 trap 'rm -f -- "${MANIFEST}"' EXIT
 
@@ -28,6 +29,8 @@ count() {
 [[ "$(yq ea -r 'select(.kind == "VirtualMachine" and .metadata.name == "ubuntu-runner") | .spec.dataVolumeTemplates[0].spec.source.pvc.name' "${MANIFEST}")" == "ubuntu-runner-base" ]] || fail "runner VM template must clone the base disk"
 [[ "$(yq ea -r 'select(.kind == "VirtualMachine" and .metadata.name == "ubuntu-runner") | .spec.template.spec.volumes[] | select(.name == "cloudinitdisk") | .cloudInitNoCloud.userData' "${MANIFEST}" | grep -c 'actions-runner-linux-x64-2.336.0.tar.gz')" == "1" ]] || fail "runner bootstrap must pin the Actions runner release"
 [[ "$(yq ea -r 'select(.kind == "VirtualMachine" and .metadata.name == "ubuntu-runner") | .spec.template.spec.volumes[] | select(.name == "cloudinitdisk") | .cloudInitNoCloud.userData' "${MANIFEST}" | grep -c 'sha256sum --check')" == "1" ]] || fail "runner bootstrap must verify the Actions runner release"
+[[ "$(yq ea -r 'select(.kind == "VirtualMachine" and .metadata.name == "ubuntu-runner") | .spec.template.spec.volumes[] | select(.name == "cloudinitdisk") | .cloudInitNoCloud.userData' "${MANIFEST}" | grep -c 'sudo: ALL=(ALL) NOPASSWD:ALL')" == "1" ]] || fail "runner user must support non-interactive workflow setup"
+grep -qF "runs-on: \${{ github.event_name == 'workflow_dispatch' && 'kubevirt' || 'ubuntu-24.04' }}" "${WORKFLOW}" || fail "manual validation must use KubeVirt without moving untrusted PR jobs in-cluster"
 
 [[ "$(count AutoscalingRunnerSet kubevirt)" == "1" ]] || fail "ARC runner scale set is missing"
 [[ "$(yq ea -r 'select(.kind == "AutoscalingRunnerSet" and .metadata.name == "kubevirt") | .spec.minRunners' "${MANIFEST}")" == "0" ]] || fail "runner scale set must have minRunners zero"

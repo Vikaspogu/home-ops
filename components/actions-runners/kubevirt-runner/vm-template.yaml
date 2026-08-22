@@ -65,6 +65,7 @@ spec:
               users:
                 - name: runner
                   shell: /bin/bash
+                  sudo: ALL=(ALL) NOPASSWD:ALL
               write_files:
                 - path: /usr/local/sbin/bootstrap-actions-runner
                   permissions: "0755"
