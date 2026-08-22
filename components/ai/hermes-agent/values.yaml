@@ -43,7 +43,7 @@ controllers:
       seed-config:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260820143120-301872b-oci
+          tag: 20260822184714-4bebc05-oci
         command: ["hermes-seed-config"]
         envFrom:
         - secretRef:
@@ -64,7 +64,7 @@ controllers:
       hermes-bootstrap:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260820143120-301872b-oci
+          tag: 20260822184714-4bebc05-oci
         command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -117,7 +117,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260820143120-301872b-oci
+          tag: 20260822184714-4bebc05-oci
         args:
         - gateway
         - run
