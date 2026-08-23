@@ -228,6 +228,15 @@ fi
 [[ "$(
   yq ea -r '
     select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
+    | .data["config.yaml"]
+    | from_yaml
+    | .cron
+    | (.model_drift_guard == false and .model == null and .model_provider == null)
+  ' "${manifest}"
+)" == "true" ]] || fail "rendered Hermes cron config must disable drift protection without pinning a model or provider"
+[[ "$(
+  yq ea -r '
+    select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
     | .data["nemo-relay-plugins.toml"]
   ' "${manifest}"
 )" == "${NEMO_RELAY_PLUGINS_TOML}" ]] || fail "NeMo Relay OpenInference ConfigMap entry missing or invalid"
