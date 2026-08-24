@@ -37,9 +37,6 @@ controllers:
           III_REST_PORT: "3111"
           RUST_LOG: warn
           AGENTMEMORY_DROP_STALE_INDEX: "true"
-          # Consolidation LLM via in-cluster headroom; OPENAI_API_KEY comes from
-          # the secret. Consolidation activates when a key is present.
-          OPENAI_BASE_URL: http://headroom.ai.svc.cluster.local:8787/v1
           # Not nemotron-3-super-v3: agentmemory sends `tools: []` on every chat
           # call and super's vLLM backend 400s on empty tools arrays; nano's
           # backend accepts them (verified via in-pod probe against headroom).
