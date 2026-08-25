@@ -259,6 +259,7 @@ data:
           port: 8644
           routes:
             infra-alert:
+              secret: null
               prompt: |-
                 Investigate authenticated infrastructure incident {incident_id} using Coroot.
                 Alert: {alert}
@@ -271,6 +272,7 @@ data:
                 - infra-proposal
               deliver: telegram
             infra-card:
+              secret: null
               prompt: "{message_text}"
               deliver: telegram
               deliver_only: true
@@ -278,6 +280,7 @@ data:
                 chat_id: "${TELEGRAM_HOME_CHANNEL}"
                 inline_keyboard: "{inline_keyboard}"
             infra-card-update:
+              secret: null
               prompt: "{message_text}"
               deliver: telegram
               deliver_only: true
