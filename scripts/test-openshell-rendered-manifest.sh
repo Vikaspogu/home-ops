@@ -33,8 +33,8 @@ kustomize build --enable-helm "${OPENSHELL_COMPONENT}" >"${manifest}"
 [[ "$(gateway_config_matches '(?m)^supervisor_topology\s*=')" == "false" ]] \
   || fail "rendered OpenShell config must not use the removed supervisor_topology field"
 
-[[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell" and .metadata.labels."app.kubernetes.io/version" == "0.0.110")] | length' "${manifest}")" == "1" ]] \
-  || fail "rendered OpenShell Deployment must use chart 0.0.110"
+[[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell" and .metadata.labels."app.kubernetes.io/version" == "0.0.111")] | length' "${manifest}")" == "1" ]] \
+  || fail "rendered OpenShell Deployment must use chart 0.0.111"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .env[] | select(.name == "OPENSHELL_GATEWAY_CREDENTIAL_KEY_ENCRYPTION_KEY" and .valueFrom.secretKeyRef.name == "openshell-db-secret" and .valueFrom.secretKeyRef.key == "key-encryption-key")] | length' "${manifest}")" == "1" ]] \
   || fail "OpenShell must read its credential-encryption key from openshell-db-secret"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .env[] | select(.name == "OPENSHELL_TELEMETRY_ENABLED" and .value == "false")] | length' "${manifest}")" == "1" ]] \
@@ -44,4 +44,4 @@ kustomize build --enable-helm "${OPENSHELL_COMPONENT}" >"${manifest}"
 [[ "$(yq ea -r 'select(.kind == "ExternalSecret" and .metadata.name == "openshell-db") | .spec.target.template.data."key-encryption-key"' "${manifest}")" == "{{ .OPENSHELL_CREDENTIAL_KEY_ENCRYPTION_KEY }}" ]] \
   || fail "OpenShell ExternalSecret must project the credential-encryption key"
 
-printf 'PASS: rendered OpenShell 0.0.110 config and stable credential storage are consistent\n'
+printf 'PASS: rendered OpenShell 0.0.111 config and stable credential storage are consistent\n'
