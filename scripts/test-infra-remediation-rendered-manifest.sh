@@ -41,6 +41,9 @@ kustomize build --enable-helm "${PROMETHEUS_COMPONENT}" >"${prometheus_manifest}
 [[ "$(yq ea -r '[select(.kind == "NetworkPolicy" and .metadata.name == "infra-remediation" and (.spec.policyTypes | contains(["Ingress", "Egress"])))] | length' "${infra_manifest}")" == "1" ]] \
   || fail "controller NetworkPolicy contract missing or ambiguous"
 
+[[ "$(yq ea -r '[select(.kind == "ExternalSecret" and .metadata.name == "infra-remediation-secret" and (.spec.target.template.data | has("INFRA_REMEDIATION_HERMES_CARD_UPDATE_SECRET")))] | length' "${infra_manifest}")" == "1" ]] \
+  || fail "controller card-update secret projection is missing"
+
 [[ "$(yq ea -r '[select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config") | .data["config.yaml"] | from_yaml | select((.plugins.enabled | contains(["infra-proposal"])) and .platforms.webhook.enabled == true and .platforms.webhook.extra.routes."infra-card".deliver_only == true and .platforms.webhook.extra.routes."infra-card-update".deliver_only == true and (.platforms.webhook.extra.routes."infra-alert".toolsets | contains(["mcp-coroot", "infra-proposal"])))] | length' "${hermes_manifest}")" == "1" ]] \
   || fail "Hermes remediation routes or plugin missing"
 
