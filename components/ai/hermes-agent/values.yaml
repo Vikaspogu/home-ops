@@ -143,9 +143,6 @@ controllers:
           AGENTMEMORY_URL: http://agentmemory.ai.svc.cluster.local:3111
           SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
           HERMES_NEMO_RELAY_PLUGINS_TOML: /opt/data/nemo-relay-plugins.toml
-          INFRA_REMEDIATION_PROPOSAL_URL: http://infra-remediation.ai.svc.cluster.local:8080/proposals
-          TELEGRAM_ACTION_CALLBACK_PREFIXES: "ir:"
-          TELEGRAM_ACTION_CALLBACK_URL: http://infra-remediation.ai.svc.cluster.local:8080/decisions
           TZ: America/New_York
         envFrom:
         - secretRef:
