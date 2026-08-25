@@ -18,7 +18,7 @@ data:
         base_url: http://spark.a113.internal:11434/v1
         api_mode: chat_completions
         models:
-          qwen3-coder:30b:
+          qwen3.6:35b-a3b-q8_0:
             context_length: 262144
     auxiliary:
       vision:
@@ -34,31 +34,43 @@ data:
       mcp:
         provider: auto
       goal_judge:
-        provider: main
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        provider: spark
+        model: qwen3.6:35b-a3b-q8_0
         timeout: 60
+        extra_body:
+          reasoning_effort: none
       triage_specifier:
         provider: spark
-        model: qwen3-coder:30b
+        model: qwen3.6:35b-a3b-q8_0
         timeout: 120
+        extra_body:
+          reasoning_effort: none
       title_generation:
         provider: spark
-        model: qwen3-coder:30b
+        model: qwen3.6:35b-a3b-q8_0
         timeout: 60
+        extra_body:
+          reasoning_effort: none
       skills_hub:
         provider: spark
-        model: qwen3-coder:30b
+        model: qwen3.6:35b-a3b-q8_0
         timeout: 90
+        extra_body:
+          reasoning_effort: none
       compression:
         provider: spark
-        model: qwen3-coder:30b
+        model: qwen3.6:35b-a3b-q8_0
         timeout: 300
+        extra_body:
+          reasoning_effort: none
       web_extract:
         provider: spark
-        model: qwen3-coder:30b
+        model: qwen3.6:35b-a3b-q8_0
         timeout: 600
-      # Curator writes durable memory; nano beats the spark coder model on
-      # summarization quality and matches the agentmemory consolidation model.
+        extra_body:
+          reasoning_effort: none
+      # Curator writes durable memory; keep it external until Qwen3.6 passes
+      # the curation quality gate.
       curator:
         provider: main
         model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B

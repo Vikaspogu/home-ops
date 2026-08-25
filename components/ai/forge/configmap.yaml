@@ -69,11 +69,13 @@ data:
     entry_state: todo
     description: Refine vague todo into an operator-approved specification
     nodes:
+      # Start local routing with the read-only first pass; external models still
+      # investigate, critique, and decide. Remove spark/ for an outage fallback.
       - id: analyze
         type: agent
         role: council-analyst
         read_only: true
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        model: spark/qwen3.6:35b-a3b-q8_0
         verify:
           - "git diff --exit-code && git diff --cached --exit-code"
       - id: investigate
@@ -146,7 +148,7 @@ data:
         role: pr-opener
         skills: [secret-scan]
         depends_on: [approval]
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        model: spark/qwen3.6:35b-a3b-q8_0
         timeout_minutes: 10
 
   implement.yaml: |-
@@ -205,7 +207,7 @@ data:
         # implement + ai-review are already ancestors via fix-loop; the extra
         # edges pull their notes into this node's message for the PR body.
         depends_on: [implement, ai-review, fix-loop]
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        model: spark/qwen3.6:35b-a3b-q8_0
         timeout_minutes: 10
 
   gitops-update.yaml: |-
