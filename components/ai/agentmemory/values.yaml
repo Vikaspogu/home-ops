@@ -39,7 +39,7 @@ controllers:
           AGENTMEMORY_DROP_STALE_INDEX: "true"
           OPENAI_API_KEY: no-key-required
           OPENAI_BASE_URL: http://127.0.0.1:11435/v1
-          OPENAI_MODEL: qwen3-coder:30b
+          OPENAI_MODEL: qwen3.6:35b-a3b-q8_0
           OPENAI_EMBEDDING_MODEL: nvidia/qwen/qwen3-embedding-0.6b
           OPENAI_EMBEDDING_DIMENSIONS: "1024"
           GRAPH_EXTRACTION_ENABLED: "true"
@@ -104,7 +104,8 @@ controllers:
         - /app/metrics-proxy.mjs
         env:
           OLLAMA_URL: http://spark.a113.internal:11434
-          OLLAMA_MODEL: qwen3-coder:30b
+          OLLAMA_MODEL: qwen3.6:35b-a3b-q8_0
+          OLLAMA_REASONING_EFFORT: none
         probes:
           startup:
             enabled: true
