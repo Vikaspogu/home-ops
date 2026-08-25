@@ -44,8 +44,11 @@ kustomize build --enable-helm "${PROMETHEUS_COMPONENT}" >"${prometheus_manifest}
 [[ "$(yq ea -r '[select(.kind == "ExternalSecret" and .metadata.name == "infra-remediation-secret" and (.spec.target.template.data | has("INFRA_REMEDIATION_HERMES_CARD_UPDATE_SECRET")))] | length' "${infra_manifest}")" == "1" ]] \
   || fail "controller card-update secret projection is missing"
 
-[[ "$(yq ea -r '[select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config") | .data["config.yaml"] | from_yaml | select((.plugins.enabled | contains(["infra-proposal"])) and .platforms.webhook.enabled == true and .platforms.webhook.extra.routes."infra-card".deliver_only == true and .platforms.webhook.extra.routes."infra-card-update".deliver_only == true and (.platforms.webhook.extra.routes."infra-alert".toolsets | contains(["mcp-coroot", "infra-proposal"])))] | length' "${hermes_manifest}")" == "1" ]] \
+[[ "$(yq ea -r '[select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config") | .data["config.yaml"] | from_yaml | select((.plugins.enabled | contains(["infra-proposal"])) and .platforms.webhook.enabled == true and .platforms.webhook.extra.routes."infra-card".deliver_only == true and .platforms.webhook.extra.routes."infra-card-update".deliver_only == true and (.platforms.webhook.extra.routes."infra-alert".toolsets | contains(["mcp-coroot", "infra-proposal"])) and ([.platforms.webhook.extra.routes[] | select(has("secret"))] | length == 0))] | length' "${hermes_manifest}")" == "1" ]] \
   || fail "Hermes remediation routes or plugin missing"
+
+[[ "$(yq ea -r '[select(.kind == "ExternalSecret" and .metadata.name == "hermes-agent" and (.spec.target.template.data | has("WEBHOOK_SECRET")))] | length' "${hermes_manifest}")" == "1" ]] \
+  || fail "Hermes global webhook secret projection is missing"
 
 [[ "$(yq ea -r '[select(.kind == "AlertmanagerConfig" and .metadata.name == "alertmanager") | select(([.spec.route.routes[] | select(.receiver == "infra-remediation" and .continue == true)] | length) == 1 and ([.spec.route.routes[] | select(.receiver == "ntfy" and .matchers[0].value == "warning|critical" and .matchers[0].matchType == "=~")] | length) == 1 and ([.spec.receivers[] | select(.name == "infra-remediation" and .webhookConfigs[0].httpConfig.authorization.credentials.key == "REMEDIATION_ALERT_TOKEN")] | length) == 1)] | length' "${prometheus_manifest}")" == "1" ]] \
   || fail "Alertmanager remediation receiver missing or unauthenticated"
