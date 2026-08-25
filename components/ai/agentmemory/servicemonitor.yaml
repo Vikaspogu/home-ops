@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://kube-schemas.pages.dev/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: agentmemory
+  labels:
+    app.kubernetes.io/instance: agentmemory
+    app.kubernetes.io/name: agentmemory
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: agentmemory
+      app.kubernetes.io/name: agentmemory
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+      metricRelabelings:
+        - action: labeldrop
+          regex: (pod)

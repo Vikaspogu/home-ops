@@ -19,7 +19,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agentmemory
-          tag: 20260825110602-e030422-oci
+          tag: &agentmemoryTag 20260825110602-e030422-oci
         command:
         - /usr/bin/catatonit
         - --
@@ -38,7 +38,7 @@ controllers:
           RUST_LOG: warn
           AGENTMEMORY_DROP_STALE_INDEX: "true"
           OPENAI_API_KEY: no-key-required
-          OPENAI_BASE_URL: http://spark.a113.internal:11434/v1
+          OPENAI_BASE_URL: http://127.0.0.1:11435/v1
           OPENAI_MODEL: qwen3-coder:30b
           OPENAI_EMBEDDING_MODEL: nvidia/qwen/qwen3-embedding-0.6b
           OPENAI_EMBEDDING_DIMENSIONS: "1024"
@@ -95,6 +95,53 @@ controllers:
           capabilities:
             drop:
             - ALL
+      metrics-proxy:
+        image:
+          repository: gitea.a113.casa/vpogu/agentmemory
+          tag: *agentmemoryTag
+        command:
+        - node
+        - /app/metrics-proxy.mjs
+        env:
+          OLLAMA_URL: http://spark.a113.internal:11434
+          OLLAMA_MODEL: qwen3-coder:30b
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /metrics
+                port: &metricsPort 9090
+              failureThreshold: 12
+              periodSeconds: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /metrics
+                port: *metricsPort
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /metrics
+                port: *metricsPort
+              periodSeconds: 30
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
 service:
   app:
     controller: agentmemory
@@ -105,6 +152,8 @@ service:
         port: 3112
       viewer:
         port: 3113
+      metrics:
+        port: 9090
 persistence:
   data:
     existingClaim: agentmemory
