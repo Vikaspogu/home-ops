@@ -42,6 +42,9 @@ controllers:
           OPENAI_MODEL: qwen3.6:35b-a3b-q8_0
           OPENAI_EMBEDDING_MODEL: nvidia/qwen/qwen3-embedding-0.6b
           OPENAI_EMBEDDING_DIMENSIONS: "1024"
+          # Restore hybrid weighting after the preserved sparse vector index is fully reindexed.
+          BM25_WEIGHT: "1"
+          VECTOR_WEIGHT: "0"
           GRAPH_EXTRACTION_ENABLED: "true"
           AGENTMEMORY_AUTO_COMPRESS: "true"
           AGENTMEMORY_INJECT_CONTEXT: "true"
