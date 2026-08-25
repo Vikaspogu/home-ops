@@ -42,6 +42,7 @@ controllers:
           OPENAI_MODEL: qwen3.6:35b-a3b-q8_0
           OPENAI_EMBEDDING_MODEL: nvidia/qwen/qwen3-embedding-0.6b
           OPENAI_EMBEDDING_DIMENSIONS: "1024"
+          EMBEDDING_PROVIDER: disabled
           GRAPH_EXTRACTION_ENABLED: "true"
           AGENTMEMORY_AUTO_COMPRESS: "true"
           AGENTMEMORY_INJECT_CONTEXT: "true"
