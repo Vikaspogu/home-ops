@@ -25,11 +25,17 @@ spec:
           - name: alertname
             value: Watchdog
             matchType: =
+      - receiver: infra-remediation
+        continue: true
+        matchers:
+          - name: severity
+            value: warning|critical
+            matchType: =~
       - receiver: ntfy
         matchers:
           - name: severity
-            value: critical
-            matchType: =
+            value: warning|critical
+            matchType: =~
   inhibitRules:
     - equal: ["alertname", "namespace"]
       sourceMatch:
@@ -43,6 +49,16 @@ spec:
   receivers:
     - name: "null"
     - name: heartbeat
+    - name: infra-remediation
+      webhookConfigs:
+        - url: http://infra-remediation.ai.svc.cluster.local:8080/alerts
+          sendResolved: true
+          httpConfig:
+            authorization:
+              type: Bearer
+              credentials:
+                name: alertmanager-secret
+                key: REMEDIATION_ALERT_TOKEN
     - name: ntfy
       webhookConfigs:
         - url: http://ntfy.default.svc.cluster.local/infra-alerts?template=infra-alerts

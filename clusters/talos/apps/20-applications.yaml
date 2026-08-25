@@ -598,6 +598,25 @@ applications:
       namespace: ai
     source:
       path: components/ai/forge
+
+  infra-remediation:
+    annotations:
+      argocd.argoproj.io/sync-wave: "25"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/infra-remediation
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 1Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 2Gi
+
   forge-dashboard:
     annotations:
       argocd.argoproj.io/sync-wave: "25"
