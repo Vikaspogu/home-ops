@@ -19,16 +19,14 @@ server:
   sandboxImagePullSecrets:
     - name: gitea-registry-secret
 
+# Empty tags keep gateway and supervisor aligned with the chart appVersion.
 image:
   repository: ghcr.io/nvidia/openshell/gateway
-  tag: "0.0.111"
   pullPolicy: Always
 
-# Pin supervisor and gateway to the same release; version skew breaks bootstrap.
 supervisor:
   image:
     repository: ghcr.io/nvidia/openshell/supervisor
-    tag: "0.0.111"
     pullPolicy: Always
 
 resources:

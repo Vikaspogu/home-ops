@@ -30,7 +30,7 @@ strip_envsub_defaults() {
     sed -E 's/\$\{([A-Za-z_][A-Za-z0-9_]*)-[^}]*\}/${\1}/g'
 }
 
-kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins" "--enable-helm")
+kustomize_args=("--load-restrictor=LoadRestrictionsNone" "--enable-alpha-plugins" "--enable-helm" "--helm-api-versions=agents.x-k8s.io/v1beta1")
 kustomize_config="kustomization.yaml"
 kubeconform_skip="Secret,ExternalSecret,SecretStore,ClusterSecretStore,HelmChart,HelmChartConfig,ImageUpdater"
 kubeconform_args=(
