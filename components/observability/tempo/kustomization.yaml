@@ -8,5 +8,5 @@ helmCharts:
     releaseName: tempo
     namespace: observability
     repo: oci://ghcr.io/grafana-community/helm-charts
-    version: 2.2.4
+    version: 2.3.0
     valuesFile: values.yaml
