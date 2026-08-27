@@ -234,22 +234,22 @@ persistence:
     volumeSpec:
       projected:
         sources:
-          - serviceAccountToken:
-              expirationSeconds: 3600
-              path: token
-          - configMap:
-              name: kube-root-ca.crt
-              items:
-                - key: ca.crt
-                  path: ca.crt
-          - downwardAPI:
-              items:
-                - path: namespace
-                  fieldRef:
-                    apiVersion: v1
-                    fieldPath: metadata.namespace
+        - serviceAccountToken:
+            expirationSeconds: 3600
+            path: token
+        - configMap:
+            name: kube-root-ca.crt
+            items:
+            - key: ca.crt
+              path: ca.crt
+        - downwardAPI:
+            items:
+            - path: namespace
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
     advancedMounts:
       app:
         app:
-          - path: /var/run/secrets/kubernetes.io/serviceaccount
-            readOnly: true
+        - path: /var/run/secrets/kubernetes.io/serviceaccount
+          readOnly: true
