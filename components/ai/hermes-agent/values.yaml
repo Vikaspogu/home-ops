@@ -1,3 +1,7 @@
+serviceAccount:
+  hermes-cluster-reader:
+    forceRename: hermes-cluster-reader
+    automountServiceAccountToken: false
 controllers:
   app:
     replicas: 1
@@ -6,9 +10,12 @@ controllers:
       configmap.reloader.stakater.com/reload: hermes-agent-config
       secret.reloader.stakater.com/reload: hermes-agent-secret
     pod:
+      automountServiceAccountToken: false
       securityContext:
         fsGroup: 10000
         fsGroupChangePolicy: OnRootMismatch
+    serviceAccount:
+      identifier: hermes-cluster-reader
     initContainers:
       00-restore-permissions:
         image:
@@ -222,3 +229,27 @@ persistence:
         - path: /opt/data/.env
           subPath: .env
           readOnly: true
+  kubernetes-api:
+    type: custom
+    volumeSpec:
+      projected:
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3600
+              path: token
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+                - key: ca.crt
+                  path: ca.crt
+          - downwardAPI:
+              items:
+                - path: namespace
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+    advancedMounts:
+      app:
+        app:
+          - path: /var/run/secrets/kubernetes.io/serviceaccount
+            readOnly: true
