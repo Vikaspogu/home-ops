@@ -236,6 +236,7 @@ data:
         - disk-cleanup
         - rtk-rewrite
         - forge
+        - kube-read
         - web/ddgs
         - security-guidance
         - observability/nemo_relay
@@ -285,6 +286,7 @@ data:
         - ivan_paperless
         - ivan_synology
         - mcp-coroot
+        - kube-read
         - mcp-trek
         - memory
         - messaging
@@ -307,6 +309,7 @@ data:
         - ivan_obsidian
         - ivan_paperless
         - ivan_synology
+        - kube-read
       telegram: *known-plugin-toolsets
   nemo-relay-plugins.toml: |-
     version = 1

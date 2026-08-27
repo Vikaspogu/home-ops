@@ -75,4 +75,18 @@ done
   | length
 ' "${manifest}")" == "0" ]] || fail "projected API credential must not mount in init containers or sidecars"
 
-printf 'PASS: Hermes Kubernetes identity, RBAC, and projected credential are least privilege\n'
+[[ "$(yq ea -r '
+  select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
+  | .data["config.yaml"]
+  | from_yaml
+  | [
+      ([.plugins.enabled[] | select(. == "kube-read")] | length),
+      ([.platform_toolsets.cli[] | select(. == "kube-read")] | length),
+      ([.platform_toolsets.telegram[] | select(. == "kube-read")] | length),
+      ([.known_plugin_toolsets.cli[] | select(. == "kube-read")] | length),
+      ([.known_plugin_toolsets.telegram[] | select(. == "kube-read")] | length)
+    ]
+  | join(",")
+' "${manifest}")" == "1,1,1,1,1" ]] || fail "kube-read plugin and toolset must be enabled exactly once"
+
+printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and kube-read toolset are least privilege\n'
