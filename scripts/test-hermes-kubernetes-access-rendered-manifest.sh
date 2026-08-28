@@ -216,9 +216,15 @@ done
   select(.kind == "Deployment" and .metadata.name == "forge-orchestrator")
   | .spec.template.spec.containers[]
   | select(.name == "app")
+  | (.env[] | select(.name == "FORGE_HELM_REGISTRY_HOSTS") | .value | split(",")) as $helm_hosts
   | [(.env[] | select(.name == "FORGE_TOOL_ALLOWLIST") | .value | split(",") | contains(["helm"])),
-     (.env[] | select(.name == "FORGE_TOOL_MIRROR_HOSTS") | .value | split(",") | contains(["get.helm.sh"]))]
+     (.env[] | select(.name == "FORGE_TOOL_MIRROR_HOSTS") | .value | split(",") | contains(["get.helm.sh"])),
+     ($helm_hosts | contains(["ghcr.io"])),
+     ($helm_hosts | contains(["mirror.gcr.io"])),
+     ($helm_hosts | contains(["quay.io"])),
+     ($helm_hosts | contains(["registry.k8s.io"])),
+     ($helm_hosts | contains(["us-east4-docker.pkg.dev"]))]
   | join(",")
-' "${forge_manifest}")" == "true,true" ]] || fail "Forge must allow pinned Helm and mise-only get.helm.sh downloads"
+' "${forge_manifest}")" == "true,true,true,true,true,true,true" ]] || fail "Forge must scope pinned Helm to declared read-only chart hosts"
 
 printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and bounded autonomous routes are least privilege\n'

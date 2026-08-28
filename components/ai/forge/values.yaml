@@ -47,6 +47,7 @@ controllers:
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/22.22.1/bin/node
           FORGE_PYPI_REGISTRY_HOSTS: pypi.org,files.pythonhosted.org
+          FORGE_HELM_REGISTRY_HOSTS: argoproj.github.io,cdn.quay.io,ceph.github.io,charts.external-secrets.io,charts.rook.io,cloudnative-pg.github.io,coroot.github.io,emberstack.github.io,ghcr.io,grafana.github.io,helm.cilium.io,helm.influxdata.com,helm.ngc.nvidia.com,mirror.gcr.io,perfectra1n.github.io,quay.io,registry.k8s.io,stakater.github.io,zapier.github.io,github.com,objects.githubusercontent.com,pkg-containers.githubusercontent.com,release-assets.githubusercontent.com,storage.googleapis.com,us-east4-docker.pkg.dev
           FORGE_SKILLS_CONFIG: /app/config/skills.yaml
           FORGE_RULES_CONFIG: /app/config/rules.yaml
           FORGE_COPILOT_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
