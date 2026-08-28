@@ -89,4 +89,105 @@ done
   | join(",")
 ' "${manifest}")" == "1,1,1,1,1" ]] || fail "kube-read plugin and toolset must be enabled exactly once"
 
-printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and kube-read toolset are least privilege\n'
+[[ "$(yq ea -r '
+  select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
+  | .data["config.yaml"]
+  | from_yaml
+  | [.platforms.webhook.enabled,
+     .platforms.webhook.extra.host,
+     .platforms.webhook.extra.routes."kubernetes-alert".deliver,
+     (.platforms.webhook.extra.routes."kubernetes-alert".events | join(",")),
+     (.platforms.webhook.extra.routes."kubernetes-alert".toolsets | join(",")),
+     (.platform_toolsets.webhook | join(",")),
+     (.known_plugin_toolsets.webhook | join(","))]
+  | join(",")
+' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kube-read,kube-read,kube-read" ]] || fail "ntfy webhook route must be loopback-only and restricted to kube-read"
+
+[[ "$(yq ea -r '
+  select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
+  | .data["config.yaml"]
+  | from_yaml
+  | .platforms.webhook.extra.routes."kubernetes-alert".prompt as $prompt
+  | [($prompt | contains("Untrusted content boundary")),
+     ($prompt | contains("notification is resolved")),
+     ($prompt | contains("alert is malformed")),
+     ($prompt | contains("API is unavailable")),
+     ($prompt | contains("Never mutate the cluster"))]
+  | join(",")
+' "${manifest}")" == "true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required failure or injection boundary"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | [.spec.template.spec.initContainers[]?
+     | select(.name == "ntfy-alert-bridge")
+     | (.command | join(" "))]
+  | join(",")
+' "${manifest}")" == "python /usr/local/bin/hermes-ntfy-alert-bridge" ]] || fail "restricted ntfy alert bridge sidecar is missing"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | [.spec.template.spec.initContainers[0].name,
+     (.spec.template.spec.initContainers[0].command | join(" ") | contains("os.makedirs(alert_state"))]
+  | join(",")
+' "${manifest}")" == "00-restore-permissions,true" ]] || fail "alert cursor subpath must be created before native sidecars start"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | [.spec.template.spec.initContainers[]?
+     | select(.name == "ntfy-alert-bridge")
+     | .volumeMounts[]?
+     | select(.name == "app-data")
+     | [.mountPath, .subPath]
+     | join(",")]
+  | join(",")
+' "${manifest}")" == "/var/lib/hermes-alert-intake,alert-intake" ]] || fail "ntfy bridge cursor must persist in its isolated PVC subpath"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | [.spec.template.spec.containers[]
+     | select(.name == "app")
+     | .env[]
+     | select(.name == "WEBHOOK_ENABLED")
+     | .value]
+  | join(",")
+' "${manifest}")" == "true" ]] || fail "Hermes webhook environment enablement is missing"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | [.spec.template.spec.initContainers[]?
+     | select(.name == "ntfy-alert-bridge")
+     | .env[]
+     | select(has("valueFrom"))
+     | [.name, .valueFrom.secretKeyRef.name, .valueFrom.secretKeyRef.key]
+     | join("/")]
+  | sort
+  | join(",")
+' "${manifest}")" == "NTFY_TOKEN/hermes-alert-intake-secret/NTFY_TOKEN,WEBHOOK_SECRET/hermes-alert-intake-secret/WEBHOOK_SECRET" ]] || fail "ntfy bridge must receive only its two dedicated secrets"
+
+[[ "$(yq ea -r '
+  select(.kind == "ExternalSecret" and .metadata.name == "hermes-alert-intake")
+  | [.spec.data[]
+     | [.secretKey, .remoteRef.key, .remoteRef.property]
+     | join("/")]
+  | sort
+  | join(",")
+' "${manifest}")" == "NTFY_TOKEN/ntfy/HERMES_READ_TOKEN,WEBHOOK_SECRET/ivan/REMEDIATION_HERMES_WEBHOOK_SECRET" ]] || fail "alert intake secrets must be explicit and isolated"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | [.spec.template.spec.containers[]
+     | select(.name == "app")
+     | .env[]
+     | select(.name == "WEBHOOK_SECRET")
+     | [.valueFrom.secretKeyRef.name, .valueFrom.secretKeyRef.key]
+     | join("/")]
+  | join(",")
+' "${manifest}")" == "hermes-alert-intake-secret/WEBHOOK_SECRET" ]] || fail "only the Hermes app may verify the isolated alert webhook secret"
+
+[[ "$(yq ea -r '
+  select(.kind == "Service" and .metadata.name == "hermes-agent")
+  | [.spec.ports[]?.port | select(. == 8644)]
+  | length
+' "${manifest}")" == "0" ]] || fail "loopback webhook must not be exposed by the Service"
+
+printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and autonomous kube-read routes are least privilege\n'

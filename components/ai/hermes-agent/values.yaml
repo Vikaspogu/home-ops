@@ -33,6 +33,13 @@ controllers:
                   os.chown(root, 10000, 10000, follow_symlinks=False)
                   for name in dirs + files:
                       os.chown(os.path.join(root, name), 10000, 10000, follow_symlinks=False)
+
+          alert_state = "/opt/data/alert-intake"
+          if os.path.islink(alert_state):
+              raise RuntimeError("refusing symlinked alert intake state")
+          os.makedirs(alert_state, mode=0o700, exist_ok=True)
+          os.chown(alert_state, 10000, 10000, follow_symlinks=False)
+          os.chmod(alert_state, 0o700, follow_symlinks=False)
         resources:
           requests:
             cpu: 10m
@@ -120,6 +127,41 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
+      ntfy-alert-bridge:
+        restartPolicy: Always
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260828131240-e7787b4-oci
+        command: ["python", "/usr/local/bin/hermes-ntfy-alert-bridge"]
+        env:
+          PYTHONUNBUFFERED: "1"
+          NTFY_SERVER_URL: http://ntfy.default.svc.cluster.local
+          NTFY_TOPIC: infra-alerts
+          NTFY_CURSOR_FILE: /var/lib/hermes-alert-intake/cursor
+          HERMES_ALERT_WEBHOOK_URL: http://127.0.0.1:8644/webhooks/kubernetes-alert
+          NTFY_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-alert-intake-secret
+                key: NTFY_TOKEN
+          WEBHOOK_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-alert-intake-secret
+                key: WEBHOOK_SECRET
+        resources:
+          requests:
+            cpu: 5m
+            memory: 24Mi
+          limits:
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 10000
+          runAsGroup: 10000
+          capabilities: {drop: ["ALL"]}
     containers:
       app:
         image:
@@ -150,6 +192,12 @@ controllers:
           AGENTMEMORY_URL: http://agentmemory.ai.svc.cluster.local:3111
           SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
           HERMES_NEMO_RELAY_PLUGINS_TOML: /opt/data/nemo-relay-plugins.toml
+          WEBHOOK_ENABLED: "true"
+          WEBHOOK_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-alert-intake-secret
+                key: WEBHOOK_SECRET
           TZ: America/New_York
         envFrom:
         - secretRef:
@@ -168,8 +216,6 @@ service:
     ports:
       dashboard:
         port: *dashboardPort
-      webhook:
-        port: 8644
 persistence:
   app-data:
     existingClaim: hermes-agent
@@ -185,6 +231,9 @@ persistence:
         - path: /opt/data
         mcp-token-sidecar:
         - path: /opt/data
+        ntfy-alert-bridge:
+        - path: /var/lib/hermes-alert-intake
+          subPath: alert-intake
   config:
     type: configMap
     name: hermes-agent-config
