@@ -171,7 +171,7 @@ done
      | join("/")]
   | sort
   | join(",")
-' "${manifest}")" == "NTFY_TOKEN/ntfy/HERMES_READ_TOKEN,WEBHOOK_SECRET/ivan/REMEDIATION_HERMES_WEBHOOK_SECRET" ]] || fail "alert intake secrets must be explicit and isolated"
+' "${manifest}")" == "NTFY_TOKEN/ntfy/HERMES_READ_TOKEN,WEBHOOK_SECRET/ntfy/HERMES_ALERT_WEBHOOK_SECRET" ]] || fail "alert intake secrets must be explicit and isolated"
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")

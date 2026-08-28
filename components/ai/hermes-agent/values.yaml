@@ -39,7 +39,7 @@ controllers:
               raise RuntimeError("refusing symlinked alert intake state")
           os.makedirs(alert_state, mode=0o700, exist_ok=True)
           os.chown(alert_state, 10000, 10000, follow_symlinks=False)
-          os.chmod(alert_state, 0o700, follow_symlinks=False)
+          # CSI rejects chmod here; the bridge writes its cursor atomically as 0600.
         resources:
           requests:
             cpu: 10m
