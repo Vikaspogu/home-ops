@@ -128,6 +128,14 @@ done
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | ([.spec.template.spec.containers[] | select(.name == "app") | .image] +
+     [.spec.template.spec.initContainers[] | select(.name == "ntfy-alert-bridge") | .image])
+  | unique
+  | length
+' "${manifest}")" == "1" ]] || fail "Hermes app and ntfy bridge must run the same image revision"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
   | [.spec.template.spec.initContainers[0].name,
      (.spec.template.spec.initContainers[0].command | join(" ") | contains("os.makedirs(alert_state"))]
   | join(",")
