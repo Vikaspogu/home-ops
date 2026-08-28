@@ -42,7 +42,7 @@ controllers:
           FORGE_SPARK_API_KEY: no-key-required
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:b027b897bf3078c9859f8c0cdbe69aa8aa05dd9f35c019a0e10745ca23343d8c
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
-          FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org,mise-versions.jdx.dev,registry.npmjs.org
+          FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org,mise-versions.jdx.dev,registry.npmjs.org,get.helm.sh
           FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/22.22.1/bin/node

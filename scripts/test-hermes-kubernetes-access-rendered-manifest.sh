@@ -3,9 +3,11 @@ set -Eeuo pipefail
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly HERMES_COMPONENT="${ROOT_DIR}/components/ai/hermes-agent"
+readonly FORGE_COMPONENT="${ROOT_DIR}/components/ai/forge"
 umask 077
 readonly manifest="$(mktemp)"
-trap 'rm -f -- "${manifest}"' EXIT
+readonly forge_manifest="$(mktemp)"
+trap 'rm -f -- "${manifest}" "${forge_manifest}"' EXIT
 
 fail() {
   printf 'FAIL: %s\n' "$1" >&2
@@ -19,6 +21,7 @@ resource_count() {
 }
 
 kustomize build --enable-helm "${HERMES_COMPONENT}" >"${manifest}"
+kustomize build --enable-helm "${FORGE_COMPONENT}" >"${forge_manifest}"
 
 for kind in ServiceAccount ClusterRole ClusterRoleBinding; do
   [[ "$(resource_count "${kind}" hermes-cluster-reader)" == "1" ]] || fail "missing ${kind}/hermes-cluster-reader"
@@ -208,5 +211,14 @@ done
   | [.spec.ports[]?.port | select(. == 8644)]
   | length
 ' "${manifest}")" == "0" ]] || fail "loopback webhook must not be exposed by the Service"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "forge-orchestrator")
+  | .spec.template.spec.containers[]
+  | select(.name == "app")
+  | [(.env[] | select(.name == "FORGE_TOOL_ALLOWLIST") | .value | split(",") | contains(["helm"])),
+     (.env[] | select(.name == "FORGE_TOOL_MIRROR_HOSTS") | .value | split(",") | contains(["get.helm.sh"]))]
+  | join(",")
+' "${forge_manifest}")" == "true,true" ]] || fail "Forge must allow pinned Helm and mise-only get.helm.sh downloads"
 
 printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and bounded autonomous routes are least privilege\n'
