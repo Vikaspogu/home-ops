@@ -84,10 +84,15 @@ done
       ([.platform_toolsets.cli[] | select(. == "kube-read")] | length),
       ([.platform_toolsets.telegram[] | select(. == "kube-read")] | length),
       ([.known_plugin_toolsets.cli[] | select(. == "kube-read")] | length),
-      ([.known_plugin_toolsets.telegram[] | select(. == "kube-read")] | length)
+      ([.known_plugin_toolsets.telegram[] | select(. == "kube-read")] | length),
+      ([.plugins.enabled[] | select(. == "infra-dispatch")] | length),
+      ([.platform_toolsets.cli[] | select(. == "infra-dispatch")] | length),
+      ([.platform_toolsets.telegram[] | select(. == "infra-dispatch")] | length),
+      ([.known_plugin_toolsets.cli[] | select(. == "infra-dispatch")] | length),
+      ([.known_plugin_toolsets.telegram[] | select(. == "infra-dispatch")] | length)
     ]
   | join(",")
-' "${manifest}")" == "1,1,1,1,1" ]] || fail "kube-read plugin and toolset must be enabled exactly once"
+' "${manifest}")" == "1,1,1,1,1,1,0,0,0,0" ]] || fail "dispatch must be enabled only for bounded webhook sessions"
 
 [[ "$(yq ea -r '
   select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
@@ -101,7 +106,7 @@ done
      (.platform_toolsets.webhook | join(",")),
      (.known_plugin_toolsets.webhook | join(","))]
   | join(",")
-' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kube-read,kube-read,kube-read" ]] || fail "ntfy webhook route must be loopback-only and restricted to kube-read"
+' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kube-read,infra-dispatch,infra-dispatch,kube-read,infra-dispatch,kube-read" ]] || fail "ntfy webhook route must expose only bounded investigation and dispatch tools"
 
 [[ "$(yq ea -r '
   select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
@@ -113,10 +118,14 @@ done
      ($prompt | contains("malformed")),
      ($prompt | contains("API is unavailable")),
      ($prompt | contains("Never mutate the cluster")),
+     ($prompt | contains("call infra_dispatch_gitops once")),
+     ($prompt | contains("incident key made from the alert name")),
+     ($prompt | contains("Do not dispatch transient runtime")),
+     ($prompt | contains("claim that a task or PR exists")),
      ($prompt | contains("Return exactly this compact plain-text format")),
      ($prompt | contains("Evidence: <at most three short facts"))]
   | join(",")
-' "${manifest}")" == "true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required failure, injection, or format boundary"
+' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required failure, injection, dispatch, or format boundary"
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")
@@ -200,4 +209,4 @@ done
   | length
 ' "${manifest}")" == "0" ]] || fail "loopback webhook must not be exposed by the Service"
 
-printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and autonomous kube-read routes are least privilege\n'
+printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and bounded autonomous routes are least privilege\n'

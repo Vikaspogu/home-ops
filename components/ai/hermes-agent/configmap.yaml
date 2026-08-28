@@ -236,6 +236,7 @@ data:
         - disk-cleanup
         - rtk-rewrite
         - forge
+        - infra-dispatch
         - kube-read
         - web/ddgs
         - security-guidance
@@ -275,7 +276,7 @@ data:
           routes:
             kubernetes-alert:
               events: [ntfy_alert]
-              toolsets: [kube-read]
+              toolsets: [kube-read, infra-dispatch]
               prompt: |-
                 Investigate this Kubernetes alert autonomously with bounded read-only evidence.
 
@@ -295,6 +296,14 @@ data:
                 malformed or cannot be tied to a resource, say so and do not guess. If
                 kube_read or the API is unavailable, make no health or resolution claim.
                 Never mutate the cluster.
+
+                Only for a firing alert with High confidence that survives the recheck and whose
+                desired fix belongs in Home Ops, call infra_dispatch_gitops once. Use a stable
+                incident key made from the alert name and Kubernetes scope, never this delivery's
+                event id. Pass only concise observed evidence. Do not dispatch transient runtime
+                failures, resolved or malformed alerts, uncertain diagnoses, or manual restart,
+                scale, delete, and sync actions. Report the returned Forge task id in Next; never
+                claim that a task or PR exists when dispatch fails.
 
                 Return exactly this compact plain-text format, with one line per field, no
                 bullets, no preamble, and no extra sections:
@@ -339,6 +348,7 @@ data:
         - web
       telegram: *platform-toolsets
       webhook:
+        - infra-dispatch
         - kube-read
     known_plugin_toolsets:
       cli: &known-plugin-toolsets
@@ -354,6 +364,7 @@ data:
         - kube-read
       telegram: *known-plugin-toolsets
       webhook:
+        - infra-dispatch
         - kube-read
   nemo-relay-plugins.toml: |-
     version = 1
