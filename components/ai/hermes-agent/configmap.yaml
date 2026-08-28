@@ -289,14 +289,21 @@ data:
                 Message: {message}
                 Tags: {tags}
 
-                If the notification is resolved, report that the alert closed and perform no
-                Kubernetes or Forge action. If it is firing, call kube_read summary, inspect
-                only clearly related resources with workload or events, and recheck summary
-                before answering. If the alert is malformed or cannot be tied to a resource,
-                say so and do not guess. If kube_read or the API is unavailable, state that
-                automated investigation failed and make no health or resolution claim.
-                Never mutate the cluster. Return only a concise report under 3500 characters
-                with evidence, confidence, and the proposed human next action.
+                If the notification is resolved, perform no Kubernetes or Forge action. If it
+                is firing, call kube_read summary, inspect only clearly related resources with
+                workload or events, and recheck summary before answering. If the alert is
+                malformed or cannot be tied to a resource, say so and do not guess. If
+                kube_read or the API is unavailable, make no health or resolution claim.
+                Never mutate the cluster.
+
+                Return exactly this compact plain-text format, with one line per field, no
+                bullets, no preamble, and no extra sections:
+                <🚨 or ✅> <alert name> — <FIRING or RESOLVED>
+                Scope: <namespace/resource, or unknown>
+                Finding: <one sentence>
+                Evidence: <at most three short facts separated by semicolons>
+                Confidence: <High, Medium, or Low>
+                Next: <one human action, or None>
               deliver: telegram
     platform_toolsets:
       cli: &platform-toolsets

@@ -110,11 +110,13 @@ done
   | .platforms.webhook.extra.routes."kubernetes-alert".prompt as $prompt
   | [($prompt | contains("Untrusted content boundary")),
      ($prompt | contains("notification is resolved")),
-     ($prompt | contains("alert is malformed")),
+     ($prompt | contains("malformed")),
      ($prompt | contains("API is unavailable")),
-     ($prompt | contains("Never mutate the cluster"))]
+     ($prompt | contains("Never mutate the cluster")),
+     ($prompt | contains("Return exactly this compact plain-text format")),
+     ($prompt | contains("Evidence: <at most three short facts"))]
   | join(",")
-' "${manifest}")" == "true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required failure or injection boundary"
+' "${manifest}")" == "true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required failure, injection, or format boundary"
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")
