@@ -1,5 +1,6 @@
 # Forge sandbox environment (see forge docs/forge/notes/environment-lockfile.md).
-# scripts/kubeconform.sh needs kubeconform + kustomize (helm dirs are skipped).
+# scripts/kubeconform.sh needs kubeconform, kustomize, and helm.
 [tools]
+helm = "4.2.4"
 kubeconform = "0.6.7"
 kustomize = "5.5.0"
