@@ -223,8 +223,9 @@ done
      ($helm_hosts | contains(["mirror.gcr.io"])),
      ($helm_hosts | contains(["quay.io"])),
      ($helm_hosts | contains(["registry.k8s.io"])),
-     ($helm_hosts | contains(["us-east4-docker.pkg.dev"]))]
+     ($helm_hosts | contains(["us-east4-docker.pkg.dev"])),
+     ((.env[] | select(.name == "FORGE_HELM_PATH") | .value) == "/opt/mise/installs/helm/4.2.4/linux-amd64/helm")]
   | join(",")
-' "${forge_manifest}")" == "true,true,true,true,true,true,true" ]] || fail "Forge must scope pinned Helm to declared read-only chart hosts"
+' "${forge_manifest}")" == "true,true,true,true,true,true,true,true" ]] || fail "Forge must scope pinned Helm to declared read-only chart hosts"
 
 printf 'PASS: Hermes Kubernetes identity, RBAC, projected credential, and bounded autonomous routes are least privilege\n'
