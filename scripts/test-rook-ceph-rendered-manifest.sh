@@ -17,6 +17,17 @@ cephcluster() {
   yq ea -r 'select(.kind == "CephCluster" and .metadata.name == "rook-ceph")' "${manifest}"
 }
 
+volsync_storage_class() {
+  yq ea -r 'select(.kind == "StorageClass" and .metadata.name == "ceph-block-volsync")' "${manifest}"
+}
+
+[[ "$(volsync_storage_class | yq -r '.provisioner')" == "rook-ceph.rbd.csi.ceph.com" ]] \
+  || fail "VolSync StorageClass must use the Rook Ceph RBD provisioner"
+[[ "$(volsync_storage_class | yq -r '.parameters.mapOptions')" == "krbd:noshare" ]] \
+  || fail "VolSync StorageClass must isolate each krbd client with noshare"
+[[ "$(volsync_storage_class | yq -r '.reclaimPolicy')" == "Delete" ]] \
+  || fail "VolSync StorageClass must clean up temporary RBD volumes"
+
 [[ "$(cephcluster | yq -r '.spec.security.cephx.daemon.keyRotationPolicy')" == "KeyGeneration" ]] \
   || fail "Ceph daemon key rotation must use KeyGeneration"
 [[ "$(cephcluster | yq -r '.spec.security.cephx.daemon.keyGeneration')" == "2" ]] \
@@ -40,4 +51,4 @@ for warning in \
     || fail "${warning} must remain muted while legacy CSI keys are required"
 done
 
-printf 'PASS: rendered CephCluster rotates daemon keys and preserves kernel-compatible CSI settings\n'
+printf 'PASS: rendered Ceph resources preserve security settings and isolate VolSync krbd clients\n'

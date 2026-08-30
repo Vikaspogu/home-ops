@@ -10,7 +10,7 @@ spec:
     accessModes: ["ReadWriteOnce"]
     cacheAccessModes: ["ReadWriteOnce"]
     cacheCapacity: ${ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY}
-    cacheStorageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
+    cacheStorageClassName: ${ARGOCD_ENV_VOLSYNC_STORAGE_CLASS}
     capacity: ${ARGOCD_ENV_VOLSYNC_CAPACITY}
     cleanupCachePVC: false
     cleanupTempPVC: false
@@ -23,5 +23,5 @@ spec:
     repository: "${ARGOCD_APP_NAME}-volsync-secret"
     sourceIdentity:
       sourceName: ${ARGOCD_APP_NAME}
-    storageClassName: ${ARGOCD_ENV_STORAGE_CLASS}
+    storageClassName: ${ARGOCD_ENV_VOLSYNC_STORAGE_CLASS}
     volumeSnapshotClassName: ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS}

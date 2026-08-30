@@ -19,12 +19,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "0 0,6,12,18 * * *"
 
   actual-http-api:
     annotations:
@@ -53,12 +57,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "13 0,6,12,18 * * *"
 
   authentik:
     annotations:
@@ -79,12 +87,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "26 0,6,12,18 * * *"
 
   filebrowser:
     annotations:
@@ -97,12 +109,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "39 0,6,12,18 * * *"
 
   flaresolverr:
     annotations:
@@ -130,6 +146,8 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
@@ -137,7 +155,7 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 30Gi
           - name: VOLSYNC_SCHEDULE
-            value: "20 */6 * * *"
+            value: "52 0,6,12,18 * * *"
 
   gitea-runner:
     annotations:
@@ -150,6 +168,8 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
@@ -157,7 +177,7 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
           - name: VOLSYNC_SCHEDULE
-            value: "40 */6 * * *"
+            value: "5 1,7,13,19 * * *"
 
   gitea-runner-burst:
     annotations:
@@ -170,6 +190,8 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
@@ -177,7 +199,7 @@ applications:
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
           - name: VOLSYNC_SCHEDULE
-            value: "40 */6 * * *"
+            value: "18 1,7,13,19 * * *"
 
   ntfy:
     annotations:
@@ -190,12 +212,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "31 1,7,13,19 * * *"
 
   govee2mqtt:
     annotations:
@@ -232,12 +258,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "44 1,7,13,19 * * *"
 
   homepage:
     annotations:
@@ -258,12 +288,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 20Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "57 1,7,13,19 * * *"
 
   it-tools:
     annotations:
@@ -291,12 +325,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 15Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "10 2,8,14,20 * * *"
 
   jellyseerr:
     annotations:
@@ -309,12 +347,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 4Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "23 2,8,14,20 * * *"
 
   mosquitto:
     annotations:
@@ -343,12 +385,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 4Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "36 2,8,14,20 * * *"
 
   onstar2mqtt:
     annotations:
@@ -369,12 +415,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 15Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "49 2,8,14,20 * * *"
 
   pgadmin:
     annotations:
@@ -387,12 +437,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 4Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "2 3,9,15,21 * * *"
 
   piped:
     annotations:
@@ -413,12 +467,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "15 3,9,15,21 * * *"
 
   reactive-resume:
     annotations:
@@ -439,12 +497,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "28 3,9,15,21 * * *"
 
   redlib:
     annotations:
@@ -481,12 +543,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "41 3,9,15,21 * * *"
 
   stirling-pdf:
     annotations:
@@ -515,12 +581,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "54 3,9,15,21 * * *"
 
   switchbotmqtt:
     annotations:
@@ -533,12 +603,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 4Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "7 4,10,16,22 * * *"
 
   openshell:
     annotations:
@@ -584,12 +658,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 15Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "20 4,10,16,22 * * *"
 
   forge-orchestrator:
     annotations:
@@ -617,12 +695,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 5Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "33 4,10,16,22 * * *"
 
   searxng:
     annotations:
@@ -659,12 +741,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "46 4,10,16,22 * * *"
 
   zwave:
     annotations:
@@ -677,12 +763,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "59 4,10,16,22 * * *"
 
   # # Downloads namespace apps
   prowlarr:
@@ -704,12 +794,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 20Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "12 5,11,17,23 * * *"
 
   qui:
     annotations:
@@ -722,12 +816,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 10Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "25 5,11,17,23 * * *"
 
   sabnzbd:
     annotations:
@@ -740,12 +838,16 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS
             value: csi-ceph-blockpool
           - name: VOLSYNC_CAPACITY
             value: 2Gi
           - name: VOLSYNC_CACHE_CAPACITY
             value: 8Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "38 5,11,17,23 * * *"
 
   whisper-asr:
     annotations:

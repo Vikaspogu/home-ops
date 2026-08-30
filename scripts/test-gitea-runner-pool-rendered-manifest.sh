@@ -5,7 +5,7 @@ set -Eeuo pipefail
 # (capacity 2) plus a burst runner (capacity 1) that shares no persistent
 # state with the baseline. Both components are rendered as ArgoCD would render
 # them — `kustomize build --enable-helm` piped through `envsubst` restricted to
-# an explicit allowlist of the seven plugin variables ArgoCD injects — so the
+# an explicit allowlist of the eight plugin variables ArgoCD injects — so the
 # assertions run against the real rendered Helm output, not the source YAML.
 # The rendered manifests (which contain ExternalSecret definitions) are never
 # printed; assertions inspect resource names, counts, and scalar fields only.
@@ -32,22 +32,23 @@ fail() {
 # envsubst with the plugin environment. VOLSYNC_SCHEDULE is quoted because it
 # contains spaces and glob characters.
 render() {
-    local component="$1" app_name="$2" out="$3"
+    local component="$1" app_name="$2" schedule="$3" out="$4"
 
     [[ -d "${component}" ]] || fail "component directory is missing: ${component}"
 
-    # Restrict envsubst to exactly the seven plugin variables ArgoCD injects, so
+    # Restrict envsubst to exactly the eight plugin variables ArgoCD injects, so
     # any other `$word` inside rendered manifests (shell snippets, Go templates)
     # is left untouched. The schedule value carries spaces/glob chars; it is
     # exported, never word-split into the allowlist.
-    local -r allowlist='${ARGOCD_APP_NAME} ${ARGOCD_ENV_STORAGE_CLASS} ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS} ${ARGOCD_ENV_VOLSYNC_CAPACITY} ${ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY} ${ARGOCD_ENV_VOLSYNC_SCHEDULE} ${CLUSTER_DOMAIN}'
+    local -r allowlist='${ARGOCD_APP_NAME} ${ARGOCD_ENV_STORAGE_CLASS} ${ARGOCD_ENV_VOLSYNC_STORAGE_CLASS} ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS} ${ARGOCD_ENV_VOLSYNC_CAPACITY} ${ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY} ${ARGOCD_ENV_VOLSYNC_SCHEDULE} ${CLUSTER_DOMAIN}'
 
     ARGOCD_APP_NAME="${app_name}" \
     ARGOCD_ENV_STORAGE_CLASS="ceph-block" \
+    ARGOCD_ENV_VOLSYNC_STORAGE_CLASS="ceph-block-volsync" \
     ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS="csi-ceph-blockpool" \
     ARGOCD_ENV_VOLSYNC_CAPACITY="2Gi" \
     ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY="8Gi" \
-    ARGOCD_ENV_VOLSYNC_SCHEDULE="40 */6 * * *" \
+    ARGOCD_ENV_VOLSYNC_SCHEDULE="${schedule}" \
     CLUSTER_DOMAIN="example.local" \
         bash -c '
             set -Eeuo pipefail
@@ -106,6 +107,12 @@ external_secret_target() {
     yq ea -r "[select(.kind == \"ExternalSecret\" and .metadata.name == \"${name}\") | .spec.target.name] | .[0] // \"none\"" "${manifest}"
 }
 
+volsync_storage_classes() {
+    local manifest="$1"
+
+    yq ea -r '[select(.kind == "ReplicationSource" or .kind == "ReplicationDestination") | .spec.kopia | [.cacheStorageClassName, .storageClassName][]] | unique | .[]' "${manifest}"
+}
+
 app_field() {
     local expr="$1"
 
@@ -118,7 +125,7 @@ plugin_env_value() {
     app_field ".source.plugin.env[]? | select(.name == \"${var}\") | .value"
 }
 
-render "${BASELINE_COMPONENT}" "${BASELINE_APP}" "${baseline_manifest}"
+render "${BASELINE_COMPONENT}" "${BASELINE_APP}" "5 1,7,13,19 * * *" "${baseline_manifest}"
 
 # --- Burst component exists and renders -------------------------------------
 # Checked first: until the burst component is authored this is the contract's
@@ -126,7 +133,7 @@ render "${BASELINE_COMPONENT}" "${BASELINE_APP}" "${baseline_manifest}"
 [[ -d "${BURST_COMPONENT}" ]] \
     || fail "burst component is missing: expected ${BURST_COMPONENT}"
 
-render "${BURST_COMPONENT}" "${BURST_APP}" "${burst_manifest}"
+render "${BURST_COMPONENT}" "${BURST_APP}" "18 1,7,13,19 * * *" "${burst_manifest}"
 
 # --- Baseline capacity ------------------------------------------------------
 # Capacity is act_runner's runner.capacity (concurrent jobs per runner), read
@@ -140,6 +147,8 @@ render "${BURST_COMPONENT}" "${BURST_APP}" "${burst_manifest}"
     || fail "rendered baseline ConfigMap ${BASELINE_APP}-config runner.capacity must be 2"
 [[ "$(deployment_replicas "${baseline_manifest}" "${BASELINE_APP}")" == "1" ]] \
     || fail "rendered baseline ${BASELINE_APP} Deployment must run a single pod (spec.replicas == 1)"
+[[ "$(volsync_storage_classes "${baseline_manifest}")" == "ceph-block-volsync" ]] \
+    || fail "rendered baseline VolSync resources must use ceph-block-volsync"
 
 # --- Burst capacity ---------------------------------------------------------
 [[ "$(resource_count "${burst_manifest}" ConfigMap "${BURST_APP}-config")" == "1" ]] \
@@ -148,6 +157,8 @@ render "${BURST_COMPONENT}" "${BURST_APP}" "${burst_manifest}"
     || fail "rendered burst ConfigMap ${BURST_APP}-config runner.capacity must be 1"
 [[ "$(deployment_replicas "${burst_manifest}" "${BURST_APP}")" == "1" ]] \
     || fail "rendered burst ${BURST_APP} Deployment must run a single pod (spec.replicas == 1)"
+[[ "$(volsync_storage_classes "${burst_manifest}")" == "ceph-block-volsync" ]] \
+    || fail "rendered burst VolSync resources must use ceph-block-volsync"
 
 # --- Burst resources and wiring ---------------------------------------------
 [[ "$(resource_count "${burst_manifest}" Deployment "${BURST_APP}")" == "1" ]] \
@@ -183,13 +194,15 @@ burst_claims="$(deployment_claims "${burst_manifest}" "${BURST_APP}")"
 
 [[ "$(plugin_env_value STORAGE_CLASS)" == "ceph-block" ]] \
     || fail "ArgoCD ${BURST_APP} plugin STORAGE_CLASS must be ceph-block"
+[[ "$(plugin_env_value VOLSYNC_STORAGE_CLASS)" == "ceph-block-volsync" ]] \
+    || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_STORAGE_CLASS must be ceph-block-volsync"
 [[ "$(plugin_env_value VOLUME_SNAPSHOT_CLASS)" == "csi-ceph-blockpool" ]] \
     || fail "ArgoCD ${BURST_APP} plugin VOLUME_SNAPSHOT_CLASS must be csi-ceph-blockpool"
 [[ "$(plugin_env_value VOLSYNC_CAPACITY)" == "2Gi" ]] \
     || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_CAPACITY must be 2Gi"
 [[ "$(plugin_env_value VOLSYNC_CACHE_CAPACITY)" == "8Gi" ]] \
     || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_CACHE_CAPACITY must be 8Gi"
-[[ "$(plugin_env_value VOLSYNC_SCHEDULE)" == "40 */6 * * *" ]] \
-    || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_SCHEDULE must be '40 */6 * * *'"
+[[ "$(plugin_env_value VOLSYNC_SCHEDULE)" == "18 1,7,13,19 * * *" ]] \
+    || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_SCHEDULE must be staggered"
 
 printf 'PASS: gitea runner pool baseline capacity, burst capacity, burst workload wiring, and ArgoCD burst registration are consistent\n'

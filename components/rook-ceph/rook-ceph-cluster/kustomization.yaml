@@ -5,6 +5,7 @@ namespace: rook-ceph
 resources:
   - namespace.yaml
   - http-route.yaml
+  - storageclass-volsync.yaml
 helmCharts:
   - name: rook-ceph-cluster
     releaseName: rook-ceph-cluster
