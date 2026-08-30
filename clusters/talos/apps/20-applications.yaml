@@ -1,5 +1,4 @@
 applications:
-
   argo-cd:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
@@ -645,7 +644,6 @@ applications:
       namespace: agent-sandbox-system
     source:
       path: components/ai/agent-sandbox
-
 
   hermes-agent:
     annotations:

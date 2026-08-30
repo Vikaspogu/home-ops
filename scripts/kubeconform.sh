@@ -69,10 +69,10 @@ is_configmap_generator_file() {
     # Check if kustomization.yaml exists and contains configMapGenerator referencing this file
     if [[ -f "${kustomization_file}" ]]; then
         if grep -q "configMapGenerator:" "${kustomization_file}" && grep -A 20 "configMapGenerator:" "${kustomization_file}" | grep -q "files:" && grep -A 20 "configMapGenerator:" "${kustomization_file}" | grep -A 10 "files:" | grep -q "${filename}"; then
-            return 0  # File is referenced in configMapGenerator
+            return 0 # File is referenced in configMapGenerator
         fi
     fi
-    return 1  # File is not referenced in configMapGenerator
+    return 1 # File is not referenced in configMapGenerator
 }
 
 # Return true when a component directory belongs to a Helm chart.
@@ -114,7 +114,7 @@ validate_standalone_files() {
         fi
 
         echo "Validating ${file_relative}"
-        if ! envsubst < "${file}" | kubeconform "${kubeconform_args[@]}" -skip "${kubeconform_skip}"; then
+        if ! envsubst <"${file}" | kubeconform "${kubeconform_args[@]}" -skip "${kubeconform_skip}"; then
             echo "❌ Validation failed for ${file_relative}"
             exit 1
         fi
@@ -131,7 +131,7 @@ if [[ -d "${ROOT_DIR}/components" ]]; then
     # First validate any standalone YAML files in components subdirectories
     find "${ROOT_DIR}/components" -type d -name "*" | while read -r dir; do
         if [[ "${dir}" == "${ROOT_DIR}/components" ]]; then
-            continue  # Skip the root components directory
+            continue # Skip the root components directory
         fi
 
         # Skip charts directories (contain Helm charts, not raw manifests)

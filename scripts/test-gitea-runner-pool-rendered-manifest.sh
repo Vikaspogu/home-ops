@@ -43,18 +43,18 @@ render() {
     local -r allowlist='${ARGOCD_APP_NAME} ${ARGOCD_ENV_STORAGE_CLASS} ${ARGOCD_ENV_VOLSYNC_STORAGE_CLASS} ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS} ${ARGOCD_ENV_VOLSYNC_CAPACITY} ${ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY} ${ARGOCD_ENV_VOLSYNC_SCHEDULE} ${CLUSTER_DOMAIN}'
 
     ARGOCD_APP_NAME="${app_name}" \
-    ARGOCD_ENV_STORAGE_CLASS="ceph-block" \
-    ARGOCD_ENV_VOLSYNC_STORAGE_CLASS="ceph-block-volsync" \
-    ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS="csi-ceph-blockpool" \
-    ARGOCD_ENV_VOLSYNC_CAPACITY="2Gi" \
-    ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY="8Gi" \
-    ARGOCD_ENV_VOLSYNC_SCHEDULE="${schedule}" \
-    CLUSTER_DOMAIN="example.local" \
+        ARGOCD_ENV_STORAGE_CLASS="ceph-block" \
+        ARGOCD_ENV_VOLSYNC_STORAGE_CLASS="ceph-block-volsync" \
+        ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS="csi-ceph-blockpool" \
+        ARGOCD_ENV_VOLSYNC_CAPACITY="2Gi" \
+        ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY="8Gi" \
+        ARGOCD_ENV_VOLSYNC_SCHEDULE="${schedule}" \
+        CLUSTER_DOMAIN="example.local" \
         bash -c '
             set -Eeuo pipefail
             kustomize build --enable-helm "$1" | envsubst "$2"
-        ' _ "${component}" "${allowlist}" >"${out}" \
-        || fail "kustomize/envsubst render failed for ${app_name} (${component})"
+        ' _ "${component}" "${allowlist}" >"${out}" ||
+        fail "kustomize/envsubst render failed for ${app_name} (${component})"
 }
 
 deployment_replicas() {
@@ -130,8 +130,8 @@ render "${BASELINE_COMPONENT}" "${BASELINE_APP}" "5 1,7,13,19 * * *" "${baseline
 # --- Burst component exists and renders -------------------------------------
 # Checked first: until the burst component is authored this is the contract's
 # primary gap, and it should be the failure the test reports.
-[[ -d "${BURST_COMPONENT}" ]] \
-    || fail "burst component is missing: expected ${BURST_COMPONENT}"
+[[ -d "${BURST_COMPONENT}" ]] ||
+    fail "burst component is missing: expected ${BURST_COMPONENT}"
 
 render "${BURST_COMPONENT}" "${BURST_APP}" "18 1,7,13,19 * * *" "${burst_manifest}"
 
@@ -139,70 +139,70 @@ render "${BURST_COMPONENT}" "${BURST_APP}" "18 1,7,13,19 * * *" "${burst_manifes
 # Capacity is act_runner's runner.capacity (concurrent jobs per runner), read
 # from the rendered ConfigMap. Each pool runs a single pod, so both Deployments
 # keep spec.replicas == 1; scaling concurrency is done via runner.capacity.
-[[ "$(resource_count "${baseline_manifest}" Deployment "${BASELINE_APP}")" == "1" ]] \
-    || fail "rendered baseline Deployment ${BASELINE_APP} is missing or ambiguous"
-[[ "$(resource_count "${baseline_manifest}" ConfigMap "${BASELINE_APP}-config")" == "1" ]] \
-    || fail "rendered baseline ConfigMap ${BASELINE_APP}-config is missing or ambiguous"
-[[ "$(runner_capacity "${baseline_manifest}" "${BASELINE_APP}-config")" == "2" ]] \
-    || fail "rendered baseline ConfigMap ${BASELINE_APP}-config runner.capacity must be 2"
-[[ "$(deployment_replicas "${baseline_manifest}" "${BASELINE_APP}")" == "1" ]] \
-    || fail "rendered baseline ${BASELINE_APP} Deployment must run a single pod (spec.replicas == 1)"
-[[ "$(volsync_storage_classes "${baseline_manifest}")" == "ceph-block-volsync" ]] \
-    || fail "rendered baseline VolSync resources must use ceph-block-volsync"
+[[ "$(resource_count "${baseline_manifest}" Deployment "${BASELINE_APP}")" == "1" ]] ||
+    fail "rendered baseline Deployment ${BASELINE_APP} is missing or ambiguous"
+[[ "$(resource_count "${baseline_manifest}" ConfigMap "${BASELINE_APP}-config")" == "1" ]] ||
+    fail "rendered baseline ConfigMap ${BASELINE_APP}-config is missing or ambiguous"
+[[ "$(runner_capacity "${baseline_manifest}" "${BASELINE_APP}-config")" == "2" ]] ||
+    fail "rendered baseline ConfigMap ${BASELINE_APP}-config runner.capacity must be 2"
+[[ "$(deployment_replicas "${baseline_manifest}" "${BASELINE_APP}")" == "1" ]] ||
+    fail "rendered baseline ${BASELINE_APP} Deployment must run a single pod (spec.replicas == 1)"
+[[ "$(volsync_storage_classes "${baseline_manifest}")" == "ceph-block-volsync" ]] ||
+    fail "rendered baseline VolSync resources must use ceph-block-volsync"
 
 # --- Burst capacity ---------------------------------------------------------
-[[ "$(resource_count "${burst_manifest}" ConfigMap "${BURST_APP}-config")" == "1" ]] \
-    || fail "rendered burst ConfigMap ${BURST_APP}-config is missing or ambiguous"
-[[ "$(runner_capacity "${burst_manifest}" "${BURST_APP}-config")" == "1" ]] \
-    || fail "rendered burst ConfigMap ${BURST_APP}-config runner.capacity must be 1"
-[[ "$(deployment_replicas "${burst_manifest}" "${BURST_APP}")" == "1" ]] \
-    || fail "rendered burst ${BURST_APP} Deployment must run a single pod (spec.replicas == 1)"
-[[ "$(volsync_storage_classes "${burst_manifest}")" == "ceph-block-volsync" ]] \
-    || fail "rendered burst VolSync resources must use ceph-block-volsync"
+[[ "$(resource_count "${burst_manifest}" ConfigMap "${BURST_APP}-config")" == "1" ]] ||
+    fail "rendered burst ConfigMap ${BURST_APP}-config is missing or ambiguous"
+[[ "$(runner_capacity "${burst_manifest}" "${BURST_APP}-config")" == "1" ]] ||
+    fail "rendered burst ConfigMap ${BURST_APP}-config runner.capacity must be 1"
+[[ "$(deployment_replicas "${burst_manifest}" "${BURST_APP}")" == "1" ]] ||
+    fail "rendered burst ${BURST_APP} Deployment must run a single pod (spec.replicas == 1)"
+[[ "$(volsync_storage_classes "${burst_manifest}")" == "ceph-block-volsync" ]] ||
+    fail "rendered burst VolSync resources must use ceph-block-volsync"
 
 # --- Burst resources and wiring ---------------------------------------------
-[[ "$(resource_count "${burst_manifest}" Deployment "${BURST_APP}")" == "1" ]] \
-    || fail "rendered burst Deployment ${BURST_APP} is missing or ambiguous"
-[[ "$(resource_count "${burst_manifest}" PersistentVolumeClaim "${BURST_APP}")" == "1" ]] \
-    || fail "rendered burst data PVC ${BURST_APP} is missing or ambiguous"
-[[ "$(resource_count "${burst_manifest}" PersistentVolumeClaim "${BURST_APP}-docker")" == "1" ]] \
-    || fail "rendered burst docker PVC ${BURST_APP}-docker is missing or ambiguous"
-[[ "$(resource_count "${burst_manifest}" ExternalSecret "${BURST_APP}")" == "1" ]] \
-    || fail "rendered burst ExternalSecret ${BURST_APP} is missing or ambiguous"
-[[ "$(external_secret_target "${burst_manifest}" "${BURST_APP}")" == "${BURST_APP}-secret" ]] \
-    || fail "rendered burst ExternalSecret ${BURST_APP} must target ${BURST_APP}-secret"
+[[ "$(resource_count "${burst_manifest}" Deployment "${BURST_APP}")" == "1" ]] ||
+    fail "rendered burst Deployment ${BURST_APP} is missing or ambiguous"
+[[ "$(resource_count "${burst_manifest}" PersistentVolumeClaim "${BURST_APP}")" == "1" ]] ||
+    fail "rendered burst data PVC ${BURST_APP} is missing or ambiguous"
+[[ "$(resource_count "${burst_manifest}" PersistentVolumeClaim "${BURST_APP}-docker")" == "1" ]] ||
+    fail "rendered burst docker PVC ${BURST_APP}-docker is missing or ambiguous"
+[[ "$(resource_count "${burst_manifest}" ExternalSecret "${BURST_APP}")" == "1" ]] ||
+    fail "rendered burst ExternalSecret ${BURST_APP} is missing or ambiguous"
+[[ "$(external_secret_target "${burst_manifest}" "${BURST_APP}")" == "${BURST_APP}-secret" ]] ||
+    fail "rendered burst ExternalSecret ${BURST_APP} must target ${BURST_APP}-secret"
 
 # The complete persistent-claim set must be its two dedicated claims: this
 # rejects missing, baseline, or any unexpected shared claim.
 burst_claims="$(deployment_claims "${burst_manifest}" "${BURST_APP}")"
-[[ "${burst_claims}" == "${BURST_APP}"$'\n'"${BURST_APP}-docker" ]] \
-    || fail "burst ${BURST_APP} Deployment must mount exactly ${BURST_APP} and ${BURST_APP}-docker"
-[[ "$(deployment_config_maps "${burst_manifest}" "${BURST_APP}")" == "${BURST_APP}-config" ]] \
-    || fail "burst ${BURST_APP} Deployment must mount exactly ConfigMap ${BURST_APP}-config"
-[[ "$(runner_envfrom_secrets "${burst_manifest}" "${BURST_APP}" runner)" == "${BURST_APP}-secret" ]] \
-    || fail "burst ${BURST_APP} runner container envFrom must reference exactly ${BURST_APP}-secret"
+[[ "${burst_claims}" == "${BURST_APP}"$'\n'"${BURST_APP}-docker" ]] ||
+    fail "burst ${BURST_APP} Deployment must mount exactly ${BURST_APP} and ${BURST_APP}-docker"
+[[ "$(deployment_config_maps "${burst_manifest}" "${BURST_APP}")" == "${BURST_APP}-config" ]] ||
+    fail "burst ${BURST_APP} Deployment must mount exactly ConfigMap ${BURST_APP}-config"
+[[ "$(runner_envfrom_secrets "${burst_manifest}" "${BURST_APP}" runner)" == "${BURST_APP}-secret" ]] ||
+    fail "burst ${BURST_APP} runner container envFrom must reference exactly ${BURST_APP}-secret"
 
 # --- ArgoCD registration ----------------------------------------------------
-[[ "$(app_field 'has("source")')" == "true" ]] \
-    || fail "ArgoCD application ${BURST_APP} is not registered in ${APPLICATIONS}"
-[[ "$(app_field '.source.path')" == "components/default/${BURST_APP}" ]] \
-    || fail "ArgoCD ${BURST_APP} source.path must be components/default/${BURST_APP}"
-[[ "$(app_field '.destination.namespace')" == "default" ]] \
-    || fail "ArgoCD ${BURST_APP} destination.namespace must be default"
-[[ "$(app_field '.annotations."argocd.argoproj.io/sync-wave"')" == "20" ]] \
-    || fail "ArgoCD ${BURST_APP} sync-wave must be 20"
+[[ "$(app_field 'has("source")')" == "true" ]] ||
+    fail "ArgoCD application ${BURST_APP} is not registered in ${APPLICATIONS}"
+[[ "$(app_field '.source.path')" == "components/default/${BURST_APP}" ]] ||
+    fail "ArgoCD ${BURST_APP} source.path must be components/default/${BURST_APP}"
+[[ "$(app_field '.destination.namespace')" == "default" ]] ||
+    fail "ArgoCD ${BURST_APP} destination.namespace must be default"
+[[ "$(app_field '.annotations."argocd.argoproj.io/sync-wave"')" == "20" ]] ||
+    fail "ArgoCD ${BURST_APP} sync-wave must be 20"
 
-[[ "$(plugin_env_value STORAGE_CLASS)" == "ceph-block" ]] \
-    || fail "ArgoCD ${BURST_APP} plugin STORAGE_CLASS must be ceph-block"
-[[ "$(plugin_env_value VOLSYNC_STORAGE_CLASS)" == "ceph-block-volsync" ]] \
-    || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_STORAGE_CLASS must be ceph-block-volsync"
-[[ "$(plugin_env_value VOLUME_SNAPSHOT_CLASS)" == "csi-ceph-blockpool" ]] \
-    || fail "ArgoCD ${BURST_APP} plugin VOLUME_SNAPSHOT_CLASS must be csi-ceph-blockpool"
-[[ "$(plugin_env_value VOLSYNC_CAPACITY)" == "2Gi" ]] \
-    || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_CAPACITY must be 2Gi"
-[[ "$(plugin_env_value VOLSYNC_CACHE_CAPACITY)" == "8Gi" ]] \
-    || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_CACHE_CAPACITY must be 8Gi"
-[[ "$(plugin_env_value VOLSYNC_SCHEDULE)" == "18 1,7,13,19 * * *" ]] \
-    || fail "ArgoCD ${BURST_APP} plugin VOLSYNC_SCHEDULE must be staggered"
+[[ "$(plugin_env_value STORAGE_CLASS)" == "ceph-block" ]] ||
+    fail "ArgoCD ${BURST_APP} plugin STORAGE_CLASS must be ceph-block"
+[[ "$(plugin_env_value VOLSYNC_STORAGE_CLASS)" == "ceph-block-volsync" ]] ||
+    fail "ArgoCD ${BURST_APP} plugin VOLSYNC_STORAGE_CLASS must be ceph-block-volsync"
+[[ "$(plugin_env_value VOLUME_SNAPSHOT_CLASS)" == "csi-ceph-blockpool" ]] ||
+    fail "ArgoCD ${BURST_APP} plugin VOLUME_SNAPSHOT_CLASS must be csi-ceph-blockpool"
+[[ "$(plugin_env_value VOLSYNC_CAPACITY)" == "2Gi" ]] ||
+    fail "ArgoCD ${BURST_APP} plugin VOLSYNC_CAPACITY must be 2Gi"
+[[ "$(plugin_env_value VOLSYNC_CACHE_CAPACITY)" == "8Gi" ]] ||
+    fail "ArgoCD ${BURST_APP} plugin VOLSYNC_CACHE_CAPACITY must be 8Gi"
+[[ "$(plugin_env_value VOLSYNC_SCHEDULE)" == "18 1,7,13,19 * * *" ]] ||
+    fail "ArgoCD ${BURST_APP} plugin VOLSYNC_SCHEDULE must be staggered"
 
 printf 'PASS: gitea runner pool baseline capacity, burst capacity, burst workload wiring, and ArgoCD burst registration are consistent\n'
