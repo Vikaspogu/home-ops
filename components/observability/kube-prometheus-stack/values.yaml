@@ -57,6 +57,8 @@ prometheus:
         gethomepage.dev/icon: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/prometheus.png"
   prometheusSpec:
     externalUrl: https://prometheus.${CLUSTER_DOMAIN}
+    externalLabels:
+      cluster: home-kubernetes
     enableRemoteWriteReceiver: true
     image:
       registry: quay.io

@@ -6,7 +6,7 @@ metadata:
   name: alertmanager
 spec:
   route:
-    groupBy: ["alertname", "job"]
+    groupBy: ["alertname", "cluster", "namespace", "job", "service", "integration"]
     groupInterval: 10m
     groupWait: 1m
     receiver: ntfy

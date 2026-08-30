@@ -3,10 +3,12 @@ set -Eeuo pipefail
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly NTFY_COMPONENT="${ROOT_DIR}/components/default/ntfy"
+readonly PROMETHEUS_COMPONENT="${ROOT_DIR}/components/observability/kube-prometheus-stack"
 umask 077
 readonly manifest="$(mktemp)"
+readonly prometheus_manifest="$(mktemp)"
 readonly template="$(mktemp)"
-trap 'rm -f -- "${manifest}" "${template}"' EXIT
+trap 'rm -f -- "${manifest}" "${prometheus_manifest}" "${template}"' EXIT
 
 fail() {
     printf 'FAIL: %s\n' "$1" >&2
@@ -30,6 +32,7 @@ ntfy_container_count() {
 }
 
 kustomize build --enable-helm "${NTFY_COMPONENT}" >"${manifest}"
+kustomize build --enable-helm "${PROMETHEUS_COMPONENT}" >"${prometheus_manifest}"
 
 service_count="$(resource_count Service)"
 deployment_count="$(resource_count Deployment)"
@@ -107,5 +110,24 @@ yq e '.message' "${template}" >/dev/null || fail "rendered ntfy template must be
 [[ "$(yq e -r '.message' "${template}")" != "null" ]] || fail "rendered ntfy template message must not be empty"
 
 [[ "${ntfy_template}" == *"len .alerts"* ]] || fail "rendered ntfy template must report grouped alert count"
+[[ "${ntfy_template}" == *".status"* ]] || fail "rendered ntfy template must report alert status"
+for label in cluster namespace job service integration pod container instance; do
+    [[ "${ntfy_template}" == *"labels.${label}"* ]] || fail "rendered ntfy template must report ${label} when available"
+done
 [[ "${ntfy_template}" != *"range .alerts"* ]] || fail "rendered ntfy template must not repeat every grouped alert"
 [[ "${ntfy_template}" != *".generatorURL"* ]] || fail "rendered ntfy template must not include unbounded generator URLs"
+
+[[ "$(
+    yq ea -r '
+        select(.kind == "Prometheus" and .metadata.name == "prometheus")
+        | .spec.externalLabels.cluster
+    ' "${prometheus_manifest}"
+)" == "home-kubernetes" ]] || fail "Prometheus must attach the home-kubernetes cluster label to alerts"
+
+[[ "$(
+    yq ea -r '
+        select(.kind == "AlertmanagerConfig" and .metadata.name == "alertmanager")
+        | .spec.route.groupBy
+        | join(",")
+    ' "${prometheus_manifest}"
+)" == "alertname,cluster,namespace,job,service,integration" ]] || fail "Alertmanager must group alerts by stable incident scope"

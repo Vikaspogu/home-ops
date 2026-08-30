@@ -10,10 +10,24 @@ data:
       {{- if eq .status "firing" }}🚨 {{ else }}✅ {{ end }}{{ $alert.labels.alertname }}
     message: |
       {{- $alert := first .alerts }}
+      Status: {{ if eq .status "firing" }}FIRING{{ else }}RESOLVED{{ end }}
+      Alert: {{ $alert.labels.alertname }}
       Grouped alerts: {{ len .alerts }}
       Severity: {{ default "unknown" $alert.labels.severity }}
+      {{- with $alert.labels.cluster }}
+      Cluster: {{ . }}
+      {{- end }}
       {{- with $alert.labels.namespace }}
       Namespace: {{ . }}
+      {{- end }}
+      {{- with $alert.labels.job }}
+      Job: {{ . }}
+      {{- end }}
+      {{- with $alert.labels.service }}
+      Service: {{ . }}
+      {{- end }}
+      {{- with $alert.labels.integration }}
+      Integration: {{ . }}
       {{- end }}
       {{- with $alert.labels.pod }}
       Pod: {{ . }}
