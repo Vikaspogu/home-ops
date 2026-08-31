@@ -63,7 +63,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /readyz
+                path: /health/ready
                 port: 8080
               failureThreshold: 30
               periodSeconds: 5
@@ -72,7 +72,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /readyz
+                path: /health/ready
                 port: 8080
               failureThreshold: 3
               periodSeconds: 10
@@ -81,7 +81,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /healthz
+                path: /health/live
                 port: 8080
               failureThreshold: 3
               periodSeconds: 30
