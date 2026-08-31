@@ -32,7 +32,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-farm
-          tag: 20260831202508-e179c31-oci
+          tag: 20260831203945-e0b8335-oci
           pullPolicy: IfNotPresent
         env:
           TZ: America/New_York
