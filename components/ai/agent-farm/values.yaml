@@ -1,0 +1,141 @@
+serviceAccount:
+  agent-farm: {}
+controllers:
+  agent-farm:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      secret.reloader.stakater.com/reload: agent-farm-secret
+    pod:
+      automountServiceAccountToken: true
+      imagePullSecrets:
+        - name: gitea-registry-secret
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+    serviceAccount:
+      identifier: agent-farm
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.6.0@sha256:b6d3af974df781c673d37e49bdddfa14a6f5be28b18d2cb7713f0449bea4057b
+        envFrom:
+          - secretRef:
+              name: agent-farm-secret
+    containers:
+      app:
+        image:
+          repository: gitea.a113.casa/vpogu/agent-farm
+          tag: phase1-20260831-37be160ded22-oci
+          pullPolicy: IfNotPresent
+        env:
+          TZ: America/New_York
+          PORT: &publicPort "8080"
+          BOOTSTRAP_PORT: &bootstrapPort "8443"
+          WORKLOAD_PORT: &workloadPort "9443"
+          DATABASE_URL:
+            valueFrom:
+              secretKeyRef:
+                name: agent-farm-secret
+                key: DATABASE_URL
+          OIDC_ISSUER: https://id.${CLUSTER_DOMAIN}/application/o/agent-farm/
+          OIDC_AUDIENCE: agent-farm
+          OIDC_OPERATOR_GROUP: admins
+          OIDC_BROWSER_CLIENT_ID: agent-farm
+          PUBLIC_URL: https://agent-farm.${CLUSTER_DOMAIN}
+          CONTROL_PLANE_NAMESPACE: ai
+          WORKSPACE_STORAGE_CLASS: ceph-block
+          INTERNAL_TLS_CERTIFICATE_FILE: /etc/agent-farm/tls/internal-tls.crt
+          INTERNAL_TLS_PRIVATE_KEY_FILE: /etc/agent-farm/tls/internal-tls.key
+          INTERNAL_TLS_CA_BUNDLE_FILE: /etc/agent-farm/tls/internal-ca.crt
+          WORKLOAD_CA_CERTIFICATE_FILE: /etc/agent-farm/tls/workload-ca.crt
+          WORKLOAD_CA_PRIVATE_KEY_FILE: /etc/agent-farm/tls/workload-ca.key
+          WORKLOAD_CLIENT_CA_BUNDLE_FILE: /etc/agent-farm/tls/workload-client-ca.crt
+        probes:
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /readyz
+                port: *publicPort
+              failureThreshold: 30
+              periodSeconds: 5
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /readyz
+                port: *publicPort
+              failureThreshold: 3
+              periodSeconds: 10
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *publicPort
+              failureThreshold: 3
+              periodSeconds: 30
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+service:
+  app:
+    forceRename: agent-farm
+    controller: agent-farm
+    ports:
+      http:
+        port: *publicPort
+  bootstrap:
+    controller: agent-farm
+    ports:
+      https:
+        port: *bootstrapPort
+  workload:
+    controller: agent-farm
+    ports:
+      https:
+        port: *workloadPort
+persistence:
+  tls:
+    type: secret
+    name: agent-farm-secret
+    advancedMounts:
+      agent-farm:
+        app:
+          - path: /etc/agent-farm/tls/internal-tls.crt
+            subPath: internal-tls.crt
+            readOnly: true
+          - path: /etc/agent-farm/tls/internal-tls.key
+            subPath: internal-tls.key
+            readOnly: true
+          - path: /etc/agent-farm/tls/internal-ca.crt
+            subPath: internal-ca.crt
+            readOnly: true
+          - path: /etc/agent-farm/tls/workload-ca.crt
+            subPath: workload-ca.crt
+            readOnly: true
+          - path: /etc/agent-farm/tls/workload-ca.key
+            subPath: workload-ca.key
+            readOnly: true
+          - path: /etc/agent-farm/tls/workload-client-ca.crt
+            subPath: workload-client-ca.crt
+            readOnly: true

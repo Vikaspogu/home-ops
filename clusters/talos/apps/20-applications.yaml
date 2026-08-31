@@ -682,6 +682,14 @@ applications:
     source:
       path: components/ai/forge-dashboard
 
+  agent-farm:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/agent-farm
+
   agentmemory:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
