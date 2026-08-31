@@ -29,6 +29,15 @@ data:
       {{- with $alert.labels.integration }}
       Integration: {{ . }}
       {{- end }}
+      {{- with $alert.labels.kubernetes_node }}
+      Kubernetes node: {{ . }}
+      {{- end }}
+      {{- with $alert.labels.device }}
+      Device: {{ . }}
+      {{- end }}
+      {{- with $alert.labels.mountpoint }}
+      Mountpoint: {{ . }}
+      {{- end }}
       {{- with $alert.labels.pod }}
       Pod: {{ . }}
       {{- end }}

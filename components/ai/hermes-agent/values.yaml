@@ -191,6 +191,7 @@ controllers:
           API_SERVER_PORT: "8642"
           AGENTMEMORY_URL: http://agentmemory.ai.svc.cluster.local:3111
           SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
+          PROMETHEUS_URL: http://prometheus-prometheus.observability.svc.cluster.local:9090
           HERMES_NEMO_RELAY_PLUGINS_TOML: /opt/data/nemo-relay-plugins.toml
           WEBHOOK_ENABLED: "true"
           WEBHOOK_SECRET:

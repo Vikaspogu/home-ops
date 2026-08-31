@@ -101,6 +101,32 @@ done
   select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
   | .data["config.yaml"]
   | from_yaml
+  | [
+      ([.plugins.enabled[] | select(. == "prometheus-read")] | length),
+      ([.platform_toolsets.cli[] | select(. == "prometheus-read")] | length),
+      ([.platform_toolsets.telegram[] | select(. == "prometheus-read")] | length),
+      ([.known_plugin_toolsets.cli[] | select(. == "prometheus-read")] | length),
+      ([.known_plugin_toolsets.telegram[] | select(. == "prometheus-read")] | length),
+      ([.platform_toolsets.webhook[] | select(. == "prometheus-read")] | length),
+      ([.known_plugin_toolsets.webhook[] | select(. == "prometheus-read")] | length)
+    ]
+  | join(",")
+' "${manifest}")" == "1,1,1,1,1,1,1" ]] || fail "Prometheus reads must be available through the bounded investigation toolset"
+
+[[ "$(yq ea -r '
+  select(.kind == "Deployment" and .metadata.name == "hermes-agent")
+  | [.spec.template.spec.containers[]
+     | select(.name == "app")
+     | .env[]
+     | select(.name == "PROMETHEUS_URL")
+     | .value]
+  | join(",")
+' "${manifest}")" == "http://prometheus-prometheus.observability.svc.cluster.local:9090" ]] || fail "Hermes must use the internal Prometheus service"
+
+[[ "$(yq ea -r '
+  select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
+  | .data["config.yaml"]
+  | from_yaml
   | [.platforms.webhook.enabled,
      .platforms.webhook.extra.host,
      .platforms.webhook.extra.routes."kubernetes-alert".deliver,
@@ -109,7 +135,7 @@ done
      (.platform_toolsets.webhook | join(",")),
      (.known_plugin_toolsets.webhook | join(","))]
   | join(",")
-' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kube-read,infra-dispatch,infra-dispatch,kube-read,infra-dispatch,kube-read" ]] || fail "ntfy webhook route must expose only bounded investigation and dispatch tools"
+' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kube-read,prometheus-read,infra-dispatch,infra-dispatch,kube-read,prometheus-read,infra-dispatch,kube-read,prometheus-read" ]] || fail "ntfy webhook route must expose only bounded investigation and dispatch tools"
 
 [[ "$(yq ea -r '
   select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
@@ -121,14 +147,23 @@ done
      ($prompt | contains("malformed")),
      ($prompt | contains("API is unavailable")),
      ($prompt | contains("Never mutate the cluster")),
+     ($prompt | contains("call prometheus_read")),
+     ($prompt | contains("successful tool results")),
+     ($prompt | contains("Never claim a metric")),
      ($prompt | contains("call infra_dispatch_gitops once")),
      ($prompt | contains("incident key made from the alert name")),
      ($prompt | contains("Do not dispatch transient runtime")),
      ($prompt | contains("claim that a task or PR exists")),
-     ($prompt | contains("Return exactly this compact plain-text format")),
-     ($prompt | contains("Evidence: <at most three short facts"))]
-  | join(",")
-' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required failure, injection, dispatch, or format boundary"
+     ($prompt | contains("Telegram is action-only")),
+     ($prompt | contains("respond exactly with [SILENT]")),
+     ($prompt | contains("Never send Telegram for resolved")),
+     ($prompt | contains("infra_dispatch_gitops returns outcome created")),
+     ($prompt | contains("GITOPS TASK CREATED")),
+     ($prompt | contains("ACTION REQUIRED")),
+     ($prompt | contains("Duplicate Forge tasks")),
+     ($prompt | contains("Medium or Low confidence"))]
+   | join(",")
+' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required evidence, failure, injection, dispatch, or action-only delivery boundary"
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")

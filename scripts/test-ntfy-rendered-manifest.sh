@@ -111,7 +111,7 @@ yq e '.message' "${template}" >/dev/null || fail "rendered ntfy template must be
 
 [[ "${ntfy_template}" == *"len .alerts"* ]] || fail "rendered ntfy template must report grouped alert count"
 [[ "${ntfy_template}" == *".status"* ]] || fail "rendered ntfy template must report alert status"
-for label in cluster namespace job service integration pod container instance; do
+for label in cluster namespace job service integration kubernetes_node device mountpoint pod container instance; do
     [[ "${ntfy_template}" == *"labels.${label}"* ]] || fail "rendered ntfy template must report ${label} when available"
 done
 [[ "${ntfy_template}" != *"range .alerts"* ]] || fail "rendered ntfy template must not repeat every grouped alert"

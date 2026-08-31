@@ -238,6 +238,7 @@ data:
         - forge
         - infra-dispatch
         - kube-read
+        - prometheus-read
         - web/ddgs
         - security-guidance
         - observability/nemo_relay
@@ -276,7 +277,7 @@ data:
           routes:
             kubernetes-alert:
               events: [ntfy_alert]
-              toolsets: [kube-read, infra-dispatch]
+              toolsets: [kube-read, prometheus-read, infra-dispatch]
               prompt: |-
                 Investigate this Kubernetes alert autonomously with bounded read-only evidence.
 
@@ -292,27 +293,44 @@ data:
 
                 If the notification is resolved, perform no Kubernetes or Forge action. If it
                 is firing, call kube_read summary, inspect only clearly related resources with
-                workload or events, and recheck summary before answering. If the alert is
-                malformed or cannot be tied to a resource, say so and do not guess. If
-                kube_read or the API is unavailable, make no health or resolution claim.
-                Never mutate the cluster.
+                workload or events, and recheck summary before answering. For Prometheus alerts,
+                call prometheus_read alert_history using only labels present in the alert. For
+                NodeDiskIOSaturation, also call prometheus_read node_disk with the alert's
+                kubernetes_node and device; if either is absent, report the missing evidence and
+                do not guess. If kube_read, prometheus_read, or either API is unavailable, make no
+                unsupported health or resolution claim. Use only successful tool results as
+                evidence. Never claim a metric, status, restart count, condition, or Event that a
+                successful tool result did not return. Never mutate the cluster.
 
                 Only for a firing alert with High confidence that survives the recheck and whose
                 desired fix belongs in Home Ops, call infra_dispatch_gitops once. Use a stable
                 incident key made from the alert name and Kubernetes scope, never this delivery's
                 event id. Pass only concise observed evidence. Do not dispatch transient runtime
                 failures, resolved or malformed alerts, uncertain diagnoses, or manual restart,
-                scale, delete, and sync actions. Report the returned Forge task id in Next; never
-                claim that a task or PR exists when dispatch fails.
+                scale, delete, and sync actions. Never claim that a task or PR exists when
+                dispatch fails.
 
-                Return exactly this compact plain-text format, with one line per field, no
-                bullets, no preamble, and no extra sections:
-                <🚨 or ✅> <alert name> — <FIRING or RESOLVED>
-                Scope: <namespace/resource, or unknown>
-                Finding: <one sentence>
-                Evidence: <at most three short facts separated by semicolons>
-                Confidence: <High, Medium, or Low>
-                Next: <one human action, or None>
+                Telegram is action-only. Never send Telegram for resolved alerts, transient or
+                uncorroborated findings, external observations, or failed investigations.
+                Medium or Low confidence findings and cases where no action was taken are also
+                silent. Duplicate Forge tasks are silent. For every such case, respond exactly
+                with [SILENT] and nothing else.
+
+                Only if infra_dispatch_gitops returns outcome created, return exactly:
+                🛠️ GITOPS TASK CREATED — <alert name>
+                Scope: <namespace/resource>
+                Action: Forge task <task id> created for Home Ops; review PR pending
+                Evidence: <at most two short observed facts separated by semicolons>
+
+                If no task was created, send Telegram only when a High-confidence persistent firing
+                condition requires one specific human action that Hermes cannot safely perform.
+                Return exactly:
+                ⚠️ ACTION REQUIRED — <alert name>
+                Scope: <namespace/resource>
+                Action: <one concrete human action required now>
+                Evidence: <at most two short observed facts separated by semicolons>
+
+                Otherwise respond exactly with [SILENT]. Do not add a preamble or explanation.
               deliver: telegram
     platform_toolsets:
       cli: &platform-toolsets
@@ -336,6 +354,7 @@ data:
         - ivan_synology
         - mcp-coroot
         - kube-read
+        - prometheus-read
         - mcp-trek
         - memory
         - messaging
@@ -350,6 +369,7 @@ data:
       webhook:
         - infra-dispatch
         - kube-read
+        - prometheus-read
     known_plugin_toolsets:
       cli: &known-plugin-toolsets
         - ivan_bartender
@@ -362,10 +382,12 @@ data:
         - ivan_paperless
         - ivan_synology
         - kube-read
+        - prometheus-read
       telegram: *known-plugin-toolsets
       webhook:
         - infra-dispatch
         - kube-read
+        - prometheus-read
   nemo-relay-plugins.toml: |-
     version = 1
 
