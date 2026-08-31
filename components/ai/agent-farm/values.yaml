@@ -64,7 +64,7 @@ controllers:
             spec:
               httpGet:
                 path: /readyz
-                port: *publicPort
+                port: 8080
               failureThreshold: 30
               periodSeconds: 5
           readiness:
@@ -73,7 +73,7 @@ controllers:
             spec:
               httpGet:
                 path: /readyz
-                port: *publicPort
+                port: 8080
               failureThreshold: 3
               periodSeconds: 10
           liveness:
@@ -82,7 +82,7 @@ controllers:
             spec:
               httpGet:
                 path: /healthz
-                port: *publicPort
+                port: 8080
               failureThreshold: 3
               periodSeconds: 30
         resources:
