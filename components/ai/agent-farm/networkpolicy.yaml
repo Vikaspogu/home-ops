@@ -66,8 +66,15 @@ spec:
         - protocol: TCP
           port: 5432
     - to:
-        - ipBlock:
-            cidr: 10.30.30.16/32
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ${GATEWAY_NAMESPACE}
+          podSelector:
+            matchLabels:
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+      # Cilium may enforce the service port before or the backend port after DNAT.
       ports:
         - protocol: TCP
           port: 443
+        - protocol: TCP
+          port: 10443
