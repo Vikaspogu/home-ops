@@ -292,8 +292,9 @@ data:
                 Tags: {tags}
 
                 If the notification is resolved, perform no Kubernetes or Forge action. If it
-                is firing, call kube_read summary, inspect only clearly related resources with
-                workload or events, and recheck summary before answering. For Prometheus alerts,
+                is firing, call kube_read with action="summary", inspect only clearly related
+                resources with workload or events, and recheck action="summary" before answering.
+                For Prometheus alerts,
                 call prometheus_read alert_history using only labels present in the alert. For
                 NodeDiskIOSaturation, also call prometheus_read node_disk with the alert's
                 kubernetes_node and device; if either is absent, report the missing evidence and

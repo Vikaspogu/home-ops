@@ -144,6 +144,7 @@ done
   | .platforms.webhook.extra.routes."kubernetes-alert".prompt as $prompt
   | [($prompt | contains("Untrusted content boundary")),
      ($prompt | contains("notification is resolved")),
+     ($prompt | contains("call kube_read with action=\"summary\"")),
      ($prompt | contains("malformed")),
      ($prompt | contains("API is unavailable")),
      ($prompt | contains("Never mutate the cluster")),
@@ -163,7 +164,7 @@ done
      ($prompt | contains("Duplicate Forge tasks")),
      ($prompt | contains("Medium or Low confidence"))]
    | join(",")
-' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required evidence, failure, injection, dispatch, or action-only delivery boundary"
+' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required evidence, failure, injection, dispatch, or action-only delivery boundary"
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")

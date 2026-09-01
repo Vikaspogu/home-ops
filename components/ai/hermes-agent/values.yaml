@@ -131,7 +131,7 @@ controllers:
         restartPolicy: Always
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260828230449-f97afd0-oci
+          tag: 20260831123916-3ce21d5-oci
         command: ["python", "/usr/local/bin/hermes-ntfy-alert-bridge"]
         env:
           PYTHONUNBUFFERED: "1"
