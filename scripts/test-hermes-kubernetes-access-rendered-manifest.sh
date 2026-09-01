@@ -26,6 +26,9 @@ kustomize build --enable-helm "${FORGE_COMPONENT}" >"${forge_manifest}"
 for kind in ServiceAccount ClusterRole ClusterRoleBinding; do
   [[ "$(resource_count "${kind}" hermes-cluster-reader)" == "1" ]] || fail "missing ${kind}/hermes-cluster-reader"
 done
+for kind in ClusterRole ClusterRoleBinding; do
+  [[ "$(resource_count "${kind}" hermes-approved-operator)" == "1" ]] || fail "missing ${kind}/hermes-approved-operator"
+done
 
 [[ "$(yq ea -r '
   select(.kind == "ServiceAccount" and .metadata.name == "hermes-cluster-reader")
@@ -35,6 +38,18 @@ done
 [[ "$(yq ea -r 'select(.kind == "ClusterRole" and .metadata.name == "hermes-cluster-reader") | [.rules[].verbs[]] | unique | sort | join(",")' "${manifest}")" == "get,list" ]] || fail "ClusterRole verbs must be get and list only"
 [[ "$(yq ea -r 'select(.kind == "ClusterRole" and .metadata.name == "hermes-cluster-reader") | [.rules[].apiGroups[]] | unique | sort | join(",")' "${manifest}")" == ",apps,argoproj.io,batch,events.k8s.io,policy" ]] || fail "ClusterRole API groups must remain explicit"
 [[ "$(yq ea -r 'select(.kind == "ClusterRole" and .metadata.name == "hermes-cluster-reader") | [.rules[].resources[]] | unique | sort | join(",")' "${manifest}")" == "applications,cronjobs,daemonsets,deployments,events,jobs,namespaces,nodes,persistentvolumeclaims,poddisruptionbudgets,pods,replicasets,services,statefulsets" ]] || fail "ClusterRole resources must remain explicit and non-sensitive"
+
+[[ "$(yq ea -r 'select(.kind == "ClusterRole" and .metadata.name == "hermes-approved-operator") | [.rules[].verbs[]] | unique | sort | join(",")' "${manifest}")" == "delete,patch" ]] || fail "approved operator verbs must remain explicit"
+[[ "$(yq ea -r 'select(.kind == "ClusterRole" and .metadata.name == "hermes-approved-operator") | [.rules[].resources[]] | unique | sort | join(",")' "${manifest}")" == "daemonsets,daemonsets/scale,deployments,deployments/scale,jobs,pods,statefulsets,statefulsets/scale" ]] || fail "approved operator resources must remain limited to rechecked runtime actions"
+approved_operator_resources="$(yq ea -r 'select(.kind == "ClusterRole" and .metadata.name == "hermes-approved-operator") | [.rules[].resources[]] | unique | join(",")' "${manifest}")"
+for denied_resource in secrets serviceaccounts pods/attach pods/exec pods/portforward roles rolebindings clusterroles clusterrolebindings; do
+  [[ ",${approved_operator_resources}," != *",${denied_resource},"* ]] || fail "approved operator must deny credentials, RBAC, exec, attach, and port forwarding"
+done
+[[ "$(yq ea -r '
+  select(.kind == "ClusterRoleBinding" and .metadata.name == "hermes-approved-operator")
+  | [.roleRef.kind, .roleRef.name, .subjects[0].kind, .subjects[0].name, .subjects[0].namespace, (.subjects | length)]
+  | join(",")
+' "${manifest}")" == "ClusterRole,hermes-approved-operator,ServiceAccount,hermes-cluster-reader,ai,1" ]] || fail "approved operator must bind only the Hermes identity"
 
 [[ "$(yq ea -r '
   select(.kind == "ClusterRoleBinding" and .metadata.name == "hermes-cluster-reader")
@@ -135,7 +150,14 @@ done
      (.platform_toolsets.webhook | join(",")),
      (.known_plugin_toolsets.webhook | join(","))]
   | join(",")
-' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kubernetes_health,kube-read,prometheus-read,infra-dispatch,infra-dispatch,kube-read,prometheus-read,infra-dispatch,kube-read,prometheus-read" ]] || fail "ntfy webhook route must expose only bounded investigation and dispatch tools"
+' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kubernetes_health,kube-read,prometheus-read,infra-dispatch,terminal,infra-dispatch,kube-read,prometheus-read,terminal,infra-dispatch,kube-read,prometheus-read" ]] || fail "ntfy webhook route must expose the approved command tool only with bounded investigation tools"
+
+[[ "$(yq ea -r '
+  select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
+  | .data["config.yaml"]
+  | from_yaml
+  | .approvals.mode
+' "${manifest}")" == "manual" ]] || fail "terminal commands must require manual approval"
 
 [[ "$(yq ea -r '
   select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
@@ -148,7 +170,10 @@ done
      ($prompt | contains("call kube_read with action=\"ownership\"")),
      ($prompt | contains("malformed")),
      ($prompt | contains("API is unavailable")),
-     ($prompt | contains("Never mutate the cluster")),
+     ($prompt | contains("Never directly mutate an Argo CD-managed resource")),
+     ($prompt | contains("Allow Once or Deny prompt is")),
+     ($prompt | contains("target is rechecked after approval")),
+     ($prompt | contains("terminal to read Secrets")),
      ($prompt | contains("call prometheus_read")),
      ($prompt | contains("successful tool results")),
      ($prompt | contains("Never claim a metric")),
@@ -165,7 +190,7 @@ done
      ($prompt | contains("Duplicate Forge tasks")),
      ($prompt | contains("Medium or Low confidence"))]
    | join(",")
-' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required evidence, failure, injection, dispatch, or action-only delivery boundary"
+' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required evidence, failure, injection, dispatch, approval, or action-only delivery boundary"
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")

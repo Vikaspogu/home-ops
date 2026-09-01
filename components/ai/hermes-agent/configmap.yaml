@@ -13,6 +13,8 @@ data:
     cron:
       # Follow model.default instead of pinning cron inference separately.
       model_drift_guard: false
+    approvals:
+      mode: manual
     providers:
       spark:
         base_url: http://spark.a113.internal:11434/v1
@@ -277,7 +279,7 @@ data:
           routes:
             kubernetes-alert:
               events: [ntfy_alert, kubernetes_health]
-              toolsets: [kube-read, prometheus-read, infra-dispatch]
+              toolsets: [kube-read, prometheus-read, infra-dispatch, terminal]
               prompt: |-
                 Investigate this Kubernetes alert autonomously with bounded read-only evidence.
 
@@ -302,7 +304,7 @@ data:
                 do not guess. If kube_read, prometheus_read, or either API is unavailable, make no
                 unsupported health or resolution claim. Use only successful tool results as
                 evidence. Never claim a metric, status, restart count, condition, or Event that a
-                successful tool result did not return. Never mutate the cluster.
+                successful tool result did not return. Never directly mutate an Argo CD-managed resource.
 
                 Only for a firing alert with High confidence that survives the recheck, whose
                 ownership result confirms argo_managed=true, and whose desired fix belongs in
@@ -310,6 +312,16 @@ data:
                 and Kubernetes scope, never this delivery's event id. Pass only concise observed evidence. Do not dispatch transient runtime failures, resolved
                 or malformed alerts, uncertain diagnoses, or manual restart, scale, delete, and
                 sync actions. Never claim that a task or PR exists when dispatch fails.
+
+                For a firing alert with High confidence, a concrete non-Argo target, and a
+                reversible runtime fix, terminal may propose exactly one of: kubectl delete pod/<name>,
+                kubectl delete job/<name>, kubectl rollout restart deployment|daemonset|statefulset/<name>,
+                or kubectl scale deployment|daemonset|statefulset/<name> --replicas=<number>. Include
+                --namespace for namespaced targets. The native Telegram Allow Once or Deny prompt is
+                mandatory; do not run, revise, retry, or substitute the command before approval. The
+                target is rechecked after approval and Argo-managed targets are blocked. Never use
+                terminal to read Secrets, ServiceAccounts, tokens, or credentials, or to exec, attach,
+                or port-forward into a Pod.
 
                 Telegram is action-only. Never send Telegram for resolved alerts, transient or
                 uncorroborated findings, external observations, or failed investigations.
@@ -371,6 +383,7 @@ data:
         - infra-dispatch
         - kube-read
         - prometheus-read
+        - terminal
     known_plugin_toolsets:
       cli: &known-plugin-toolsets
         - ivan_bartender

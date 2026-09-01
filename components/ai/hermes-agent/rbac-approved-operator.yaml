@@ -1,0 +1,37 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: hermes-approved-operator
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["delete"]
+  - apiGroups: ["apps"]
+    resources:
+      - daemonsets
+      - deployments
+      - statefulsets
+    verbs: ["patch"]
+  - apiGroups: ["apps"]
+    resources:
+      - daemonsets/scale
+      - deployments/scale
+      - statefulsets/scale
+    verbs: ["patch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: hermes-approved-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hermes-approved-operator
+subjects:
+  - kind: ServiceAccount
+    name: hermes-cluster-reader
+    namespace: ai
