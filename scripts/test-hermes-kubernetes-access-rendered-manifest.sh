@@ -135,7 +135,7 @@ done
      (.platform_toolsets.webhook | join(",")),
      (.known_plugin_toolsets.webhook | join(","))]
   | join(",")
-' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kube-read,prometheus-read,infra-dispatch,infra-dispatch,kube-read,prometheus-read,infra-dispatch,kube-read,prometheus-read" ]] || fail "ntfy webhook route must expose only bounded investigation and dispatch tools"
+' "${manifest}")" == "true,127.0.0.1,telegram,ntfy_alert,kubernetes_health,kube-read,prometheus-read,infra-dispatch,infra-dispatch,kube-read,prometheus-read,infra-dispatch,kube-read,prometheus-read" ]] || fail "ntfy webhook route must expose only bounded investigation and dispatch tools"
 
 [[ "$(yq ea -r '
   select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
@@ -145,6 +145,7 @@ done
   | [($prompt | contains("Untrusted content boundary")),
      ($prompt | contains("notification is resolved")),
      ($prompt | contains("call kube_read with action=\"summary\"")),
+     ($prompt | contains("call kube_read with action=\"ownership\"")),
      ($prompt | contains("malformed")),
      ($prompt | contains("API is unavailable")),
      ($prompt | contains("Never mutate the cluster")),
@@ -164,7 +165,7 @@ done
      ($prompt | contains("Duplicate Forge tasks")),
      ($prompt | contains("Medium or Low confidence"))]
    | join(",")
-' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required evidence, failure, injection, dispatch, or action-only delivery boundary"
+' "${manifest}")" == "true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true" ]] || fail "autonomous alert prompt is missing a required evidence, failure, injection, dispatch, or action-only delivery boundary"
 
 [[ "$(yq ea -r '
   select(.kind == "Deployment" and .metadata.name == "hermes-agent")
