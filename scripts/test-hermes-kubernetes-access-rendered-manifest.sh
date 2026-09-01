@@ -4,6 +4,7 @@ set -Eeuo pipefail
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly HERMES_COMPONENT="${ROOT_DIR}/components/ai/hermes-agent"
 readonly FORGE_COMPONENT="${ROOT_DIR}/components/ai/forge"
+readonly IMAGE_UPDATER_CONFIG="${ROOT_DIR}/components/argo-system/argocd-image-updater/imageupdater.yaml"
 umask 077
 readonly manifest="$(mktemp)"
 readonly forge_manifest="$(mktemp)"
@@ -22,6 +23,8 @@ resource_count() {
 
 kustomize build --enable-helm "${HERMES_COMPONENT}" >"${manifest}"
 kustomize build --enable-helm "${FORGE_COMPONENT}" >"${forge_manifest}"
+
+[[ "$(yq e '.spec.applicationRefs[] | select(.namePattern == "hermes-agent") | .images[] | select(.alias == "agent-platform-hermes-agent-ntfy") | .manifestTargets.helm.tag' "${IMAGE_UPDATER_CONFIG}")" == "controllers.app.initContainers.ntfy-alert-bridge.image.tag" ]] || fail "image updater must update the ntfy bridge with the Hermes app image"
 
 for kind in ServiceAccount ClusterRole ClusterRoleBinding; do
   [[ "$(resource_count "${kind}" hermes-cluster-reader)" == "1" ]] || fail "missing ${kind}/hermes-cluster-reader"

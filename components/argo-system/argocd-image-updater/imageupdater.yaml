@@ -113,6 +113,14 @@ spec:
             helm:
               name: controllers.app.initContainers.hermes-bootstrap.image.repository
               tag: controllers.app.initContainers.hermes-bootstrap.image.tag
+        - alias: agent-platform-hermes-agent-ntfy
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+          manifestTargets:
+            helm:
+              name: controllers.app.initContainers.ntfy-alert-bridge.image.repository
+              tag: controllers.app.initContainers.ntfy-alert-bridge.image.tag
     - namePattern: "agentmemory"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
