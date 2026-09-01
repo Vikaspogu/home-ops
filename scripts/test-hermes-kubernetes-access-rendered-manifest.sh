@@ -169,7 +169,7 @@ done
   | .platforms.webhook.extra.routes."kubernetes-alert".prompt as $prompt
   | [($prompt | contains("Untrusted content boundary")),
      ($prompt | contains("notification is resolved")),
-     ($prompt | contains("call kube_read with action=\"summary\"")),
+     ($prompt | contains("call kube_read with action=\"summary\" and no other arguments")),
      ($prompt | contains("call kube_read with action=\"ownership\"")),
      ($prompt | contains("malformed")),
      ($prompt | contains("API is unavailable")),

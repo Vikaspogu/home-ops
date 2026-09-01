@@ -294,8 +294,9 @@ data:
                 Tags: {tags}
 
                 If the notification is resolved, perform no Kubernetes or Forge action. If it
-                is firing, call kube_read with action="summary", inspect only clearly related
-                resources with workload or events, and recheck action="summary" before answering.
+                is firing, call kube_read with action="summary" and no other arguments, inspect only
+                clearly related resources with workload or events, and recheck action="summary" with
+                no other arguments before answering.
                 If a concrete target survives the recheck, call kube_read with action="ownership".
                 For Prometheus alerts,
                 call prometheus_read alert_history using only labels present in the alert. For
