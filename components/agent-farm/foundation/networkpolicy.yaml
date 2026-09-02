@@ -54,3 +54,26 @@ spec:
       ports:
         - protocol: TCP
           port: 3000
+---
+# Workspace launcher pods: Pi Web only from the API gateway; SSH open (key-gated).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: agent-farm-workspace-ingress
+  namespace: agent-farm
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: agent-farm
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: api
+      ports:
+        - protocol: TCP
+          port: 30141
+    - ports:
+        - protocol: TCP
+          port: 22
