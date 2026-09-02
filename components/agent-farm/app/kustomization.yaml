@@ -5,6 +5,8 @@ resources:
   - externalsecret.yaml
   - rbac.yaml
   - http-route.yaml
+  - http-route-workspaces.yaml
+  - datavolumes.yaml
 helmCharts:
   - name: app-template
     releaseName: agent-farm

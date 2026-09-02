@@ -1,0 +1,37 @@
+# Golden workspace base images, imported once by CDI from the immutable
+# containerdisk tags published by the agent-farm golden-images workflow.
+# Workspace DataVolumes clone these; tags are content-pinned on purpose.
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: agent-farm-ubuntu-base
+spec:
+  source:
+    registry:
+      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu:20260902164930-c306792-oci
+      secretRef: gitea-registry-secret
+  storage:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 20Gi
+    storageClassName: ceph-block
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: DataVolume
+metadata:
+  name: agent-farm-ubuntu-desktop-base
+spec:
+  source:
+    registry:
+      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu-desktop:20260902164930-c306792-oci
+      secretRef: gitea-registry-secret
+  storage:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 40Gi
+    storageClassName: ceph-block

@@ -16,6 +16,18 @@ spec:
       ports:
         - protocol: TCP
           port: 8080
+    # Forward-auth path: Envoy Gateway proxies ws-* traffic to the API after
+    # the Outpost extAuth check supplies the trusted identity header.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+          podSelector:
+            matchLabels:
+              gateway.envoyproxy.io/owning-gateway-name: envoy-internal
+      ports:
+        - protocol: TCP
+          port: 8080
     - from:
         - podSelector:
             matchLabels:
