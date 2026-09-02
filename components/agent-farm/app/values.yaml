@@ -10,7 +10,7 @@ controllers:
       labels:
         app.kubernetes.io/component: api
       imagePullSecrets:
-        - name: gitea-registry-secret
+      - name: gitea-registry-secret
     serviceAccount:
       identifier: agent-farm-api
     initContainers:
@@ -19,13 +19,13 @@ controllers:
           repository: ghcr.io/home-operations/postgres-init
           tag: 18.6.0@sha256:b6d3af974df781c673d37e49bdddfa14a6f5be28b18d2cb7713f0449bea4057b
         envFrom: &apiEnv
-          - secretRef:
-              name: agent-farm-api-secret
+        - secretRef:
+            name: agent-farm-api-secret
     containers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-farm-api
-          tag: 20260901193757-214dcdd-oci
+          tag: 20260901235219-56931a2-oci
           pullPolicy: Always
         env:
           PORT: &apiPort 8080
@@ -82,19 +82,19 @@ controllers:
       labels:
         app.kubernetes.io/component: web
       imagePullSecrets:
-        - name: gitea-registry-secret
+      - name: gitea-registry-secret
     containers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-farm-web
-          tag: 20260901193757-214dcdd-oci
+          tag: 20260901235219-56931a2-oci
           pullPolicy: Always
         env:
           PORT: &webPort 3000
           AGENT_FARM_API_URL: http://agent-farm-api.agent-farm.svc.cluster.local:8080
         envFrom:
-          - secretRef:
-              name: agent-farm-web-secret
+        - secretRef:
+            name: agent-farm-web-secret
         resources:
           requests:
             cpu: 25m
