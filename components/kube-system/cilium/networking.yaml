@@ -7,7 +7,16 @@ metadata:
 spec:
   allowFirstLastIPs: "No"
   blocks:
-    - cidr: 10.30.30.0/24
+    # Pinned service IPs (gateways, kube-api, gitea-ssh).
+    - start: 10.30.30.15
+      stop: 10.30.30.20
+    # Dynamic allocations (workspace SSH services). Kept clear of real hosts:
+    # .1 is the VLAN gateway, .21-.25 are nodes, .150 is the Talos VIP.
+    - start: 10.30.30.100
+      stop: 10.30.30.149
+    # Pinned service IPs (influxdb, loki, alloy, mosquitto).
+    - start: 10.30.30.159
+      stop: 10.30.30.162
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/cilium.io/ciliumbgpadvertisement_v2.json
 apiVersion: cilium.io/v2
