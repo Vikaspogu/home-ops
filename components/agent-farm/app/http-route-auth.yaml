@@ -1,0 +1,17 @@
+# Auth endpoint host for the workspace forward_auth domain provider.
+# Must be a distinct host from the portal: the outpost keys provider routing
+# on external_host, and sharing one shadows the portal with a 404.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: agent-farm-auth
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["agent-farm-auth.${CLUSTER_DOMAIN}"]
+  rules:
+    - backendRefs:
+        - name: ak-outpost-agent-farm
+          port: 9000

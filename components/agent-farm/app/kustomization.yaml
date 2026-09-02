@@ -6,6 +6,7 @@ resources:
   - rbac.yaml
   - http-route.yaml
   - http-route-workspaces.yaml
+  - http-route-auth.yaml
   - datavolumes.yaml
 helmCharts:
   - name: app-template
