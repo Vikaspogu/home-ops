@@ -12,4 +12,3 @@ spec:
   dnsNames:
     - ${CLUSTER_DOMAIN}
     - "*.${CLUSTER_DOMAIN}"
-    - "*.agent-farm.${CLUSTER_DOMAIN}"

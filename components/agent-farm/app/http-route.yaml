@@ -7,7 +7,7 @@ spec:
     - name: ${GATEWAY_NAME}
       namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
-  hostnames: ["portal.agent-farm.${CLUSTER_DOMAIN}"]
+  hostnames: ["portal.${CLUSTER_DOMAIN}"]
   rules:
     - backendRefs:
         - name: ak-outpost-agent-farm
