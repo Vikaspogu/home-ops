@@ -7,6 +7,7 @@ controllers:
     labels:
       app.kubernetes.io/component: api
     pod:
+      automountServiceAccountToken: true
       labels:
         app.kubernetes.io/component: api
       imagePullSecrets:
