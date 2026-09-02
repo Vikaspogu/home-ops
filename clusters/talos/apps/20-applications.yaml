@@ -653,6 +653,14 @@ applications:
     source:
       path: components/agent-farm/foundation
 
+  agent-farm:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: agent-farm
+    source:
+      path: components/agent-farm/app
+
   hermes-agent:
     annotations:
       argocd.argoproj.io/sync-wave: "24"

@@ -136,3 +136,26 @@ spec:
             helm:
               name: controllers.agentmemory.containers.app.image.repository
               tag: controllers.agentmemory.containers.app.image.tag
+    - namePattern: "agent-farm"
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: agent-farm-api
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-farm-api"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+          manifestTargets:
+            helm:
+              name: controllers.api.containers.app.image.repository
+              tag: controllers.api.containers.app.image.tag
+        - alias: agent-farm-web
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-farm-web"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+          manifestTargets:
+            helm:
+              name: controllers.web.containers.app.image.repository
+              tag: controllers.web.containers.app.image.tag

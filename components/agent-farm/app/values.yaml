@@ -1,0 +1,144 @@
+serviceAccount:
+  agent-farm-api: {}
+controllers:
+  api:
+    annotations:
+      secret.reloader.stakater.com/reload: agent-farm-api-secret
+    labels:
+      app.kubernetes.io/component: api
+    pod:
+      labels:
+        app.kubernetes.io/component: api
+      imagePullSecrets:
+        - name: gitea-registry-secret
+    serviceAccount:
+      identifier: agent-farm-api
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: 18.6.0@sha256:b6d3af974df781c673d37e49bdddfa14a6f5be28b18d2cb7713f0449bea4057b
+        envFrom: &apiEnv
+          - secretRef:
+              name: agent-farm-api-secret
+    containers:
+      app:
+        image:
+          repository: gitea.a113.casa/vpogu/agent-farm-api
+          tag: 20260901193757-214dcdd-oci
+          pullPolicy: Always
+        env:
+          PORT: &apiPort 8080
+          AGENT_FARM_NAMESPACE: agent-farm
+          CLUSTER_DOMAIN: ${CLUSTER_DOMAIN}
+          STORAGE_CLASS: ceph-block
+          UBUNTU_SOURCE: agent-farm-ubuntu-base
+          UBUNTU_DESKTOP_SOURCE: agent-farm-ubuntu-desktop-base
+          IMAGE_SOURCE_NAMESPACE: agent-farm
+        envFrom: *apiEnv
+        resources:
+          requests:
+            cpu: 25m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *apiPort
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *apiPort
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *apiPort
+              periodSeconds: 3
+              failureThreshold: 20
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: {drop: ["ALL"]}
+  web:
+    annotations:
+      secret.reloader.stakater.com/reload: agent-farm-web-secret
+    labels:
+      app.kubernetes.io/component: web
+    pod:
+      labels:
+        app.kubernetes.io/component: web
+      imagePullSecrets:
+        - name: gitea-registry-secret
+    containers:
+      app:
+        image:
+          repository: gitea.a113.casa/vpogu/agent-farm-web
+          tag: 20260901193757-214dcdd-oci
+          pullPolicy: Always
+        env:
+          PORT: &webPort 3000
+          AGENT_FARM_API_URL: http://agent-farm-api.agent-farm.svc.cluster.local:8080
+        envFrom:
+          - secretRef:
+              name: agent-farm-web-secret
+        resources:
+          requests:
+            cpu: 25m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *webPort
+              periodSeconds: 30
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *webPort
+              periodSeconds: 10
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *webPort
+              periodSeconds: 3
+              failureThreshold: 20
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {drop: ["ALL"]}
+service:
+  api:
+    controller: api
+    ports:
+      http:
+        port: *apiPort
+  web:
+    controller: web
+    ports:
+      http:
+        port: *webPort
