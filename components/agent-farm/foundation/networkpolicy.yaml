@@ -74,6 +74,9 @@ spec:
       ports:
         - protocol: TCP
           port: 30141
+        # noVNC desktop web (desktop workspaces only)
+        - protocol: TCP
+          port: 6080
     - ports:
         - protocol: TCP
           port: 22
