@@ -37,6 +37,6 @@ helmCharts:
     releaseName: openshell
     namespace: ai
     repo: oci://ghcr.io/nvidia/openshell
-    version: "0.0.113"
+    version: "0.0.111"
     valuesFile: values.yaml
     includeCRDs: false
