@@ -62,7 +62,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /agentmemory/livez
+                path: /healthz
                 port: &apiPort 3111
               failureThreshold: 60
               periodSeconds: 5
@@ -72,7 +72,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /agentmemory/livez
+                path: /healthz
                 port: *apiPort
               failureThreshold: 3
               periodSeconds: 10
@@ -82,7 +82,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /agentmemory/livez
+                path: /healthz
                 port: *apiPort
               failureThreshold: 3
               periodSeconds: 30
@@ -92,7 +92,7 @@ controllers:
             cpu: 200m
             memory: 2Gi
           limits:
-            memory: 12Gi
+            memory: 16Gi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
