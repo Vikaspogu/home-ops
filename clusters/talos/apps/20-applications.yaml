@@ -690,6 +690,14 @@ applications:
       namespace: ai
     source:
       path: components/ai/forge
+  zot:
+    annotations:
+      argocd.argoproj.io/sync-wave: "10"
+    destination:
+      namespace: forge-system
+    source:
+      path: components/forge-system/zot
+
   forge-dashboard:
     annotations:
       argocd.argoproj.io/sync-wave: "25"

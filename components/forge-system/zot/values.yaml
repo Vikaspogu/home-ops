@@ -1,0 +1,52 @@
+# Zot pull-through cache for Forge sandbox verification; upstreams regenerated from repo_contracts by the orchestrator.
+service:
+  type: ClusterIP
+  port: 5000
+
+mountConfig: true
+
+deploymentAnnotations:
+  configmap.reloader.stakater.com/reload: zot-config
+
+# Ephemeral cache: on restart zot re-pulls on demand; enable persistence below if cold caches become a latency problem.
+persistence: false
+
+configFiles:
+  config.json: |-
+    {
+      "distSpecVersion": "1.1.0",
+      "storage": {
+        "rootDirectory": "/var/lib/registry",
+        "gc": true
+      },
+      "http": {
+        "address": "0.0.0.0",
+        "port": "5000"
+      },
+      "log": { "level": "info" },
+      "extensions": {
+        "sync": {
+          "enable": true,
+          "registries": [
+            {
+              "urls": ["https://quay.io"],
+              "onDemand": true,
+              "tlsVerify": true,
+              "content": [{ "prefix": "**", "destination": "/quay.io" }]
+            },
+            {
+              "urls": ["https://ghcr.io"],
+              "onDemand": true,
+              "tlsVerify": true,
+              "content": [{ "prefix": "**", "destination": "/ghcr.io" }]
+            },
+            {
+              "urls": ["https://registry.k8s.io"],
+              "onDemand": true,
+              "tlsVerify": true,
+              "content": [{ "prefix": "**", "destination": "/registry.k8s.io" }]
+            }
+          ]
+        }
+      }
+    }
