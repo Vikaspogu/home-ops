@@ -64,9 +64,10 @@ controllers:
               httpGet:
                 path: /
                 port: &apiPort 3111
-              failureThreshold: 120
-              periodSeconds: 10
-              timeoutSeconds: 10
+              failureThreshold: 200
+              periodSeconds: 30
+              timeoutSeconds: 15
+              initialDelaySeconds: 30
           readiness:
             enabled: true
             custom: true
@@ -74,9 +75,9 @@ controllers:
               httpGet:
                 path: /
                 port: *apiPort
-              failureThreshold: 3
-              periodSeconds: 10
-              timeoutSeconds: 5
+              failureThreshold: 12
+              periodSeconds: 30
+              timeoutSeconds: 10
           liveness:
             enabled: true
             custom: true
@@ -84,9 +85,9 @@ controllers:
               httpGet:
                 path: /
                 port: *apiPort
-              failureThreshold: 3
+              failureThreshold: 12
               periodSeconds: 30
-              timeoutSeconds: 5
+              timeoutSeconds: 10
         resources:
           requests:
             cpu: 200m
