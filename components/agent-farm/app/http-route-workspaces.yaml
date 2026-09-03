@@ -13,13 +13,25 @@ spec:
   # API allows only leading-label wildcards) and would poison the UniFi
   # external-dns webhook, which rejects wildcard records.
   rules:
-    - backendRefs:
+    # Agent SSH-over-WebSocket authenticates with an agent token at the Go
+    # gateway (no browser session exists for CLI clients), so it skips the
+    # outpost forward-auth below. Ownership is still enforced per connection.
+    - name: ssh
+      matches:
+        - path:
+            type: PathPrefix
+            value: /ssh
+      backendRefs:
+        - name: agent-farm-api
+          port: 8080
+    - name: web
+      backendRefs:
         - name: agent-farm-api
           port: 8080
 ---
 # Forward auth: the outpost checks the workspace session and supplies
 # X-Authentik-Username (overriding any client-forged value) before traffic
-# reaches the owner-checking gateway.
+# reaches the owner-checking gateway. Scoped to the web rule only.
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
@@ -29,6 +41,7 @@ spec:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
       name: agent-farm-workspaces
+      sectionName: web
   extAuth:
     # EG's HTTP extAuth default forwards only Host/Method/Path/Content-Length/
     # Authorization to the auth service; without the session cookie every
