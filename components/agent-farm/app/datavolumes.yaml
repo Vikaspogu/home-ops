@@ -9,7 +9,7 @@ metadata:
 spec:
   source:
     registry:
-      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu:20260902164930-c306792-oci
+      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu:20260903205354-9b722de-oci
       secretRef: gitea-registry-cdi
   storage:
     accessModes:
@@ -26,7 +26,7 @@ metadata:
 spec:
   source:
     registry:
-      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu-desktop:20260902164930-c306792-oci
+      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu-desktop:20260903205354-9b722de-oci
       secretRef: gitea-registry-cdi
   storage:
     accessModes:
