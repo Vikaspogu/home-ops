@@ -167,11 +167,7 @@ data:
       cwd: /opt/data/workspace
       timeout: 180
       env_passthrough:
-        # Explicit list only; "*" is unsupported upstream (GHSA-rhgp-j443-p4rf).
-        # Non-blocklisted vars pass to terminal children by default; these two
-        # are listed to document what the gog/sonos CLIs rely on.
-        - GOG_KEYRING_BACKEND
-        - SONOS_SPEAKER_IPS
+        - "*"
     skills:
       disabled:
         - architecture-diagram
