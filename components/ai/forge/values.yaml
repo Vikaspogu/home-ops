@@ -1,3 +1,6 @@
+serviceAccount:
+  forge:
+    forceRename: forge
 controllers:
   app:
     replicas: 1
@@ -8,6 +11,8 @@ controllers:
     pod:
       imagePullSecrets:
       - name: gitea-registry-secret
+    serviceAccount:
+      identifier: forge
     initContainers:
       init-db:
         image:
@@ -51,7 +56,7 @@ controllers:
           FORGE_HELM_PATH: /opt/mise/installs/helm/4.2.4/linux-amd64/helm
           FORGE_SKILLS_CONFIG: /app/config/skills.yaml
           FORGE_RULES_CONFIG: /app/config/rules.yaml
-          FORGE_COPILOT_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
+          FORGE_ENV_IMAGE_REPO: gitea.a113.casa/vpogu/openshell-sandbox-env
           FORGE_REVIEWER_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
           FORGE_REVIEW_MIN_CONFIDENCE: "7"
         envFrom: *envFrom

@@ -5,6 +5,7 @@ namespace: ai
 resources:
   - ./externalsecret.yaml
   - ./configmap.yaml
+  - ./rbac.yaml
 
 helmCharts:
   - name: app-template
