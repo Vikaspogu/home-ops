@@ -51,14 +51,10 @@ spec:
           branch: main
           writeBackTarget: "helmvalues:./values.yaml"
       images:
-        - alias: backend
-          imageName: gitea.${CLUSTER_DOMAIN}/vpogu/forge-backend
-          commonUpdateSettings:
-            allowTags: regexp:^[0-9]{14}-[a-f0-9]{7}-oci$
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.app.image.repository
-              tag: controllers.app.containers.app.image.tag
+        # forge-backend is pinned MANUALLY (spec 2026-09-03 rollout discipline):
+        # the updater's tag list for it comes back empty from the registry, so
+        # it never selects a newer tag — but its write-back would still clobber
+        # manual pins. Keep it out of the tracked set.
         - alias: openshell-sandbox
           imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/openshell-sandbox:latest-oci"
           commonUpdateSettings:
