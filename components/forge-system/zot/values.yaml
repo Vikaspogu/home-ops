@@ -11,6 +11,19 @@ deploymentAnnotations:
 # Ephemeral cache: on restart zot re-pulls on demand; enable persistence below if cold caches become a latency problem.
 persistence: false
 
+# PodSecurity restricted compliance (forge-system enforces restricted).
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
+
 configFiles:
   config.json: |-
     {
