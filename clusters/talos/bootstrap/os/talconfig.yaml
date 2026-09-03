@@ -132,6 +132,7 @@ nodes:
     controlPlane: false
     patches:
       - "@./patches/k8s-5-1u/storage-volumes.yaml"
+      - "@./patches/k8s-5-1u/machine-kubelet.yaml"
     schematic:
       customization:
         systemExtensions:

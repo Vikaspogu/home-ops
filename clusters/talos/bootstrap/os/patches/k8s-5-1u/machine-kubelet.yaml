@@ -1,0 +1,8 @@
+machine:
+  kubelet:
+    extraConfig:
+      # ponytail: tighter than global 65/55 — small 117G /var with heavy CI/agent
+      # image churn on this node; raise GC pressure so stale image layers get
+      # pruned before the disk-pressure alert fires
+      imageGCHighThresholdPercent: 55
+      imageGCLowThresholdPercent: 45
