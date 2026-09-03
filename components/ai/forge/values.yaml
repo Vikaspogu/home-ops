@@ -1,6 +1,7 @@
 serviceAccount:
   forge:
     forceRename: forge
+    automountServiceAccountToken: true
 controllers:
   app:
     replicas: 1
