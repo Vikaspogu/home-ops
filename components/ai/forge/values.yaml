@@ -58,6 +58,7 @@ controllers:
           FORGE_SKILLS_CONFIG: /app/config/skills.yaml
           FORGE_RULES_CONFIG: /app/config/rules.yaml
           FORGE_ENV_IMAGE_REPO: gitea.a113.casa/vpogu/openshell-sandbox-env
+          FORGE_ZOT_ENDPOINT: zot.forge-system.svc:5000
           FORGE_REVIEWER_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
           FORGE_REVIEW_MIN_CONFIDENCE: "7"
         envFrom: *envFrom
