@@ -36,6 +36,8 @@ controllers:
           UBUNTU_SOURCE: agent-farm-ubuntu-base
           UBUNTU_DESKTOP_SOURCE: agent-farm-ubuntu-desktop-base
           IMAGE_SOURCE_NAMESPACE: agent-farm
+          OIDC_ISSUER: https://id.${CLUSTER_DOMAIN}/application/o/agent-farm-cli/
+          OIDC_CLIENT_ID: agent-farm-cli
         envFrom: *apiEnv
         resources:
           requests:
