@@ -45,9 +45,9 @@ kustomize build --enable-helm \
   || fail "rendered OpenShell config must not use the removed supervisor_topology field"
 
 [[ "$(CHART_VERSION="${chart_version}" yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell" and .metadata.labels."app.kubernetes.io/version" == strenv(CHART_VERSION))] | length' "${manifest}")" == "1" ]] \
-  || fail "rendered OpenShell Deployment must use chart ${chart_version}"
+  || fail "rendered OpenShell Deployment must use chart 0.0.111"
 [[ "$(yq ea -r 'select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .image' "${manifest}")" == "ghcr.io/nvidia/openshell/gateway:${chart_version}" ]] \
-  || fail "OpenShell gateway image must follow chart ${chart_version}"
+  || fail "OpenShell gateway image must follow chart 0.0.111"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .env[] | select(.name == "OPENSHELL_GATEWAY_CREDENTIAL_KEY_ENCRYPTION_KEY" and .valueFrom.secretKeyRef.name == "openshell-db-secret" and .valueFrom.secretKeyRef.key == "key-encryption-key")] | length' "${manifest}")" == "1" ]] \
   || fail "OpenShell must read its credential-encryption key from openshell-db-secret"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .env[] | select(.name == "OPENSHELL_TELEMETRY_ENABLED" and .value == "false")] | length' "${manifest}")" == "1" ]] \
