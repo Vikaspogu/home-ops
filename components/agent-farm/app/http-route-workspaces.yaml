@@ -30,15 +30,15 @@ spec:
       kind: HTTPRoute
       name: agent-farm-workspaces
   extAuth:
+    # EG's HTTP extAuth default forwards only Host/Method/Path/Content-Length/
+    # Authorization to the auth service; without the session cookie every
+    # check fails and the browser bounces in a login redirect loop.
+    headersToExtAuth:
+      - cookie
     http:
       backendRefs:
         - name: ak-outpost-agent-farm
           port: 9000
       path: /outpost.goauthentik.io/auth/envoy
-      # EG's HTTP extAuth default forwards only Host/Method/Path/Content-Length/
-      # Authorization; without the session cookie every check fails and the
-      # browser bounces in a login redirect loop.
-      headersToExtAuth:
-        - cookie
       headersToBackend:
         - X-Authentik-Username
