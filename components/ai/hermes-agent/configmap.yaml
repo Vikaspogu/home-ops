@@ -122,10 +122,9 @@ data:
     goals:
       max_turns: 20
     session_reset:
-      mode: both
-      at_hour: 4
+      mode: idle
+      idle_minutes: 10080
       timezone: America/New_York
-      idle_minutes: 1440
     agent:
       max_turns: 90
       api_max_retries: 3
@@ -168,7 +167,11 @@ data:
       cwd: /opt/data/workspace
       timeout: 180
       env_passthrough:
-        - "*"
+        # Explicit list only; "*" is unsupported upstream (GHSA-rhgp-j443-p4rf).
+        # Non-blocklisted vars pass to terminal children by default; these two
+        # are listed to document what the gog/sonos CLIs rely on.
+        - GOG_KEYRING_BACKEND
+        - SONOS_SPEAKER_IPS
     skills:
       disabled:
         - architecture-diagram
@@ -235,6 +238,7 @@ data:
     plugins:
       enabled:
         - ivan-personal
+        - paperless-approval
         - disk-cleanup
         - rtk-rewrite
         - forge
@@ -334,6 +338,7 @@ data:
                 🛠️ GITOPS TASK CREATED — <alert name>
                 Scope: <namespace/resource>
                 Action: Forge task <task id> created for Home Ops; review PR pending
+                Task: https://forge.${CLUSTER_DOMAIN}/tasks/<task id>
                 Evidence: <at most two short observed facts separated by semicolons>
 
                 If no task was created, send Telegram only when a High-confidence persistent firing
@@ -387,6 +392,7 @@ data:
         - terminal
     known_plugin_toolsets:
       cli: &known-plugin-toolsets
+        - paperless-approval
         - ivan_bartender
         - ivan_budget
         - ivan_dining
