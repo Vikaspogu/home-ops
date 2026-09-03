@@ -167,6 +167,11 @@ data:
       cwd: /opt/data/workspace
       timeout: 180
       env_passthrough:
+        # Wildcard passthrough requires the agent-platform-custom image patch
+        # (patch-hermes-env-passthrough.py, applied at image build). Upstream has
+        # no "*" semantics and blocklists provider/LLM/GH tokens from terminal
+        # children (GHSA-rhgp-j443-p4rf); this deliberately re-opens them to all
+        # terminal/execute_code children — owner-approved tradeoff.
         - "*"
     skills:
       disabled:
