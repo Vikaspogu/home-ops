@@ -62,7 +62,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /
+                path: /healthz
                 port: &apiPort 3111
               failureThreshold: 60
               periodSeconds: 5
@@ -72,7 +72,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /
+                path: /healthz
                 port: *apiPort
               failureThreshold: 3
               periodSeconds: 10
@@ -82,7 +82,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /
+                path: /healthz
                 port: *apiPort
               failureThreshold: 3
               periodSeconds: 30
