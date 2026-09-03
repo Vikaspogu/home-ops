@@ -64,9 +64,9 @@ controllers:
               httpGet:
                 path: /
                 port: &apiPort 3111
-              failureThreshold: 60
-              periodSeconds: 5
-              timeoutSeconds: 5
+              failureThreshold: 120
+              periodSeconds: 10
+              timeoutSeconds: 10
           readiness:
             enabled: true
             custom: true
@@ -90,9 +90,9 @@ controllers:
         resources:
           requests:
             cpu: 200m
-            memory: 1Gi
+            memory: 2Gi
           limits:
-            memory: 4Gi
+            memory: 6Gi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
