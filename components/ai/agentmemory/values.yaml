@@ -61,8 +61,7 @@ controllers:
             enabled: true
             custom: true
             spec:
-              httpGet:
-                path: /
+              tcpSocket:
                 port: &apiPort 3111
               failureThreshold: 30
               periodSeconds: 30
@@ -72,8 +71,7 @@ controllers:
             enabled: true
             custom: true
             spec:
-              httpGet:
-                path: /
+              tcpSocket:
                 port: *apiPort
               failureThreshold: 12
               periodSeconds: 30
@@ -82,8 +80,7 @@ controllers:
             enabled: true
             custom: true
             spec:
-              httpGet:
-                path: /
+              tcpSocket:
                 port: *apiPort
               failureThreshold: 12
               periodSeconds: 30
