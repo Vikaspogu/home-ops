@@ -11,7 +11,7 @@ data:
     runner:
       file: /data/.runner
       capacity: 2
-      timeout: 3h
+      timeout: 6h
       insecure: false
       fetch_timeout: 5s
       fetch_interval: 2s
@@ -31,6 +31,8 @@ data:
       privileged: false
       docker_host: tcp://localhost:2375
       force_pull: false
-      options: --add-host=host.docker.internal:host-gateway
+      # Golden image builds run QEMU; /dev/kvm turns a 2h TCG emulation crawl
+      # into hardware-accelerated builds.
+      options: --add-host=host.docker.internal:host-gateway --device /dev/kvm
       valid_volumes:
         - '**'
