@@ -62,37 +62,38 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /agentmemory/livez
+                path: /
                 port: &apiPort 3111
-              failureThreshold: 60
-              periodSeconds: 5
+              failureThreshold: 30
+              periodSeconds: 30
               timeoutSeconds: 5
+              initialDelaySeconds: 30
           readiness:
             enabled: true
             custom: true
             spec:
               httpGet:
-                path: /agentmemory/livez
+                path: /
                 port: *apiPort
-              failureThreshold: 3
-              periodSeconds: 10
-              timeoutSeconds: 5
+              failureThreshold: 12
+              periodSeconds: 30
+              timeoutSeconds: 10
           liveness:
             enabled: true
             custom: true
             spec:
               httpGet:
-                path: /agentmemory/livez
+                path: /
                 port: *apiPort
-              failureThreshold: 3
+              failureThreshold: 12
               periodSeconds: 30
-              timeoutSeconds: 5
+              timeoutSeconds: 10
         resources:
           requests:
             cpu: 200m
             memory: 2Gi
           limits:
-            memory: 12Gi
+            memory: 6Gi
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
