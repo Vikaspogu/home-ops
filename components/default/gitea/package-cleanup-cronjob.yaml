@@ -61,15 +61,7 @@ spec:
               echo "$packages" | jq -r '.[].name' | while read -r pkg_name; do
                 echo "--- Processing package: ${pkg_name} ---"
 
-                # Golden workspace base images are release artifacts pinned by
-                # DataVolumes; pruning them breaks re-imports. Never touch them.
-                case "$pkg_name" in
-                  agent-farm-ubuntu|agent-farm-ubuntu-desktop)
-                    echo "  Skipping golden image package"
-                    echo ""
-                    continue
-                    ;;
-                esac
+
 
                 # Get all versions for this package from the owner's packages endpoint filtered by name
                 all_versions=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
