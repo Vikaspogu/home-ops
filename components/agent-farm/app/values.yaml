@@ -90,7 +90,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-farm-web
-          tag: 20260904164849-9c3d575-oci
+          tag: 20260904170604-662678a-oci
           pullPolicy: Always
         env:
           PORT: &webPort 3000
