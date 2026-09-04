@@ -431,7 +431,7 @@ data:
     enabled = true
 
     [components.config]
-    version = 1
+    version = 2
 
     [components.config.openinference]
     enabled = true
