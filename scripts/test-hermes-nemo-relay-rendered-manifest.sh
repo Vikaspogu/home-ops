@@ -70,7 +70,7 @@ hermes_init_image_count() {
     [
       select(.kind == "Deployment" and .metadata.name == "hermes-agent")
       | .spec.template.spec.initContainers[]?
-      | select(.image == strenv(HERMES_IMAGE))
+      | select(.name != "00-restore-permissions" and .image == strenv(HERMES_IMAGE))
     ] | length
 
   ' "${manifest}"
@@ -216,7 +216,7 @@ kustomize build --enable-helm "${HERMES_COMPONENT}" >"${manifest}"
 
 [[ "$(hermes_app_image_count)" == "1" ]] || fail "rendered Hermes application image must use ${HERMES_IMAGE} exactly once"
 
-[[ "$(hermes_init_image_count)" == "3" ]] || fail "rendered Hermes primary init containers must retain the application image tag"
+[[ "$(hermes_init_image_count)" == "4" ]] || fail "rendered Hermes primary init containers must retain the application image tag"
 [[ "$(hermes_restore_permissions_container_count)" == "1" ]] || fail "rendered Hermes restore-permissions init container must repair restored GOG config ownership"
 [[ "$(hermes_seed_config_container_count)" == "1" ]] || fail "rendered Hermes seed-config init container must run the seeder against the mounted configuration and PVC as uid 10000"
 [[ "$(hermes_first_init_container_name)" == "00-restore-permissions" ]] || fail "rendered Hermes ownership repair must run before bootstrap"

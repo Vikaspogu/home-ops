@@ -3,7 +3,9 @@ set -Eeuo pipefail
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly TREK_COMPONENT="${ROOT_DIR}/components/default/trek"
+readonly APP_IMAGE="$(yq -r '.controllers.app.containers.app.image | "\(.repository):\(.tag)"' "${TREK_COMPONENT}/values.yaml")"
 umask 077
+export APP_IMAGE
 readonly manifest="$(mktemp)"
 trap 'rm -f -- "${manifest}"' EXIT
 
@@ -22,7 +24,7 @@ app_container() {
     yq ea -r '
         select(.kind == "Deployment" and .metadata.name == "trek")
         | .spec.template.spec.containers[]?
-        | select(.image == "mauriceboe/trek:4.1.1")
+        | select(.image == env(APP_IMAGE))
     ' "${manifest}"
 }
 app_container_count() {
@@ -37,7 +39,7 @@ assert_env() {
     actual="$(NAME="${name}" yq ea -r '
         select(.kind == "Deployment" and .metadata.name == "trek")
         | .spec.template.spec.containers[]
-        | select(.image == "mauriceboe/trek:4.1.1")
+        | select(.image == env(APP_IMAGE))
         | .env[]
         | select(.name == env(NAME))
         | .value
