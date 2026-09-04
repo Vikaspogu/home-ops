@@ -248,7 +248,6 @@ data:
         - prometheus-read
         - web/ddgs
         - security-guidance
-        - observability/nemo_relay
     # TREK MCP: auth is client_credentials tokens kept fresh on disk by the
     # trek-token-refresher sidecar; hermes reloads them via mtime watch.
     # client_id/secret are only used for storage bootstrap, never a browser flow.
