@@ -64,9 +64,9 @@ controllers:
               httpGet:
                 path: /
                 port: &apiPort 3111
-              failureThreshold: 200
+              failureThreshold: 30
               periodSeconds: 30
-              timeoutSeconds: 15
+              timeoutSeconds: 5
               initialDelaySeconds: 30
           readiness:
             enabled: true
