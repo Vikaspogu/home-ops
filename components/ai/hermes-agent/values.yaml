@@ -132,7 +132,6 @@ controllers:
       mcp-token-sidecar:
         restartPolicy: Always
         image:
-        image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260901200508-30188e8-oci
         command: ["python", "/usr/local/bin/hermes-mcp-tokens"]
@@ -175,7 +174,6 @@ controllers:
           capabilities: {drop: ["ALL"]}
       ntfy-alert-bridge:
         restartPolicy: Always
-        image:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260901200508-30188e8-oci
