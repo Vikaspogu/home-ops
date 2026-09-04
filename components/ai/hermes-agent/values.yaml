@@ -224,7 +224,7 @@ controllers:
                 command: ["curl", "-fsS", "http://127.0.0.1:8642/health"]
               periodSeconds: 15
               timeoutSeconds: 5
-              failureThreshold: 24
+              failureThreshold: 40
           liveness:
             enabled: true
             custom: true
