@@ -66,8 +66,8 @@ controllers:
                 port: &apiPort 3111
               failureThreshold: 30
               periodSeconds: 30
-              timeoutSeconds: 5
-              initialDelaySeconds: 30
+              timeoutSeconds: 10
+              initialDelaySeconds: 60
           readiness:
             enabled: true
             custom: true
