@@ -314,8 +314,10 @@ data:
 
                 Only for a firing alert with High confidence that survives the recheck, whose
                 ownership result confirms argo_managed=true, and whose desired fix belongs in
-                Home Ops, call infra_dispatch_gitops once. Use a stable incident key made from the alert name
-                and Kubernetes scope, never this delivery's event id. Pass only concise observed evidence. Do not dispatch transient runtime failures, resolved
+                Home Ops, call infra_dispatch_gitops once. Use a stable incident key made only from the
+                Kubernetes scope (namespace/kind/name, such as ai/deployment/agentmemory), never from the
+                alert name and never this delivery's event id: different alerts on the same resource are
+                one incident. Pass only concise observed evidence. Do not dispatch transient runtime failures, resolved
                 or malformed alerts, uncertain diagnoses, or manual restart, scale, delete, and
                 sync actions. Never claim that a task or PR exists when dispatch fails.
 
@@ -341,6 +343,17 @@ data:
                 Action: Forge task <task id> created for Home Ops; review PR pending
                 Task: https://forge.${CLUSTER_DOMAIN}/tasks/<task id>
                 Evidence: <at most two short observed facts separated by semicolons>
+
+                If infra_dispatch_gitops returns outcome failed_existing, a blocked Forge task already
+                exists for this incident: create nothing. Investigate why it is blocked — use its
+                failure_summary, inspect pr_url with tea or gh when present, and recheck the resource
+                with kube_read. Then return exactly:
+                ⚠️ GITOPS TASK BLOCKED — <alert name>
+                Scope: <namespace/resource>
+                Task: #<task id> https://forge.${CLUSTER_DOMAIN}/tasks/<task id>
+                PR: <pr_url, or "none">
+                Why: <one line from failure_summary plus your investigation>
+                Suggested: <one concrete action: retry the task, fix the PR, or a manual step>
 
                 If no task was created, send Telegram only when a High-confidence persistent firing
                 condition requires one specific human action that Hermes cannot safely perform.
