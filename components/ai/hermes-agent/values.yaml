@@ -205,13 +205,24 @@ controllers:
       app:
         image: *hermes-image
         probes:
+          # Gateway cold start varies (40s-2.5min: platform connect, MCP OAuth,
+          # session recovery). startupProbe owns that window so liveness never
+          # kill-loops a slow start; liveness/readiness take over after first ok.
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command: ["curl", "-fsS", "http://127.0.0.1:8642/health"]
+              periodSeconds: 15
+              timeoutSeconds: 5
+              failureThreshold: 24
           liveness:
             enabled: true
             custom: true
             spec:
               exec:
                 command: ["curl", "-fsS", "http://127.0.0.1:8642/health"]
-              initialDelaySeconds: 60
               periodSeconds: 30
               timeoutSeconds: 5
               failureThreshold: 3
