@@ -6,6 +6,8 @@ readonly NAMESPACE_COMPONENT="${ROOT_DIR}/components/system-upgrade/namespace"
 readonly TUPPR_COMPONENT="${ROOT_DIR}/components/system-upgrade/tuppr"
 readonly UPGRADE_COMPONENT="${ROOT_DIR}/components/system-upgrade/talos-upgrade"
 readonly APPLICATIONS_FILE="${ROOT_DIR}/clusters/talos/apps/30-system.yaml"
+readonly TALENV_FILE="${ROOT_DIR}/clusters/talos/bootstrap/os/talenv.yaml"
+readonly TALOS_VERSION="$(yq -r '.talosVersion' "${TALENV_FILE}")"
 readonly manifest="$(mktemp)"
 trap 'rm -f -- "${manifest}"' EXIT
 
@@ -27,7 +29,7 @@ kustomize build "${UPGRADE_COMPONENT}" >"${manifest}"
 [[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | (.metadata.annotations."tuppr.home-operations.com/suspend" // "<absent>")' "${manifest}")" == "<absent>" ]] || fail "TalosUpgrade must be active"
 [[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .spec.parallelism' "${manifest}")" == "1" ]] || fail "TalosUpgrade must be sequential"
 [[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .spec.maintenance.windows[0] | [.start, .duration, .timezone] | join(",")' "${manifest}")" == "30 9 * * 2,4h,America/New_York" ]] || fail "TalosUpgrade maintenance window must be Tuesday 09:30-13:30 America/New_York"
-[[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .spec.talos.version' "${manifest}")" == "v1.13.9" ]] || fail "TalosUpgrade version must match talenv"
+[[ "$(yq ea -r 'select(.kind == "TalosUpgrade" and .metadata.name == "cluster") | .spec.talos.version' "${manifest}")" == "${TALOS_VERSION}" ]] || fail "TalosUpgrade version must match talenv"
 
 [[ "$(yq -r '.applications."system-upgrade".annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS_FILE}")" == "30" ]] || fail "system-upgrade must sync at wave 30"
 [[ "$(yq -r '.applications.tuppr.annotations."argocd.argoproj.io/sync-wave"' "${APPLICATIONS_FILE}")" == "35" ]] || fail "Tuppr must sync at wave 35"
