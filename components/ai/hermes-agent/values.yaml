@@ -18,7 +18,7 @@ controllers:
       identifier: hermes-cluster-reader
     initContainers:
       00-restore-permissions:
-        image: &hermes-image
+        image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260901200508-30188e8-oci
         command:
@@ -55,7 +55,9 @@ controllers:
             drop: ["ALL"]
             add: ["CHOWN"]
       seed-config:
-        image: *hermes-image
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260901200508-30188e8-oci
         command: ["hermes-seed-config"]
         envFrom:
         - secretRef:
@@ -77,7 +79,9 @@ controllers:
       # immutable 40-char SHA pins + install-time security scan, replacing the
       # hand-rolled clone script. Refs are main-branch HEADs; bump on plugin change.
       plugins-install:
-        image: *hermes-image
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260901200508-30188e8-oci
         command:
           - /bin/sh
           - -ec
@@ -128,7 +132,9 @@ controllers:
       mcp-token-sidecar:
         restartPolicy: Always
         image:
-        image: *hermes-image
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260901200508-30188e8-oci
         command: ["python", "/usr/local/bin/hermes-mcp-tokens"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -170,7 +176,9 @@ controllers:
       ntfy-alert-bridge:
         restartPolicy: Always
         image:
-        image: *hermes-image
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260901200508-30188e8-oci
         command: ["python", "/usr/local/bin/hermes-ntfy-alert-bridge"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -203,7 +211,9 @@ controllers:
           capabilities: {drop: ["ALL"]}
     containers:
       app:
-        image: *hermes-image
+        image:
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
+          tag: 20260901200508-30188e8-oci
         probes:
           # Gateway cold start varies (40s-2.5min: platform connect, MCP OAuth,
           # session recovery). startupProbe owns that window so liveness never

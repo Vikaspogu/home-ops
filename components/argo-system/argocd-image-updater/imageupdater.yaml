@@ -93,6 +93,22 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
+        - alias: agent-platform-hermes-agent-restore-permissions
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+          manifestTargets:
+            helm:
+              name: controllers.app.initContainers.00-restore-permissions.image.repository
+              tag: controllers.app.initContainers.00-restore-permissions.image.tag
+        - alias: agent-platform-hermes-agent-mcp-token-sidecar
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
+          commonUpdateSettings:
+            allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
+          manifestTargets:
+            helm:
+              name: controllers.app.initContainers.mcp-token-sidecar.image.repository
+              tag: controllers.app.initContainers.mcp-token-sidecar.image.tag
         - alias: agent-platform-hermes-agent-seed
           imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
@@ -101,14 +117,14 @@ spec:
             helm:
               name: controllers.app.initContainers.seed-config.image.repository
               tag: controllers.app.initContainers.seed-config.image.tag
-        - alias: agent-platform-hermes-agent-bootstrap
+        - alias: agent-platform-hermes-agent-plugins-install
           imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
             allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
           manifestTargets:
             helm:
-              name: controllers.app.initContainers.hermes-bootstrap.image.repository
-              tag: controllers.app.initContainers.hermes-bootstrap.image.tag
+              name: controllers.app.initContainers.plugins-install.image.repository
+              tag: controllers.app.initContainers.plugins-install.image.tag
         - alias: agent-platform-hermes-agent-ntfy
           imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           commonUpdateSettings:
