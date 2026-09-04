@@ -6,6 +6,10 @@ rules:
   - apiGroups: [""]
     resources: ["services"]
     verbs: ["create", "delete"]
+  # Setup bundles (per-owner) and per-workspace cloud-init user data.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create", "delete"]
   - apiGroups: ["cdi.kubevirt.io"]
     resources: ["datavolumes"]
     verbs: ["delete"]

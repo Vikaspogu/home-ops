@@ -18,20 +18,3 @@ spec:
       requests:
         storage: 20Gi
     storageClassName: ceph-block
----
-apiVersion: cdi.kubevirt.io/v1beta1
-kind: DataVolume
-metadata:
-  name: agent-farm-ubuntu-desktop-base
-spec:
-  source:
-    registry:
-      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu-desktop:20260903205354-9b722de-oci
-      secretRef: gitea-registry-cdi
-  storage:
-    accessModes:
-      - ReadWriteOnce
-    resources:
-      requests:
-        storage: 40Gi
-    storageClassName: ceph-block
