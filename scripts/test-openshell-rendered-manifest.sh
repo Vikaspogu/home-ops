@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Update chart version expectation from 0.0.110 to 0.0.111
+# Updated chart version expectation to 0.0.111
 set -Eeuo pipefail
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
