@@ -38,5 +38,4 @@ bgp.conf
 __pycache__/
 *.py[cod]
 *.egg-info/
-graphify-out/
 .pi
