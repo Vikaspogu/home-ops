@@ -18,9 +18,9 @@ controllers:
       identifier: hermes-cluster-reader
     initContainers:
       00-restore-permissions:
-        image:
+        image: &hermes-image
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260727121950-e57aa7d-oci
+          tag: 20260901200508-30188e8-oci
         command:
         - python
         - -c
@@ -55,9 +55,7 @@ controllers:
             drop: ["ALL"]
             add: ["CHOWN"]
       seed-config:
-        image:
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+        image: *hermes-image
         command: ["hermes-seed-config"]
         envFrom:
         - secretRef:
@@ -75,16 +73,42 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-      hermes-bootstrap:
-        image:
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
-        command: ["python", "/etc/hermes-bootstrap/bootstrap.py"]
+      # Git-hosted plugins installed via upstream `hermes plugins install`:
+      # immutable 40-char SHA pins + install-time security scan, replacing the
+      # hand-rolled clone script. Refs are main-branch HEADs; bump on plugin change.
+      plugins-install:
+        image: *hermes-image
+        command:
+          - /bin/sh
+          - -ec
+          - |
+            /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
+              --ref "${IVAN_PLUGIN_REF}" \
+              "https://gitea.a113.casa/vpogu/ivan-plugin.git#plugin"
+            /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
+              --ref "${FORGE_PLUGIN_REF}" \
+              "https://gitea.a113.casa/vpogu/forge.git#plugins/hermes"
         env:
+          HOME: /opt/data
+          HERMES_HOME: /opt/data
           PYTHONUNBUFFERED: "1"
-        envFrom:
-        - secretRef:
-            name: hermes-agent-secret
+          IVAN_PLUGIN_REF: 4d095bafc6691ea8298721be1b647f5b3c12370e
+          FORGE_PLUGIN_REF: 6eb728677cc68bb44acd48909640e45d9c8615d2
+          GITEA_USER:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: GITEA_USER
+          GITEA_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: GITEA_TOKEN
+          # Token auth via git insteadOf keeps the token out of argv and out
+          # of the plugin source URL recorded in install metadata.
+          GIT_CONFIG_COUNT: "1"
+          GIT_CONFIG_KEY_0: "url.https://$(GITEA_USER):$(GITEA_TOKEN)@gitea.a113.casa/.insteadOf"
+          GIT_CONFIG_VALUE_0: "https://gitea.a113.casa/"
         resources:
           requests:
             cpu: 25m
@@ -104,16 +128,32 @@ controllers:
       mcp-token-sidecar:
         restartPolicy: Always
         image:
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260715000636-fdb6d67-oci
+        image: *hermes-image
         command: ["python", "/usr/local/bin/hermes-mcp-tokens"]
         env:
           PYTHONUNBUFFERED: "1"
           TREK_URL: "https://trek.${CLUSTER_DOMAIN}"
           COROOT_URL: "https://coroot.${CLUSTER_DOMAIN}"
-        envFrom:
-        - secretRef:
-            name: hermes-agent-secret
+          TREK_OAUTH_CLIENT_ID:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: TREK_OAUTH_CLIENT_ID
+          TREK_OAUTH_CLIENT_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: TREK_OAUTH_CLIENT_SECRET
+          COROOT_EMAIL:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: COROOT_EMAIL
+          COROOT_PASSWORD:
+            valueFrom:
+              secretKeyRef:
+                name: hermes-agent-secret
+                key: COROOT_PASSWORD
         resources:
           requests:
             cpu: 10m
@@ -130,8 +170,7 @@ controllers:
       ntfy-alert-bridge:
         restartPolicy: Always
         image:
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+        image: *hermes-image
         command: ["python", "/usr/local/bin/hermes-ntfy-alert-bridge"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -164,9 +203,28 @@ controllers:
           capabilities: {drop: ["ALL"]}
     containers:
       app:
-        image:
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+        image: *hermes-image
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command: ["curl", "-fsS", "http://127.0.0.1:8642/health"]
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command: ["curl", "-fsS", "http://127.0.0.1:8642/health"]
+              initialDelaySeconds: 15
+              periodSeconds: 15
+              timeoutSeconds: 5
+              failureThreshold: 3
         args:
         - gateway
         - run
@@ -226,7 +284,7 @@ persistence:
         - path: /opt/data
         seed-config:
         - path: /opt/data
-        hermes-bootstrap:
+        plugins-install:
         - path: /opt/data
         app:
         - path: /opt/data
@@ -244,40 +302,12 @@ persistence:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
           readOnly: true
-        hermes-bootstrap:
-        - path: /opt/bootstrap/config.yaml
-          subPath: config.yaml
-          readOnly: true
-        - path: /opt/data/nemo-relay-plugins.toml
-          subPath: nemo-relay-plugins.toml
-          readOnly: true
         # The app container must see the ConfigMap content, not the PVC's
         # stale placeholder at the same path — HERMES_NEMO_RELAY_PLUGINS_TOML
         # points here and the plugin silently no-ops on an empty file.
         app:
         - path: /opt/data/nemo-relay-plugins.toml
           subPath: nemo-relay-plugins.toml
-          readOnly: true
-  bootstrap:
-    type: configMap
-    name: hermes-bootstrap
-    advancedMounts:
-      app:
-        hermes-bootstrap:
-        - path: /etc/hermes-bootstrap/bootstrap.py
-          subPath: bootstrap.py
-          readOnly: true
-        - path: /etc/hermes-bootstrap/config.yaml
-          subPath: config.yaml
-          readOnly: true
-  secret:
-    type: secret
-    name: hermes-agent-secret
-    advancedMounts:
-      app:
-        app:
-        - path: /opt/data/.env
-          subPath: .env
           readOnly: true
   kubernetes-api:
     type: custom

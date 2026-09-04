@@ -1,9 +1,0 @@
-plugins:
-  - name: ivan-personal
-    repo: https://gitea.a113.casa/vpogu/ivan-plugin.git
-    ref: main
-    path: plugin
-  - name: forge
-    repo: https://gitea.a113.casa/vpogu/forge.git
-    ref: main
-    path: plugins/hermes

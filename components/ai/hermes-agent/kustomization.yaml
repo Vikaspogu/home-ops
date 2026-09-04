@@ -19,8 +19,3 @@ helmCharts:
     repo: oci://ghcr.io/bjw-s-labs/helm
     version: "5.1.0"
     valuesFile: values.yaml
-configMapGenerator:
-  - name: hermes-bootstrap
-    files:
-      - bootstrap.py
-      - config.yaml=bootstrap-config.yaml
