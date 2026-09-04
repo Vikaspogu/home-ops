@@ -20,7 +20,7 @@ controllers:
       00-restore-permissions:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+          tag: 20260904021059-027e69d-oci
         command:
         - python
         - -c
@@ -57,7 +57,7 @@ controllers:
       seed-config:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+          tag: 20260904021059-027e69d-oci
         command: ["hermes-seed-config"]
         envFrom:
         - secretRef:
@@ -81,7 +81,7 @@ controllers:
       plugins-install:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+          tag: 20260904021059-027e69d-oci
         command:
           - /bin/sh
           - -ec
@@ -133,7 +133,7 @@ controllers:
         restartPolicy: Always
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+          tag: 20260904021059-027e69d-oci
         command: ["python", "/usr/local/bin/hermes-mcp-tokens"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -176,7 +176,7 @@ controllers:
         restartPolicy: Always
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+          tag: 20260904021059-027e69d-oci
         command: ["python", "/usr/local/bin/hermes-ntfy-alert-bridge"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -211,7 +211,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260901200508-30188e8-oci
+          tag: 20260904021059-027e69d-oci
         probes:
           # Gateway cold start varies (40s-2.5min: platform connect, MCP OAuth,
           # session recovery). startupProbe owns that window so liveness never
