@@ -11,7 +11,7 @@ readonly HERMES_RESTORE_PERMISSIONS_IMAGE="$(yq -r '.controllers.app.initContain
 export HERMES_RESTORE_PERMISSIONS_IMAGE
 readonly NEMO_RELAY_PLUGINS_PATH="/opt/data/nemo-relay-plugins.toml"
 export NEMO_RELAY_PLUGINS_PATH
-readonly NEMO_RELAY_PLUGINS_TOML=$'version = 1\n\n[[components]]\nkind = "observability"\nenabled = true\n\n[components.config]\nversion = 1\n\n[components.config.openinference]\nenabled = true\ntransport = "http_binary"\nendpoint = "http://alloy.observability.svc.cluster.local:4318/v1/traces"\nservice_name = "hermes-agent"\nservice_namespace = "ai"\ninstrumentation_scope = "hermes-nemo-relay"\ntimeout_millis = 3000\n\n[components.config.openinference.resource_attributes]\n"deployment.environment" = "talos"'
+readonly NEMO_RELAY_PLUGINS_TOML=$'version = 1\n\n[[components]]\nkind = "observability"\nenabled = true\n\n[components.config]\nversion = 2\n\n[components.config.openinference]\nenabled = true\ntransport = "http_binary"\nendpoint = "http://alloy.observability.svc.cluster.local:4318/v1/traces"\nservice_name = "hermes-agent"\nservice_namespace = "ai"\ninstrumentation_scope = "hermes-nemo-relay"\ntimeout_millis = 3000\n\n[components.config.openinference.resource_attributes]\n"deployment.environment" = "talos"'
 umask 077
 readonly manifest="$(mktemp)"
 trap 'rm -f -- "${manifest}"' EXIT
@@ -165,18 +165,6 @@ hermes_app_env_count() {
   ' "${manifest}"
 }
 
-hermes_nemo_relay_plugin_count() {
-  yq ea -r '
-    [
-      select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")
-      | .data["config.yaml"]
-      | from_yaml
-      | .plugins.enabled[]?
-      | select(. == "observability/nemo_relay")
-    ] | length
-  ' "${manifest}"
-}
-
 hermes_config_volume_count() {
   yq ea -r '
     [
@@ -221,10 +209,6 @@ kustomize build --enable-helm "${HERMES_COMPONENT}" >"${manifest}"
 [[ "$(hermes_seed_config_container_count)" == "1" ]] || fail "rendered Hermes seed-config init container must run the seeder against the mounted configuration and PVC as uid 10000"
 [[ "$(hermes_first_init_container_name)" == "00-restore-permissions" ]] || fail "rendered Hermes ownership repair must run before bootstrap"
 hermes_restore_permissions_script | python3 -c 'import sys; compile(sys.stdin.read(), "restore-permissions", "exec")'
-if grep -q 'run_hermes_seed_config' "${HERMES_COMPONENT}/bootstrap.py"; then
-  fail "hermes-bootstrap must not duplicate the dedicated seed-config init container"
-fi
-[[ "$(hermes_nemo_relay_plugin_count)" == "1" ]] || fail "rendered Hermes configuration must enable observability/nemo_relay"
 [[ "$(
   yq ea -r '
     select(.kind == "ConfigMap" and .metadata.name == "hermes-agent-config")

@@ -181,7 +181,7 @@ done
      ($prompt | contains("successful tool results")),
      ($prompt | contains("Never claim a metric")),
      ($prompt | contains("call infra_dispatch_gitops once")),
-     ($prompt | contains("incident key made from the alert name")),
+     ($prompt | contains("never from the\nalert name")),
      ($prompt | contains("Do not dispatch transient runtime")),
      ($prompt | contains("claim that a task or PR exists")),
      ($prompt | contains("Telegram is action-only")),
