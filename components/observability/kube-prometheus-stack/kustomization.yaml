@@ -13,5 +13,5 @@ helmCharts:
     namespace: observability
     repo: oci://ghcr.io/prometheus-community/charts
     includeCRDs: true
-    version: 89.2.2
+    version: 89.2.3
     valuesFile: values.yaml
