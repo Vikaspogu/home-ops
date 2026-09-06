@@ -98,6 +98,7 @@ validate_standalone_files() {
     find "${search_dir}" -maxdepth 1 -type f -name '*.yaml' \
         ! -name 'kustomization.yaml' \
         ! -name 'values.yaml' \
+        ! -name 'kustomizeconfig.yaml' \
         ! -name 'helmfile.yaml' \
         ! -name 'Chart.yaml' \
         ! -name '*.sops.yaml' \
