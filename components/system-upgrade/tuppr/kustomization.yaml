@@ -6,6 +6,6 @@ helmCharts:
     releaseName: tuppr
     namespace: system-upgrade
     repo: oci://ghcr.io/home-operations/charts
-    version: "0.5.3"
+    version: "0.5.4"
     valuesFile: values.yaml
     includeCRDs: true
