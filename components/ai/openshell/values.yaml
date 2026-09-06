@@ -49,3 +49,10 @@ pkiInitJob:
     - openshell.ai.svc
     - openshell.ai.svc.cluster.local
     - localhost
+
+# ArgoCD repo-server renders offline (helm template without cluster access),
+# so the 0.0.116 chart's CRD lookup preflight always fails there. The cluster
+# does serve agents.x-k8s.io/v1beta1 (agent-sandbox v0.5.2 is deployed).
+agentSandbox:
+  preflight:
+    enabled: false
