@@ -8,6 +8,13 @@ resources:
   - http-route-workspaces.yaml
   - http-route-auth.yaml
   - datavolumes.yaml
+# argocd-image-updater owns the golden-image tag and bumps newTag; the docker:// name matches
+# the DataVolume's spec.source.registry/url (see kustomizeconfig.yaml).
+images:  
+- name: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu
+  newTag: 20260903205354-9b722de-oci
+configurations:
+- kustomizeconfig.yaml
 helmCharts:
   - name: app-template
     releaseName: agent-farm

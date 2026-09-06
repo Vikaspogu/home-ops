@@ -148,3 +148,10 @@ spec:
             helm:
               name: controllers.web.containers.app.image.repository
               tag: controllers.web.containers.app.image.tag
+        # Golden workspace image: the pin lives in an images: override that
+        # rewrites the DataVolume registry url tag (app/kustomizeconfig.yaml).
+        - alias: agent-farm-ubuntu
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-farm-ubuntu"
+          manifestTargets:
+            kustomize:
+              name: "docker://gitea.${CLUSTER_DOMAIN}/vpogu/agent-farm-ubuntu"
