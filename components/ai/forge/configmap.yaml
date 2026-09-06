@@ -148,7 +148,7 @@ data:
         role: pr-opener
         skills: [secret-scan]
         depends_on: [approval]
-        model: spark/qwen3.6:35b-a3b-q8_0
+        model: switchyard/openai/gpt-5.6-luna
         timeout_minutes: 10
 
   implement.yaml: |-
@@ -207,7 +207,7 @@ data:
         # implement + ai-review are already ancestors via fix-loop; the extra
         # edges pull their notes into this node's message for the PR body.
         depends_on: [implement, ai-review, fix-loop]
-        model: spark/qwen3.6:35b-a3b-q8_0
+        model: switchyard/openai/gpt-5.6-luna
         timeout_minutes: 10
 
   gitops-update.yaml: |-
