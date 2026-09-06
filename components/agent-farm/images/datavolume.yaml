@@ -1,6 +1,7 @@
 # Golden workspace base images, imported once by CDI from the immutable
 # containerdisk tags published by the agent-farm golden-images workflow.
-# Workspace DataVolumes clone these; tags are content-pinned on purpose.
+# Workspace DataVolumes clone these; the tag pin lives in the kustomization
+# images: override (owned by argocd-image-updater).
 ---
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
@@ -9,7 +10,7 @@ metadata:
 spec:
   source:
     registry:
-      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu:20260903205354-9b722de-oci
+      url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu
       secretRef: gitea-registry-cdi
   storage:
     accessModes:

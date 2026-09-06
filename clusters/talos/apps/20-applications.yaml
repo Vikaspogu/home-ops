@@ -653,6 +653,14 @@ applications:
     source:
       path: components/agent-farm/foundation
 
+  agent-farm-images:
+    annotations:
+      argocd.argoproj.io/sync-wave: "19"
+    destination:
+      namespace: agent-farm
+    source:
+      path: components/agent-farm/images
+
   agent-farm:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

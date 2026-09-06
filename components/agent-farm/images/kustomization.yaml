@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: agent-farm
+resources:
+  - datavolume.yaml
+# argocd-image-updater owns the golden-image tag; the docker:// name matches the
+# DataVolume's spec.source.registry/url (see kustomizeconfig.yaml).
+images:
+- name: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu
+  newTag: 20260903205354-9b722de-oci
+configurations:
+- kustomizeconfig.yaml

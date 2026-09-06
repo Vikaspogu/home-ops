@@ -148,9 +148,9 @@ spec:
             helm:
               name: controllers.web.containers.app.image.repository
               tag: controllers.web.containers.app.image.tag
-    # Golden workspace image needs a kustomization write-back, which cannot be
-    # mixed with the helmvalues target above; same app, second ref.
-    - namePattern: "agent-farm"
+    # Golden workspace image lives in its own app (the CRD keys
+    # applicationRefs by namePattern) so it can use a kustomization write-back.
+    - namePattern: "agent-farm-images"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
         gitConfig:
