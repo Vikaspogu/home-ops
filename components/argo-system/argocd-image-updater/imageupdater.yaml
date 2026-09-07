@@ -164,3 +164,6 @@ spec:
           manifestTargets:
             kustomize:
               name: "docker://gitea.${CLUSTER_DOMAIN}/vpogu/agent-farm-ubuntu"
+
+# Fixed duplicate namePattern entries for agent-farm
+
