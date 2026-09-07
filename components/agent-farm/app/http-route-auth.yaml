@@ -12,6 +12,15 @@ spec:
       sectionName: https
   hostnames: ["agent-farm-auth.${CLUSTER_DOMAIN}"]
   rules:
+    # Named so the outpost-callback-recovery policy can target just this rule.
+    - name: callback
+      matches:
+        - path:
+            type: PathPrefix
+            value: /outpost.goauthentik.io/callback
+      backendRefs:
+        - name: ak-outpost-agent-farm
+          port: 9000
     - backendRefs:
         - name: ak-outpost-agent-farm
           port: 9000

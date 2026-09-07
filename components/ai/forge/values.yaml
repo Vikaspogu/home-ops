@@ -49,12 +49,11 @@ controllers:
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:b027b897bf3078c9859f8c0cdbe69aa8aa05dd9f35c019a0e10745ca23343d8c
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org,mise-versions.jdx.dev,registry.npmjs.org,get.helm.sh
-          # Disabled 2026-09-06: experiment — bypass nemo-relay so pi talks to the
-          # hub directly. Relay->upstream 502s kill every long run; direct pod->hub
-          # is proven healthy. Re-enable (alloy...:4318) once the relay path is fixed.
-          FORGE_OTEL_SANDBOX_ENDPOINT: ""
+          FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
-          FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/22.22.1/bin/node
+          # Must match the node version the environment contract installs
+          # (currently 24.19.0); drift policy-denies pi/npm egress from sandboxes.
+          FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/24.19.0/bin/node
           FORGE_PYPI_REGISTRY_HOSTS: pypi.org,files.pythonhosted.org
           FORGE_HELM_REGISTRY_HOSTS: argoproj.github.io,cdn.quay.io,ceph.github.io,charts.external-secrets.io,charts.rook.io,cloudnative-pg.github.io,coroot.github.io,emberstack.github.io,ghcr.io,grafana.github.io,helm.cilium.io,helm.influxdata.com,helm.ngc.nvidia.com,mirror.gcr.io,perfectra1n.github.io,quay.io,registry.k8s.io,stakater.github.io,zapier.github.io,github.com,objects.githubusercontent.com,pkg-containers.githubusercontent.com,release-assets.githubusercontent.com,storage.googleapis.com,us-east4-docker.pkg.dev
           FORGE_HELM_PATH: /opt/mise/installs/helm/4.2.4/linux-amd64/helm

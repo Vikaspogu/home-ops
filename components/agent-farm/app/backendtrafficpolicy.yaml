@@ -1,0 +1,28 @@
+# A failed outpost auth callback (expired/missing session cookie) returns a
+# raw 400 page and strands the user. Bounce it to the portal root, which
+# restarts the login flow and lands on the dashboard.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: outpost-callback-recovery
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: agent-farm-portal
+      sectionName: callback
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: agent-farm-auth
+      sectionName: callback
+  responseOverride:
+    - match:
+        statusCodes:
+          - type: Value
+            value: 400
+      response:
+        statusCode: 302
+        header:
+          set:
+            - name: location
+              value: https://portal.${CLUSTER_DOMAIN}/
