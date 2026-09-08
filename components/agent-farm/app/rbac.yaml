@@ -10,15 +10,21 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "create", "delete"]
+  # get: golden-image tag reads and home-DV existence checks; create: home DataVolumes.
   - apiGroups: ["cdi.kubevirt.io"]
     resources: ["datavolumes"]
-    verbs: ["delete"]
+    verbs: ["get", "create", "delete"]
+  # patch: resize grows the VM's memory requests in place.
   - apiGroups: ["kubevirt.io"]
     resources: ["virtualmachines"]
-    verbs: ["create", "delete"]
+    verbs: ["create", "delete", "patch"]
   - apiGroups: ["kubevirt.io"]
     resources: ["virtualmachineinstances"]
     verbs: ["get"]
+  # patch: resize expands the workspace home PVC.
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["patch"]
   - apiGroups: ["subresources.kubevirt.io"]
     resources: ["virtualmachines/start", "virtualmachines/stop", "virtualmachines/restart"]
     verbs: ["update"]
