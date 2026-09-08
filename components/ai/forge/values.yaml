@@ -49,7 +49,11 @@ controllers:
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:9ecae4cb7cdcc3ac3a27c56f39de9f0e4d9fbd0df104da94a7be805f5dfbd299
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org,mise-versions.jdx.dev,registry.npmjs.org,get.helm.sh
-          FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
+          # Disabled 2026-09-08: nemo-relay (0.4.0 AND 0.8.4) drops LLM streams mid-run
+          # (502 "error sending request" ~500s in, dead pooled upstream after idle
+          # between agent turns). pi talks direct to the hub; sandbox OTEL tracing
+          # dark until relay is fixed upstream or launcher writes v3 TOML config.
+          FORGE_OTEL_SANDBOX_ENDPOINT: ""
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           # Must match the node version the environment contract installs
           # (currently 24.19.0); drift policy-denies pi/npm egress from sandboxes.
