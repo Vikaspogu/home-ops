@@ -44,12 +44,27 @@ controllers:
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
           FORGE_DEFAULT_MODEL: openai/openai/gpt-5.6-terra
+          # Managed inference (pi -> inference.local -> gateway -> provider).
+          # The gateway holds real provider credentials; this placeholder key
+          # overrides the 1Password INFERENCE_HUB_CODING_KEY from forge-secret
+          # (individual env entries beat envFrom) and keeps the real key out of
+          # sandboxes. Spark nodes swap both values at route resolution.
+          INFERENCE_HUB_BASE_URL: https://inference.local
+          INFERENCE_HUB_API_KEY: unused
+          FORGE_MODEL_WORKSPACES: >-
+            switchyard/openai/gpt-5.6-terra=forge-terra,
+            openai/openai/gpt-5.6-terra=forge-terra,
+            azure/anthropic/claude-opus-5=forge-claude
+          FORGE_DEFAULT_WORKSPACE: forge-aux
           FORGE_SPARK_BASE_URL: http://spark.a113.internal:11434
           FORGE_SPARK_API_KEY: no-key-required
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:9ecae4cb7cdcc3ac3a27c56f39de9f0e4d9fbd0df104da94a7be805f5dfbd299
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org,mise-versions.jdx.dev,registry.npmjs.org,get.helm.sh
-          FORGE_OTEL_SANDBOX_ENDPOINT: alloy.observability.svc.cluster.local:4318
+          # Relay disabled for the managed inference path (pi talks to
+          # inference.local directly; the gateway owns the upstream connection).
+          # Revisit sandbox OTEL after the managed path is proven.
+          FORGE_OTEL_SANDBOX_ENDPOINT: ""
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
           # Must match the node version the environment contract installs
           # (currently 24.19.0); drift policy-denies pi/npm egress from sandboxes.
@@ -61,7 +76,7 @@ controllers:
           FORGE_RULES_CONFIG: /app/config/rules.yaml
           FORGE_ENV_IMAGE_REPO: gitea.a113.casa/vpogu/openshell-sandbox-env
           FORGE_ZOT_ENDPOINT: zot.forge-system.svc:5000
-          FORGE_REVIEWER_MODEL: aws/anthropic/bedrock-claude-sonnet-4-6
+          FORGE_REVIEWER_MODEL: azure/anthropic/claude-opus-5
           FORGE_REVIEW_MIN_CONFIDENCE: "7"
         envFrom: *envFrom
         resources:
