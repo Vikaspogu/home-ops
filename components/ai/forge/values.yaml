@@ -26,7 +26,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/forge-backend
-          tag: 20260908191559-4f957d6-oci
+          tag: 20260911161217-d111e8a-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -51,11 +51,19 @@ controllers:
           # sandboxes. Spark nodes swap both values at route resolution.
           INFERENCE_HUB_BASE_URL: https://inference.local
           INFERENCE_HUB_API_KEY: unused
-          FORGE_MODEL_WORKSPACES: >-
-            switchyard/openai/gpt-5.6-terra=forge-terra,
-            openai/openai/gpt-5.6-terra=forge-terra,
-            azure/anthropic/claude-opus-5=forge-claude
-          FORGE_DEFAULT_WORKSPACE: forge-aux
+          # Workspace routing is PARKED for the diagnostic run (2026-09-11).
+          # The map below is retained for when managed inference is switched
+          # on, but every model resolves to the default workspace until the
+          # gateway route timeouts are reconciled with the node timeouts:
+          # forge-aux is 600s while ai-review is 2400s and the feature
+          # reviewer 1800s, so activating routing today would let the gateway
+          # kill those nodes mid-run with the same "no result.json" symptom we
+          # are currently trying to diagnose. One variable at a time.
+          # FORGE_MODEL_WORKSPACES: >-
+          #   switchyard/openai/gpt-5.6-terra=forge-terra,
+          #   openai/openai/gpt-5.6-terra=forge-terra,
+          #   azure/anthropic/claude-opus-5=forge-claude
+          FORGE_DEFAULT_WORKSPACE: default
           FORGE_SPARK_BASE_URL: http://spark.a113.internal:11434
           FORGE_SPARK_API_KEY: no-key-required
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:9ecae4cb7cdcc3ac3a27c56f39de9f0e4d9fbd0df104da94a7be805f5dfbd299
