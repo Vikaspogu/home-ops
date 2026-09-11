@@ -5,7 +5,7 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["services"]
-    verbs: ["create", "delete"]
+    verbs: ["get", "create", "delete"]
   # Setup bundles (per-owner) and per-workspace cloud-init user data.
   - apiGroups: [""]
     resources: ["secrets"]
@@ -17,14 +17,14 @@ rules:
   # patch: resize grows the VM's memory requests in place.
   - apiGroups: ["kubevirt.io"]
     resources: ["virtualmachines"]
-    verbs: ["create", "delete", "patch"]
+    verbs: ["get", "create", "delete", "patch"]
   - apiGroups: ["kubevirt.io"]
     resources: ["virtualmachineinstances"]
     verbs: ["get"]
   # patch: resize expands the workspace home PVC.
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
-    verbs: ["patch"]
+    verbs: ["get", "patch"]
   - apiGroups: ["subresources.kubevirt.io"]
     resources: ["virtualmachines/start", "virtualmachines/stop", "virtualmachines/restart"]
     verbs: ["update"]
