@@ -32,7 +32,7 @@ controllers:
       app:
         image:
           repository: mauriceboe/trek
-          tag: "4.2.0"
+          tag: "4.2.1"
         env:
           NODE_ENV: production
           NODE_OPTIONS: "--max-old-space-size=384"
