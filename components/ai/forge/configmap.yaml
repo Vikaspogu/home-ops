@@ -41,7 +41,11 @@ data:
         project_type: python-service
         default_workflow: feature
         verify_commands:
-          - "uv run pytest"
+          # --extra openshell is required: forge.runners.openshell imports the
+          # openshell package, so without the extra 6-12 tests fail with
+          # ModuleNotFoundError and this repo can never pass its own gate
+          # (observed on task 371: 9-12 failed with zero agent changes).
+          - "uv run --extra openshell pytest"
           - "uv run ruff check src/forge"
       agent-platform-custom:
         # Stays on the legacy implement workflow: container-images repo has no
