@@ -7,6 +7,6 @@ resources:
 # DataVolume's spec.source.registry/url (see kustomizeconfig.yaml).
 images:
 - name: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu
-  newTag: 20260906003144-1afa9be-oci
+  newTag: 20260911175135-bfcb54b-oci
 configurations:
 - kustomizeconfig.yaml
