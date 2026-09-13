@@ -1,0 +1,70 @@
+# Hindsight agent memory — official chart.
+# Storage: shared CNPG cluster pgvector17 (barman-backed), not an in-chart PVC.
+# Docs: https://hindsight.vectorize.io/developer/installation
+
+# Provided by ./externalsecret.yaml (envFrom, all keys become env vars):
+#   postgres-password                            — pgvector17 role password
+#   HINDSIGHT_API_TENANT_API_KEY                 — Bearer key for pi/Hermes/MCP clients
+#   HINDSIGHT_API_EMBEDDINGS_OPENAI_API_KEY      — NVIDIA inference hub
+#   HINDSIGHT_API_EMBEDDINGS_OPENAI_BASE_URL     — NVIDIA inference hub
+#   HINDSIGHT_API_LLM_API_KEY                    — dummy, Ollama ignores it
+existingSecret: hindsight-secret
+# NOTE (review): the chart envFrom's this secret into the control-plane pod too,
+# so the UI process can read postgres-password and the tenant key. Accepted:
+# the UI is not exposed externally (see http-route.yaml), so exposure stays
+# in-cluster. Revisit if the UI is ever routed publicly.
+# NOTE (review): chart default readOnlyRootFilesystem:false is kept — the
+# chart offers no per-component override and the Next.js control plane needs
+# a writable fs. Accepted deviation from the repo hardening default.
+
+podAnnotations:
+  reloader.stakater.com/auto: "true"
+
+api:
+  env:
+    TZ: America/New_York
+    # Extraction/reflect LLM: Ollama on spark (same model agentmemory uses).
+    HINDSIGHT_API_LLM_PROVIDER: "ollama"
+    HINDSIGHT_API_LLM_MODEL: "qwen3.6:35b-a3b-q8_0"
+    HINDSIGHT_API_LLM_BASE_URL: "http://spark.a113.internal:11434"
+    HINDSIGHT_API_LLM_OLLAMA_NUM_CTX: "65536" # hindsight requires >=64K ctx
+    HINDSIGHT_API_LLM_MAX_CONCURRENT: "2" # single GPU on spark
+    # Embeddings: NVIDIA inference hub (same provider agentmemory uses).
+    HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"
+    HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL: "nvidia/qwen/qwen3-embedding-0.6b"
+    HINDSIGHT_API_EMBEDDINGS_OPENAI_DIMENSIONS: "1024"
+    # No reranker backend available in-cluster; embedding-only recall.
+    # If recall quality falls short, enable the chart's tei.reranker and drop this.
+    HINDSIGHT_API_ENABLE_RERANKING: "false"
+    # Bearer auth for all clients (pi plugin, Hermes provider, MCP).
+    HINDSIGHT_API_TENANT_EXTENSION: "hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
+
+controlPlane:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 128Mi
+    limits:
+      memory: 512Mi
+
+# API's internal worker is enough at this scale.
+worker:
+  enabled: false
+
+postgresql:
+  enabled: false
+  external:
+    host: pgvector17-rw.default.svc.cluster.local
+    port: 5432
+    database: hindsight
+    username: hindsight
+
+metrics:
+  serviceMonitor:
+    enabled: true

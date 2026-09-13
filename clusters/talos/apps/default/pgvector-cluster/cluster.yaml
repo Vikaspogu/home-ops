@@ -15,6 +15,13 @@ spec:
   superuserSecret:
     name: cloudnative-pg-secret
   enableSuperuserAccess: true
+  managed:
+    roles:
+      - name: hindsight
+        login: true
+        ensure: present
+        passwordSecret:
+          name: hindsight-db-secret
   postgresql:
     parameters:
       max_connections: "400"

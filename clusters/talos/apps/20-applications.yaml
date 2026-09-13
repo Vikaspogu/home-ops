@@ -736,6 +736,14 @@ applications:
           - name: VOLSYNC_SCHEDULE
             value: "33 4,10,16,22 * * *"
 
+  hindsight:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/hindsight
+
   searxng:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

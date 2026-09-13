@@ -5,3 +5,5 @@ kind: Kustomization
 namespace: default
 resources:
   - ./cluster.yaml
+  - ./database-hindsight.yaml
+  - ./externalsecret-hindsight-db.yaml
