@@ -161,7 +161,7 @@ data:
       user_char_limit: 2200
       nudge_interval: 15
       flush_min_turns: 3
-      provider: agentmemory
+      provider: hindsight
     terminal:
       backend: local
       cwd: /opt/data/workspace
