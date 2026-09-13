@@ -7,6 +7,13 @@ metadata:
   labels:
     app.kubernetes.io/instance: *app
     app.kubernetes.io/name: *app
+  annotations:
+    gethomepage.dev/href: "https://hindsight.${CLUSTER_DOMAIN}"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Ingress
+    gethomepage.dev/name: hindsight
+    gethomepage.dev/description: "Agent memory that learns"
+    gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons@main/png/basic-memory.png
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
@@ -29,6 +36,13 @@ spec:
       backendRefs:
         - name: hindsight-api
           port: 8888
-    # The control-plane UI has no built-in auth, so it is deliberately NOT
-    # exposed. Browse it with:
-    #   kubectl -n ai port-forward svc/hindsight-control-plane 3000:3000
+    # Control-plane UI → port 3000. No built-in auth: safe only because
+    # ${GATEWAY_NAME} resolves to envoy-internal (LAN/VPN-only exposure).
+    # Never move this rule to envoy-external without adding auth first.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: hindsight-control-plane
+          port: 3000

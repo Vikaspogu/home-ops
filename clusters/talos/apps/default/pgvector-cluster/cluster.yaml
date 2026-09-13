@@ -22,6 +22,11 @@ spec:
         ensure: present
         passwordSecret:
           name: hindsight-db-secret
+      # Legacy from the pre-CNPG mem0 experiment; databases dropped manually.
+      - name: mem0
+        ensure: absent
+      - name: app
+        ensure: absent
   postgresql:
     parameters:
       max_connections: "400"
