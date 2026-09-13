@@ -36,9 +36,10 @@ api:
     # No reranker backend available in-cluster; embedding-only recall.
     # If recall quality falls short, enable the chart's tei.reranker and drop these.
     HINDSIGHT_API_ENABLE_RERANKING: "false"
-    # ENABLE_RERANKING only gates recall-time use; provider=none stops the local
+    # ENABLE_RERANKING gates recall-time use; provider=rrf stops the local
     # cross-encoder model from loading at boot (~100MB + torch arenas).
-    HINDSIGHT_API_RERANKER_PROVIDER: "none"
+    # (provider "none" is mentioned in hindsight docs but rejected by the factory.)
+    HINDSIGHT_API_RERANKER_PROVIDER: "rrf"
     # Bearer auth for all clients (pi plugin, Hermes provider, MCP).
     HINDSIGHT_API_TENANT_EXTENSION: "hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension"
   resources:
