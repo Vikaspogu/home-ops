@@ -26,7 +26,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/forge-backend
-          tag: 20260912202738-42bb087-oci
+          tag: 20260914071720-e4f292f-oci
           pullPolicy: Always
         env:
           TZ: America/New_York
@@ -51,19 +51,15 @@ controllers:
           # sandboxes. Spark nodes swap both values at route resolution.
           INFERENCE_HUB_BASE_URL: https://inference.local
           INFERENCE_HUB_API_KEY: unused
-          # Workspace routing is PARKED for the diagnostic run (2026-09-11).
-          # The map below is retained for when managed inference is switched
-          # on, but every model resolves to the default workspace until the
-          # gateway route timeouts are reconciled with the node timeouts:
-          # forge-aux is 600s while ai-review is 2400s and the feature
-          # reviewer 1800s, so activating routing today would let the gateway
-          # kill those nodes mid-run with the same "no result.json" symptom we
-          # are currently trying to diagnose. One variable at a time.
-          # FORGE_MODEL_WORKSPACES: >-
-          #   switchyard/openai/gpt-5.6-terra=forge-terra,
-          #   openai/openai/gpt-5.6-terra=forge-terra,
-          #   azure/anthropic/claude-opus-5=forge-claude
-          FORGE_DEFAULT_WORKSPACE: default
+          # Workspace routes pin one model each because OpenShell rewrites the
+          # client model to the route model. Route ceilings exceed every Forge
+          # node timeout: terra 1800s, claude 2700s, aux 600s (pr-opener only).
+          FORGE_MODEL_WORKSPACES: >-
+            switchyard/openai/gpt-5.6-terra=forge-terra,
+            openai/openai/gpt-5.6-terra=forge-terra,
+            azure/anthropic/claude-opus-5=forge-claude,
+            nvidia/nvidia/Nemotron-3-Nano-30B-A3B=forge-aux
+          FORGE_DEFAULT_WORKSPACE: forge-terra
           FORGE_SPARK_BASE_URL: http://spark.a113.internal:11434
           FORGE_SPARK_API_KEY: no-key-required
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:9ecae4cb7cdcc3ac3a27c56f39de9f0e4d9fbd0df104da94a7be805f5dfbd299

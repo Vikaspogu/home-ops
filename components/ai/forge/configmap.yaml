@@ -94,7 +94,7 @@ data:
         type: agent
         role: council-critic
         read_only: true
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        model: azure/anthropic/claude-opus-5
         verify:
           - "git diff --exit-code && git diff --cached --exit-code"
         depends_on: [analyze, investigate]
@@ -141,7 +141,7 @@ data:
             # Deliberately a different model family than the implementer:
             # cross-model review catches shared blind spots.
             - role: reviewer
-              model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+              model: azure/anthropic/claude-opus-5
               rules: [codebase-design]
               skills: [security, impact-analysis]
       - id: approval
@@ -189,7 +189,7 @@ data:
         skills: [security, impact-analysis]
         depends_on: [implement]
         # Deliberately a different model than the implementer for fresh eyes.
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        model: azure/anthropic/claude-opus-5
         timeout_minutes: 40
       - id: fix-loop
         type: loop
@@ -224,7 +224,7 @@ data:
         max_attempts: 2
         on_max_attempts: blocked
         timeout_minutes: 30
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        model: switchyard/openai/gpt-5.6-terra
         body:
           type: agent
           role: implementer
