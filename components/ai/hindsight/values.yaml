@@ -33,13 +33,13 @@ api:
     HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL: "nvidia/qwen/qwen3-embedding-0.6b"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_DIMENSIONS: "1024"
-    # Reranking via rrf: model-free reciprocal-rank-fusion over the BM25+vector+graph
-    # candidates — zero RAM/latency cost. Upgrade path if recall ordering feels weak:
-    # provider=local (cross-encoder, ~+300Mi) or the chart's tei.reranker sidecar.
+    # Neural reranking of recall candidates via the bundled MiniLM cross-encoder.
+    # Costs ~+300Mi RSS and a one-time model download per pod start (no cache PVC);
+    # proven fine on this deployment. Fallback if RAM/boot pain: provider=rrf
+    # (passthrough, zero cost). TEI sidecar is the GPU/offload path.
     HINDSIGHT_API_ENABLE_RERANKING: "true"
-    # provider=rrf also stops the local cross-encoder from loading at boot.
     # (provider "none" is mentioned in hindsight docs but rejected by the factory.)
-    HINDSIGHT_API_RERANKER_PROVIDER: "rrf"
+    HINDSIGHT_API_RERANKER_PROVIDER: "local"
     # Bearer auth for all clients (pi plugin, Hermes provider, MCP).
     HINDSIGHT_API_TENANT_EXTENSION: "hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension"
   resources:
