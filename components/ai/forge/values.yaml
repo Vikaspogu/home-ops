@@ -31,8 +31,7 @@ controllers:
         env:
           TZ: America/New_York
           FORGE_API_PORT: &httpPort 8080
-          # OIDC authentication is active.
-          # OIDC fields below populated in forge-secret.
+          # OIDC is active and forge-secret supplies the fields below.
           FORGE_AUTH_MODE: oidc
           FORGE_PUBLIC_URL: https://forge.${CLUSTER_DOMAIN}
           FORGE_OIDC_DISCOVERY_URL: https://id.${CLUSTER_DOMAIN}/application/o/forge/.well-known/openid-configuration
@@ -44,16 +43,10 @@ controllers:
           FORGE_WORKFLOWS_DIR: /app/config
           FORGE_REPOS_CONFIG: /app/config/repos.yaml
           FORGE_DEFAULT_MODEL: openai/openai/gpt-5.6-terra
-          # Managed inference (pi -> inference.local -> gateway -> provider).
-          # The gateway holds real provider credentials; this placeholder key
-          # overrides the 1Password INFERENCE_HUB_CODING_KEY from forge-secret
-          # (individual env entries beat envFrom) and keeps the real key out of
-          # sandboxes. Spark nodes swap both values at route resolution.
+          # Route managed inference through the credential-owning gateway and override the secret key with a harmless sandbox placeholder.
           INFERENCE_HUB_BASE_URL: https://inference.local
           INFERENCE_HUB_API_KEY: unused
-          # Workspace routes pin one model each because OpenShell rewrites the
-          # client model to the route model. Route ceilings exceed every Forge
-          # node timeout: terra 1800s, claude 2700s, aux 600s (pr-opener only).
+          # OpenShell pins each workspace route model; route ceilings exceed Forge node timeouts (terra 1800s, claude 2700s, aux 600s).
           FORGE_MODEL_WORKSPACES: >-
             switchyard/openai/gpt-5.6-terra=forge-terra,
             openai/openai/gpt-5.6-terra=forge-terra,
@@ -65,13 +58,10 @@ controllers:
           FORGE_SANDBOX_IMAGE: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci@sha256:9ecae4cb7cdcc3ac3a27c56f39de9f0e4d9fbd0df104da94a7be805f5dfbd299
           FORGE_TOOL_ALLOWLIST: node,python,go,kubectl,kustomize,kubeconform,helm,uv
           FORGE_TOOL_MIRROR_HOSTS: github.com,api.github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,nodejs.org,dl.k8s.io,tuf-repo-cdn.sigstore.dev,pypi.org,files.pythonhosted.org,mise-versions.jdx.dev,registry.npmjs.org,get.helm.sh
-          # Relay disabled for the managed inference path (pi talks to
-          # inference.local directly; the gateway owns the upstream connection).
-          # Revisit sandbox OTEL after the managed path is proven.
+          # Managed inference connects directly to inference.local; revisit sandbox OTEL after that path is proven.
           FORGE_OTEL_SANDBOX_ENDPOINT: ""
           FORGE_OTEL_ENDPOINT: http://alloy.observability.svc.cluster.local:4318
-          # Must match the node version the environment contract installs
-          # (currently 24.19.0); drift policy-denies pi/npm egress from sandboxes.
+          # Keep this path aligned with the environment contract Node version or sandbox pi/npm egress is denied.
           FORGE_NPM_REGISTRY_NODE_PATH: /opt/mise/installs/node/24.19.0/bin/node
           FORGE_PYPI_REGISTRY_HOSTS: pypi.org,files.pythonhosted.org
           FORGE_HELM_REGISTRY_HOSTS: argoproj.github.io,cdn.quay.io,ceph.github.io,charts.external-secrets.io,charts.rook.io,cloudnative-pg.github.io,coroot.github.io,emberstack.github.io,ghcr.io,grafana.github.io,helm.cilium.io,helm.influxdata.com,helm.ngc.nvidia.com,mirror.gcr.io,perfectra1n.github.io,quay.io,registry.k8s.io,stakater.github.io,zapier.github.io,github.com,objects.githubusercontent.com,pkg-containers.githubusercontent.com,release-assets.githubusercontent.com,storage.googleapis.com,us-east4-docker.pkg.dev

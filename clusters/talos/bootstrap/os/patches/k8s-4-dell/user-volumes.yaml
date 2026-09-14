@@ -1,12 +1,5 @@
 ---
-# Local storage user volumes for k8s-4-dell.
-#
-# Intentionally excluded:
-# - nvme2n1 / Samsung SSD 970 EVO 250GB: current Talos system disk
-# - sdb / MARSHAL MAL38000: failed SMART evidence (do not use)
-# - nvme0n1 / KINGSTON SNV3S1000G: reserved as future raw Rook/Ceph OSD
-#
-# IMPORTANT: disks are already formatted with data; mount without provisioning to prevent Talos reformatting on boot.
+# Mount existing media/download filesystems without provisioning; exclude system nvme2n1, failed sdb, and future Ceph OSD nvme0n1 to prevent data loss.
 machine:
   disks:
     # Media storage (3TB+ HDD)

@@ -3,8 +3,7 @@ set -Eeuo pipefail
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly HERMES_COMPONENT="${ROOT_DIR}/components/ai/hermes-agent"
-# Derive the image from values.yaml — a hardcoded tag rots on every
-# automatic image bump and the whole script silently stops guarding.
+# Read the image from values.yaml so automatic tag bumps cannot silently stale this test.
 readonly HERMES_IMAGE="$(yq -r '.controllers.app.containers.app.image | .repository + ":" + .tag' "${HERMES_COMPONENT}/values.yaml")"
 export HERMES_IMAGE
 readonly HERMES_RESTORE_PERMISSIONS_IMAGE="$(yq -r '.controllers.app.initContainers."00-restore-permissions".image | .repository + ":" + .tag' "${HERMES_COMPONENT}/values.yaml")"

@@ -4,12 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: ${ARGOCD_APP_NAME}
   annotations:
-    # dataSource/dataSourceRef become immutable once the PVC is bound, and
-    # Kubernetes rewrites dataSource to the restore VolumeSnapshot. ArgoCD's
-    # server-side apply dry-run then fails on the immutable field. Scope
-    # client-side diff/apply to THIS PVC only (not the whole app) so the
-    # ignoreDifferences applies here while other resources (ExternalSecret,
-    # HTTPRoute) keep server-side diff and don't churn on webhook defaults.
+    # Disable server-side diff only for this PVC so immutable restored dataSource fields do not fail ArgoCD dry-run while other resources retain server-side diff.
     argocd.argoproj.io/compare-options: ServerSideDiff=false
     argocd.argoproj.io/sync-options: ServerSideApply=false
 spec:

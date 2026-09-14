@@ -1,10 +1,4 @@
-# Reflects openshell-client-tls into the sandbox namespace.
-# The certgen helm hook creates openshell-client-tls in ns ai only, but the
-# gateway mounts it by name into every sandbox pod in openshell-sandboxes, so
-# without this the pods hang Init:0/2 on FailedMount. certgen has only secrets
-# get,create (no update), so it never overwrites the existing secret and these
-# reflector annotations survive upgrades. A PostSync hook job adds the
-# annotations after the certgen secret exists; emberstack reflector mirrors it.
+# Reflect the certgen-created client TLS secret into the sandbox namespace so gateway mounts succeed; a PostSync hook adds persistent reflector annotations because certgen cannot update it.
 ---
 apiVersion: v1
 kind: ServiceAccount

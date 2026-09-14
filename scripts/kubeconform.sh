@@ -6,8 +6,7 @@ source "$(dirname "${0}")/lib/common.sh"
 
 export ROOT_DIR="$(git rev-parse --show-toplevel)"
 
-# Set default environment variables for envsubst validation
-# These are placeholder values used only for syntax validation
+# Set placeholder envsubst values used only for syntax validation.
 export CLUSTER_DOMAIN="${CLUSTER_DOMAIN:-example.local}"
 export EXTERNAL_IP_ADDRESS="${EXTERNAL_IP_ADDRESS:-192.168.1.100}"
 export INTERNAL_IP_ADDRESS="${INTERNAL_IP_ADDRESS:-10.0.0.100}"

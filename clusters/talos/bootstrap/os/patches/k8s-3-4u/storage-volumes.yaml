@@ -1,11 +1,5 @@
 ---
-# Storage configuration for k8s-3-4u: backup/replication node, 4x 4.0TB HGST SAS HDDs behind AVAGO 3108 MegaRAID.
-# Controller rejects GPT writes on raw JBOD passthrough, so each HDD is wrapped in a single-drive RAID-0 VD.
-# VDs get NEW controller-assigned wwids (naa.600304...), not the raw-drive wwids.
-# Two drives are PI-4K formatted (Unconfigured Bad); they need PI stripped before forming a VD. Only sdi/sdj exist now.
-# UserVolumeConfig provisions+formats a partition spanning the VD on first apply, then mounts at /var/mnt/<name>.
-# Pinned by wwid; minSize satisfies talhelper validation; grow:true with no maxSize consumes the disk.
-# Working VDs: sdi naa.6003048018df230131c997a634685c1d -> backup-garage. sdj naa.6003048018df230131c998b2446bbbb0 -> reserved.
+# AVAGO 3108 rejects GPT on JBOD, so backup-garage uses an all-disk RAID-0 VD pinned to its controller WWID; sdj is reserved and PI must be stripped before creating VDs.
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: backup-garage

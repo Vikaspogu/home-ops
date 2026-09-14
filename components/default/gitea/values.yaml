@@ -23,15 +23,13 @@ controllers:
           GITEA__ACTIONS__ENABLED: "true"
           GITEA__ACTIONS__DEFAULT_ACTIONS_URL: "https://gitea.com"
           GITEA__PACKAGES__ENABLED: "true"
-          # Native cleanup applies enabled database rules before collecting unreferenced blobs.
-          # Keep those rules disabled because version retention stays in the custom CronJob.
+          # Keep native package-retention rules disabled because the custom CronJob owns retention; native cleanup still collects unreferenced blobs.
           GITEA__cron.cleanup_packages__ENABLED: "true"
           GITEA__cron.cleanup_packages__RUN_AT_START: "true"
           GITEA__cron.cleanup_packages__SCHEDULE: "@midnight"
           GITEA__cron.cleanup_packages__OLDER_THAN: "24h"
           GITEA__database__DB_TYPE: "postgres"
-          # Fsync loose objects/packs before refs move: a pod/RBD interruption
-          # mid-push truncated vpogu/forge repo objects on 2026-07-21.
+          # Fsync Git objects before moving refs to prevent another interruption-related repository truncation.
           GITEA__git.config__core.fsync: "objects"
           GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
           GITEA__REPOSITORY__DEFAULT_BRANCH: "main"
@@ -60,8 +58,7 @@ service:
         port: 3000
   ssh:
     enabled: true
-    # Phase 1 (DGX coding bot): expose Gitea's built-in SSH server externally
-    # via Klipper svclb on port 2222 (port 22 is taken by host OpenSSH).
+    # Expose Gitea SSH for the DGX coding bot via Klipper svclb on 2222 because host OpenSSH owns port 22.
     type: LoadBalancer
     controller: *name
     ports:

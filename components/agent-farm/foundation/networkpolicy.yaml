@@ -16,8 +16,7 @@ spec:
       ports:
         - protocol: TCP
           port: 8080
-    # Forward-auth path: Envoy Gateway proxies ws-* traffic to the API after
-    # the Outpost extAuth check supplies the trusted identity header.
+    # Allow Envoy Gateway to reach the API after Outpost forward-auth supplies the trusted identity header.
     - from:
         - namespaceSelector:
             matchLabels:

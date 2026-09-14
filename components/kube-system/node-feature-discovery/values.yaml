@@ -2,9 +2,7 @@
 worker:
   config:
     core:
-      # `system` is required by the NVIDIA GPU Operator — it reads
-      # feature.node.kubernetes.io/system-os_release.ID to pick the correct
-      # OS variant for driver/toolkit/device-plugin DaemonSets.
+      # NVIDIA GPU Operator requires the system source to select OS-specific workloads from system-os_release.ID.
       sources: ["custom", "pci", "system", "usb"]
     sources:
       usb:

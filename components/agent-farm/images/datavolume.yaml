@@ -1,7 +1,4 @@
-# Golden workspace base images, imported once by CDI from the immutable
-# containerdisk tags published by the agent-farm golden-images workflow.
-# Workspace DataVolumes clone these; the tag pin lives in the kustomization
-# images: override (owned by argocd-image-updater).
+# CDI imports immutable golden workspace images once; workspaces clone them and ArgoCD Image Updater owns the kustomization tag pin.
 ---
 apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume

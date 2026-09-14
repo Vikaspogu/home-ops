@@ -1,8 +1,4 @@
-# Restricts ingress on the gateway client API (8080) to the Forge orchestrator
-# and managed sandbox agents (which dial back for policy fetch + log push).
-# The chart's built-in NetworkPolicy only covers sandbox SSH (2222), leaving the
-# client API open. With allowUnauthenticatedUsers=true this is the auth boundary
-# until iteration 2 moves to OIDC via Authelia.
+# Restrict the unauthenticated gateway client API to Forge and managed sandboxes because the chart policy covers only sandbox SSH; OIDC is deferred.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -23,8 +19,7 @@ spec:
           podSelector:
             matchLabels:
               app.kubernetes.io/name: forge-orchestrator
-        # Sandbox pods carry only agents.x-k8s.io/sandbox-name-hash (unique per pod),
-        # not openshell.ai/managed-by, so gate on the dedicated namespace alone.
+        # Sandbox pods lack openshell.ai/managed-by, so restrict them by their dedicated namespace.
         - namespaceSelector:
             matchLabels:
               openshell.io/sandbox-namespace: "true"

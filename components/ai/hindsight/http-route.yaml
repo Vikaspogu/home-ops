@@ -21,8 +21,7 @@ spec:
       sectionName: https
   hostnames: ["hindsight.${CLUSTER_DOMAIN}"]
   rules:
-    # REST API + per-bank MCP endpoints → API server (port 8888).
-    # Tenant Bearer auth (HINDSIGHT_API_TENANT_*) gates these paths.
+    # Tenant Bearer auth protects REST API and per-bank MCP paths on port 8888.
     - matches:
         - path:
             type: PathPrefix
@@ -36,9 +35,7 @@ spec:
       backendRefs:
         - name: hindsight-api
           port: 8888
-    # Control-plane UI → port 3000. No built-in auth: safe only because
-    # ${GATEWAY_NAME} resolves to envoy-internal (LAN/VPN-only exposure).
-    # Never move this rule to envoy-external without adding auth first.
+    # The unauthenticated control-plane UI is safe only on the LAN/VPN internal gateway; add auth before any external exposure.
     - matches:
         - path:
             type: PathPrefix

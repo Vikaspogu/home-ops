@@ -104,16 +104,7 @@ function apply_sops_secrets() {
     done
 }
 
-# CRDs to be applied before ArgoCD and Helm operators are installed
-# These base CRDs are required for:
-# - Gateway API: Used by Envoy Gateway (network routing)
-# - Prometheus Operator: Used by kube-prometheus-stack (monitoring)
-# - External Secrets: Used by 1Password integration (secrets management)
-# - External DNS: Used by DNS automation (DNSEndpoint resources)
-#
-# Note: Installing these CRDs early avoids chicken-and-egg issues where ArgoCD
-# applications depend on CRDs that don't exist yet. The operators will manage
-# CRD updates after initial bootstrap.
+# Bootstrap Gateway API, Prometheus, External Secrets, and External DNS CRDs before dependent ArgoCD apps; operators manage later updates.
 function apply_crds() {
     log debug "Applying bootstrap CRDs"
 

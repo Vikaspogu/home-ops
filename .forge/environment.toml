@@ -1,5 +1,4 @@
-# Forge sandbox environment (see forge docs/forge/notes/environment-lockfile.md).
-# scripts/kubeconform.sh needs kubeconform, kustomize, and helm.
+# Forge sandbox tools required by scripts/kubeconform.sh.
 [tools]
 helm = "4.2.4"
 kubeconform = "0.8.0"

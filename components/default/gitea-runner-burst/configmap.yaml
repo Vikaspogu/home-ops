@@ -31,8 +31,7 @@ data:
       privileged: false
       docker_host: tcp://localhost:2375
       force_pull: false
-      # Golden image builds run QEMU; /dev/kvm turns a 2h TCG emulation crawl
-      # into hardware-accelerated builds.
+      # Expose /dev/kvm so golden-image QEMU builds use hardware acceleration instead of multi-hour TCG emulation.
       options: --add-host=host.docker.internal:host-gateway --device /dev/kvm
       valid_volumes:
         - '**'

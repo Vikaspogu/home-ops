@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Contract test for the staged Gitea runner pool: a baseline runner
-# (capacity 2) plus a burst runner (capacity 1) that shares no persistent
-# state with the baseline. Both components are rendered as ArgoCD would render
-# them — `kustomize build --enable-helm` piped through `envsubst` restricted to
-# an explicit allowlist of the eight plugin variables ArgoCD injects — so the
-# assertions run against the real rendered Helm output, not the source YAML.
-# The rendered manifests (which contain ExternalSecret definitions) are never
-# printed; assertions inspect resource names, counts, and scalar fields only.
+# Contract-test isolated baseline (capacity 2) and burst (capacity 1) runners against real ArgoCD-style rendered output without printing secret-bearing manifests.
 
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly BASELINE_COMPONENT="${ROOT_DIR}/components/default/gitea-runner"
@@ -28,18 +21,13 @@ fail() {
     exit 1
 }
 
-# Render a component the way ArgoCD does: kustomize build --enable-helm, then
-# envsubst with the plugin environment. VOLSYNC_SCHEDULE is quoted because it
-# contains spaces and glob characters.
+# Render as ArgoCD does with Helm-enabled Kustomize and plugin envsubst; quote the space/glob-containing schedule.
 render() {
     local component="$1" app_name="$2" schedule="$3" out="$4"
 
     [[ -d "${component}" ]] || fail "component directory is missing: ${component}"
 
-    # Restrict envsubst to exactly the eight plugin variables ArgoCD injects, so
-    # any other `$word` inside rendered manifests (shell snippets, Go templates)
-    # is left untouched. The schedule value carries spaces/glob chars; it is
-    # exported, never word-split into the allowlist.
+    # Restrict envsubst to ArgoCD’s eight plugin variables so manifest shell/templates remain untouched; export the space/glob-containing schedule.
     local -r allowlist='${ARGOCD_APP_NAME} ${ARGOCD_ENV_STORAGE_CLASS} ${ARGOCD_ENV_VOLSYNC_STORAGE_CLASS} ${ARGOCD_ENV_VOLUME_SNAPSHOT_CLASS} ${ARGOCD_ENV_VOLSYNC_CAPACITY} ${ARGOCD_ENV_VOLSYNC_CACHE_CAPACITY} ${ARGOCD_ENV_VOLSYNC_SCHEDULE} ${CLUSTER_DOMAIN}'
 
     ARGOCD_APP_NAME="${app_name}" \
@@ -63,9 +51,7 @@ deployment_replicas() {
     yq ea -r "[select(.kind == \"Deployment\" and .metadata.name == \"${name}\") | .spec.replicas] | .[0] // \"none\"" "${manifest}"
 }
 
-# runner.capacity from the embedded act_runner config.yaml inside a rendered
-# ConfigMap. This is the number of concurrent jobs a single runner process
-# accepts — the pool's real capacity knob, independent of Deployment replicas.
+# Read rendered act_runner runner.capacity, the per-process concurrency knob independent of Deployment replicas.
 runner_capacity() {
     local manifest="$1" name="$2"
 
@@ -78,8 +64,7 @@ resource_count() {
     yq ea -r "[select(.kind == \"${kind}\" and .metadata.name == \"${name}\")] | length" "${manifest}"
 }
 
-# Sorted persistent claims mounted by a Deployment's pod template. Sorting lets
-# the caller assert an exact claim set without exposing rendered manifests.
+# Sort mounted PVC names so callers can assert the exact set without exposing rendered manifests.
 deployment_claims() {
     local manifest="$1" name="$2"
 
@@ -93,8 +78,7 @@ deployment_config_maps() {
     yq ea -r "[select(.kind == \"Deployment\" and .metadata.name == \"${name}\") | .spec.template.spec.volumes[]? | select(.configMap) | .configMap.name] | sort | .[]" "${manifest}"
 }
 
-# Secret names referenced by the named runner container's envFrom entries.
-# Only names are returned; secret values are never inspected or printed.
+# Return only referenced envFrom secret names without inspecting or printing values.
 runner_envfrom_secrets() {
     local manifest="$1" deployment="$2" container="$3"
 
@@ -127,18 +111,13 @@ plugin_env_value() {
 
 render "${BASELINE_COMPONENT}" "${BASELINE_APP}" "5 1,7,13,19 * * *" "${baseline_manifest}"
 
-# --- Burst component exists and renders -------------------------------------
-# Checked first: until the burst component is authored this is the contract's
-# primary gap, and it should be the failure the test reports.
+# Check burst rendering first so a missing component is the contract’s primary reported failure.
 [[ -d "${BURST_COMPONENT}" ]] ||
     fail "burst component is missing: expected ${BURST_COMPONENT}"
 
 render "${BURST_COMPONENT}" "${BURST_APP}" "18 1,7,13,19 * * *" "${burst_manifest}"
 
-# --- Baseline capacity ------------------------------------------------------
-# Capacity is act_runner's runner.capacity (concurrent jobs per runner), read
-# from the rendered ConfigMap. Each pool runs a single pod, so both Deployments
-# keep spec.replicas == 1; scaling concurrency is done via runner.capacity.
+# Verify baseline capacity from rendered runner.capacity while each pool remains a single-replica Deployment.
 [[ "$(resource_count "${baseline_manifest}" Deployment "${BASELINE_APP}")" == "1" ]] ||
     fail "rendered baseline Deployment ${BASELINE_APP} is missing or ambiguous"
 [[ "$(resource_count "${baseline_manifest}" ConfigMap "${BASELINE_APP}-config")" == "1" ]] ||
@@ -172,8 +151,7 @@ render "${BURST_COMPONENT}" "${BURST_APP}" "18 1,7,13,19 * * *" "${burst_manifes
 [[ "$(external_secret_target "${burst_manifest}" "${BURST_APP}")" == "${BURST_APP}-secret" ]] ||
     fail "rendered burst ExternalSecret ${BURST_APP} must target ${BURST_APP}-secret"
 
-# The complete persistent-claim set must be its two dedicated claims: this
-# rejects missing, baseline, or any unexpected shared claim.
+# Require exactly the burst pool’s two dedicated claims, rejecting missing, baseline, or unexpected shared claims.
 burst_claims="$(deployment_claims "${burst_manifest}" "${BURST_APP}")"
 [[ "${burst_claims}" == "${BURST_APP}"$'\n'"${BURST_APP}-docker" ]] ||
     fail "burst ${BURST_APP} Deployment must mount exactly ${BURST_APP} and ${BURST_APP}-docker"

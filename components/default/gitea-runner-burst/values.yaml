@@ -40,11 +40,7 @@ controllers:
         env:
           DOCKER_TLS_CERTDIR: ""
         securityContext:
-          # Standard (root) Docker-in-Docker. dockerd needs full privileges to
-          # manage cgroups, the bridge network and overlayfs for image builds,
-          # so the daemon runs privileged. Isolation is at the node level only;
-          # Kata VM sandboxing was ruled out (incompatible with this cluster's
-          # Cilium netkit-L3 datapath — kata-containers/kata-containers#12159).
+          # Root Docker-in-Docker needs privilege for cgroups, networking, and overlayfs; node isolation is the boundary because Kata conflicts with Cilium netkit-L3.
           privileged: true
         resources:
           requests:

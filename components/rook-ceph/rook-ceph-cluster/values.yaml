@@ -6,8 +6,7 @@ monitoring:
     CephNodeNetworkPacketDrops:
       disabled: true
     CephNodeDiskspaceWarning:
-      # The upstream predictive rule is noisy for new Talos nodes because
-      # bootstrap image churn can look like a sustained 48h fill rate.
+      # Disable the noisy predictive alert because bootstrap image churn on new Talos nodes resembles sustained 48h fill.
       expr: |
         (
           predict_linear(

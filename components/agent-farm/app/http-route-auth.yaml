@@ -1,6 +1,4 @@
-# Auth endpoint host for the workspace forward_auth domain provider.
-# Must be a distinct host from the portal: the outpost keys provider routing
-# on external_host, and sharing one shadows the portal with a 404.
+# Keep forward-auth on a distinct host because sharing the portal external_host shadows it with a 404.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:

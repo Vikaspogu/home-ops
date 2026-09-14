@@ -1,21 +1,8 @@
-# Hindsight agent memory — official chart.
-# Storage: shared CNPG cluster pgvector17 (barman-backed), not an in-chart PVC.
-# Docs: https://hindsight.vectorize.io/developer/installation
+# Official Hindsight chart using the shared barman-backed CNPG pgvector17 cluster; docs: https://hindsight.vectorize.io/developer/installation
 
-# Provided by ./externalsecret.yaml (envFrom, all keys become env vars):
-#   postgres-password                            — pgvector17 role password
-#   HINDSIGHT_API_TENANT_API_KEY                 — Bearer key for pi/Hermes/MCP clients
-#   HINDSIGHT_API_EMBEDDINGS_OPENAI_API_KEY      — NVIDIA inference hub
-#   HINDSIGHT_API_EMBEDDINGS_OPENAI_BASE_URL     — NVIDIA inference hub
-#   HINDSIGHT_API_LLM_API_KEY                    — dummy, Ollama ignores it
+# hindsight-secret supplies the DB password, tenant key, NVIDIA embeddings key/base URL, and dummy Ollama LLM key.
 existingSecret: hindsight-secret
-# NOTE (review): the chart envFrom's this secret into the control-plane pod too,
-# so the UI process can read postgres-password and the tenant key. Accepted:
-# the UI is not exposed externally (see http-route.yaml), so exposure stays
-# in-cluster. Revisit if the UI is ever routed publicly.
-# NOTE (review): chart default readOnlyRootFilesystem:false is kept — the
-# chart offers no per-component override and the Next.js control plane needs
-# a writable fs. Accepted deviation from the repo hardening default.
+# Accepted chart deviations: the internal-only UI pod receives DB/tenant secrets, and chart-wide writable root filesystems are required by Next.js; revisit before public exposure.
 
 podAnnotations:
   reloader.stakater.com/auto: "true"
@@ -33,10 +20,7 @@ api:
     HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL: "nvidia/qwen/qwen3-embedding-0.6b"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_DIMENSIONS: "1024"
-    # Neural reranking of recall candidates via the bundled MiniLM cross-encoder.
-    # Costs ~+300Mi RSS and a one-time model download per pod start (no cache PVC);
-    # proven fine on this deployment. Fallback if RAM/boot pain: provider=rrf
-    # (passthrough, zero cost). TEI sidecar is the GPU/offload path.
+    # Local MiniLM reranking adds ~300Mi and a per-start download; fall back to provider=rrf if needed, or use TEI for GPU offload.
     HINDSIGHT_API_ENABLE_RERANKING: "true"
     # (provider "none" is mentioned in hindsight docs but rejected by the factory.)
     HINDSIGHT_API_RERANKER_PROVIDER: "local"

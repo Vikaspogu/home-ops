@@ -18,10 +18,7 @@ controllers:
       terminationGracePeriodSeconds: 120
 
     initContainers:
-      # One-time ownership migration: qbittorrent previously ran as UID 2000, so
-      # its config PVC and completed downloads are owned by 2000. Re-own them to
-      # 1000 (the shared *arr UID) so imports work without group-write
-      # workarounds. Idempotent once ownership matches; safe to leave in place.
+      # Idempotently migrate config/download ownership from old UID 2000 to shared *arr UID 1000 so imports work without group-write workarounds.
       chown-data:
         image:
           repository: public.ecr.aws/docker/library/busybox

@@ -1,6 +1,4 @@
-# A failed outpost auth callback (expired/missing session cookie) returns a
-# raw 400 page and strands the user. Bounce it to the portal root, which
-# restarts the login flow and lands on the dashboard.
+# Redirect failed outpost callbacks to the portal root to restart login instead of stranding users on a raw 400 page.
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: BackendTrafficPolicy
 metadata:

@@ -19,10 +19,7 @@ spec:
         operations: ["CREATE", "UPDATE"]
         resources: ["jobs"]
   matchConditions:
-    # Guard each expression with has()/in so it returns false (not an error)
-    # when the field is absent. Jobs created with generateName have no
-    # metadata.name at admission time, and unrelated Jobs may lack labels;
-    # an erroring matchCondition under failurePolicy: Fail denies the request.
+    # Guard optional fields so generateName or unlabeled Jobs return false instead of being denied by CEL errors under failurePolicy: Fail.
     - name: has-volsync-job-name-prefix
       expression: >
         has(object.metadata.name) && object.metadata.name.startsWith("volsync-src-")
@@ -72,11 +69,7 @@ spec:
         operations: ["CREATE", "UPDATE"]
         resources: ["jobs"]
   matchConditions:
-    # Guard each expression with has()/in so it returns false (not an error)
-    # when the field is absent. KubeVirt's install-strategy Job uses
-    # generateName (no metadata.name) and has no volumes; without these
-    # guards the CEL errors and failurePolicy: Fail denies the Job, blocking
-    # any Job that lacks these fields cluster-wide.
+    # Guard optional name/volume fields so KubeVirt generateName Jobs and unrelated Jobs return false instead of being denied under failurePolicy: Fail.
     - name: has-volsync-job-name-prefix
       expression: >
         has(object.metadata.name) && object.metadata.name.startsWith("volsync-")

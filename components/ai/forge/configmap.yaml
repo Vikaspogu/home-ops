@@ -10,8 +10,7 @@ data:
         dialect: gitea
         base_url: https://gitea.a113.casa
         token_env: GITEA_TOKEN
-        # Read-only token for reviewer sandboxes (staged review gate).
-        # Gated workflows refuse to run when this is unset.
+        # Gated review workflows require this read-only sandbox token.
         read_token_env: GITEA_TOKEN_RO
         provider_ref: gitea
       github:
@@ -26,8 +25,7 @@ data:
         default_branch: main
         project_type: python-service
         default_workflow: feature
-        # Runner-executed in the sandbox after the agent; real exit codes gate
-        # the loop (staged review gate M1/M2.3). Applies to loop nodes only.
+        # Run repository verification in the sandbox after loop agents and gate on real exit codes.
         verify_commands:
           - "cd service && uv run pytest"
           - "cd service && uv run ruff check ."
@@ -41,16 +39,11 @@ data:
         project_type: python-service
         default_workflow: feature
         verify_commands:
-          # --extra openshell is required: forge.runners.openshell imports the
-          # openshell package, so without the extra 6-12 tests fail with
-          # ModuleNotFoundError and this repo can never pass its own gate
-          # (observed on task 371: 9-12 failed with zero agent changes).
+          # Install the openshell extra because forge.runners.openshell otherwise makes this repository fail its own test gate.
           - "uv run --extra openshell pytest"
           - "uv run ruff check src/forge"
       agent-platform-custom:
-        # Stays on the legacy implement workflow: container-images repo has no
-        # test command, and a gated workflow without verify commands is
-        # refused at walk start by design.
+        # Keep the legacy workflow because agent-platform-custom has no verify command and gated walks reject that configuration.
         full_name: vpogu/agent-platform-custom
         instance: gitea-home
         default_branch: main
@@ -73,8 +66,7 @@ data:
     entry_state: todo
     description: Refine vague todo into an operator-approved specification
     nodes:
-      # Start local routing with the read-only first pass; external models still
-      # investigate, critique, and decide. Remove spark/ for an outage fallback.
+      # Start local routing with the read-only pass; external models still investigate and decide, and removing spark/ is the outage fallback.
       - id: analyze
         type: agent
         role: council-analyst
@@ -114,9 +106,7 @@ data:
         depends_on: [decide]
 
   feature.yaml: |-
-    # Deployment override of the bundled gated workflow: same structure, plus
-    # model pins (FORGE_WORKFLOWS_DIR wins over the image-bundled copy).
-    # verify commands come from repos.yaml per repo — never set verify here.
+    # Override the bundled gated workflow only to pin models; per-repo verify commands stay in repos.yaml.
     name: feature
     nodes:
       - id: plan
@@ -138,8 +128,7 @@ data:
               model: switchyard/openai/gpt-5.6-terra
               rules: [ponytail, codebase-design]
               skills: [verify-loop, defensive-coding, secret-scan]
-            # Deliberately a different model family than the implementer:
-            # cross-model review catches shared blind spots.
+            # Use a different reviewer model family to catch implementer blind spots.
             - role: reviewer
               model: azure/anthropic/claude-opus-5
               rules: [codebase-design]
@@ -158,9 +147,7 @@ data:
   implement.yaml: |-
     name: implement
     description: Legacy pre-gate workflow. Only agent-platform-custom uses it.
-    # Structure only: node behavior comes from role profiles (bundled in the
-    # forge image; override via FORGE_AGENTS_DIR). depends_on selects which
-    # upstream outputs each node's message includes.
+    # Node behavior comes from bundled role profiles (overridable via FORGE_AGENTS_DIR); depends_on selects included upstream outputs.
     nodes:
       - id: plan
         type: agent
@@ -208,8 +195,7 @@ data:
         type: agent
         role: pr-opener
         skills: [secret-scan]
-        # implement + ai-review are already ancestors via fix-loop; the extra
-        # edges pull their notes into this node's message for the PR body.
+        # Pull implement and ai-review notes into the PR body in addition to their existing fix-loop ancestry.
         depends_on: [implement, ai-review, fix-loop]
         model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
         timeout_minutes: 10

@@ -7,15 +7,9 @@ spec:
     - name: ${GATEWAY_NAME}
       namespace: ${GATEWAY_NAMESPACE}
       sectionName: https
-  # No hostnames: catch-all for the https listener. Exact-host routes win per
-  # Gateway API precedence, so this only receives ws-<id>.${CLUSTER_DOMAIN}
-  # and otherwise-unclaimed hosts. A wildcard hostname is impossible (Gateway
-  # API allows only leading-label wildcards) and would poison the UniFi
-  # external-dns webhook, which rejects wildcard records.
+  # Catch otherwise-unclaimed ws-<id> hosts; exact hosts take precedence, while unsupported wildcards also break the UniFi external-dns webhook.
   rules:
-    # Agent SSH-over-WebSocket authenticates with an agent token at the Go
-    # gateway (no browser session exists for CLI clients), so it skips the
-    # outpost forward-auth below. Ownership is still enforced per connection.
+    # SSH-over-WebSocket uses an agent token at the gateway, skips browser forward-auth, and still enforces ownership.
     - name: ssh
       matches:
         - path:
@@ -29,9 +23,7 @@ spec:
         - name: agent-farm-api
           port: 8080
 ---
-# Forward auth: the outpost checks the workspace session and supplies
-# X-Authentik-Username (overriding any client-forged value) before traffic
-# reaches the owner-checking gateway. Scoped to the web rule only.
+# Forward-auth supplies trusted X-Authentik-Username to the owner-checking gateway and applies only to the web rule.
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
@@ -43,9 +35,7 @@ spec:
       name: agent-farm-workspaces
       sectionName: web
   extAuth:
-    # EG's HTTP extAuth default forwards only Host/Method/Path/Content-Length/
-    # Authorization to the auth service; without the session cookie every
-    # check fails and the browser bounces in a login redirect loop.
+    # Forward the session cookie because Envoy Gateway HTTP extAuth omits it by default, causing login redirect loops.
     headersToExtAuth:
       - cookie
     http:

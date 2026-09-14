@@ -1,15 +1,5 @@
 ---
-# NVIDIA GPU Operator on Talos
-#
-# Talos extensions (nonfree-kmod-nvidia-lts, nvidia-container-toolkit-lts)
-# already install the driver, toolkit binary, and libraries on the host at
-# /usr/local. The operator must NOT try to install them again. We also rely
-# on the cluster's existing node-feature-discovery, so disable the bundled NFD.
-#
-# Containerd's nvidia runtime is registered via the Talos machine.files patch
-# in clusters/talos/bootstrap/os/patches/global/machine-files.yaml. With
-# toolkit.enabled=false the operator does not touch containerd; it expects
-# the runtime to already exist when its pods use runtimeClassName: nvidia.
+# Talos extensions already provide NVIDIA drivers, toolkit, libraries, and containerd runtime configuration; disable operator installation and bundled NFD while retaining runtimeClassName nvidia.
 
 nfd:
   enabled: false
@@ -36,8 +26,7 @@ dcgmExporter:
 gfd:
   enabled: true
 
-# Validators verify GPU access end-to-end on a node before scheduling user
-# workloads. Keep enabled — cheap insurance against silent breakage.
+# Keep validators enabled to verify node GPU access before scheduling workloads.
 validator:
   driver:
     env:

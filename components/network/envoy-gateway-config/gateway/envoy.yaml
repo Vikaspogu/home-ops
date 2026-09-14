@@ -75,9 +75,7 @@ spec:
   connection:
     bufferLimit: 8Mi
     maxAcceptPerSocketEvent: 0
-  # OpenAI's codex protocol sends a `session_id` header; Envoy's default
-  # rejects underscore header names with a bare 400, breaking omp's codex
-  # traffic through headroom-codex.
+  # Allow underscore headers because OpenAI Codex sends session_id and Envoy otherwise rejects the request with 400.
   headers:
     withUnderscoresAction: Allow
   http2:

@@ -14,10 +14,7 @@ controllers:
     annotations:
       configmap.reloader.stakater.com/reload: sabnzbd-scripts
     initContainers:
-      # One-time ownership migration: sabnzbd previously ran as UID 568, so its
-      # config PVC and completed downloads are owned by 568. Re-own them to 1000
-      # (the shared *arr UID) so imports work without group-write workarounds.
-      # Safe to leave in place: chown is idempotent once ownership matches.
+      # Idempotently migrate config/download ownership from old UID 568 to shared *arr UID 1000 so imports work without group-write workarounds.
       chown-data:
         image:
           repository: public.ecr.aws/docker/library/busybox

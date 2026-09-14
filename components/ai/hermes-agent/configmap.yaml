@@ -71,8 +71,7 @@ data:
         timeout: 600
         extra_body:
           reasoning_effort: none
-      # Curator writes durable memory; keep it external until Qwen3.6 passes
-      # the curation quality gate.
+      # Keep durable-memory curation external until Qwen3.6 passes its quality gate.
       curator:
         provider: main
         model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
@@ -167,11 +166,7 @@ data:
       cwd: /opt/data/workspace
       timeout: 180
       env_passthrough:
-        # Wildcard passthrough requires the agent-platform-custom image patch
-        # (patch-hermes-env-passthrough.py, applied at image build). Upstream has
-        # no "*" semantics and blocklists provider/LLM/GH tokens from terminal
-        # children (GHSA-rhgp-j443-p4rf); this deliberately re-opens them to all
-        # terminal/execute_code children — owner-approved tradeoff.
+        # The custom image intentionally enables wildcard child-process env passthrough, including normally blocklisted provider/LLM/GH tokens (owner-approved GHSA-rhgp-j443-p4rf tradeoff).
         - "*"
     skills:
       disabled:
@@ -248,9 +243,7 @@ data:
         - prometheus-read
         - web/ddgs
         - security-guidance
-    # TREK MCP: auth is client_credentials tokens kept fresh on disk by the
-    # trek-token-refresher sidecar; hermes reloads them via mtime watch.
-    # client_id/secret are only used for storage bootstrap, never a browser flow.
+    # TREK client_credentials tokens stay fresh on disk via the sidecar and Hermes reloads them by mtime.
     mcp_servers:
       trek:
         url: "https://trek.${CLUSTER_DOMAIN}/mcp"
@@ -258,10 +251,7 @@ data:
         oauth:
           client_id: "${TREK_OAUTH_CLIENT_ID}"
           client_secret: "${TREK_OAUTH_CLIENT_SECRET}"
-      # Coroot MCP only supports the authorization_code grant, but the sidecar
-      # bootstraps it headlessly (login + consent POST with admin credentials).
-      # Hermes then rotates the 30-day refresh token on its own; the sidecar
-      # only re-bootstraps if the stored refresh token nears expiry.
+      # The sidecar headlessly bootstraps Coroot authorization_code auth; Hermes rotates the 30-day refresh token and re-bootstrap occurs only near expiry.
       coroot:
         url: "https://coroot.${CLUSTER_DOMAIN}/mcp"
         auth: oauth

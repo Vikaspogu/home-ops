@@ -75,9 +75,7 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-      # Git-hosted plugins installed via upstream `hermes plugins install`:
-      # immutable 40-char SHA pins + install-time security scan, replacing the
-      # hand-rolled clone script. Refs are main-branch HEADs; bump on plugin change.
+      # Install Git plugins through upstream Hermes with immutable SHA pins and security scanning; bump pins when plugins change.
       plugins-install:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
@@ -108,8 +106,7 @@ controllers:
               secretKeyRef:
                 name: hermes-agent-secret
                 key: GITEA_TOKEN
-          # Token auth via git insteadOf keeps the token out of argv and out
-          # of the plugin source URL recorded in install metadata.
+          # Git insteadOf token auth keeps the token out of argv and recorded plugin source URLs.
           GIT_CONFIG_COUNT: "1"
           GIT_CONFIG_KEY_0: "url.https://$(GITEA_USER):$(GITEA_TOKEN)@gitea.a113.casa/.insteadOf"
           GIT_CONFIG_VALUE_0: "https://gitea.a113.casa/"
@@ -126,9 +123,7 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-      # Native sidecar: keeps MCP OAuth tokens fresh on the shared PVC so
-      # hermes never needs a browser flow (TREK hourly client_credentials,
-      # Coroot headless authorization_code bootstrap).
+      # The native sidecar refreshes shared-PVC MCP OAuth tokens without a browser (TREK client_credentials and Coroot headless authorization_code).
       mcp-token-sidecar:
         restartPolicy: Always
         image:
@@ -213,9 +208,7 @@ controllers:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
           tag: 20260904021059-027e69d-oci
         probes:
-          # Gateway cold start varies (40s-2.5min: platform connect, MCP OAuth,
-          # session recovery). startupProbe owns that window so liveness never
-          # kill-loops a slow start; liveness/readiness take over after first ok.
+          # Let startupProbe cover the variable 40s–2.5m cold start before liveness/readiness take over to avoid kill loops.
           startup:
             enabled: true
             custom: true
@@ -322,9 +315,7 @@ persistence:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
           readOnly: true
-        # The app container must see the ConfigMap content, not the PVC's
-        # stale placeholder at the same path — HERMES_NEMO_RELAY_PLUGINS_TOML
-        # points here and the plugin silently no-ops on an empty file.
+        # Mount ConfigMap content over the PVC placeholder so HERMES_NEMO_RELAY_PLUGINS_TOML cannot silently read an empty file.
         app:
         - path: /opt/data/nemo-relay-plugins.toml
           subPath: nemo-relay-plugins.toml

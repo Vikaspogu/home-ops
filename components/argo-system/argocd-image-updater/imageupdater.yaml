@@ -48,10 +48,7 @@ spec:
           branch: main
           writeBackTarget: "helmvalues:./values.yaml"
       images:
-        # forge-backend is pinned MANUALLY (spec 2026-09-03 rollout discipline):
-        # the updater's tag list for it comes back empty from the registry, so
-        # it never selects a newer tag — but its write-back would still clobber
-        # manual pins. Keep it out of the tracked set.
+        # Pin forge-backend manually: its empty registry tag list prevents updates, while write-back could still overwrite manual pins.
         - alias: openshell-sandbox
           imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/openshell-sandbox:latest-oci"
           commonUpdateSettings:
@@ -148,8 +145,7 @@ spec:
             helm:
               name: controllers.web.containers.app.image.repository
               tag: controllers.web.containers.app.image.tag
-    # Golden workspace image lives in its own app (the CRD keys
-    # applicationRefs by namePattern) so it can use a kustomization write-back.
+    # Keep the golden workspace image in a separate Application so it can use kustomization write-back.
     - namePattern: "agent-farm-images"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
@@ -157,8 +153,7 @@ spec:
           branch: main
           writeBackTarget: "kustomization:./"
       images:
-        # The pin lives in an images: override that rewrites the DataVolume
-        # registry url tag (app/kustomizeconfig.yaml).
+        # Update the DataVolume registry URL tag through its kustomization images override.
         - alias: agent-farm-ubuntu
           imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-farm-ubuntu"
           manifestTargets:

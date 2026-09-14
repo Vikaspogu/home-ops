@@ -66,8 +66,7 @@ applications:
 
   nvidia-gpu-cluster-policy:
     annotations:
-      # Sync wave 31 — after nvidia-gpu-operator (wave 30) registers the
-      # ClusterPolicy CRD and brings up the operator manager.
+      # Sync after nvidia-gpu-operator registers the ClusterPolicy CRD and starts its manager.
       argocd.argoproj.io/sync-wave: "31"
     destination:
       namespace: kube-system
