@@ -39,7 +39,7 @@ data:
     REG_TOKEN="$(curl -fsS "$REGISTRY/v2/token?service=container_registry&scope=repository:$REPO:pull" \
       | tr '{,' '\n\n' | grep '"token"' | cut -d'"' -f4)"
     NEWEST="$(curl -fsS -H "Authorization: Bearer $REG_TOKEN" "$REGISTRY/v2/$REPO/tags/list" \
-      | tr ',' '\n' | tr -d '[]"' | grep -E '^[0-9]{14}-[a-f0-9]{7}-oci$' | sort | tail -1)"
+      | tr ',' '\n' | tr -d '[]"}' | grep -E '^[0-9]{14}-[a-f0-9]{7}-oci$' | sort | tail -1)"
     if [ -z "$NEWEST" ]; then
       echo "no CI-tagged images in registry; nothing to do"
       exit 0
