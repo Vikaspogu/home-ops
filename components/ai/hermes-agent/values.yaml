@@ -121,7 +121,6 @@ controllers:
         env:
           PYTHONUNBUFFERED: "1"
           TREK_URL: "https://trek.${CLUSTER_DOMAIN}"
-          COROOT_URL: "https://coroot.${CLUSTER_DOMAIN}"
           TREK_OAUTH_CLIENT_ID:
             valueFrom:
               secretKeyRef:
@@ -132,16 +131,6 @@ controllers:
               secretKeyRef:
                 name: hermes-agent-secret
                 key: TREK_OAUTH_CLIENT_SECRET
-          COROOT_EMAIL:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: COROOT_EMAIL
-          COROOT_PASSWORD:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: COROOT_PASSWORD
         resources:
           requests:
             cpu: 10m

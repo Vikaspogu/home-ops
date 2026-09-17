@@ -865,11 +865,3 @@ applications:
             value: 8Gi
           - name: VOLSYNC_SCHEDULE
             value: "38 5,11,17,23 * * *"
-
-  whisper-asr:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: default
-    source:
-      path: components/default/whisper-asr
