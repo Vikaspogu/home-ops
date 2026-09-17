@@ -67,7 +67,7 @@ spec:
       serviceAccountName: golden-image-presync
       containers:
         - name: recreate-stale-datavolume
-          image: registry.k8s.io/kubectl:v1.31.4
+          image: docker.io/bitnami/kubectl:1.31.4
           command: ["/bin/sh", "-c"]
           args:
             - |
