@@ -24,9 +24,10 @@ api:
     # Non-reasoning instruct variant: reasoning models overshoot the per-call read timeout.
     HINDSIGHT_API_REFLECT_LLM_PROVIDER: "openai"
     HINDSIGHT_API_REFLECT_LLM_MODEL: "nvidia/qwen/qwen3-next-80b-a3b-instruct"
-    # 1 agentic iteration at low budget (pi's auto hook is hard-capped at 20s);
-    # high-budget tool reflects still get 4 iterations.
-    HINDSIGHT_API_REFLECT_MAX_ITERATIONS: "2"
+    # low=1 iteration skips forced retrieval entirely (empty answers) — 2 is the
+    # minimum viable: retrieve then synthesize. low budget = 2 iterations
+    # (~20s, fits pi's auto-hook cap); high-budget tool reflects get 8.
+    HINDSIGHT_API_REFLECT_MAX_ITERATIONS: "4"
     # Embeddings: NVIDIA inference hub.
     HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL: "nvidia/qwen/qwen3-embedding-0.6b"
