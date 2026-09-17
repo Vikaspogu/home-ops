@@ -28,15 +28,15 @@ api:
     HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL: "nvidia/qwen/qwen3-embedding-0.6b"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_DIMENSIONS: "1024"
-    # Local MiniLM reranking adds ~300Mi and a per-start download; fall back to provider=rrf if needed, or use TEI for GPU offload.
+    # RRF fusion only — local MiniLM reranking was CPU-starving recall under concurrent reflects.
     HINDSIGHT_API_ENABLE_RERANKING: "true"
     # (provider "none" is mentioned in hindsight docs but rejected by the factory.)
-    HINDSIGHT_API_RERANKER_PROVIDER: "local"
+    HINDSIGHT_API_RERANKER_PROVIDER: "rrf"
     # Bearer auth for all clients (pi plugin, Hermes provider, MCP).
     HINDSIGHT_API_TENANT_EXTENSION: "hindsight_api.extensions.builtin.tenant:ApiKeyTenantExtension"
   resources:
     requests:
-      cpu: 100m
+      cpu: 1000m
       memory: 512Mi
     limits:
       memory: 2Gi
