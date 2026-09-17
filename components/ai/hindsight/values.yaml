@@ -10,12 +10,19 @@ podAnnotations:
 api:
   env:
     TZ: America/New_York
-    # Extraction/reflect LLM: Ollama on spark.
+    # Extraction/consolidation/mental-model-refresh LLM: Ollama on spark.
+    # Interactive reflect is split off to the hosted hub below.
     HINDSIGHT_API_LLM_PROVIDER: "ollama"
     HINDSIGHT_API_LLM_MODEL: "qwen3.6:35b-a3b-q8_0"
     HINDSIGHT_API_LLM_BASE_URL: "http://spark.a113.internal:11434"
     HINDSIGHT_API_LLM_OLLAMA_NUM_CTX: "65536" # hindsight requires >=64K ctx
-    HINDSIGHT_API_LLM_MAX_CONCURRENT: "2" # single GPU on spark
+    HINDSIGHT_API_LLM_MAX_CONCURRENT: "8" # global room; per-op caps below reserve slots for reflect
+    HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "2" # extraction: 2 GPU slots, queues on its own cap
+    HINDSIGHT_API_CONSOLIDATION_LLM_MAX_CONCURRENT: "2"
+    HINDSIGHT_API_MENTAL_MODEL_REFRESH_LLM_MAX_CONCURRENT: "2"
+    # Reflect on the hosted inference hub (OpenAI-compatible), same creds pattern as embeddings.
+    HINDSIGHT_API_REFLECT_LLM_PROVIDER: "openai"
+    HINDSIGHT_API_REFLECT_LLM_MODEL: "nvidia/nvidia/Nemotron-3-Nano-30B-A3B"
     # Embeddings: NVIDIA inference hub.
     HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL: "nvidia/qwen/qwen3-embedding-0.6b"
