@@ -1,9 +1,13 @@
 # CDI denies spec updates on an existing DataVolume ("Cannot update DataVolume Spec"),
-# so a tag bump can never be applied in place. This PreSync hook compares the live
-# golden DataVolume with the desired tag (golden-image-desired ConfigMap) and deletes
-# the stale DataVolume right before sync, letting ArgoCD recreate it from the new tag.
+# so a tag bump can never be applied in place. This PreSync hook deletes the golden
+# DataVolume right before sync, letting ArgoCD recreate it from the new tag.
 # Workspaces keep running: they clone into their own root DataVolumes and never
 # reference the golden one after provisioning.
+#
+# ponytail: always-delete means every sync of this app re-imports the golden image
+# (20 GiB from the in-cluster registry, a few minutes). This app only syncs on tag
+# bumps, so that is the right trade; compare-and-delete (golden-image-desired
+# ConfigMap) if manual syncs become routine.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -26,10 +30,7 @@ metadata:
 rules:
   - apiGroups: ["cdi.kubevirt.io"]
     resources: ["datavolumes"]
-    verbs: ["get", "delete"]
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get"]
+    verbs: ["delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -59,29 +60,21 @@ metadata:
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     argocd.argoproj.io/sync-wave: "-1"
 spec:
-  backoffLimit: 2
-  activeDeadlineSeconds: 120
+  backoffLimit: 1
+  activeDeadlineSeconds: 60
   template:
     spec:
       restartPolicy: Never
       serviceAccountName: golden-image-presync
       containers:
+        # Distroless: kubectl only, no shell — hence the single imperative command.
         - name: recreate-stale-datavolume
-          image: docker.io/bitnami/kubectl:1.31.4
-          command: ["/bin/sh", "-c"]
+          image: registry.k8s.io/kubectl:v1.31.4
+          command: ["/kubectl"]
           args:
-            - |
-              set -eu
-              desired="$(kubectl -n agent-farm get configmap golden-image-desired -o jsonpath='{.data.url}')"
-              live="$(kubectl -n agent-farm get datavolume agent-farm-ubuntu-base -o jsonpath='{.spec.source.registry.url}' 2>/dev/null || true)"
-              echo "desired=${desired} live=${live:-<absent>}"
-              if [ "${live:-}" = "${desired}" ]; then
-                echo "golden DataVolume already at the pinned tag; nothing to do"
-                exit 0
-              fi
-              if [ -n "${live:-}" ]; then
-                echo "golden DataVolume tag is stale; deleting so sync recreates it from the new pin"
-                kubectl -n agent-farm delete datavolume agent-farm-ubuntu-base
-              else
-                echo "golden DataVolume absent; sync will create it"
-              fi
+            - -n
+            - agent-farm
+            - delete
+            - datavolume
+            - agent-farm-ubuntu-base
+            - --ignore-not-found

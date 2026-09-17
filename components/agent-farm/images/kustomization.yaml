@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: agent-farm
 resources:
   - datavolume.yaml
-  - golden-image-desired.yaml
   - presync-recreate-datavolume.yaml
 # ArgoCD Image Updater owns this tag; the image name matches the DataVolume registry URL configured by kustomizeconfig.yaml.
 images:
