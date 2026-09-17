@@ -107,25 +107,6 @@ spec:
             helm:
               name: controllers.app.initContainers.plugins-install.image.repository
               tag: controllers.app.initContainers.plugins-install.image.tag
-        - alias: agent-platform-hermes-agent-ntfy
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
-          manifestTargets:
-            helm:
-              name: controllers.app.initContainers.ntfy-alert-bridge.image.repository
-              tag: controllers.app.initContainers.ntfy-alert-bridge.image.tag
-    - namePattern: "agentmemory"
-      writeBackConfig:
-        method: "git:secret:argo-system/git-creds"
-        gitConfig:
-          branch: main
-          writeBackTarget: "helmvalues:./values.yaml"
-      images:
-        - alias: agentmemory
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agentmemory"
-          manifestTargets:
-            helm:
-              name: controllers.agentmemory.containers.app.image.repository
-              tag: controllers.agentmemory.containers.app.image.tag
     - namePattern: "agent-farm"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"

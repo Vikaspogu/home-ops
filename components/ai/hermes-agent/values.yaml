@@ -1,7 +1,3 @@
-serviceAccount:
-  hermes-cluster-reader:
-    forceRename: hermes-cluster-reader
-    automountServiceAccountToken: false
 controllers:
   app:
     replicas: 1
@@ -14,8 +10,6 @@ controllers:
       securityContext:
         fsGroup: 10000
         fsGroupChangePolicy: OnRootMismatch
-    serviceAccount:
-      identifier: hermes-cluster-reader
     initContainers:
       00-restore-permissions:
         image:
@@ -34,12 +28,6 @@ controllers:
                   for name in dirs + files:
                       os.chown(os.path.join(root, name), 10000, 10000, follow_symlinks=False)
 
-          alert_state = "/opt/data/alert-intake"
-          if os.path.islink(alert_state):
-              raise RuntimeError("refusing symlinked alert intake state")
-          os.makedirs(alert_state, mode=0o700, exist_ok=True)
-          os.chown(alert_state, 10000, 10000, follow_symlinks=False)
-          # CSI rejects chmod here; the bridge writes its cursor atomically as 0600.
         resources:
           requests:
             cpu: 10m
@@ -167,41 +155,6 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-      ntfy-alert-bridge:
-        restartPolicy: Always
-        image:
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260917150225-20f0b3a-oci
-        command: ["python", "/usr/local/bin/hermes-ntfy-alert-bridge"]
-        env:
-          PYTHONUNBUFFERED: "1"
-          NTFY_SERVER_URL: http://ntfy.default.svc.cluster.local
-          NTFY_TOPIC: infra-alerts
-          NTFY_CURSOR_FILE: /var/lib/hermes-alert-intake/cursor
-          HERMES_ALERT_WEBHOOK_URL: http://127.0.0.1:8644/webhooks/kubernetes-alert
-          NTFY_TOKEN:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-alert-intake-secret
-                key: NTFY_TOKEN
-          WEBHOOK_SECRET:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-alert-intake-secret
-                key: WEBHOOK_SECRET
-        resources:
-          requests:
-            cpu: 5m
-            memory: 24Mi
-          limits:
-            memory: 64Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
     containers:
       app:
         image:
@@ -262,14 +215,7 @@ controllers:
           HINDSIGHT_API_URL: http://hindsight-api.ai.svc.cluster.local:8888
           HINDSIGHT_BANK_ID: global
           SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
-          PROMETHEUS_URL: http://prometheus-prometheus.observability.svc.cluster.local:9090
           HERMES_NEMO_RELAY_PLUGINS_TOML: /opt/data/nemo-relay-plugins.toml
-          WEBHOOK_ENABLED: "true"
-          WEBHOOK_SECRET:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-alert-intake-secret
-                key: WEBHOOK_SECRET
           TZ: America/New_York
         envFrom:
         - secretRef:
@@ -303,9 +249,6 @@ persistence:
         - path: /opt/data
         mcp-token-sidecar:
         - path: /opt/data
-        ntfy-alert-bridge:
-        - path: /var/lib/hermes-alert-intake
-          subPath: alert-intake
   config:
     type: configMap
     name: hermes-agent-config
@@ -319,28 +262,4 @@ persistence:
         app:
         - path: /opt/data/nemo-relay-plugins.toml
           subPath: nemo-relay-plugins.toml
-          readOnly: true
-  kubernetes-api:
-    type: custom
-    volumeSpec:
-      projected:
-        sources:
-        - serviceAccountToken:
-            expirationSeconds: 3600
-            path: token
-        - configMap:
-            name: kube-root-ca.crt
-            items:
-            - key: ca.crt
-              path: ca.crt
-        - downwardAPI:
-            items:
-            - path: namespace
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.namespace
-    advancedMounts:
-      app:
-        app:
-        - path: /var/run/secrets/kubernetes.io/serviceaccount
           readOnly: true
