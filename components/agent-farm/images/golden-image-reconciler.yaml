@@ -130,7 +130,7 @@ spec:
           serviceAccountName: golden-image-presync
           containers:
             - name: reconcile-golden-image
-              image: docker.io/curlimages/curl:8.11.0
+              image: docker.io/curlimages/curl:8.22.0
               command: ["sh", "/scripts/reconcile.sh"]
               volumeMounts:
                 - name: script
