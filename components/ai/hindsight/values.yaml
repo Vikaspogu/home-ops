@@ -21,8 +21,9 @@ api:
     HINDSIGHT_API_CONSOLIDATION_LLM_MAX_CONCURRENT: "2"
     HINDSIGHT_API_MENTAL_MODEL_REFRESH_LLM_MAX_CONCURRENT: "2"
     # Reflect on the hosted inference hub (OpenAI-compatible), same creds pattern as embeddings.
+    # Non-reasoning instruct variant: reasoning models overshoot the per-call read timeout.
     HINDSIGHT_API_REFLECT_LLM_PROVIDER: "openai"
-    HINDSIGHT_API_REFLECT_LLM_MODEL: "nvidia/nvidia/Nemotron-3-Nano-30B-A3B"
+    HINDSIGHT_API_REFLECT_LLM_MODEL: "nvidia/qwen/qwen3-next-80b-a3b-instruct"
     # Embeddings: NVIDIA inference hub.
     HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"
     HINDSIGHT_API_EMBEDDINGS_OPENAI_MODEL: "nvidia/qwen/qwen3-embedding-0.6b"
