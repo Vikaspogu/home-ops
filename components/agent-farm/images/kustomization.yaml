@@ -4,6 +4,7 @@ namespace: agent-farm
 resources:
   - datavolume.yaml
   - presync-recreate-datavolume.yaml
+  - golden-image-reconciler.yaml
 # ArgoCD Image Updater owns this tag; the image name matches the DataVolume registry URL configured by kustomizeconfig.yaml.
 images:
 - name: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu

@@ -1,0 +1,141 @@
+# Registry-driven golden-image reconciler: the Gitea registry (public repo, anonymous
+# Docker bearer flow) is the source of truth for the golden DataVolume's tag.
+#
+# Why: argocd-image-updater cannot pin this image (its kustomize flow reads the
+# current tag from an Application kustomize.images override this GitOps layout
+# cannot carry, and the docker:// scheme breaks its name matching); CDI denies
+# spec updates on an existing DataVolume; and ArgoCD's compare excludes the
+# webhook-denied DataVolume from its diff, so tag-only Git changes never sync.
+#
+# The reconciler closes the loop level-triggered: every 30 minutes it lists the
+# registry tags, picks the newest matching the CI tag format, and only acts when
+# the live golden DataVolume differs — delete + create-at-newest (creation
+# passes CDI's webhook; only updates are denied). Same state = a two-second
+# no-op. ArgoCD stays as an absent-only fallback: if this CronJob is removed or
+# the DataVolume is deleted out-of-band, self-heal recreates it at the Git pin
+# in components/agent-farm/images/kustomization.yaml, and the next reconcile
+# moves it forward. The Git pin is a fallback and record now, not the driver.
+#
+# ponytail: a bump landing mid-workspace-provision breaks that clone (retryable);
+# add a VM-provisioning guard here if it ever bites.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: golden-image-reconciler
+  namespace: agent-farm
+data:
+  reconcile.sh: |
+    #!/bin/sh
+    set -eu
+    REGISTRY="https://gitea.a113.casa"
+    REPO="vpogu/agent-farm-ubuntu"
+    NS="agent-farm"
+    NAME="agent-farm-ubuntu-base"
+    API="https://kubernetes.default.svc"
+    TOKEN="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+    CA="--cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+
+    # 1. Newest CI-built tag in the registry (anonymous bearer flow; the repo is public).
+    REG_TOKEN="$(curl -fsS "$REGISTRY/v2/token?service=container_registry&scope=repository:$REPO:pull" \
+      | tr '{,' '\n\n' | grep '"token"' | cut -d'"' -f4)"
+    NEWEST="$(curl -fsS -H "Authorization: Bearer $REG_TOKEN" "$REGISTRY/v2/$REPO/tags/list" \
+      | tr ',' '\n' | tr -d '[]"' | grep -E '^[0-9]{14}-[a-f0-9]{7}-oci$' | sort | tail -1)"
+    if [ -z "$NEWEST" ]; then
+      echo "no CI-tagged images in registry; nothing to do"
+      exit 0
+    fi
+    echo "newest registry tag: $NEWEST"
+
+    # 2. Compare with the live golden DataVolume.
+    LIVE="$(curl -fsS $CA -H "Authorization: Bearer $TOKEN" \
+      "$API/apis/cdi.kubevirt.io/v1beta1/namespaces/$NS/datavolumes/$NAME" 2>/dev/null || true)"
+    if [ -n "$LIVE" ]; then
+      LIVE_URL="$(printf '%s' "$LIVE" | tr ',' '\n' | grep '"url":' | cut -d'"' -f4)"
+      LIVE_PHASE="$(printf '%s' "$LIVE" | tr ',' '\n' | grep '"phase":' | cut -d'"' -f4)"
+      case "$LIVE_URL" in
+        *"$NEWEST")
+          echo "golden DataVolume already at $NEWEST"
+          exit 0
+          ;;
+      esac
+      if [ "$LIVE_PHASE" = "ImportInProgress" ]; then
+        echo "golden DataVolume import in progress; skipping this cycle"
+        exit 0
+      fi
+      echo "golden DataVolume at $LIVE_URL is stale; recreating at $NEWEST"
+      curl -fsS $CA -X DELETE -H "Authorization: Bearer $TOKEN" \
+        "$API/apis/cdi.kubevirt.io/v1beta1/namespaces/$NS/datavolumes/$NAME"
+      # Wait out the deletion so creation under the same name cannot race a terminating claim.
+      I=0
+      while [ $I -lt 12 ]; do
+        if ! curl -fsS $CA -H "Authorization: Bearer $TOKEN" \
+             "$API/apis/cdi.kubevirt.io/v1beta1/namespaces/$NS/datavolumes/$NAME" >/dev/null 2>&1; then
+          break
+        fi
+        I=$((I + 1))
+        sleep 5
+      done
+    else
+      echo "golden DataVolume absent; creating at $NEWEST"
+    fi
+
+    # 3. Create the golden DataVolume at the newest tag. 409 means ArgoCD's
+    # absent-fallback won the same-name race; tolerate it if it is at NEWEST.
+    # Creation passes CDI's admission webhook; only spec updates are denied.
+    IMAGE_HOST="$(printf '%s' "$REGISTRY" | sed 's|^https://||')"
+    CODE="$(curl -sS $CA -o /dev/null -w '%{http_code}' -X POST \
+      -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+      -d '{"apiVersion":"cdi.kubevirt.io/v1beta1","kind":"DataVolume","metadata":{"name":"'"$NAME"'","namespace":"'"$NS"'"},"spec":{"source":{"registry":{"secretRef":"gitea-registry-cdi","url":"docker://'"$IMAGE_HOST/$REPO:$NEWEST"'"}},"storage":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"20Gi"}},"storageClassName":"ceph-block"}}}' \
+      "$API/apis/cdi.kubevirt.io/v1beta1/namespaces/$NS/datavolumes")"
+    case "$CODE" in
+      201)
+        echo "golden DataVolume created at $NEWEST"
+        ;;
+      409)
+        RACE_URL="$(curl -fsS $CA -H "Authorization: Bearer $TOKEN" \
+          "$API/apis/cdi.kubevirt.io/v1beta1/namespaces/$NS/datavolumes/$NAME" \
+          | tr ',' '\n' | grep '"url":' | cut -d'"' -f4)"
+        case "$RACE_URL" in
+          *"$NEWEST") echo "golden DataVolume already created at $NEWEST (race with fallback)";;
+          *) echo "unexpected 409: existing DataVolume at $RACE_URL"; exit 1;;
+        esac
+        ;;
+      *)
+        echo "create failed with HTTP $CODE"
+        exit 1
+        ;;
+    esac
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: golden-image-reconciler
+  namespace: agent-farm
+spec:
+  # The idle run is a two-second anonymous tag list plus one API GET; 30 minutes
+  # is plenty after a multi-hour Packer build.
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: Never
+          # Reuses the PreSync hook's ServiceAccount; its Role carries the union
+          # of verbs both jobs need (get, create, delete datavolumes).
+          serviceAccountName: golden-image-presync
+          containers:
+            - name: reconcile-golden-image
+              image: docker.io/curlimages/curl:8.11.0
+              command: ["sh", "/scripts/reconcile.sh"]
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+          volumes:
+            - name: script
+              configMap:
+                name: golden-image-reconciler
