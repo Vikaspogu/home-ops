@@ -13,5 +13,5 @@ helmCharts:
     releaseName: agent-farm
     namespace: agent-farm
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "5.2.0"
+    version: "5.2.1"
     valuesFile: values.yaml
