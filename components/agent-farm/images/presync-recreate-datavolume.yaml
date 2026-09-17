@@ -1,0 +1,87 @@
+# CDI denies spec updates on an existing DataVolume ("Cannot update DataVolume Spec"),
+# so a tag bump can never be applied in place. This PreSync hook compares the live
+# golden DataVolume with the desired tag (golden-image-desired ConfigMap) and deletes
+# the stale DataVolume right before sync, letting ArgoCD recreate it from the new tag.
+# Workspaces keep running: they clone into their own root DataVolumes and never
+# reference the golden one after provisioning.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: golden-image-presync
+  namespace: agent-farm
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "-2"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: golden-image-presync
+  namespace: agent-farm
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "-2"
+rules:
+  - apiGroups: ["cdi.kubevirt.io"]
+    resources: ["datavolumes"]
+    verbs: ["get", "delete"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: golden-image-presync
+  namespace: agent-farm
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "-2"
+subjects:
+  - kind: ServiceAccount
+    name: golden-image-presync
+    namespace: agent-farm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: golden-image-presync
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: golden-image-presync
+  namespace: agent-farm
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 120
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: golden-image-presync
+      containers:
+        - name: recreate-stale-datavolume
+          image: registry.k8s.io/kubectl:v1.31.4
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              desired="$(kubectl -n agent-farm get configmap golden-image-desired -o jsonpath='{.data.url}')"
+              live="$(kubectl -n agent-farm get datavolume agent-farm-ubuntu-base -o jsonpath='{.spec.source.registry.url}' 2>/dev/null || true)"
+              echo "desired=${desired} live=${live:-<absent>}"
+              if [ "${live:-}" = "${desired}" ]; then
+                echo "golden DataVolume already at the pinned tag; nothing to do"
+                exit 0
+              fi
+              if [ -n "${live:-}" ]; then
+                echo "golden DataVolume tag is stale; deleting so sync recreates it from the new pin"
+                kubectl -n agent-farm delete datavolume agent-farm-ubuntu-base
+              else
+                echo "golden DataVolume absent; sync will create it"
+              fi

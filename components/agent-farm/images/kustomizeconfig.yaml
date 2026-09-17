@@ -2,3 +2,6 @@ images:
 - group: cdi.kubevirt.io
   kind: DataVolume
   path: spec/source/registry/url
+- group: ""
+  kind: ConfigMap
+  path: data/url

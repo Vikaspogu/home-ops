@@ -1,0 +1,9 @@
+# Carries the desired golden image URL; kustomize's images transformer appends the
+# pinned tag from kustomization.yaml to data.url on render (see kustomizeconfig.yaml).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: golden-image-desired
+  namespace: agent-farm
+data:
+  url: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu
