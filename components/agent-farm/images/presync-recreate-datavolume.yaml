@@ -11,7 +11,7 @@ metadata:
   namespace: agent-farm
   annotations:
     argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     argocd.argoproj.io/sync-wave: "-2"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -21,7 +21,7 @@ metadata:
   namespace: agent-farm
   annotations:
     argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     argocd.argoproj.io/sync-wave: "-2"
 rules:
   - apiGroups: ["cdi.kubevirt.io"]
@@ -38,7 +38,7 @@ metadata:
   namespace: agent-farm
   annotations:
     argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     argocd.argoproj.io/sync-wave: "-2"
 subjects:
   - kind: ServiceAccount
@@ -56,7 +56,7 @@ metadata:
   namespace: agent-farm
   annotations:
     argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
     argocd.argoproj.io/sync-wave: "-1"
 spec:
   backoffLimit: 2
