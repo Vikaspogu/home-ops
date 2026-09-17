@@ -7,6 +7,6 @@ resources:
 # ArgoCD Image Updater owns this tag; the image name matches the DataVolume registry URL configured by kustomizeconfig.yaml.
 images:
 - name: docker://gitea.a113.casa/vpogu/agent-farm-ubuntu
-  newTag: 20260911175135-bfcb54b-oci
+  newTag: 20260917144345-313fd32-oci
 configurations:
 - kustomizeconfig.yaml
