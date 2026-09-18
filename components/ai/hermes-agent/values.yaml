@@ -14,7 +14,7 @@ controllers:
       00-restore-permissions:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260917191302-84fd67c-oci
+          tag: 20260918125544-e40cf31-oci
         command:
         - python
         - -c
@@ -116,7 +116,7 @@ controllers:
         restartPolicy: Always
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260917191302-84fd67c-oci
+          tag: 20260918125544-e40cf31-oci
         command: ["python", "/usr/local/bin/hermes-mcp-tokens"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -148,7 +148,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260917191302-84fd67c-oci
+          tag: 20260918125544-e40cf31-oci
         probes:
           # Let startupProbe cover the variable 40s–2.5m cold start before liveness/readiness take over to avoid kill loops.
           startup:
