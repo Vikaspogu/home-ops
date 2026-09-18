@@ -45,7 +45,7 @@ controllers:
       seed-config:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260917191302-84fd67c-oci
+          tag: 20260918125544-e40cf31-oci
         command: ["hermes-seed-config"]
         envFrom:
         - secretRef:
@@ -67,7 +67,7 @@ controllers:
       plugins-install:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260917191302-84fd67c-oci
+          tag: 20260918125544-e40cf31-oci
         command:
           - /bin/sh
           - -ec
