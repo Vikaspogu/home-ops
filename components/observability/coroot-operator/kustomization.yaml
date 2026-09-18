@@ -8,6 +8,6 @@ helmCharts:
     releaseName: coroot-operator
     namespace: observability
     repo: https://coroot.github.io/helm-charts
-    version: 0.10.1
+    version: 0.10.2
     includeCRDs: true
     valuesFile: values.yaml
