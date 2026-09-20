@@ -7,6 +7,10 @@ rules:
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["get", "create", "list", "delete"]
+  # get: the why-failed tail the driver records when an attempt pod dies.
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
   - apiGroups: [""]
     resources: ["services"]
     verbs: ["get", "create", "delete"]
