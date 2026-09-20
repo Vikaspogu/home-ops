@@ -204,7 +204,6 @@ controllers:
           HINDSIGHT_API_URL: http://hindsight-api.ai.svc.cluster.local:8888
           HINDSIGHT_BANK_ID: global
           SEARXNG_URL: http://searxng.ai.svc.cluster.local:8080
-          HERMES_NEMO_RELAY_PLUGINS_TOML: /opt/data/nemo-relay-plugins.toml
           TZ: America/New_York
         envFrom:
         - secretRef:
@@ -246,9 +245,4 @@ persistence:
         seed-config:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
-          readOnly: true
-        # Mount ConfigMap content over the PVC placeholder so HERMES_NEMO_RELAY_PLUGINS_TOML cannot silently read an empty file.
-        app:
-        - path: /opt/data/nemo-relay-plugins.toml
-          subPath: nemo-relay-plugins.toml
           readOnly: true
