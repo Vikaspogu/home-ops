@@ -26,9 +26,13 @@ spec:
             - port: "8080"
               protocol: TCP
     # DNS: toFQDNs rules below resolve through the cluster's DNS proxy.
+    # The explicit kube-system namespace is REQUIRED: a namespaced CNP's
+    # toEndpoints rules are otherwise implicitly constrained to the policy's
+    # own namespace and never match coredns.
     - toEndpoints:
         - matchLabels:
             "k8s:k8s-app": kube-dns
+            "k8s:io.kubernetes.pod.namespace": kube-system
       toPorts:
         - ports:
             - port: "53"
