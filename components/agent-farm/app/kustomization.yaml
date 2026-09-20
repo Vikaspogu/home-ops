@@ -4,6 +4,7 @@ namespace: agent-farm
 resources:
   - externalsecret.yaml
   - rbac.yaml
+  - task-pods-egress-cnp.yaml
   - http-route.yaml
   - http-route-workspaces.yaml
   - http-route-auth.yaml

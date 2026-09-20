@@ -31,6 +31,9 @@ controllers:
         env:
           PORT: &apiPort 8080
           AGENT_FARM_NAMESPACE: agent-farm
+          AGENT_FARM_INTERNAL_API_URL: http://agent-farm-api.agent-farm.svc.cluster.local:8080
+          AGENT_FARM_ARTIFACTS_DIR: /artifacts
+          AGENT_FARM_TASK_IMAGE: gitea.a113.casa/vpogu/agent-farm-agent:latest
           CLUSTER_DOMAIN: ${CLUSTER_DOMAIN}
           STORAGE_CLASS: ceph-block
           UBUNTU_SOURCE: agent-farm-ubuntu-base
@@ -134,6 +137,13 @@ controllers:
         securityContext:
           allowPrivilegeEscalation: false
           capabilities: {drop: ["ALL"]}
+persistence:
+  artifacts:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /artifacts
+
 service:
   api:
     controller: api

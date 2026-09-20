@@ -3,6 +3,10 @@ kind: Role
 metadata:
   name: agent-farm-api
 rules:
+  # Agentic task pods (agent + keyless verify): created, watched, torn down.
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "create", "list", "delete"]
   - apiGroups: [""]
     resources: ["services"]
     verbs: ["get", "create", "delete"]
