@@ -271,6 +271,7 @@ data:
         - file
         - image_gen
         - ivan_bartender
+        - ivan_books
         - ivan_budget
         - ivan_dining
         - ivan_documents
@@ -296,6 +297,7 @@ data:
       cli: &known-plugin-toolsets
         - paperless-approval
         - ivan_bartender
+        - ivan_books
         - ivan_budget
         - ivan_dining
         - ivan_documents

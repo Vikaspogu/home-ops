@@ -82,7 +82,7 @@ controllers:
           HOME: /opt/data
           HERMES_HOME: /opt/data
           PYTHONUNBUFFERED: "1"
-          IVAN_PLUGIN_REF: 4d095bafc6691ea8298721be1b647f5b3c12370e
+          IVAN_PLUGIN_REF: 25139bc179e56b35891c6f1c4703ea880b4489df
           FORGE_PLUGIN_REF: 6eb728677cc68bb44acd48909640e45d9c8615d2
           GITEA_USER:
             valueFrom:
