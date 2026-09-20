@@ -656,6 +656,16 @@ applications:
   agent-farm-images:
     annotations:
       argocd.argoproj.io/sync-wave: "19"
+    # The golden-image-reconciler CronJob owns the registry tag: it deletes and
+    # recreates the DataVolume out-of-band (CDI forbids spec updates). Without this
+    # ignore, ArgoCD's SSA dry-run tries to roll the URL back to the pinned tag and
+    # the CDI webhook fails the whole comparison (ComparisonError).
+    ignoreDifferences:
+      - group: cdi.kubevirt.io
+        kind: DataVolume
+        name: agent-farm-ubuntu-base
+        jqPathExpressions:
+          - .spec.source.registry.url
     destination:
       namespace: agent-farm
     source:
