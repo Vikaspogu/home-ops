@@ -36,9 +36,14 @@ spec:
       toPorts:
         - ports:
             - port: "53"
-              protocol: UDP
-            - port: "53"
-              protocol: TCP
+              protocol: ANY
+          # The L7 dns section is REQUIRED with toFQDNs: Cilium's DNS proxy
+          # must observe the answers so the FQDN rules below can match the
+          # learned IPs (without it, the hub resolved but every connect was
+          # policy-denied).
+          rules:
+            dns:
+              - matchPattern: "*"
     # The model inference endpoint: the managed NVIDIA inference hub
     # (INFERENCE_HUB_BASE_URL in the 1Password "inference-hub" item — the
     # same URL the agentic settings use). The agentic settings' inference
