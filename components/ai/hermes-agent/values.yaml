@@ -14,7 +14,7 @@ controllers:
       00-restore-permissions:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20260918125544-e40cf31-oci
+          tag: 20260920015331-2bac6a0-oci
         command:
         - python
         - -c
