@@ -11,6 +11,11 @@ rules:
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get"]
+  # The UI-managed task-pod egress allowlist renders into this generated CNP
+  # (agent-farm-task-pods-egress-extra); the static deny-all CNP in git stays.
+  - apiGroups: ["cilium.io"]
+    resources: ["ciliumnetworkpolicies"]
+    verbs: ["get", "create", "update", "delete"]
   - apiGroups: [""]
     resources: ["services"]
     verbs: ["get", "create", "delete"]
