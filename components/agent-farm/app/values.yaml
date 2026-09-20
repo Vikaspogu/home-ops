@@ -138,6 +138,14 @@ controllers:
           allowPrivilegeEscalation: false
           capabilities: {drop: ["ALL"]}
 persistence:
+  # Scratch space for the task pipeline's server-side git work (source
+  # fetch, MR validation/push) — the container runs read-only root FS and
+  # os.MkdirTemp defaults to /tmp.
+  tmp:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
   artifacts:
     enabled: true
     type: emptyDir
