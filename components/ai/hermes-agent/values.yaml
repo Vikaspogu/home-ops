@@ -63,7 +63,7 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-      # Install Git plugins through upstream Hermes with immutable SHA pins and security scanning; bump pins when plugins change.
+      # Install Git plugins through upstream Hermes; Ivan tracks main while Forge stays SHA-pinned.
       plugins-install:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
@@ -73,17 +73,12 @@ controllers:
           - -ec
           - |
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
-              --ref "${IVAN_PLUGIN_REF}" \
+              --ref main \
               "https://gitea.a113.casa/vpogu/ivan-plugin.git#plugin"
-            /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
-              --ref "${FORGE_PLUGIN_REF}" \
-              "https://gitea.a113.casa/vpogu/forge.git#plugins/hermes"
         env:
           HOME: /opt/data
           HERMES_HOME: /opt/data
           PYTHONUNBUFFERED: "1"
-          IVAN_PLUGIN_REF: 25139bc179e56b35891c6f1c4703ea880b4489df
-          FORGE_PLUGIN_REF: 6eb728677cc68bb44acd48909640e45d9c8615d2
           GITEA_USER:
             valueFrom:
               secretKeyRef:
