@@ -14,10 +14,11 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "create", "delete"]
-  # get: golden-image tag reads and home-DV existence checks; create: home DataVolumes.
+  # get: golden-image tag reads and home-DV existence checks; create: home DataVolumes;
+  # patch: keep-home-disk delete relabels the home DataVolume detached for adoption.
   - apiGroups: ["cdi.kubevirt.io"]
     resources: ["datavolumes"]
-    verbs: ["get", "create", "delete"]
+    verbs: ["get", "create", "delete", "patch"]
   # patch: resize grows the VM's memory requests in place.
   - apiGroups: ["kubevirt.io"]
     resources: ["virtualmachines"]
