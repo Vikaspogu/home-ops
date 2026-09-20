@@ -1600,8 +1600,7 @@ kubectl -n default logs job/omv-media-to-k8s4-dell
 ssh omv "find /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/VolsyncKopia -type f | wc -l"
 ssh synology "find /volume1/VolsyncKopia -type f | wc -l"
 
-# Spot check media from k8s-4-dell local media path after the app cutover
-# Checksum Garage metadata
+# Spot check media from k8s-4-dell local media path after the app cutover; checksum Garage metadata
 ssh omv "md5sum /srv/.../garage-meta/db"
 ssh synology "md5sum /volume1/staging/garage-meta/db"
 ```
@@ -1635,8 +1634,7 @@ Do not proceed if active VolSync mover jobs are still running against the old OM
 - [ ] **Step 2: Final delta rsync**
 
 ```bash
-# Re-run the k8s-4-dell media rsync Job with --delete added to the rsync command.
-# Catch any changes since bulk transfer for Synology-backed data.
+# Re-run the k8s-4-dell media rsync Job with --delete added to the rsync command. Catch any changes since bulk transfer for Synology-backed data.
 rsync -avhP --delete omv:/srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/syncthing/ synology:/volume1/syncthing/
 rsync -avhP --delete omv:/srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/nextcloud/ synology:/volume1/nextcloud/
 rsync -avhP --delete omv:/srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/bytestash/ synology:/volume1/bytestash/
@@ -1747,9 +1745,7 @@ This is deferred until the future storage worker has a new hostname/IP and mount
 From a pod or node with access:
 
 ```bash
-# Split Garage data across 4 HDDs by hex prefix
-# Garage stores blocks in directories like 00/, 01/, ... ff/
-# Distribute: 00-3f → hdd1, 40-7f → hdd2, 80-bf → hdd3, c0-ff → hdd4
+# Split Garage data across 4 HDDs by hex prefix. Garage stores blocks in directories like 00/, 01/, ... ff/. Distribute: 00-3f → hdd1, 40-7f → hdd2, 80-bf → hdd3, c0-ff → hdd4.
 rsync -avhP synology:/volume1/staging/garage/00/ /var/mnt/hdd1/garage/00/
 # ... (script to distribute hex prefixes across 4 disks)
 
@@ -1760,8 +1756,7 @@ rsync -avhP synology:/volume1/staging/garage-meta/ /var/mnt/hdd1/garage-meta/
 - [ ] **Step 2: Deploy Garage and register node**
 
 ```bash
-# ArgoCD should pick up the new Garage config
-# Then register the node and assign partitions
+# ArgoCD should pick up the new Garage config; then register the node and assign partitions
 kubectl exec -n default deploy/garage -- garage node id
 kubectl exec -n default deploy/garage -- garage layout assign <node-id> -z dc1 -c 14T
 kubectl exec -n default deploy/garage -- garage layout apply --version 1

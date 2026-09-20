@@ -484,10 +484,7 @@ kubectl exec -n default $POD -c app -- /garage status
 kubectl exec -n default $POD -c app -- /garage bucket list
 kubectl exec -n default $POD -c app -- /garage stats -a
 
-# Should show:
-# - All 8 data directories registered
-# - 4 empty buckets
-# - Storage distributed across HDDs
+# Should show: all 8 data directories registered; 4 empty buckets; storage distributed across HDDs
 ```
 
 **Success Criteria:**
@@ -641,8 +638,7 @@ ssh root@omv-baymx 'kubectl get pods -n default | grep garage'
 
 **4. Copy data via rsync (22 min, DOWNTIME):**
 ```bash
-# Copy data directory (113 GB @ ~85 MB/s = 22 min)
-# Note: Using first HDD as staging, will rebalance later
+# Copy data directory (113 GB @ ~85 MB/s = 22 min). Note: using first HDD as staging, will rebalance later.
 ssh root@omv-baymx "rsync -aP --info=progress2 \
   /srv/dev-disk-by-uuid-9d2e4cb9-8825-4168-8153-e020ee524474/storage0/garage/ \
   root@10.30.30.25:/mnt/garage-hdd1/data-migration/"
@@ -655,8 +651,7 @@ ssh root@omv-baymx "rsync -aP --info=progress2 \
 
 **ALTERNATIVE: S3 replication method (if rsync not feasible):**
 ```bash
-# Restart OMV Garage in read-only mode first
-# Then use rclone sync (will take longer ~2 hours)
+# Restart OMV Garage in read-only mode first; then use rclone sync (will take longer ~2 hours)
 kubectl run rclone-postgres --rm -i --image=rclone/rclone:latest \
   --restart=Never -- \
   --config /tmp/rclone.conf \
@@ -669,8 +664,7 @@ kubectl run rclone-postgres --rm -i --image=rclone/rclone:latest \
 # Stop new Garage
 kubectl scale deploy/garage-s3 -n default --replicas=0
 
-# Move data from staging to proper multi-HDD layout
-# (Garage will rebalance after start)
+# Move data from staging to proper multi-HDD layout (Garage will rebalance after start)
 talosctl -n 10.30.30.25 cp /mnt/garage-hdd1/data-migration/ /mnt/garage-hdd1/
 talosctl -n 10.30.30.25 cp /mnt/garage-meta-migration/ /mnt/garage-meta/
 
@@ -955,9 +949,7 @@ talosctl -n 10.30.30.25 df | grep garage
 
 **Rollback:**
 ```bash
-# 1. Update app endpoints back to OMV
-# 2. Data still exists on OMV Garage (never deleted)
-# 3. Delete new Garage deployment
+# 1. Update app endpoints back to OMV; 2. Data still exists on OMV Garage (never deleted); 3. Delete new Garage deployment
 kubectl delete -f components/default/garage-s3/
 ```
 
@@ -976,8 +968,7 @@ kubectl scale deploy/garage-s3 -n default --replicas=0
 ssh root@omv-baymx 'kubectl scale deploy/garage -n default --replicas=1'
 ssh root@omv-baymx 'kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=garage -n default --timeout=180s'
 
-# 3. Revert postgres ObjectStore endpoints
-# (undo changes from Phase 3, step 7)
+# 3. Revert postgres ObjectStore endpoints (undo changes from Phase 3, step 7)
 
 # 4. Resume scheduled backups
 kubectl patch scheduledbackup postgres17 -n default --type=merge -p '{"spec":{"suspend":false}}'
@@ -998,9 +989,7 @@ kubectl logs -n default -l cnpg.io/cluster=postgres17 --tail=50 | grep -i wal
 
 **Rollback:**
 ```bash
-# 1. Update DNS/HTTPRoute back to OMV Garage
-# 2. Restart OMV Garage
-# 3. Verify old Garage serving traffic
+# 1. Update DNS/HTTPRoute back to OMV Garage; 2. Restart OMV Garage; 3. Verify old Garage serving traffic
 ```
 
 **Data loss risk:** Low

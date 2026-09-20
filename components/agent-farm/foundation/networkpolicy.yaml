@@ -34,8 +34,7 @@ spec:
       ports:
         - protocol: TCP
           port: 8080
-    # Agentic task pods (agent + keyless verify): their only server channel is
-    # the artifact/transcript ingestion endpoint on the API.
+    # Agentic task pods (agent + keyless verify): their only server channel is the artifact/transcript ingestion endpoint on the API.
     - from:
         - podSelector:
             matchLabels:

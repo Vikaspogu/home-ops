@@ -359,10 +359,7 @@ kubectl get pod -n default -l app.kubernetes.io/name=nfs-server -o wide
 
 # Check NFS exports
 kubectl exec -n default deploy/nfs-server -- showmount -e localhost
-# Expected output:
-# Export list for localhost:
-# /exports/downloads *
-# /exports/media *
+# Expected output: export list for localhost: /exports/downloads *; /exports/media *
 
 # Test NFS mount from another node
 kubectl run nfs-test --rm -i --restart=Never --image=alpine:latest -- \
@@ -516,11 +513,7 @@ kubectl apply -f components/default/media-migration/rsync-media-job.yaml
 # Monitor progress
 kubectl logs -n default -l target=media -f
 
-# Expected duration: ~2-3 hours for 2.55TB over network
-# Progress will show:
-# - Number of files transferred
-# - Transfer speed (MB/s)
-# - ETA
+# Expected duration: ~2-3 hours for 2.55TB over network. Progress will show: number of files transferred; transfer speed (MB/s); ETA.
 ```
 
 5. **After media completes, rsync downloads separately:**
@@ -601,8 +594,7 @@ kubectl logs -n default -l target=downloads -f
 kubectl get jobs -n default | grep rsync
 # Both should show COMPLETIONS=1/1
 
-# Verify file counts match
-# OMV:
+# Verify file counts match OMV:
 ssh root@omv-baymx "find /export/storage0/media/Shows -type f | wc -l"
 ssh root@omv-baymx "find /export/storage0/media/Movies -type f | wc -l"
 
@@ -810,8 +802,7 @@ curl -I https://jellyfin.${CLUSTER_DOMAIN}/health
 kubectl logs -n default -l app.kubernetes.io/name=jellyfin --tail=50
 # Should show library scan starting
 
-# Verify shows/movies visible in Jellyfin UI
-# Login and check library contents
+# Verify shows/movies visible in Jellyfin UI; login and check library contents
 ```
 
 **Rollback (if issues):**
@@ -937,37 +928,21 @@ kubectl logs -n default -l app=media-migration -f
 2. **Comprehensive functionality test:**
 
 ```bash
-# Test Jellyfin playback
-# - Open Jellyfin UI
-# - Play a TV show
-# - Play a movie
-# - Verify transcoding works (CPU/GPU usage spike)
+# Test Jellyfin playback: open Jellyfin UI; play a TV show; play a movie; verify transcoding works (CPU/GPU usage spike)
 
-# Test Sonarr
-# - Browse series list
-# - Trigger manual search for episode
-# - Verify Sonarr can see files in Shows directory
+# Test Sonarr: browse series list; trigger manual search for episode; verify Sonarr can see files in Shows directory
 
-# Test Radarr
-# - Browse movie list
-# - Trigger manual search for movie
-# - Verify Radarr can see files in Movies directory
+# Test Radarr: browse movie list; trigger manual search for movie; verify Radarr can see files in Movies directory
 
-# Test download clients
-# - qbittorrent: Add test torrent, verify writes to /downloads
-# - sabnzbd: Add test download, verify writes to /downloads
+# Test download clients: qbittorrent: add test torrent, verify writes to /downloads; sabnzbd: add test download, verify writes to /downloads
 
-# Test Bazarr
-# - Browse series/movies
-# - Trigger subtitle search
-# - Verify can download and save subtitles
+# Test Bazarr: browse series/movies; trigger subtitle search; verify can download and save subtitles
 ```
 
 3. **Verify HA failover:**
 
 ```bash
-# Test 1: Pod rescheduling (node drain)
-# Drain k8s-1 (or whichever node runs Jellyfin)
+# Test 1: Pod rescheduling (node drain); drain k8s-1 (or whichever node runs Jellyfin)
 kubectl drain k8s-1-nab9 --ignore-daemonsets --delete-emptydir-data
 
 # Watch Jellyfin pod reschedule to another node
@@ -979,17 +954,13 @@ while true; do curl -I https://jellyfin.${CLUSTER_DOMAIN}/health; sleep 2; done
 # Uncordon node
 kubectl uncordon k8s-1-nab9
 
-# Test 2: NFS server resilience
-# If k8s-4-dell goes down, NFS becomes unavailable
-# Jellyfin pod stays up but media unplayable until k8s-4-dell recovers
-# This is EXPECTED behavior with current NFS architecture
+# Test 2: NFS server resilience. If k8s-4-dell goes down, NFS becomes unavailable; Jellyfin pod stays up but media is unplayable until k8s-4-dell recovers. This is EXPECTED behavior with current NFS architecture.
 ```
 
 4. **Compare file checksums (sample):**
 
 ```bash
-# Pick random files to checksum verify
-# OMV:
+# Pick random files to checksum verify OMV:
 ssh root@omv-baymx "md5sum /export/storage0/media/Shows/SomeShow/S01E01.mkv"
 
 # Talos (via NFS pod):
@@ -1017,11 +988,7 @@ kubectl exec -n default deploy/nfs-server -- \
 1. **Monitor for 1 week before cleanup:**
 
 ```bash
-# Daily checks (for 7 days):
-# - Jellyfin accessible
-# - No media playback errors
-# - Download clients working
-# - No NFS mount errors in pod logs
+# Daily checks (for 7 days): Jellyfin accessible; no media playback errors; download clients working; no NFS mount errors in pod logs
 ```
 
 2. **After 1 week verification, archive OMV media:**
@@ -1104,17 +1071,13 @@ kubectl delete -k components/default/jellyfin/
 # 2. Restart Jellyfin on OMV
 ssh root@omv-baymx "kubectl scale deploy jellyfin -n default --replicas=1"
 
-# 3. Verify OMV Jellyfin working
-# Data loss: None (OMV media files unchanged)
+# 3. Verify OMV Jellyfin working. Data loss: none (OMV media files unchanged).
 ```
 
 ### If issues during Phase 4 (other apps):
 
 ```bash
-# Roll back affected app to OMV NFS server
-# 1. Edit app values.yaml, revert NFS server to omv-baymx.a113.internal
-# 2. kubectl apply -k components/default/<app>/
-# 3. Other apps already migrated stay on Talos NFS
+# Roll back affected app to OMV NFS server: 1. Edit app values.yaml, revert NFS server to omv-baymx.a113.internal; 2. kubectl apply -k components/default/<app>/; 3. Other apps already migrated stay on Talos NFS
 ```
 
 ### If NFS server pod fails:
@@ -1132,15 +1095,9 @@ kubectl delete pod -n default -l app.kubernetes.io/name=nfs-server
 ### If k8s-4-dell node goes offline:
 
 ```bash
-# Symptom: NFS mounts fail, media inaccessible
-# Expected behavior: NFS server pod cannot reschedule (tied to k8s-4-dell)
-# Media apps remain running but show "file not found" errors
+# Symptom: NFS mounts fail, media inaccessible. Expected behavior: NFS server pod cannot reschedule (tied to k8s-4-dell). Media apps remain running but show "file not found" errors.
 
-# Resolution:
-# 1. Fix k8s-4-dell hardware issue
-# 2. Reboot k8s-4-dell (Talos recovery ~2 min)
-# 3. Wait for NFS pod to restart
-# 4. Media apps automatically reconnect
+# Resolution: 1. Fix k8s-4-dell hardware issue; 2. Reboot k8s-4-dell (Talos recovery ~2 min); 3. Wait for NFS pod to restart; 4. Media apps automatically reconnect
 
 # Data loss: None (local disks persist through reboot)
 ```
@@ -1177,8 +1134,7 @@ cephClusterSpec:
       - name: "k8s-4-dell"  # NEW
         devices:
           - name: "nvme1n1"  # 1TB NVMe (fast)
-          # OR
-          # - name: "sdc"  # 4TB HDD (slow but more capacity)
+          # OR - name: "sdc" # 4TB HDD (slow but more capacity)
 ```
 
 **New Ceph capacity:**
@@ -1355,8 +1311,7 @@ talosctl -n 10.30.30.24 shell -- \
 
 **Short-term fix:**
 ```bash
-# Delete old/unwatched content manually
-# Expand to CephFS (see Future Improvements)
+# Delete old/unwatched content manually; expand to CephFS (see Future Improvements)
 ```
 
 **Long-term fix:**

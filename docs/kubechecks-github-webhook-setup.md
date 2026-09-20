@@ -151,8 +151,7 @@ git add README.md
 git commit -m "test: kubechecks webhook validation"
 git push origin test/kubechecks-webhook
 
-# Create PR on GitHub
-# Check PR for kubechecks comments
+# Create PR on GitHub; check PR for kubechecks comments
 ```
 
 Expected behavior:
@@ -221,8 +220,7 @@ curl -X POST https://kubechecks.${CLUSTER_DOMAIN}/hooks/github \
 # Fetch current GitHub IP ranges
 curl -s https://api.github.com/meta | jq -r '.hooks[]'
 
-# Update components/argo-system/kubechecks/security-policy.yaml
-# with new IP ranges, commit, and sync
+# Update components/argo-system/kubechecks/security-policy.yaml with new IP ranges, commit, and sync
 ```
 
 #### Issue 2: Webhook Deliveries Show 401 Unauthorized
@@ -246,9 +244,7 @@ openssl rand -hex 32 | tee >(op item edit kubechecks KUBECHECKS_WEBHOOK_SECRET[c
 
 **Solution:**
 ```bash
-# GitHub PAT needs these scopes:
-# - repo (Full control of private repositories)
-# - write:discussion (Write access to discussions)
+# GitHub PAT needs these scopes: repo (full control of private repositories); write:discussion (write access to discussions)
 
 # Regenerate token with correct scopes and update 1Password:
 op item edit kubechecks K8S_TOKEN[concealed]=<new-token>
@@ -300,8 +296,7 @@ diff <(curl -s https://api.github.com/meta | jq -r '.hooks[]' | sort) \
      <(yq '.spec.authorization.rules[0].principal.clientCIDRs[]' \
         components/argo-system/kubechecks/security-policy.yaml | sort)
 
-# 3. Update security-policy.yaml if changed
-# 4. Commit and ArgoCD will sync
+# 3. Update security-policy.yaml if changed; 4. Commit and ArgoCD will sync
 ```
 
 ### Rotate Webhook Secret (Annually)
@@ -316,8 +311,7 @@ echo $NEW_SECRET | op item edit kubechecks KUBECHECKS_WEBHOOK_SECRET[concealed]=
 # 3. Wait for ExternalSecret to sync (~1 minute)
 kubectl get secret -n argo-system kubechecks -o yaml | grep -A1 KUBECHECKS_WEBHOOK_SECRET
 
-# 4. Update GitHub webhook secret (no downtime during this step)
-# Settings → Webhooks → Edit → Update Secret field → Update webhook
+# 4. Update GitHub webhook secret (no downtime during this step): Settings → Webhooks → Edit → Update Secret field → Update webhook
 
 # 5. Verify webhook deliveries succeed
 ```

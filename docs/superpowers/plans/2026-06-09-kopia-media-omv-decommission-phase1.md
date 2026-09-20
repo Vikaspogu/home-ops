@@ -215,9 +215,7 @@ Replace the entire contents of `clusters/talos/apps/volsync-system/kopia/deploym
 
 ```yaml
 ---
-# Cluster-specific deployment patch for Kopia
-# Mounts the repository from local XFS on k8s-4-dell (hostPath), interim home
-# under the media volume. Pinned to k8s-4-dell because hostPath data is node-local.
+# Cluster-specific deployment patch for Kopia. Mounts the repository from local XFS on k8s-4-dell (hostPath), interim home under the media volume. Pinned to k8s-4-dell because hostPath data is node-local.
 apiVersion: apps/v1
 kind: Deployment
 metadata:

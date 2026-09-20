@@ -957,8 +957,7 @@ This step assumes you have a Gitea repository with:
 If you don't have one, create a minimal test repo:
 
 ```bash
-# Example: create test-rootless-dind repo on Gitea
-# Push with a Dockerfile and .gitea/workflows/test-build.yaml
+# Example: create test-rootless-dind repo on Gitea; push with a Dockerfile and .gitea/workflows/test-build.yaml
 ```
 
 ### Step 2: Trigger workflow via Git push
@@ -1249,9 +1248,7 @@ If rootless DinD breaks CI jobs:
 ```bash
 # 1. Revert values.yaml changes
 git revert <commit-sha-gitea-runner-refactor>
-# Alternatively, manually edit:
-# - daemon.image.tag: "dind-rootless" → "29-dind"
-# - daemon.securityContext: restore "privileged: true", remove rootless fields
+# Alternatively, manually edit: daemon.image.tag: "dind-rootless" → "29-dind"; daemon.securityContext: restore "privileged: true", remove rootless fields
 
 # 2. Push revert commit
 git push origin main

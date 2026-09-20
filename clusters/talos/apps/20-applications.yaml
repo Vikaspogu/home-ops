@@ -238,13 +238,7 @@ applications:
     source:
       path: components/default/garage-s3
 
-  # garage-s3-backup:
-  #   annotations:
-  #     argocd.argoproj.io/sync-wave: "20"
-  #   destination:
-  #     namespace: default
-  #   source:
-  #     path: components/default/garage-s3-backup
+  # garage-s3-backup: annotations: argocd.argoproj.io/sync-wave: "20" destination: namespace: default source: path: components/default/garage-s3-backup
 
   home-assistant:
     annotations:
@@ -656,14 +650,9 @@ applications:
   agent-farm-images:
     annotations:
       argocd.argoproj.io/sync-wave: "19"
-      # Server-side diff is enabled cluster-wide, but its SSA dry-run sends the
-      # full desired DataVolume (pinned tag) and the CDI webhook rejects any spec
-      # update, failing the whole comparison. Client-side diff honors the ignore
-      # below without calling the webhook.
+      # Server-side diff is enabled cluster-wide, but its SSA dry-run sends the full desired DataVolume (pinned tag) and the CDI webhook rejects any spec update, failing the whole comparison. Client-side diff honors the ignore below without calling the webhook.
       argocd.argoproj.io/compare-options: ServerSideDiff=false
-    # The golden-image-reconciler CronJob owns the registry tag: it deletes and
-    # recreates the DataVolume out-of-band (CDI forbids spec updates). Without this
-    # ignore, ArgoCD tries to roll the URL back to the pinned tag.
+    # The golden-image-reconciler CronJob owns the registry tag: it deletes and recreates the DataVolume out-of-band (CDI forbids spec updates). Without this ignore, ArgoCD tries to roll the URL back to the pinned tag.
     ignoreDifferences:
       - group: cdi.kubevirt.io
         kind: DataVolume

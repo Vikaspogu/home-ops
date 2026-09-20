@@ -172,8 +172,7 @@ The RD's manager has reported the mover succeeded but never recorded a `latestIm
 
 ```bash
 kubectl delete replicationdestination -n default jellyfin-dst
-# Argo will recreate it from components/volsync-system/volsync-replication/replicationdestination.yaml
-# trigger: manual: restore-once  → it'll start a fresh restore, which is wasteful but harmless
+# Argo will recreate it from components/volsync-system/volsync-replication/replicationdestination.yaml; trigger: manual: restore-once → it'll start a fresh restore, which is wasteful but harmless
 ```
 
 **(b) Leave it.** The RD only matters when a fresh restore is needed (i.e., next time the jellyfin PVC gets nuked). Until then it's idle from the workload's perspective. If you take this path, document why so future-you doesn't restore from kopia and discover the RD is still stuck.

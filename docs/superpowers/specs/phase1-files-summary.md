@@ -120,10 +120,7 @@ talosctl --talosconfig clusterconfig/talosconfig -n 10.30.30.25 get mounts | gre
 
 ### Step 2: Create 1Password Secret (if not exists)
 ```bash
-# Via 1Password UI or CLI:
-# - Login: garage-s3
-# - Field: GARAGE_ADMIN_TOKEN = <generated token>
-# - Vault: homelab (or whichever vault onepassword-connect uses)
+# Via 1Password UI or CLI: login: garage-s3; field: GARAGE_ADMIN_TOKEN = <generated token>; vault: homelab (or whichever vault onepassword-connect uses)
 ```
 
 ### Step 3: Deploy Garage via ArgoCD (5 min)

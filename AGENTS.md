@@ -158,6 +158,7 @@ spec:
 - Containers should set `readOnlyRootFilesystem: true` and drop all capabilities when possible
 - Always set both resource requests and memory limits
 - Use image tags (not `latest`) or SHA digests for reproducibility
+- Write comments on one line; do not split a single comment across consecutive comment lines
 
 ## Adding a New Application
 

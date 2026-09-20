@@ -1,23 +1,4 @@
-# Registry-driven golden-image reconciler: the Gitea registry (public repo, anonymous
-# Docker bearer flow) is the source of truth for the golden DataVolume's tag.
-#
-# Why: argocd-image-updater cannot pin this image (its kustomize flow reads the
-# current tag from an Application kustomize.images override this GitOps layout
-# cannot carry, and the docker:// scheme breaks its name matching); CDI denies
-# spec updates on an existing DataVolume; and ArgoCD's compare excludes the
-# webhook-denied DataVolume from its diff, so tag-only Git changes never sync.
-#
-# The reconciler closes the loop level-triggered: every 30 minutes it lists the
-# registry tags, picks the newest matching the CI tag format, and only acts when
-# the live golden DataVolume differs — delete + create-at-newest (creation
-# passes CDI's webhook; only updates are denied). Same state = a two-second
-# no-op. ArgoCD stays as an absent-only fallback: if this CronJob is removed or
-# the DataVolume is deleted out-of-band, self-heal recreates it at the Git pin
-# in components/agent-farm/images/kustomization.yaml, and the next reconcile
-# moves it forward. The Git pin is a fallback and record now, not the driver.
-#
-# ponytail: a bump landing mid-workspace-provision breaks that clone (retryable);
-# add a VM-provisioning guard here if it ever bites.
+# Registry-driven golden-image reconciler: the Gitea registry (public repo, anonymous Docker bearer flow) is the source of truth for the golden DataVolume's tag. Why: argocd-image-updater cannot pin this image (its kustomize flow reads the current tag from an Application kustomize.images override this GitOps layout cannot carry, and the docker:// scheme breaks its name matching); CDI denies spec updates on an existing DataVolume; and ArgoCD's compare excludes the webhook-denied DataVolume from its diff, so tag-only Git changes never sync. The reconciler closes the loop level-triggered: every 30 minutes it lists the registry tags, picks the newest matching the CI tag format, and only acts when the live golden DataVolume differs — delete + create-at-newest (creation passes CDI's webhook; only updates are denied). Same state = a two-second no-op. ArgoCD stays as an absent-only fallback: if this CronJob is removed or the DataVolume is deleted out-of-band, self-heal recreates it at the Git pin in components/agent-farm/images/kustomization.yaml, and the next reconcile moves it forward. The Git pin is a fallback and record now, not the driver. ponytail: a bump landing mid-workspace-provision breaks that clone (retryable); add a VM-provisioning guard here if it ever bites.
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -79,9 +60,7 @@ data:
       echo "golden DataVolume absent; creating at $NEWEST"
     fi
 
-    # 3. Create the golden DataVolume at the newest tag. 409 means ArgoCD's
-    # absent-fallback won the same-name race; tolerate it if it is at NEWEST.
-    # Creation passes CDI's admission webhook; only spec updates are denied.
+    # 3. Create the golden DataVolume at the newest tag. 409 means ArgoCD's absent-fallback won the same-name race; tolerate it if it is at NEWEST. Creation passes CDI's admission webhook; only spec updates are denied.
     IMAGE_HOST="$(printf '%s' "$REGISTRY" | sed 's|^https://||')"
     CODE="$(curl -sS $CA -o /dev/null -w '%{http_code}' -X POST \
       -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
@@ -112,8 +91,7 @@ metadata:
   name: golden-image-reconciler
   namespace: agent-farm
 spec:
-  # The idle run is a two-second anonymous tag list plus one API GET; 30 minutes
-  # is plenty after a multi-hour Packer build.
+  # The idle run is a two-second anonymous tag list plus one API GET; 30 minutes is plenty after a multi-hour Packer build.
   schedule: "*/30 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
@@ -125,9 +103,7 @@ spec:
       template:
         spec:
           restartPolicy: Never
-          # Reuses the PreSync hook's ServiceAccount; its Role carries the union
-          # of verbs both jobs need (get, create, delete datavolumes).
-          serviceAccountName: golden-image-presync
+          # Reuses the PreSync hook's ServiceAccount; its Role carries the union of verbs both jobs need (get, create, delete datavolumes).
           containers:
             - name: reconcile-golden-image
               image: docker.io/curlimages/curl:8.11.0

@@ -558,8 +558,7 @@ spec:
       featureGates:
         - LiveMigration       # Enable VM live migration
         - Snapshot            # Enable VM disk snapshots
-        # - CPUManager        # (optional) CPU pinning
-        # - GPU               # (optional) GPU passthrough
+        # - CPUManager # (optional) CPU pinning; - GPU # (optional) GPU passthrough
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
   workloadUpdateStrategy:

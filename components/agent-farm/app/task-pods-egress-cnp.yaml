@@ -1,10 +1,4 @@
-# Task-pod egress enforcement (plan rule 2: a task pod's only channels are
-# the model endpoint and the agent-farm artifact/ingestion endpoint).
-#
-# Cilium enforces this cluster-wide (Cilium 1.20, Talos cni: none): once this
-# policy selects a pod for egress, everything not allowed below is denied.
-# Task pods carry the label agent-farm.io/task-pod: "true" (set by the
-# agent-farm API's pod builder).
+# Task-pod egress enforcement (plan rule 2): a task pod's only channels are the model endpoint and agent-farm artifact/ingestion endpoint. Cilium enforces this cluster-wide (Cilium 1.20, Talos cni: none): once this policy selects a pod for egress, everything not allowed below is denied. Task pods carry the label agent-farm.io/task-pod: "true" (set by the agent-farm API's pod builder).
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -15,8 +9,7 @@ spec:
     matchLabels:
       agent-farm.io/task-pod: "true"
   egress:
-    # The agent-farm API: source-bundle download, transcript ingestion,
-    # result-bundle upload.
+    # The agent-farm API: source-bundle download, transcript ingestion, result-bundle upload.
     - toEndpoints:
         - matchLabels:
             "k8s:app.kubernetes.io/component": api
@@ -25,10 +18,7 @@ spec:
         - ports:
             - port: "8080"
               protocol: TCP
-    # DNS: toFQDNs rules below resolve through the cluster's DNS proxy.
-    # The explicit kube-system namespace is REQUIRED: a namespaced CNP's
-    # toEndpoints rules are otherwise implicitly constrained to the policy's
-    # own namespace and never match coredns.
+    # DNS: toFQDNs rules below resolve through the cluster's DNS proxy. The explicit kube-system namespace is REQUIRED: a namespaced CNP's toEndpoints rules are otherwise implicitly constrained to the policy's own namespace and never match coredns.
     - toEndpoints:
         - matchLabels:
             "k8s:k8s-app": kube-dns
@@ -37,18 +27,11 @@ spec:
         - ports:
             - port: "53"
               protocol: ANY
-          # The L7 dns section is REQUIRED with toFQDNs: Cilium's DNS proxy
-          # must observe the answers so the FQDN rules below can match the
-          # learned IPs (without it, the hub resolved but every connect was
-          # policy-denied).
+          # The L7 dns section is REQUIRED with toFQDNs: Cilium's DNS proxy must observe the answers so the FQDN rules below can match the learned IPs (without it, the hub resolved but every connect was policy-denied).
           rules:
             dns:
               - matchPattern: "*"
-    # The model inference endpoint: the managed NVIDIA inference hub
-    # (INFERENCE_HUB_BASE_URL in the 1Password "inference-hub" item — the
-    # same URL the agentic settings use). The agentic settings' inference
-    # URL and this rule MUST agree — pods reach exactly the hosts allowed
-    # here. inference-backend is pi's model-catalog metadata host.
+    # The model inference endpoint: the managed NVIDIA inference hub (INFERENCE_HUB_BASE_URL in the 1Password "inference-hub" item — the same URL the agentic settings use). The agentic settings' inference URL and this rule MUST agree — pods reach exactly the hosts allowed here. inference-backend is pi's model-catalog metadata host.
     - toFQDNs:
         - matchPattern: "inference-api.nvidia.com"
         - matchPattern: "inference-backend.nvidia.com"

@@ -10,8 +10,7 @@ podAnnotations:
 api:
   env:
     TZ: America/New_York
-    # Extraction/consolidation/mental-model-refresh LLM: Ollama on spark.
-    # Interactive reflect is split off to the hosted hub below.
+    # Extraction/consolidation/mental-model-refresh LLM: Ollama on spark. Interactive reflect is split off to the hosted hub below.
     HINDSIGHT_API_LLM_PROVIDER: "ollama"
     HINDSIGHT_API_LLM_MODEL: "qwen3.6:35b-a3b-q8_0"
     HINDSIGHT_API_LLM_BASE_URL: "http://spark.a113.internal:11434"
@@ -20,13 +19,10 @@ api:
     HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "2" # extraction: 2 GPU slots, queues on its own cap
     HINDSIGHT_API_CONSOLIDATION_LLM_MAX_CONCURRENT: "2"
     HINDSIGHT_API_MENTAL_MODEL_REFRESH_LLM_MAX_CONCURRENT: "2"
-    # Reflect on the hosted inference hub (OpenAI-compatible), same creds pattern as embeddings.
-    # Non-reasoning instruct variant: reasoning models overshoot the per-call read timeout.
+    # Reflect on the hosted inference hub (OpenAI-compatible), same creds pattern as embeddings. Non-reasoning instruct variant: reasoning models overshoot the per-call read timeout.
     HINDSIGHT_API_REFLECT_LLM_PROVIDER: "openai"
     HINDSIGHT_API_REFLECT_LLM_MODEL: "nvidia/qwen/qwen3-next-80b-a3b-instruct"
-    # low=1 iteration skips forced retrieval entirely (empty answers) — 2 is the
-    # minimum viable: retrieve then synthesize. low budget = 2 iterations
-    # (~20s, fits pi's auto-hook cap); high-budget tool reflects get 8.
+    # low=1 iteration skips forced retrieval entirely (empty answers) — 2 is the minimum viable: retrieve then synthesize. low budget = 2 iterations (~20s, fits pi's auto-hook cap); high-budget tool reflects get 8.
     HINDSIGHT_API_REFLECT_MAX_ITERATIONS: "4"
     # Embeddings: NVIDIA inference hub.
     HINDSIGHT_API_EMBEDDINGS_PROVIDER: "openai"

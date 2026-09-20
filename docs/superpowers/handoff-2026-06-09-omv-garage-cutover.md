@@ -134,8 +134,7 @@ mac, mem0, etc.)
 # Talos
 export KUBECONFIG=/tmp/talos-kubeconfig
 
-# OMV (NOTE: ssh hostname omv-baymx had intermittent DNS resolution failures this
-# session — retry if "Could not resolve hostname")
+# OMV (NOTE: ssh hostname omv-baymx had intermittent DNS resolution failures this session — retry if "Could not resolve hostname")
 ssh root@omv-baymx 'kubectl ...'
 
 # Check OMV ObjectStore endpoint

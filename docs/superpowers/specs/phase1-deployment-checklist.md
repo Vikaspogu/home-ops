@@ -61,19 +61,14 @@ git push
 ADMIN_TOKEN=$(openssl rand -base64 32)
 echo "Admin Token: $ADMIN_TOKEN"
 
-# Add to 1Password:
-# - Item name: garage-s3
-# - Field name: GARAGE_ADMIN_TOKEN
-# - Field value: <token from above>
-# - Vault: homelab (or your vault name)
+# Add to 1Password: item name: garage-s3; field name: GARAGE_ADMIN_TOKEN; field value: <token from above>; vault: homelab (or your vault name)
 
 # Save this token somewhere safe - you'll need it later!
 ```
 
 **Verify ExternalSecret will work:**
 ```bash
-# After creating in 1Password, verify the secret store can access it
-# (This will fail until after deployment, but good to check vault name is correct)
+# After creating in 1Password, verify the secret store can access it (this will fail until after deployment, but good to check vault name is correct)
 kubectl get clustersecretstore onepassword-connect -o yaml 2>&1 | grep -A5 "spec:"
 ```
 
@@ -130,8 +125,7 @@ watch -n 5 'talosctl --talosconfig clusters/talos/bootstrap/os/clusterconfig/tal
 
 **Verify node is back:**
 ```bash
-# Wait for Kubernetes node to be Ready (may take 2-3 min after Talos responds)
-# Note: Use your actual kubeconfig path
+# Wait for Kubernetes node to be Ready (may take 2-3 min after Talos responds). Note: use your actual kubeconfig path.
 KUBECONFIG=<your-kubeconfig> kubectl wait --for=condition=ready node/k8s-5-1u --timeout=600s
 
 # Verify mounts exist
@@ -187,11 +181,7 @@ POD=$(KUBECONFIG=<your-kubeconfig> kubectl get pod -n default \
 # Check Garage status
 KUBECONFIG=<your-kubeconfig> kubectl exec -n default $POD -c app -- /garage status
 
-# Expected: Single-node cluster with 8 data directories
-# Output should show:
-# ==== HEALTHY NODES ====
-# ID                Hostname  Address         Tags  Zone  Capacity
-# <node-id>         garage    127.0.0.1:3901        1     ...
+# Expected: single-node cluster with 8 data directories. Output should show: ==== HEALTHY NODES ==== ID Hostname Address Tags Zone Capacity <node-id> garage 127.0.0.1:3901 1 ...
 
 # Verify all 8 HDDs are visible
 KUBECONFIG=<your-kubeconfig> kubectl exec -n default $POD -c app -- /garage status | grep -i "data"
@@ -206,12 +196,7 @@ KUBECONFIG=<your-kubeconfig> kubectl exec -n default $POD -c app -- /garage stat
 KUBECONFIG=<your-kubeconfig> kubectl exec -n default $POD -c app -- \
   /garage key create main
 
-# ⚠️ IMPORTANT: Save the output!
-# You'll see:
-#   Key ID: GKxxxxxxxxxxxxxxxxxxxxxxxx
-#   Secret key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-#
-# Save these credentials - you'll need them for Phase 2!
+# ⚠️ IMPORTANT: Save the output! You'll see: Key ID: GKxxxxxxxxxxxxxxxxxxxxxxxx; Secret key: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx. Save these credentials — you'll need them for Phase 2!
 ```
 
 **Save credentials to a secure location:**
@@ -268,11 +253,7 @@ KUBECONFIG=<your-kubeconfig> kubectl run aws-test --rm -i --image=amazon/aws-cli
   --env AWS_SECRET_ACCESS_KEY=<secret-key> -- \
   s3 ls --endpoint-url http://garage-s3.default.svc.cluster.local:3900
 
-# Expected output: 4 buckets listed
-# 2026-06-08 12:00:00 obsidian-notes
-# 2026-06-08 12:00:00 postgres
-# 2026-06-08 12:00:00 reactive-resume
-# 2026-06-08 12:00:00 tofu-state
+# Expected output: 4 buckets listed: 2026-06-08 12:00:00 obsidian-notes; 2026-06-08 12:00:00 postgres; 2026-06-08 12:00:00 reactive-resume; 2026-06-08 12:00:00 tofu-state
 ```
 
 **3. Verify OMV Garage still running (zero impact):**

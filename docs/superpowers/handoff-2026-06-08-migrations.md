@@ -50,9 +50,7 @@ export KUBECONFIG=/tmp/talos-kubeconfig
 # Check pod status
 kubectl get pod rclone-postgres-migrate -n default
 
-# If STATUS = "Completed" → Migration finished successfully
-# If STATUS = "Running" → Still transferring final files (wait 1-2 min, check again)
-# If STATUS = "Error" → Check logs for errors
+# If STATUS = "Completed" → migration finished successfully; if STATUS = "Running" → still transferring final files (wait 1-2 min, check again); if STATUS = "Error" → check logs for errors
 ```
 
 **If pod status shows "Completed":**
@@ -75,18 +73,13 @@ export KUBECONFIG=/tmp/talos-kubeconfig
 # Check final pod logs
 kubectl logs -n default rclone-postgres-migrate --tail=100
 
-# Look for:
-# - "Transferred:" line showing total objects and size
-# - Exit code 0 (success)
-# - No error messages
+# Look for: "Transferred:" line showing total objects and size; exit code 0 (success); no error messages
 
 # Check new Garage stats
 POD=$(kubectl get pod -n default -l app.kubernetes.io/name=garage-s3 -o name | head -1)
 kubectl exec -n default $POD -c app -- /garage stats -a
 
-# Expected output:
-# Total number of objects: ~100,000+ objects
-# Total size of objects: ~1.8+ TiB
+# Expected output: total number of objects: ~100,000+ objects; total size of objects: ~1.8+ TiB
 ```
 
 #### Step 2: Suspend PostgreSQL Scheduled Backups
@@ -117,9 +110,7 @@ kubectl get scheduledbackup -n default
 # Re-run rclone job to catch any new WAL files written during bulk copy
 kubectl delete pod rclone-postgres-migrate -n default
 
-# Recreate the pod (it will run incremental sync automatically)
-# (You need the original pod manifest or Job YAML)
-# This should complete quickly (only delta files since bulk copy started)
+# Recreate the pod (it will run incremental sync automatically). You need the original pod manifest or Job YAML. This should complete quickly (only delta files since bulk copy started).
 ```
 
 **Note:** If you don't have the original manifest handy, you can skip the incremental sync IF:

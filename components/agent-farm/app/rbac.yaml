@@ -14,15 +14,11 @@ rules:
   - apiGroups: [""]
     resources: ["services"]
     verbs: ["get", "create", "delete"]
-  # Setup bundles (per-owner) and per-workspace cloud-init user data.
-  # update: the agentic config Secret merges via resource-versioned update
-  # (deliberately not delete/recreate — the model key must not vanish).
+  # Setup bundles (per-owner) and per-workspace cloud-init user data. update: the agentic config Secret merges via resource-versioned update (deliberately not delete/recreate — the model key must not vanish).
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "create", "update", "delete"]
-  # get: golden-image tag reads and home-DV existence checks; create: home DataVolumes;
-  # patch: keep-home-disk delete relabels the home DataVolume detached for adoption;
-  # list: GET /v1/disks lists detached DataVolumes for the attach dropdown.
+  # get: golden-image tag reads and home-DV existence checks; create: home DataVolumes; patch: keep-home-disk delete relabels the home DataVolume detached for adoption; list: GET /v1/disks lists detached DataVolumes for the attach dropdown.
   - apiGroups: ["cdi.kubevirt.io"]
     resources: ["datavolumes"]
     verbs: ["get", "create", "delete", "patch", "list"]

@@ -1,13 +1,4 @@
-# CDI denies spec updates on an existing DataVolume ("Cannot update DataVolume Spec"),
-# so a tag bump can never be applied in place. This PreSync hook deletes the golden
-# DataVolume right before sync, letting ArgoCD recreate it from the new tag.
-# Workspaces keep running: they clone into their own root DataVolumes and never
-# reference the golden one after provisioning.
-#
-# ponytail: always-delete means every sync of this app re-imports the golden image
-# (20 GiB from the in-cluster registry, a few minutes). This app only syncs on tag
-# bumps, so that is the right trade; compare-and-delete (golden-image-desired
-# ConfigMap) if manual syncs become routine.
+# CDI denies spec updates on an existing DataVolume ("Cannot update DataVolume Spec"), so a tag bump can never be applied in place. This PreSync hook deletes the golden DataVolume right before sync, letting ArgoCD recreate it from the new tag. Workspaces keep running: they clone into their own root DataVolumes and never reference the golden one after provisioning. ponytail: always-delete means every sync of this app re-imports the golden image (20 GiB from the in-cluster registry, a few minutes). This app only syncs on tag bumps, so that is the right trade; compare-and-delete (golden-image-desired ConfigMap) if manual syncs become routine.
 apiVersion: v1
 kind: ServiceAccount
 metadata:

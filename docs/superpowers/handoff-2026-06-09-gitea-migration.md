@@ -191,8 +191,7 @@ KUBECONFIG=~/.kube/configs/talos-cluster-config kubectl logs -n default \
 The OMV gitea instance is scaled to 0 but all data is intact:
 
 ```bash
-# Re-register gitea on OMV
-# (Add back to clusters/omv/apps/20-applications.yaml and push)
+# Re-register gitea on OMV (add back to clusters/omv/apps/20-applications.yaml and push)
 
 # Scale back up
 ssh root@10.30.30.54 'kubectl scale deploy gitea -n default --replicas=1'

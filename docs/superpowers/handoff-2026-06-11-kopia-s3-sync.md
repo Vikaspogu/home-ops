@@ -218,8 +218,7 @@ spec:
               configMap:
                 name: kopia-repository-configmap
             - name: repository
-              # NOTE: This volume mount will match the main kopia deployment
-              # Currently NFS, will be hostPath after migration
+              # NOTE: This volume mount will match the main kopia deployment; currently NFS, will be hostPath after migration
               nfs:
                 server: omv-baymx.a113.internal
                 path: /storage0/VolsyncKopia
