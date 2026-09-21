@@ -73,7 +73,7 @@ controllers:
           - -ec
           - |
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
-              --ref 30c1e86e1cd89467bba60188e9fcff1616d20d28 \
+              --ref b363b54972fea35b172537d97988a7899b475018 \
               "https://gitea.a113.casa/vpogu/ivan-plugin.git#plugin"
         env:
           HOME: /opt/data
