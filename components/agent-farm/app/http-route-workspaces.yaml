@@ -45,3 +45,7 @@ spec:
       path: /outpost.goauthentik.io/auth/envoy
       headersToBackend:
         - X-Authentik-Username
+        # Supplied by an authentik scope mapping on the provider (the value
+        # must stay out of this public repo); the ws- gateway rejects
+        # browser traffic without the shared proxy token.
+        - X-Agent-Farm-Proxy-Token
