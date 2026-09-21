@@ -63,7 +63,7 @@ controllers:
           runAsUser: 10000
           runAsGroup: 10000
           capabilities: {drop: ["ALL"]}
-      # Install Git plugins through upstream Hermes; Ivan tracks main while Forge stays SHA-pinned.
+      # Install the Git plugin through upstream Hermes at the current main commit.
       plugins-install:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
@@ -73,7 +73,7 @@ controllers:
           - -ec
           - |
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
-              --ref main \
+              --ref 0cf7bc69ea43cb0a1a9c3a08c1bbfac90564bb52 \
               "https://gitea.a113.casa/vpogu/ivan-plugin.git#plugin"
         env:
           HOME: /opt/data
