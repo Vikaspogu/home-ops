@@ -277,7 +277,7 @@ data:
         - ivan_documents
         - ivan_home_assistant
         - ivan_household
-        - ivan_journal_images
+        - ivan_media
         - ivan_obsidian
         - ivan_paperless
         - ivan_synology
@@ -303,6 +303,7 @@ data:
         - ivan_documents
         - ivan_home_assistant
         - ivan_household
+        - ivan_media
         - ivan_obsidian
         - ivan_paperless
         - ivan_synology
