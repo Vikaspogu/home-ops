@@ -75,6 +75,9 @@ controllers:
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
               --ref b363b54972fea35b172537d97988a7899b475018 \
               "https://gitea.a113.casa/vpogu/ivan-plugin.git#plugin"
+            /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
+              --ref 4ad356c911fbbc66b75b80d20f8b317bee9b9e76 \
+              "https://gitea.a113.casa/vpogu/agent-farm.git#plugins/agentfarm"
         env:
           HOME: /opt/data
           HERMES_HOME: /opt/data

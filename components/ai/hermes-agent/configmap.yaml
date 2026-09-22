@@ -233,6 +233,7 @@ data:
       config: {}
     plugins:
       enabled:
+        - agent-farm
         - ivan-personal
         - paperless-approval
         - disk-cleanup
