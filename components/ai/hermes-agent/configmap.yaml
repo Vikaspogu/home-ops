@@ -238,7 +238,6 @@ data:
         - paperless-approval
         - disk-cleanup
         - rtk-rewrite
-        - forge
         - web/ddgs
         - security-guidance
     # TREK client_credentials tokens stay fresh on disk via the sidecar and Hermes reloads them by mtime.

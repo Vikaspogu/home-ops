@@ -694,13 +694,6 @@ applications:
           - name: VOLSYNC_SCHEDULE
             value: "20 4,10,16,22 * * *"
 
-  forge-orchestrator:
-    annotations:
-      argocd.argoproj.io/sync-wave: "24"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/forge
   zot:
     annotations:
       argocd.argoproj.io/sync-wave: "10"
@@ -708,14 +701,6 @@ applications:
       namespace: forge-system
     source:
       path: components/forge-system/zot
-
-  forge-dashboard:
-    annotations:
-      argocd.argoproj.io/sync-wave: "25"
-    destination:
-      namespace: ai
-    source:
-      path: components/ai/forge-dashboard
 
 
   hindsight:

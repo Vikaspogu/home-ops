@@ -1,4 +1,4 @@
-# Restrict the unauthenticated gateway client API to Forge and managed sandboxes because the chart policy covers only sandbox SSH; OIDC is deferred.
+# Restrict the unauthenticated gateway client API to managed sandboxes because the chart policy covers only sandbox SSH; OIDC is deferred.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -13,12 +13,6 @@ spec:
     - Ingress
   ingress:
     - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: ai
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: forge-orchestrator
         # Sandbox pods lack openshell.ai/managed-by, so restrict them by their dedicated namespace.
         - namespaceSelector:
             matchLabels:

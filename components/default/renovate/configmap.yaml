@@ -25,13 +25,7 @@ data:
       optimizeForDisabled: true,
       persistRepoData: false,
       configValidationError: true,
-      repositories: [{
-        repository: "vpogu/forge",
-        allowedCommands: [
-          "^uv lock$",
-          "^npm --prefix frontend-next install --package-lock-only --ignore-scripts$",
-        ],
-      }],
+      repositories: [],
       prHourlyLimit: 2,
       prConcurrentLimit: 5,
       labels: ["dependencies", "renovate"],
