@@ -102,10 +102,11 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          for test in ./scripts/test-*-rendered-manifest.sh; do
+          # Contract tests live next to the component they protect (test-rendered-manifest.sh), so removing a component removes its test in the same commit
+          while IFS= read -r test; do
             echo "Running ${test}"
             bash "${test}"
-          done
+          done < <(find components clusters -type f -name 'test-rendered-manifest.sh' | sort)
 
       - name: Report app-template policy drift
         shell: bash
