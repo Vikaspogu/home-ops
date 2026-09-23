@@ -21,12 +21,22 @@ controllers:
         - |
           import os
 
-          path = "/opt/data/.config/gogcli"
-          if os.path.lexists(path):
-              for root, dirs, files in os.walk(path, followlinks=False):
-                  os.chown(root, 10000, 10000, follow_symlinks=False)
-                  for name in dirs + files:
-                      os.chown(os.path.join(root, name), 10000, 10000, follow_symlinks=False)
+          paths = ["/opt/data/.config/gogcli"] + [
+              f"/opt/data/{name}"
+              for name in (
+                  "image_cache",
+                  "audio_cache",
+                  "video_cache",
+                  "document_cache",
+                  "browser_screenshots",
+              )
+          ]
+          for path in paths:
+              if os.path.lexists(path):
+                  for root, dirs, files in os.walk(path, followlinks=False):
+                      os.chown(root, 10000, 10000, follow_symlinks=False)
+                      for name in dirs + files:
+                          os.chown(os.path.join(root, name), 10000, 10000, follow_symlinks=False)
 
         resources:
           requests:
