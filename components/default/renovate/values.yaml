@@ -33,7 +33,8 @@ controllers:
             memory: 2Gi
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          # readOnlyRootFilesystem must stay false until containerbase#7424 is fixed: its CLI writes /opt/containerbase/data/links.nedb when installing/linking tools, so a RO rootfs breaks npm/python tool setup (spawn npm ENOENT) - https://github.com/containerbase/base/issues/7424
+          readOnlyRootFilesystem: false
           capabilities: { drop: ["ALL"] }
         probes:
           liveness:
