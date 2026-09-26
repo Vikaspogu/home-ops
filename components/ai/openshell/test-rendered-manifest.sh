@@ -39,6 +39,8 @@ kustomize build --enable-helm "${OPENSHELL_COMPONENT}" >"${manifest}"
   || fail "OpenShell must read its credential-encryption key from openshell-db-secret"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .env[] | select(.name == "OPENSHELL_TELEMETRY_ENABLED" and .value == "false")] | length' "${manifest}")" == "1" ]] \
   || fail "OpenShell anonymous telemetry must be disabled"
+[[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .volumeMounts[] | select(.name == "gateway-config" and .mountPath == "/etc/openshell/gateway.toml" and .subPath == "gateway.toml" and .readOnly == true)] | length' "${manifest}")" == "1" ]] \
+  || fail "OpenShell must mount gateway.toml as a regular ConfigMap subPath file"
 [[ "$(yq ea -r '[select(.kind == "Secret" and .metadata.name == "openshell-credential-storage-key-encryption-key")] | length' "${manifest}")" == "0" ]] \
   || fail "OpenShell must not render a nondeterministic credential-encryption Secret"
 [[ "$(yq ea -r 'select(.kind == "ExternalSecret" and .metadata.name == "openshell-db") | .spec.target.template.data."key-encryption-key"' "${manifest}")" == "{{ .OPENSHELL_CREDENTIAL_KEY_ENCRYPTION_KEY }}" ]] \

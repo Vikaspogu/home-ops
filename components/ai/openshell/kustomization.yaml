@@ -28,6 +28,13 @@ patches:
             containers:
               - name: openshell-gateway
                 volumeMounts:
+                  - $patch: delete
+                    name: gateway-config
+                    mountPath: /etc/openshell
+                  - name: gateway-config
+                    mountPath: /etc/openshell/gateway.toml
+                    subPath: gateway.toml
+                    readOnly: true
                   - name: state
                     mountPath: /.local/state/openshell
             volumes:
