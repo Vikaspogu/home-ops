@@ -22,14 +22,14 @@ data:
         models:
           qwen3.6:35b-a3b-q8_0:
             context_length: 262144
+    image_gen:
+      provider: main
+      model: azure/openai/gpt-image-2
+      timeout: 180
     auxiliary:
       vision:
         provider: main
         model: nvidia/nvidia/nemotron-nano-12b-v2-vl
-        timeout: 180
-      image_gen:
-        provider: main
-        model: azure/openai/gpt-image-2
         timeout: 180
       approval:
         provider: auto
