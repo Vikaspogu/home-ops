@@ -60,7 +60,7 @@ spec:
       containers:
         # Distroless: kubectl only, no shell — hence the single imperative command.
         - name: recreate-stale-datavolume
-          image: registry.k8s.io/kubectl:v1.31.4
+          image: registry.k8s.io/kubectl:v1.37.1
           command: ["/bin/kubectl"]
           args:
             - -n
