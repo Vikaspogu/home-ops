@@ -6,7 +6,6 @@ workload:
 server:
   telemetryEnabled: false
   sandboxNamespace: openshell-sandboxes
-  appArmorProfile: Unconfined
   externalDbSecret: openshell-db-secret
   credentialStorage:
     existingSecret: openshell-db-secret
@@ -14,20 +13,25 @@ server:
     allowUnauthenticatedUsers: true
   disableTls: false
   logLevel: info
-  sandboxImage: gitea.a113.casa/vpogu/openshell-sandbox:latest-oci
-  sandboxImagePullPolicy: Always
   sandboxImagePullSecrets:
     - name: gitea-registry-secret
 
-image:
-  repository: ghcr.io/nvidia/openshell/gateway
-  tag: "0.1.1"
-  pullPolicy: Always
+gateway:
+  image:
+    repository: openshell/gateway
+    tag: "0.1.1"
+    pullPolicy: Always
+
+sandbox:
+  image:
+    repository: gitea.a113.casa/vpogu/openshell-sandbox
+    tag: latest-oci
+    pullPolicy: Always
 
 # Pin supervisor and gateway to the same release; version skew breaks bootstrap.
 supervisor:
   image:
-    repository: ghcr.io/nvidia/openshell/supervisor
+    repository: openshell/supervisor
     tag: "0.1.1"
     pullPolicy: Always
 

@@ -24,23 +24,27 @@ gateway_config_matches() {
 
 kustomize build --enable-helm "${OPENSHELL_COMPONENT}" >"${manifest}"
 
-[[ "$(gateway_config_matches '(?m)^topology\s*=\s*"combined"$')" == "true" ]] \
-  || fail "rendered OpenShell config must use combined topology"
+[[ "$(gateway_config_matches '(?m)^compute_driver\s*=\s*"kubernetes"$')" == "true" ]] \
+  || fail "rendered OpenShell config must select the Kubernetes compute driver"
+[[ "$(gateway_config_matches '(?m)^sandbox_namespace\s*=')" == "false" ]] \
+  || fail "rendered OpenShell config must not use the removed sandbox_namespace field"
 [[ "$(gateway_config_matches '(?m)^policy_validation_failure_mode\s*=\s*"fail_closed"$')" == "true" ]] \
   || fail "rendered OpenShell config must fail closed on invalid policies"
 [[ "$(gateway_config_matches '(?m)^workspace_mode\s*=\s*"shared"$')" == "true" ]] \
   || fail "rendered OpenShell config must use shared Kubernetes workspaces"
-[[ "$(gateway_config_matches '(?m)^supervisor_topology\s*=')" == "false" ]] \
-  || fail "rendered OpenShell config must not use the removed supervisor_topology field"
+[[ "$(gateway_config_matches '(?m)^topology\s*=')" == "false" ]] \
+  || fail "rendered OpenShell config must not use the removed topology field"
 
-[[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell" and .metadata.labels."app.kubernetes.io/version" == "0.0.116")] | length' "${manifest}")" == "1" ]] \
-  || fail "rendered OpenShell Deployment must use chart 0.0.116"
+[[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell" and .metadata.labels."app.kubernetes.io/version" == "0.1.1")] | length' "${manifest}")" == "1" ]] \
+  || fail "rendered OpenShell Deployment must use chart 0.1.1"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .env[] | select(.name == "OPENSHELL_GATEWAY_CREDENTIAL_KEY_ENCRYPTION_KEY" and .valueFrom.secretKeyRef.name == "openshell-db-secret" and .valueFrom.secretKeyRef.key == "key-encryption-key")] | length' "${manifest}")" == "1" ]] \
   || fail "OpenShell must read its credential-encryption key from openshell-db-secret"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .env[] | select(.name == "OPENSHELL_TELEMETRY_ENABLED" and .value == "false")] | length' "${manifest}")" == "1" ]] \
   || fail "OpenShell anonymous telemetry must be disabled"
 [[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .volumeMounts[] | select(.name == "gateway-config" and .mountPath == "/etc/openshell/gateway.toml" and .subPath == "gateway.toml" and .readOnly == true)] | length' "${manifest}")" == "1" ]] \
   || fail "OpenShell must mount gateway.toml as a regular ConfigMap subPath file"
+[[ "$(yq ea -r '[select(.kind == "Deployment" and .metadata.name == "openshell") | .spec.template.spec.containers[] | select(.name == "openshell-gateway") | .volumeMounts[] | select(.name == "gateway-config" and .mountPath == "/etc/openshell")] | length' "${manifest}")" == "0" ]] \
+  || fail "OpenShell must not mount the gateway ConfigMap directory"
 [[ "$(yq ea -r '[select(.kind == "Secret" and .metadata.name == "openshell-credential-storage-key-encryption-key")] | length' "${manifest}")" == "0" ]] \
   || fail "OpenShell must not render a nondeterministic credential-encryption Secret"
 [[ "$(yq ea -r 'select(.kind == "ExternalSecret" and .metadata.name == "openshell-db") | .spec.target.template.data."key-encryption-key"' "${manifest}")" == "{{ .OPENSHELL_CREDENTIAL_KEY_ENCRYPTION_KEY }}" ]] \

@@ -28,13 +28,6 @@ patches:
             containers:
               - name: openshell-gateway
                 volumeMounts:
-                  - $patch: delete
-                    name: gateway-config
-                    mountPath: /etc/openshell
-                  - name: gateway-config
-                    mountPath: /etc/openshell/gateway.toml
-                    subPath: gateway.toml
-                    readOnly: true
                   - name: state
                     mountPath: /.local/state/openshell
             volumes:
@@ -46,6 +39,6 @@ helmCharts:
     releaseName: openshell
     namespace: ai
     repo: oci://ghcr.io/nvidia/openshell
-    version: "0.0.116"
+    version: "0.1.1"
     valuesFile: values.yaml
     includeCRDs: false
