@@ -256,6 +256,9 @@ data:
           redirect_port: 8899
     web:
       search_backend: searxng
+    gateway:
+      # Upstream default "pair" DMs strangers a pairing code; "decline" sends one polite refusal then goes silent.
+      unauthorized_dm_behavior: decline
     platforms:
       telegram:
         extra:
