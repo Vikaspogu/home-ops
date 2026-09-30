@@ -169,6 +169,9 @@ data:
         # The custom image intentionally enables wildcard child-process env passthrough, including normally blocklisted provider/LLM/GH tokens (owner-approved GHSA-rhgp-j443-p4rf tradeoff).
         - "*"
     skills:
+      # Pin the upstream grounded-citations skill into every session's prompt for evidence-based answers.
+      auto_load:
+        - grounded-citations
       disabled:
         - architecture-diagram
         - arxiv
