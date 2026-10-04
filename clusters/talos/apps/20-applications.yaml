@@ -694,6 +694,19 @@ applications:
           - name: VOLSYNC_SCHEDULE
             value: "20 4,10,16,22 * * *"
 
+  # No VolSync vars: the companion's state PVC is a recoverable cache (no backup component).
+  hermes-companion:
+    annotations:
+      argocd.argoproj.io/sync-wave: "24"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/hermes-companion
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+
   zot:
     annotations:
       argocd.argoproj.io/sync-wave: "10"

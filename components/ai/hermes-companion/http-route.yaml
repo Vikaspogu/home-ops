@@ -1,0 +1,56 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hermes-companion
+  labels:
+    app.kubernetes.io/instance: hermes-companion
+    app.kubernetes.io/name: hermes-companion
+spec:
+  parentRefs:
+    - name: ${GATEWAY_NAME}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["companion.${CLUSTER_DOMAIN}"]
+  rules:
+    - name: app
+      # Belt-and-braces: strip client-supplied X-Authentik-* request headers BEFORE routing. The companion's inner gate never trusts them anyway (design §AuthN/Z), but Envoy extAuth does not blanket-strip them upstream.
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            remove:
+              - X-Authentik-Username
+              - X-Authentik-Groups
+              - X-Authentik-Entitlements
+              - X-Authentik-Email
+              - X-Authentik-Name
+              - X-Authentik-Uid
+              - X-Authentik-Akproxy-User-Extras
+      backendRefs:
+        - name: hermes-companion
+          port: 8080
+---
+# Outer gate: Authentik outpost forward-auth (mirrors agent-farm workspaces). The companion still authenticates every request itself — this is defense in depth plus the login redirect UX.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: hermes-companion
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: hermes-companion
+      sectionName: app
+  extAuth:
+    # Envoy Gateway HTTP extAuth omits cookies by default — without this, login loops.
+    headersToExtAuth:
+      - cookie
+    http:
+      backendRefs:
+        # Reuses the domain-level forward-auth outpost (agent-farm ns; ReferenceGrant in components/agent-farm/app/reference-grant.yaml). companion.<domain> is covered by the forward_domain provider — verified live: unauthenticated requests 302 to the Authentik login with redirect-back already encoded.
+        - name: ak-outpost-agent-farm
+          namespace: agent-farm
+          port: 9000
+      path: /outpost.goauthentik.io/auth/envoy
+      headersToBackend:
+        - X-Authentik-Username

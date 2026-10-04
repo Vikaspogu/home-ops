@@ -1,0 +1,88 @@
+---
+# hermes-companion — Phase 1 (plan task 1.8, docs/superpowers/specs/2026-10-03-hermes-companion-*.md) Singleton by design: replicas 1 + Recreate back the single main session and the one-concurrent-voice-session cap. State on PVC is a recoverable cache (no VolSync).
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    annotations:
+      secret.reloader.stakater.com/reload: hermes-companion-secret
+    pod:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          # argocd-image-updater tracks latest-oci from the agent-platform-custom Gitea registry.
+          repository: gitea.a113.casa/vpogu/agent-platform-hermes-companion
+          tag: latest-oci
+        env:
+          HERMES_API_URL: "http://hermes-agent:8642"
+          COMPANION_FQDN: "companion.${CLUSTER_DOMAIN}"
+          # Inner gate: host-pinned, cookie-only validation against the SAME outpost the outer gate uses. The envoy path returns 302 unauthenticated (denied, fail-closed) and 200 + identity headers with a valid domain session.
+          AUTH_OUTPOST_URL: "http://ak-outpost-agent-farm.agent-farm.svc.cluster.local:9000/outpost.goauthentik.io/auth/envoy"
+          STATE_DIR: "/data"
+          NODE_ENV: "production"
+          # Smoke-credential kill-switch, hardcoded in Git on purpose: rotating the TOKEN VALUE lives in 1Password; extending the window is a one-line GitOps commit (deploy = instant re-extension, no vault touch). 2027-04-01 UTC.
+          SMOKE_TOKEN_EXPIRES: "1806537600"
+        envFrom:
+          - secretRef:
+              name: hermes-companion-secret
+        probes:
+          # Liveness only — readiness via the same probe; degraded Hermes is reported in the body, not by failing liveness (the gateway never crash-loops on upstream state).
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: 8080
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: 8080
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 256Mi
+        securityContext:
+          # distroless/nodejs22:nonroot ships uid 65532.
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          capabilities: { drop: ["ALL"] }
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: 8080
+persistence:
+  state:
+    accessMode: ReadWriteOnce
+    size: 128Mi
+    storageClass: "${STORAGE_CLASS}"
+    advancedMounts:
+      app:
+        app:
+          - path: /data
+  tmp:
+    type: emptyDir
+    advancedMounts:
+      app:
+        app:
+          - path: /tmp

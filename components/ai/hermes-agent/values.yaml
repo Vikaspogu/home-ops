@@ -207,7 +207,8 @@ controllers:
           HERMES_DASHBOARD_HOST: "0.0.0.0"
           HERMES_DASHBOARD_PORT: &dashboardPort 9119
           API_SERVER_ENABLED: "true"
-          API_SERVER_HOST: "127.0.0.1"
+          # In-cluster reachable for hermes-companion (configmap platforms.api_server extra.host is the canonical setting; env aligned to avoid drift — config wins upstream).
+          API_SERVER_HOST: "0.0.0.0"
           API_SERVER_PORT: "8642"
           HINDSIGHT_API_URL: http://hindsight-api.ai.svc.cluster.local:8888
           HINDSIGHT_BANK_ID: global
@@ -230,6 +231,9 @@ service:
     ports:
       dashboard:
         port: *dashboardPort
+      # api_server platform — consumed by hermes-companion only (NetworkPolicy scopes it).
+      api:
+        port: 8642
 persistence:
   app-data:
     existingClaim: hermes-agent
