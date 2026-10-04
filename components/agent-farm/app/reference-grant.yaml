@@ -1,0 +1,21 @@
+---
+# Grants the hermes-companion SecurityPolicy (ns ai) permission to reference this
+# namespace's outpost Service for Envoy Gateway extAuth. The companion reuses the
+# DOMAIN-LEVEL forward-auth provider (authentik_provider_proxy.agent_farm_workspaces,
+# mode=forward_domain, cookie_domain=cluster domain) managed by homelab-orchestrator
+# terraform — companion.<cluster-domain> is already covered by it, so no Authentik
+# objects are created for the companion.
+# Least privilege: only the SecurityPolicy kind, only from ns ai, only this Service.
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: allow-companion-extauth-to-outpost
+spec:
+  from:
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: ai
+  to:
+    - group: ""
+      kind: Service
+      name: ak-outpost-agent-farm

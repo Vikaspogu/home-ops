@@ -683,6 +683,17 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+  hermes-companion:
+    annotations:
+      argocd.argoproj.io/sync-wave: "24"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/hermes-companion
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
           - name: VOLSYNC_STORAGE_CLASS
             value: ceph-block-volsync
           - name: VOLUME_SNAPSHOT_CLASS

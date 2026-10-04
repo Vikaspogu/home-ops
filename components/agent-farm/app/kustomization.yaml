@@ -9,6 +9,7 @@ resources:
   - http-route-workspaces.yaml
   - http-route-auth.yaml
   - backendtrafficpolicy.yaml
+  - reference-grant.yaml
 helmCharts:
   - name: app-template
     releaseName: agent-farm

@@ -78,6 +78,19 @@ spec:
             helm:
               name: controllers.app.initContainers.plugins-install.image.repository
               tag: controllers.app.initContainers.plugins-install.image.tag
+    - namePattern: "hermes-companion"
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: agent-platform-hermes-companion
+          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-companion"
+          manifestTargets:
+            helm:
+              name: controllers.app.containers.app.image.repository
+              tag: controllers.app.containers.app.image.tag
     - namePattern: "agent-farm"
       writeBackConfig:
         method: "git:secret:argo-system/git-creds"
