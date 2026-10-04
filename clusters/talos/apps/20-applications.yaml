@@ -683,6 +683,18 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 10Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 15Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "20 4,10,16,22 * * *"
+
+  # No VolSync vars: the companion's state PVC is a recoverable cache (no backup component).
   hermes-companion:
     annotations:
       argocd.argoproj.io/sync-wave: "24"
@@ -694,16 +706,6 @@ applications:
         env:
           - name: STORAGE_CLASS
             value: ceph-block
-          - name: VOLSYNC_STORAGE_CLASS
-            value: ceph-block-volsync
-          - name: VOLUME_SNAPSHOT_CLASS
-            value: csi-ceph-blockpool
-          - name: VOLSYNC_CAPACITY
-            value: 10Gi
-          - name: VOLSYNC_CACHE_CAPACITY
-            value: 15Gi
-          - name: VOLSYNC_SCHEDULE
-            value: "20 4,10,16,22 * * *"
 
   zot:
     annotations:

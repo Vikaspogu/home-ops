@@ -14,9 +14,7 @@ spec:
   hostnames: ["companion.${CLUSTER_DOMAIN}"]
   rules:
     - name: app
-      # Belt-and-braces: strip client-supplied X-Authentik-* request headers BEFORE
-      # routing. The companion's inner gate never trusts them anyway (design §AuthN/Z),
-      # but Envoy extAuth does not blanket-strip them upstream.
+      # Belt-and-braces: strip client-supplied X-Authentik-* request headers BEFORE routing. The companion's inner gate never trusts them anyway (design §AuthN/Z), but Envoy extAuth does not blanket-strip them upstream.
       filters:
         - type: RequestHeaderModifier
           requestHeaderModifier:
@@ -32,9 +30,7 @@ spec:
         - name: hermes-companion
           port: 8080
 ---
-# Outer gate: Authentik outpost forward-auth (mirrors agent-farm workspaces).
-# The companion still authenticates every request itself — this is defense in depth
-# plus the login redirect UX.
+# Outer gate: Authentik outpost forward-auth (mirrors agent-farm workspaces). The companion still authenticates every request itself — this is defense in depth plus the login redirect UX.
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
 metadata:
@@ -51,10 +47,7 @@ spec:
       - cookie
     http:
       backendRefs:
-        # Reuses the domain-level forward-auth outpost (agent-farm ns; ReferenceGrant
-        # in components/agent-farm/app/reference-grant.yaml). companion.<domain> is
-        # covered by the forward_domain provider — verified live: unauthenticated
-        # requests 302 to the Authentik login with redirect-back already encoded.
+        # Reuses the domain-level forward-auth outpost (agent-farm ns; ReferenceGrant in components/agent-farm/app/reference-grant.yaml). companion.<domain> is covered by the forward_domain provider — verified live: unauthenticated requests 302 to the Authentik login with redirect-back already encoded.
         - name: ak-outpost-agent-farm
           namespace: agent-farm
           port: 9000

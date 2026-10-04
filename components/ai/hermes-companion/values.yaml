@@ -1,7 +1,5 @@
 ---
-# hermes-companion — Phase 1 (plan task 1.8, docs/superpowers/specs/2026-10-03-hermes-companion-*.md)
-# Singleton by design: replicas 1 + Recreate back the single main session and the
-# one-concurrent-voice-session cap. State on PVC is a recoverable cache (no VolSync).
+# hermes-companion — Phase 1 (plan task 1.8, docs/superpowers/specs/2026-10-03-hermes-companion-*.md) Singleton by design: replicas 1 + Recreate back the single main session and the one-concurrent-voice-session cap. State on PVC is a recoverable cache (no VolSync).
 controllers:
   app:
     replicas: 1
@@ -22,22 +20,17 @@ controllers:
         env:
           HERMES_API_URL: "http://hermes-agent:8642"
           COMPANION_FQDN: "companion.${CLUSTER_DOMAIN}"
-          # Inner gate: host-pinned, cookie-only validation against the SAME outpost
-          # the outer gate uses. The envoy path returns 302 unauthenticated (denied,
-          # fail-closed) and 200 + identity headers with a valid domain session.
+          # Inner gate: host-pinned, cookie-only validation against the SAME outpost the outer gate uses. The envoy path returns 302 unauthenticated (denied, fail-closed) and 200 + identity headers with a valid domain session.
           AUTH_OUTPOST_URL: "http://ak-outpost-agent-farm.agent-farm.svc.cluster.local:9000/outpost.goauthentik.io/auth/envoy"
           STATE_DIR: "/data"
           NODE_ENV: "production"
-          # Smoke-credential kill-switch, hardcoded in Git on purpose: rotating the
-          # TOKEN VALUE lives in 1Password; extending the window is a one-line GitOps
-          # commit (deploy = instant re-extension, no vault touch). 2027-04-01 UTC.
+          # Smoke-credential kill-switch, hardcoded in Git on purpose: rotating the TOKEN VALUE lives in 1Password; extending the window is a one-line GitOps commit (deploy = instant re-extension, no vault touch). 2027-04-01 UTC.
           SMOKE_TOKEN_EXPIRES: "1806537600"
         envFrom:
           - secretRef:
               name: hermes-companion-secret
         probes:
-          # Liveness only — readiness via the same probe; degraded Hermes is reported in the
-          # body, not by failing liveness (the gateway never crash-loops on upstream state).
+          # Liveness only — readiness via the same probe; degraded Hermes is reported in the body, not by failing liveness (the gateway never crash-loops on upstream state).
           liveness:
             enabled: true
             custom: true

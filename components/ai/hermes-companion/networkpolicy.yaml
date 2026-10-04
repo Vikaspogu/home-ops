@@ -1,6 +1,5 @@
 ---
-# Companion ingress: only Envoy Gateway reaches it (the outer forward-auth gate and the
-# inner cookie gate both live behind that path). No in-cluster callers hit the app port.
+# Companion ingress: only Envoy Gateway reaches it (the outer forward-auth gate and the inner cookie gate both live behind that path). No in-cluster callers hit the app port.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -12,8 +11,7 @@ spec:
       app.kubernetes.io/name: hermes-companion
   policyTypes: [Ingress]
   ingress:
-    # ${GATEWAY_NAME} resolved live = envoy-internal (same gateway as hermes-agent
-    # and agent-farm; envoy-external serves nothing on these hosts).
+    # ${GATEWAY_NAME} resolved live = envoy-internal (same gateway as hermes-agent and agent-farm; envoy-external serves nothing on these hosts).
     - from:
         - namespaceSelector:
             matchLabels:
@@ -25,10 +23,7 @@ spec:
         - protocol: TCP
           port: 8080
 ---
-# Companion egress: DNS, the Hermes api_server, the Authentik outpost, and OpenAI
-# (Realtime WS). Once this CiliumNetworkPolicy selects the pod, everything else is denied
-# (design §AuthN/Z NetworkPolicy row). The explicit kube-system DNS section is REQUIRED
-# with toFQDNs — Cilium's DNS proxy must observe answers for the FQDN rule to match.
+# Companion egress: DNS, the Hermes api_server, the Authentik outpost, and OpenAI (Realtime WS). Once this CiliumNetworkPolicy selects the pod, everything else is denied (design §AuthN/Z NetworkPolicy row). The explicit kube-system DNS section is REQUIRED with toFQDNs — Cilium's DNS proxy must observe answers for the FQDN rule to match.
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
 metadata:
@@ -50,8 +45,7 @@ spec:
           rules:
             dns:
               - matchPattern: "*"
-    # Hermes upstream (api_server platform, port 8642 — needs the hermes-agent service
-    # port addition + configmap host bind, see NOTES.md prerequisites).
+    # Hermes upstream (api_server platform, port 8642 — needs the hermes-agent service port addition + configmap host bind, see NOTES.md prerequisites).
     - toEndpoints:
         - matchLabels:
             "k8s:io.kubernetes.pod.namespace": ai
@@ -60,8 +54,7 @@ spec:
         - ports:
             - port: "8642"
               protocol: TCP
-    # Authentik outpost (cookie validation) — the shared domain-level forward-auth
-    # outpost lives in the agent-farm namespace.
+    # Authentik outpost (cookie validation) — the shared domain-level forward-auth outpost lives in the agent-farm namespace.
     - toEndpoints:
         - matchLabels:
             "k8s:io.kubernetes.pod.namespace": agent-farm
