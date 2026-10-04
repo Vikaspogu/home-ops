@@ -75,7 +75,9 @@ persistence:
   state:
     accessMode: ReadWriteOnce
     size: 128Mi
-    storageClass: "${STORAGE_CLASS}"
+    # ArgoCD exposes Application plugin env to the CMP as ARGOCD_ENV_* (house convention,
+    # cf. the volsync component) — plain ${STORAGE_CLASS} never resolves there.
+    storageClass: ${ARGOCD_ENV_STORAGE_CLASS}
     advancedMounts:
       app:
         app:
