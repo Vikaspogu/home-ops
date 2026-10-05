@@ -24,7 +24,7 @@ controllers:
         image:
           # argocd-image-updater tracks latest-oci from the agent-platform-custom Gitea registry.
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-companion
-          tag: 20261005093501-9a3d558-oci
+          tag: 20261005132515-f349f27-oci
         env:
           HERMES_API_URL: "http://hermes-agent:8642"
           COMPANION_FQDN: "companion.${CLUSTER_DOMAIN}"
