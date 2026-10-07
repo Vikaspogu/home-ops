@@ -2,6 +2,10 @@
 csi:
   cephFSKernelMountOptions: ms_mode=prefer-crc
   enableLiveness: true
+  # v3.18.1 requires x86-64-v3 and crashes on the only KubeVirt node.
+  cephcsi:
+    repository: quay.io/cephcsi/cephcsi
+    tag: v3.17.1
   serviceMonitor:
     enabled: true
 image:
