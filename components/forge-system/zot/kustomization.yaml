@@ -9,5 +9,5 @@ helmCharts:
     releaseName: zot
     namespace: forge-system
     repo: https://zotregistry.dev/helm-charts
-    version: 0.1.125
+    version: 0.1.128
     valuesFile: values.yaml
