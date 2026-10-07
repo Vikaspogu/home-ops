@@ -525,6 +525,14 @@ applications:
     source:
       path: components/default/reverse-proxy
 
+  t3-orbit:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: agent-farm
+    source:
+      path: components/agent-farm/t3-orbit
+
   sonarr:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
