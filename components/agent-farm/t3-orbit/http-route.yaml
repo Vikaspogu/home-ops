@@ -23,22 +23,3 @@ spec:
       backendRefs:
         - name: t3-orbit
           port: 3773
----
-apiVersion: gateway.envoyproxy.io/v1alpha1
-kind: SecurityPolicy
-metadata:
-  name: t3-orbit
-spec:
-  targetRefs:
-    - group: gateway.networking.k8s.io
-      kind: HTTPRoute
-      name: t3-orbit
-      sectionName: app
-  extAuth:
-    headersToExtAuth:
-      - cookie
-    http:
-      backendRefs:
-        - name: ak-outpost-agent-farm
-          port: 9000
-      path: /outpost.goauthentik.io/auth/envoy

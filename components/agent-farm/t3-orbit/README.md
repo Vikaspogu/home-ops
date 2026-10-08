@@ -1,8 +1,9 @@
 # T3 Orbit test route
 
-`https://t3-orbit.a113.casa` uses the internal Envoy gateway and the same
-Authentik forward-auth outpost as Pi Web. The Service selects only Agent Farm
-workspace `acac5578e380aa52`. The VM must serve T3 on `0.0.0.0:3773`.
+`https://t3-orbit.a113.casa` uses the internal Envoy gateway. Orbit's own
+pairing and session authentication protect the app; the route does not use
+Authentik. The Service selects only Agent Farm workspace `acac5578e380aa52`.
+The VM must serve T3 on `0.0.0.0:3773`.
 
 The guest uses KubeVirt masquerade networking. Its VM interface must include
 TCP port 3773 before the Service can reach it. Add the port to the VM template
