@@ -39,4 +39,6 @@ volsync_count="$(yq ea -r "${volsync_apps} | length" "${manifest}")"
 [[ "$(yq ea -r "${volsync_schedules} | unique | length" "${manifest}")" == "${volsync_count}" ]] ||
   fail "VolSync schedules must be unique to avoid synchronized mover jobs"
 
+[[ "$(yq ea -r 'select(.kind == "Application" and .metadata.name == "kubechecks") | .spec.source.plugin.name' "${manifest}")" == "setenv-cmp-plugin-v1.0" ]] || fail "Kubechecks must use the cluster variable substitution plugin"
+
 printf 'PASS: rendered Argo Applications include sync policy and staggered VolSync schedules\n'

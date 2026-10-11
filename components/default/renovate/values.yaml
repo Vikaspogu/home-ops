@@ -22,6 +22,7 @@ controllers:
         env:
           RENOVATE_CONFIG_FILE: /config/config.js
           LOG_LEVEL: info
+          NODE_OPTIONS: "--max-old-space-size=1536"
         envFrom:
           - secretRef:
               name: renovate-secret
