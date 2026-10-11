@@ -256,6 +256,10 @@ data:
       telegram:
         extra:
           drop_pending_updates: true
+      # The API server health probe and in-cluster clients need this bind address.
+      api_server:
+        extra:
+          host: "0.0.0.0"
     platform_toolsets:
       cli: &platform-toolsets
         - browser
