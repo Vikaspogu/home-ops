@@ -10,6 +10,9 @@ Renovate runs as a Kubernetes CronJob in the Talos cluster and targets the self-
 - Concurrency policy: `Forbid`
 - Repository discovery: `vpogu/*`
 - Pull-request limits: 2 per hour and 5 concurrent
+- Node.js heap: `NODE_OPTIONS=--max-old-space-size=1536` within the 2 GiB container memory limit
+
+The heap setting addresses exit code 134 with `JavaScript heap out of memory` near 1 GiB. It is a starting limit, not proof that every repository fits. After deployment, verify the next scheduled job completes and inspect peak container memory. Node.js also needs memory outside its heap, and child processes share the container limit. Existing failed jobs keep their old settings and remain failed until normal retention removes them.
 
 The ExternalSecret reads:
 
