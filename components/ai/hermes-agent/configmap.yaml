@@ -182,7 +182,6 @@ data:
         - baoyu-infographic
         - claude-code
         - claude-design
-        - codex
         - coder-kanban-workflow
         - comfyui
         - debugging-hermes-tui-commands
@@ -257,10 +256,6 @@ data:
       telegram:
         extra:
           drop_pending_updates: true
-      # Companion gateway (components/ai/hermes-companion) reaches the api_server platform in-cluster; upstream binds localhost by default (listen_address()).
-      api_server:
-        extra:
-          host: "0.0.0.0"
     platform_toolsets:
       cli: &platform-toolsets
         - browser
