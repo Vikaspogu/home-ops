@@ -54,12 +54,6 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
-        - alias: agent-platform-hermes-agent-restore-permissions
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
-          manifestTargets:
-            helm:
-              name: controllers.app.initContainers.00-restore-permissions.image.repository
-              tag: controllers.app.initContainers.00-restore-permissions.image.tag
         - alias: agent-platform-hermes-agent-mcp-token-sidecar
           imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/agent-platform-hermes-agent"
           manifestTargets:

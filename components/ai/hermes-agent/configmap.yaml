@@ -6,76 +6,74 @@ metadata:
 data:
   config.yaml: |-
     model:
-      default: "switchyard/openai/gpt-5.6-sol"
-      provider: "custom"
-      api_key: "${HERMES_API_KEY}"
-      base_url: "${HERMES_BASE_URL}"
+      default: gpt-6-sol
+      provider: openai-codex
+      # Clear the old custom route retained by the PVC merge.
+      api_key: ""
+      base_url: ""
     cron:
       # Follow model.default instead of pinning cron inference separately.
       model_drift_guard: false
     approvals:
       mode: manual
     providers:
-      spark:
-        base_url: http://spark.a113.internal:11434/v1
+      # The PVC merge keeps removed keys, so null disables the old Spark endpoint.
+      spark: null
+      inference-hub:
+        base_url: "${HERMES_BASE_URL}"
+        key_env: HERMES_API_KEY
         api_mode: chat_completions
-        models:
-          qwen3.6:35b-a3b-q8_0:
-            context_length: 262144
     image_gen:
-      provider: main
-      model: azure/openai/gpt-image-2
+      provider: openai-codex
+      model: gpt-image-2
       timeout: 180
     auxiliary:
       vision:
-        provider: main
-        model: nvidia/nvidia/nemotron-nano-12b-v2-vl
+        provider: openai-codex
+        model: gpt-6-sol
         timeout: 180
+        reasoning_effort: low
       approval:
         provider: auto
       mcp:
         provider: auto
       goal_judge:
-        provider: spark
-        model: qwen3.6:35b-a3b-q8_0
+        provider: openai-codex
+        model: gpt-6-sol
         timeout: 60
-        extra_body:
-          reasoning_effort: none
+        reasoning_effort: low
       triage_specifier:
-        provider: spark
-        model: qwen3.6:35b-a3b-q8_0
+        provider: openai-codex
+        model: gpt-6-sol
         timeout: 120
-        extra_body:
-          reasoning_effort: none
+        reasoning_effort: medium
       title_generation:
-        provider: spark
-        model: qwen3.6:35b-a3b-q8_0
+        provider: openai-codex
+        model: gpt-6-luna
         timeout: 60
-        extra_body:
-          reasoning_effort: none
+        reasoning_effort: none
       skills_hub:
-        provider: spark
-        model: qwen3.6:35b-a3b-q8_0
+        provider: openai-codex
+        model: gpt-6-luna
         timeout: 90
-        extra_body:
-          reasoning_effort: none
+        reasoning_effort: none
       compression:
-        provider: spark
-        model: qwen3.6:35b-a3b-q8_0
+        provider: openai-codex
+        model: gpt-6-sol
         timeout: 300
-        extra_body:
-          reasoning_effort: none
+        reasoning_effort: low
       web_extract:
-        provider: spark
-        model: qwen3.6:35b-a3b-q8_0
+        provider: openai-codex
+        model: gpt-6-luna
         timeout: 600
-        extra_body:
-          reasoning_effort: none
-      # Keep durable-memory curation external until Qwen3.6 passes its quality gate.
+        reasoning_effort: none
       curator:
-        provider: main
-        model: nvidia/nvidia/Nemotron-3-Nano-30B-A3B
+        provider: openai-codex
+        model: gpt-6-sol
         timeout: 900
+        reasoning_effort: medium
+      session_search: null
+      image_gen: null
     curator:
       backup:
         enabled: true
@@ -132,7 +130,6 @@ data:
       timeout: 300
       max_tool_calls: 50
     file_read_max_chars: 100000
-    # Sized for the 200k-context main model per upstream large-model guidance.
     tool_output:
       max_bytes: 150000
       max_lines: 5000
@@ -241,9 +238,8 @@ data:
         - paperless-approval
         - disk-cleanup
         - rtk-rewrite
-        - web/ddgs
+        - web/ihub_search
         - security-guidance
-        - ihub-search
     # TREK client_credentials tokens stay fresh on disk via the sidecar and Hermes reloads them by mtime.
     mcp_servers:
       trek:
@@ -252,12 +248,6 @@ data:
         oauth:
           client_id: "${TREK_OAUTH_CLIENT_ID}"
           client_secret: "${TREK_OAUTH_CLIENT_SECRET}"
-      # The sidecar headlessly bootstraps Coroot authorization_code auth; Hermes rotates the 30-day refresh token and re-bootstrap occurs only near expiry.
-      coroot:
-        url: "https://coroot.${CLUSTER_DOMAIN}/mcp"
-        auth: oauth
-        oauth:
-          redirect_port: 8899
     web:
       search_backend: ihub
     gateway:
@@ -292,7 +282,6 @@ data:
         - ivan_obsidian
         - ivan_paperless
         - ivan_synology
-        - mcp-coroot
         - mcp-trek
         - memory
         - messaging
