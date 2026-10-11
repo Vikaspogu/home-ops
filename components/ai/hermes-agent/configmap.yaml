@@ -243,6 +243,7 @@ data:
         - rtk-rewrite
         - web/ddgs
         - security-guidance
+        - ihub-search
     # TREK client_credentials tokens stay fresh on disk via the sidecar and Hermes reloads them by mtime.
     mcp_servers:
       trek:
@@ -258,7 +259,7 @@ data:
         oauth:
           redirect_port: 8899
     web:
-      search_backend: searxng
+      search_backend: ihub
     gateway:
       # Upstream default "pair" DMs strangers a pairing code; "decline" sends one polite refusal then goes silent.
       unauthorized_dm_behavior: decline
