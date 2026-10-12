@@ -47,16 +47,9 @@ controllers:
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
               --ref 4ad356c911fbbc66b75b80d20f8b317bee9b9e76 \
               "https://gitea.a113.casa/vpogu/agent-farm.git#plugins/agentfarm"
-            /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
-              --ref 62de6b51289d933a3f8d68841652b044130aa72f \
-              "https://github.com/Codename-11/hermes-relay.git#plugin"
-            /opt/hermes/.venv/bin/python -m pip install --no-cache-dir --no-deps --upgrade \
-              --target /opt/data/.local/lib/hermes-relay \
-              "segno==1.6.6" "websocket-client==1.9.0"
         env:
           HOME: /opt/data
           HERMES_HOME: /opt/data
-          TMPDIR: /opt/data
           PYTHONUNBUFFERED: "1"
           GITEA_USER:
             valueFrom:
@@ -160,7 +153,6 @@ controllers:
           PATH: /usr/local/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           HOME: /opt/data
           HERMES_HOME: /opt/data
-          PYTHONPATH: /opt/data/.local/lib/hermes-relay
           XDG_CONFIG_HOME: /opt/data/.config
           XDG_DATA_HOME: /opt/data/.local/share
           XDG_CACHE_HOME: /opt/data/.cache
@@ -172,7 +164,6 @@ controllers:
           HERMES_DASHBOARD: "1"
           HERMES_DASHBOARD_HOST: "0.0.0.0"
           HERMES_DASHBOARD_PORT: &dashboardPort 9119
-          HERMES_DASHBOARD_PUBLIC_URL: "https://hermes.${CLUSTER_DOMAIN}"
           API_SERVER_ENABLED: "true"
           # In-cluster reachable for hermes-companion (configmap platforms.api_server extra.host is the canonical setting; env aligned to avoid drift — config wins upstream).
           API_SERVER_HOST: "0.0.0.0"
@@ -191,54 +182,6 @@ controllers:
             memory: 4Gi
         securityContext:
           allowPrivilegeEscalation: false
-      # Relay shares the host secret with the Dashboard and serves only pod loopback.
-      relay:
-        image:
-          repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20261011183510-713e074-oci
-        command: ["/opt/hermes/.venv/bin/hermes", "relay", "start", "--host", "127.0.0.1", "--no-ssl"]
-        env:
-          HOME: /opt/data
-          HERMES_HOME: /opt/data
-          PYTHONPATH: /opt/data/.local/lib/hermes-relay
-          HERMES_DASHBOARD_PUBLIC_URL: "https://hermes.${CLUSTER_DOMAIN}"
-          API_SERVER_KEY:
-            valueFrom:
-              secretKeyRef:
-                name: hermes-agent-secret
-                key: API_SERVER_KEY
-        probes:
-          liveness:
-            enabled: true
-            custom: true
-            spec:
-              exec:
-                command: ["curl", "-fsS", "http://127.0.0.1:8767/health"]
-              periodSeconds: 30
-              timeoutSeconds: 5
-              failureThreshold: 3
-          readiness:
-            enabled: true
-            custom: true
-            spec:
-              exec:
-                command: ["curl", "-fsS", "http://127.0.0.1:8767/health"]
-              periodSeconds: 15
-              timeoutSeconds: 5
-              failureThreshold: 3
-        resources:
-          requests:
-            cpu: 25m
-            memory: 128Mi
-          limits:
-            memory: 512Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-          runAsUser: 10000
-          runAsGroup: 10000
-          capabilities: {drop: ["ALL"]}
 service:
   app:
     controller: app
@@ -256,8 +199,6 @@ persistence:
         seed-config:
         - path: /opt/data
         plugins-install:
-        - path: /opt/data
-        relay:
         - path: /opt/data
         app:
         - path: /opt/data

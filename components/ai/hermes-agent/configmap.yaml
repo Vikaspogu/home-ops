@@ -232,7 +232,6 @@ data:
       config: {}
     plugins:
       enabled:
-        - hermes-relay
         - agent-farm
         - ivan-personal
         - paperless-approval
