@@ -20,9 +20,9 @@ controllers:
           repository: dockurr/macos
           tag: "3.12"
         env:
-          # macOS 13 Ventura: newest version that boots on k8s-5-1u's Xeon
-          # E5-2658 (Sandy Bridge, no AVX2). 14+ spins at XNU handoff.
-          VERSION: "13"
+          # macOS 12 Monterey: newest version that boots on k8s-5-1us Xeon
+          # E5-2658 (Sandy Bridge, AVX1 only). 13+ kernels assume AVX2 and spin
+          VERSION: "12"
           RAM_SIZE: 16G
           CPU_CORES: "8"
           DISK_SIZE: 180G
