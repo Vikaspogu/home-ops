@@ -351,14 +351,6 @@ applications:
           - name: VOLSYNC_SCHEDULE
             value: "23 2,8,14,20 * * *"
 
-  macos-runner:
-    annotations:
-      argocd.argoproj.io/sync-wave: "20"
-    destination:
-      namespace: default
-    source:
-      path: components/default/macos-runner
-
   mosquitto:
     annotations:
       argocd.argoproj.io/sync-wave: "20"
