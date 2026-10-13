@@ -32,6 +32,9 @@ data:
       docker_host: tcp://localhost:2375
       force_pull: false
       # Expose /dev/kvm so golden-image QEMU builds use hardware acceleration instead of multi-hour TCG emulation.
-      options: --add-host=host.docker.internal:host-gateway --device /dev/kvm
+      # /certs emptyDir must exist in job containers too: node actions probe
+      # /certs/client/ca.pem for the runner API TLS client and fail with
+      # ENOENT when the path is missing from the job container filesystem.
+      options: --add-host=host.docker.internal:host-gateway --device /dev/kvm -v /certs:/certs
       valid_volumes:
         - '**'
