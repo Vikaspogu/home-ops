@@ -45,9 +45,11 @@ controllers:
         resources:
           requests:
             cpu: 500m
-            memory: 512Mi
-          limits:
             memory: 2Gi
+          limits:
+            # Job containers (Android Gradle needs 6+ GB) run inside dind, so
+            # this cgroup must cover the docker daemon plus all concurrent jobs.
+            memory: 24Gi
 
 persistence:
   docker-certs:
