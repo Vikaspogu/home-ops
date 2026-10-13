@@ -12,7 +12,10 @@ defaultPodOptions:
 
 controllers:
   app:
-    replicas: 1
+    # Parked at 0: every macOS version hangs at the Apple logo on k8s-5-1u's
+    # Sandy Bridge Xeon (qemu Skylake-Client-v4 model with masked features).
+    # Set back to 1 only with a fixed CPU model or different hardware.
+    replicas: 0
     strategy: Recreate
     containers:
       app:
@@ -20,7 +23,7 @@ controllers:
           repository: dockurr/macos
           tag: "3.12"
         env:
-          # macOS 12 Monterey: newest version that boots on k8s-5-1us Xeon
+          # macOS 12 Monterey: newest version that boots on k8s-5-1u's Xeon
           # E5-2658 (Sandy Bridge, AVX1 only). 13+ kernels assume AVX2 and spin
           VERSION: "12"
           RAM_SIZE: 16G
