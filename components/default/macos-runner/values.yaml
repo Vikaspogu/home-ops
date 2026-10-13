@@ -1,0 +1,72 @@
+---
+# macOS build runner for Gitea Actions (desktop DMG + iOS-adjacent builds).
+# Runs sickcodes/docker-osx: macOS as a KVM guest inside a privileged
+# container. KubeVirt is deliberately NOT used: macOS guests need raw qemu
+# args (AppleSMC device, Penryn CPU, custom OVMF) that KubeVirt's libvirt
+# layer cannot express. See README.md for bootstrap (Xcode + act_runner).
+defaultPodOptions:
+  nodeSelector:
+    # Only node with KVM exposed (devices.kubevirt.io/kvm > 0).
+    kubernetes.io/hostname: k8s-5-1u
+controllers:
+  app:
+    replicas: 1
+    strategy: Recreate
+    initContainers:
+      # Seed the PVC once with the image's bundled OpenCore firmware and
+      # pre-installed macOS disk so the guest boots straight to the desktop
+      # and survives pod restarts. cp -n makes restarts no-ops.
+      seed:
+        image:
+          repository: sickcodes/docker-osx
+          tag: ventura
+        command:
+          - sh
+          - -c
+          - cp -rn /home/arch/OSX-KVM/. /disk/ && sync
+    containers:
+      app:
+        image:
+          repository: sickcodes/docker-osx
+          tag: ventura
+        env:
+          # Unique serial per disk, avoids iServices collisions.
+          GENERATE_UNIQUE: "true"
+          DEVICE_MODEL: "iMacPro1,1"
+          WIDTH: "1920"
+          HEIGHT: "1080"
+          # docker-osx documented escape hatch for extra qemu args:
+          # 8 vCPUs, 16 GiB guest RAM.
+          EXTRA: "-smp 8,sockets=1,cores=8,threads=1 -m 16384"
+        securityContext:
+          # KVM-in-container needs privilege; node isolation is the boundary,
+          # same tradeoff as gitea-runner's dind sidecar.
+          privileged: true
+        resources:
+          requests:
+            cpu: 500m
+            memory: 18Gi
+          limits:
+            memory: 20Gi
+
+service:
+  app:
+    controller: app
+    ports:
+      # macOS Screen Sharing / VNC for setup; reach via kubectl port-forward.
+      vnc:
+        port: 5900
+      # docker-osx forwards guest :22 here once SSH is enabled in macOS.
+      ssh:
+        port: 10022
+
+persistence:
+  osx:
+    enabled: true
+    existingClaim: macos-runner
+    advancedMounts:
+      app:
+        app:
+          - path: /home/arch/OSX-KVM
+        seed:
+          - path: /disk
