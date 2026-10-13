@@ -20,9 +20,9 @@ controllers:
           repository: dockurr/macos
           tag: "3.12"
         env:
-          # macOS 14 Sonoma: newest version still reliable on x86 guests and
-          # able to run current Xcode. Bump deliberately.
-          VERSION: "14"
+          # macOS 13 Ventura: newest version that boots on k8s-5-1u's Xeon
+          # E5-2658 (Sandy Bridge, no AVX2). 14+ spins at XNU handoff.
+          VERSION: "13"
           RAM_SIZE: 16G
           CPU_CORES: "8"
           DISK_SIZE: 180G
