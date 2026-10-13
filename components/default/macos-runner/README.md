@@ -1,41 +1,40 @@
 # macos-runner
 
-macOS guest (docker-osx, KVM in a privileged container) pinned to `k8s-5-1u`,
-the only node with `devices.kubevirt.io/kvm` capacity. It exists to run a
-Gitea `act_runner` natively on macOS so the t3code-orbit release workflow can
-build the desktop DMG (and later iOS) — things the Linux runners cannot do.
+macOS guest (dockurr/macos, KVM in a privileged container) pinned to
+`k8s-5-1u`, the only node with `devices.kubevirt.io/kvm` capacity. It exists
+to run a Gitea `act_runner` natively on macOS so the t3code-orbit release
+workflow can build the desktop DMG — something the Linux runners cannot do.
 
-Legal note: Apple's EULA restricts macOS to Apple hardware. This is a personal
-homelab choice; do not use for commercial distribution.
+Legal note: Apple's EULA restricts macOS to Apple hardware. This is a
+personal homelab choice; do not use for commercial distribution.
 
 ## First boot
 
-The init container seeds the PVC (`macos-runner`, 200 Gi) with the prebuilt
-OpenCore firmware and installed macOS disk from the image. First start takes
-a long time (tens of GB copied to Ceph). Later restarts skip the copy.
+Fully automated. On first start the image downloads the macOS 14 (Sonoma)
+recovery from Apple and installs unattended onto the PVC (`macos-runner`,
+200 Gi, mounted at `/storage`). Expect ~1 hour. Follow progress in the web
+viewer:
+
+```sh
+kubectl port-forward svc/macos-runner 8006:8006
+# open http://localhost:8006
+```
 
 ## One-time bootstrap (manual, inside the guest)
 
-1. Watch the console / attach VNC:
+1. Open the web viewer (above), wait for the macOS desktop.
+
+2. In a guest terminal:
 
    ```sh
-   kubectl port-forward svc/macos-runner 5900:5900
-   # open vnc://localhost:5900
-   ```
-
-2. Finish macOS setup, then in a guest terminal:
-
-   ```sh
-   # Xcode (needs an Apple ID for the xip download from developer.apple.com)
-   brew install xcodes && xcodes install --latest
-   sudo xcodebuild -license accept
-
-   # Node 24 (repo engines: ^24.13.1)
+   # Xcode (needs an Apple ID for the download from developer.apple.com).
+   # Only needed if we ever build iOS here; the unsigned desktop DMG build
+   # works with just the Command Line Tools: xcode-select --install
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    brew install node@24
 
    # act_runner, registered with the host-execution label `macos`
-   curl -LO https://gitea.a113.casa/api/packages/vpogu/generic/act_runner/latest/act_runner-darwin-amd64 2>/dev/null \
-     || curl -LO https://dl.gitea.com/act_runner/latest/act_runner-darwin-amd64
+   curl -LO https://dl.gitea.com/act_runner/latest/act_runner-darwin-amd64
    chmod +x act_runner-darwin-amd64
    ./act_runner-darwin-amd64 register --no-interactive \
      --instance https://gitea.a113.casa \
@@ -45,9 +44,6 @@ a long time (tens of GB copied to Ceph). Later restarts skip the copy.
    ```
 
    `macos:host` (no `:docker://...`) means jobs run directly on the guest OS.
-
-3. Enable SSH in macOS (System Settings → Sharing → Remote Login) if shell
-   access is wanted; the pod forwards it on service port 10022.
 
 ## Workflow usage
 
@@ -63,8 +59,7 @@ needs an Apple Developer certificate added as Gitea secrets.
 
 ## Notes
 
-- `GENERATE_UNIQUE=true` gives the guest a unique serial; iServices/iCloud
-  sign-in is optional and not required for builds.
-- CPU/RAM are qemu args in `EXTRA` (8 vCPU, 16 GiB); pod requests must stay
-  above the guest RAM or the OOM killer wins.
+- Guest CPU/RAM/disk come from `VERSION`/`CPU_CORES`/`RAM_SIZE`/`DISK_SIZE`
+  env vars in values.yaml; the pod memory request must stay above the guest
+  RAM or the OOM killer wins.
 - Do not schedule anything else heavy on `k8s-5-1u` while a build runs.
