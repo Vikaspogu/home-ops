@@ -40,8 +40,17 @@ data:
           ;;
       esac
       if [ "$LIVE_PHASE" = "ImportInProgress" ]; then
-        echo "golden DataVolume import in progress; skipping this cycle"
-        exit 0
+        # A healthy import is left alone, but a crash-looping importer never advances
+        # the phase (e.g. its tag was pruned from the registry): treat it as stale.
+        DV_UID="$(printf '%s' "$LIVE" | tr ',' '\n' | grep '"uid"' | head -1 | cut -d'"' -f4)"
+        IMPORTER="$(curl -fsS $CA -H "Authorization: Bearer $TOKEN" \
+          "$API/api/v1/namespaces/$NS/pods/importer-prime-$DV_UID" 2>/dev/null || true)"
+        if printf '%s' "$IMPORTER" | grep -qE 'CrashLoopBackOff|ImagePullBackOff'; then
+          echo "importer pod is in backoff; stuck import counts as stale"
+        else
+          echo "golden DataVolume import in progress; skipping this cycle"
+          exit 0
+        fi
       fi
       echo "golden DataVolume at $LIVE_URL is stale; recreating at $NEWEST"
       curl -fsS $CA -X DELETE -H "Authorization: Bearer $TOKEN" \
