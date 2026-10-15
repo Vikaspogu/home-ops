@@ -9,5 +9,5 @@ helmCharts:
     releaseName: kubevirt-runner
     namespace: actions-runners
     repo: oci://ghcr.io/actions/actions-runner-controller-charts
-    version: "0.14.2"
+    version: "0.15.0"
     valuesFile: values.yaml
