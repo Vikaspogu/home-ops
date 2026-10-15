@@ -240,6 +240,7 @@ data:
         - web/ihub_search
         - security-guidance
         - talk-desktop
+        - hermes-pwa
     # TREK client_credentials tokens stay fresh on disk via the sidecar and Hermes reloads them by mtime.
     mcp_servers:
       trek:
