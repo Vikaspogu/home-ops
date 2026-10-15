@@ -1,0 +1,80 @@
+controllers:
+  app:
+    replicas: 1
+    # RWO claim: never two pods at once
+    strategy: Recreate
+    annotations:
+      secret.reloader.stakater.com/reload: sre-agent-secret
+    pod:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: gitea-registry-secret
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    containers:
+      app:
+        image:
+          repository: gitea.a113.casa/vpogu/durable-sre-agent
+          tag: 20261015124647-38c5c4f-oci
+        env:
+          TZ: America/New_York
+          # The hub validates the Host header of /api requests; allow the ingress hostname.
+          DPI_HUB_ALLOWED_HOSTS: "sre-agent.${CLUSTER_DOMAIN}"
+          SWEEP_INTERVAL_SECONDS: "900"
+        envFrom:
+          - secretRef:
+              name: sre-agent-secret
+        probes:
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: 4781
+              periodSeconds: 15
+              timeoutSeconds: 5
+              failureThreshold: 3
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: 4781
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities: {drop: ["ALL"]}
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: 4781
+
+persistence:
+  data:
+    # Created by the volsync-replication component (name = Argo app name); holds the SQLite state.
+    existingClaim: sre-agent
+    globalMounts:
+      - path: /data
+  tmp:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

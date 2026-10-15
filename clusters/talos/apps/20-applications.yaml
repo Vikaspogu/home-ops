@@ -702,6 +702,29 @@ applications:
           - name: VOLSYNC_SCHEDULE
             value: "20 4,10,16,22 * * *"
 
+  # Durable on-call SRE agent (gitea.a113.casa/vpogu/durable-sre-agent)
+  sre-agent:
+    annotations:
+      argocd.argoproj.io/sync-wave: "24"
+    destination:
+      namespace: sre-agent
+    source:
+      path: components/sre/sre-agent
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 2Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 2Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "47 4,10,16,22 * * *"
+
   zot:
     annotations:
       argocd.argoproj.io/sync-wave: "10"
