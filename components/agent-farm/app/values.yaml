@@ -26,7 +26,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-farm-api
-          tag: 20261015124300-9791e40-oci
+          tag: 20261015131456-07684c7-oci
           pullPolicy: Always
         env:
           PORT: &apiPort 8080
