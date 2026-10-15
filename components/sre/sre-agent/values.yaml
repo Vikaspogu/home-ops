@@ -1,6 +1,6 @@
 controllers:
   app:
-    replicas: 1
+    replicas: 0
     # RWO claim: never two pods at once
     strategy: Recreate
     annotations:
