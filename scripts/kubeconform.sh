@@ -47,6 +47,10 @@ validate_kustomization() {
     local skip="${kubeconform_skip}"
     # The public CephCluster schema lags Rook v1.20.6's CephX keyType field.
     [[ "${relative_path}" == "components/rook-ceph/rook-ceph-cluster" ]] && skip+=",CephCluster"
+    # The public AutoscalingRunnerSet schema lags gha-runner-scale-set 0.15's listenerConfig field;
+    # the live CRD (checked in-cluster) accepts it.
+    [[ "${relative_path}" == "components/actions-runners/kubevirt-runner" ]] && skip+=",AutoscalingRunnerSet"
+
 
     # Build and validate the kustomization (process env vars with envsubst)
     if ! kustomize build "${dir}" "${kustomize_args[@]}" | envsubst | kubeconform "${kubeconform_args[@]}" -skip "${skip}"; then
