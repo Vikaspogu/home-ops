@@ -47,6 +47,12 @@ controllers:
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
               --ref 4ad356c911fbbc66b75b80d20f8b317bee9b9e76 \
               "https://gitea.a113.casa/vpogu/agent-farm.git#plugins/agentfarm"
+            /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
+              --ref 3fab54f758c100bd3ea26968565d51d5a914da96 \
+              "https://github.com/Vikaspogu/hermes-mobile.git"
+            /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
+              --ref 9228da2064c9af645af021e6a90ead6f55c00b0a \
+              "https://github.com/Vikaspogu/hermes-live-voice.git"
         env:
           HOME: /opt/data
           HERMES_HOME: /opt/data
