@@ -51,7 +51,7 @@ controllers:
               --ref 3fab54f758c100bd3ea26968565d51d5a914da96 \
               "https://github.com/Vikaspogu/hermes-mobile.git"
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
-              --ref 9228da2064c9af645af021e6a90ead6f55c00b0a \
+              --ref 0182707c2315d3ba9f6f68dbb26c82d8b9cee45c \
               "https://github.com/Vikaspogu/hermes-live-voice.git"
         env:
           HOME: /opt/data
