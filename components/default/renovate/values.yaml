@@ -22,7 +22,7 @@ controllers:
         env:
           RENOVATE_CONFIG_FILE: /config/config.js
           LOG_LEVEL: info
-          NODE_OPTIONS: "--max-old-space-size=1536"
+          NODE_OPTIONS: "--max-old-space-size=3072"
         envFrom:
           - secretRef:
               name: renovate-secret
@@ -31,7 +31,7 @@ controllers:
             cpu: 100m
             memory: 512Mi
           limits:
-            memory: 2Gi
+            memory: 4Gi
         securityContext:
           allowPrivilegeEscalation: false
           # readOnlyRootFilesystem must stay false until containerbase#7424 is fixed: its CLI writes /opt/containerbase/data/links.nedb when installing/linking tools, so a RO rootfs breaks npm/python tool setup (spawn npm ENOENT) - https://github.com/containerbase/base/issues/7424
