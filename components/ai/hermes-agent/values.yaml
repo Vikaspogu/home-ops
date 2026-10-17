@@ -48,7 +48,7 @@ controllers:
               --ref 4ad356c911fbbc66b75b80d20f8b317bee9b9e76 \
               "https://gitea.a113.casa/vpogu/agent-farm.git#plugins/agentfarm"
             /opt/hermes/.venv/bin/hermes plugins install --force --yes-deps \
-              --ref 01ee6dc6d5a3282946cd578d2a32914fb2151566 \
+              --ref 8acb3902c0824a60e3d7d9cebb628d613eb05387 \
               "https://github.com/Vikaspogu/hermes-mobile.git"
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
               --ref 0182707c2315d3ba9f6f68dbb26c82d8b9cee45c \
