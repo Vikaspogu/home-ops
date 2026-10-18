@@ -1,0 +1,14 @@
+# talhelper 3.1.17 renders the KubeEtcdEncryptionConfig secretbox key as "key1",
+# but the cluster's etcd data was encrypted under a key named "key2" (Talos default).
+# Secretbox decrypts by key name, so restate the document with "key2" to match existing data.
+apiVersion: v1alpha1
+kind: KubeEtcdEncryptionConfig
+config:
+  resources:
+    - providers:
+        - secretbox:
+            keys:
+              - name: key2
+                secret: "${TALOS_SECRETBOX_SECRET}"
+      resources:
+        - secrets

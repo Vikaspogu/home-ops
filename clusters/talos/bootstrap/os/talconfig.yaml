@@ -165,3 +165,4 @@ controlPlane:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
     - "@./patches/controller/machine-talos-api-access.yaml"
+    - "@./patches/controller/etcd-encryption.yaml"
