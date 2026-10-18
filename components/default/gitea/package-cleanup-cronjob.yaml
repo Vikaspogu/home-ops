@@ -43,14 +43,17 @@ spec:
               echo "User: ${GITEA_USER}"
               echo ""
 
-              # Get all packages for the user
-              echo "Fetching packages..."
-              packages=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
-                "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=container" || echo "[]")
+              cleanup_type() {
+                pkg_type=$1
+
+                # Get all packages for the user
+                echo "Fetching ${pkg_type} packages..."
+                packages=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
+                  "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=${pkg_type}" || echo "[]")
 
               if [ "$packages" = "[]" ] || [ -z "$packages" ]; then
                 echo "No packages found or API error"
-                exit 0
+                return 0
               fi
 
               package_count=$(echo "$packages" | jq -r 'length')
@@ -65,7 +68,7 @@ spec:
 
                 # Get all versions for this package from the owner's packages endpoint filtered by name
                 all_versions=$(curl -sf -H "Authorization: token ${GITEA_API_TOKEN}" \
-                  "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=container&q=${pkg_name}")
+                  "${GITEA_URL}/api/v1/packages/${GITEA_USER}?type=${pkg_type}&q=${pkg_name}")
 
                 # Extract version info, sorted by created date (newest first)
                 versions=$(echo "$all_versions" | \
@@ -99,7 +102,7 @@ spec:
 
                     delete_response=$(curl -sf -w "\n%{http_code}" -X DELETE \
                       -H "Authorization: token ${GITEA_API_TOKEN}" \
-                      "${GITEA_URL}/api/v1/packages/${GITEA_USER}/container/${pkg_name}/${version}" 2>&1 || echo "000")
+                      "${GITEA_URL}/api/v1/packages/${GITEA_USER}/${pkg_type}/${pkg_name}/${version}" 2>&1 || echo "000")
 
                     http_code=$(echo "$delete_response" | tail -n1)
 
@@ -112,7 +115,13 @@ spec:
                 done
 
                 echo ""
-              done
+                done
+
+                echo ""
+              }
+
+              cleanup_type container
+              cleanup_type generic
 
               echo "=== Gitea Package Cleanup Completed at $(date) ==="
             env:
