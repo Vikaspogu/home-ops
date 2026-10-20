@@ -48,7 +48,7 @@ controllers:
               --ref 4ad356c911fbbc66b75b80d20f8b317bee9b9e76 \
               "https://gitea.a113.casa/vpogu/agent-farm.git#plugins/agentfarm"
             /opt/hermes/.venv/bin/hermes plugins install --force --yes-deps \
-              --ref d829cb9584680b7200f0a53ed745c928f8cd872d \
+              --ref "$HERMES_PWA_REF" \
               "https://github.com/Vikaspogu/hermes-mobile.git"
             /opt/hermes/.venv/bin/hermes plugins install --force --no-enable \
               --ref 0182707c2315d3ba9f6f68dbb26c82d8b9cee45c \
@@ -57,6 +57,8 @@ controllers:
           HOME: /opt/data
           HERMES_HOME: /opt/data
           PYTHONUNBUFFERED: "1"
+          # renovate: datasource=git-refs depName=https://github.com/Vikaspogu/hermes-mobile branch=main
+          HERMES_PWA_REF: "d829cb9584680b7200f0a53ed745c928f8cd872d"
           GITEA_USER:
             valueFrom:
               secretKeyRef:

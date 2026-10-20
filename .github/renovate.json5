@@ -229,6 +229,15 @@
       ],
       "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}docker{{/if}}",
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "description": "Track hermes-mobile main HEAD for the hermes-pwa plugin pin",
+      "fileMatch": ["(^|/)components/ai/hermes-agent/values\\.ya?ml$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>git-refs) depName=(?<depName>\\S+) branch=(?<currentValue>\\S+)\\n\\s*HERMES_PWA_REF: \"(?<currentDigest>[0-9a-f]{40})\""
+      ],
+      "datasourceTemplate": "{{{datasource}}}"
     }
   ]
 }
