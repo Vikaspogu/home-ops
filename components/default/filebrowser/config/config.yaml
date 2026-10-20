@@ -1,6 +1,11 @@
-server:
+http:
   port: 80
-  database: /home/filebrowser/data/database.db
+  # Behind the Gateway API/Traefik proxy; v2 replaces the v1 trustedHeaders list with this boolean.
+  trustProxyHeaders: true
+server:
+  database:
+    # v2 SQLite DB defaults to /home/filebrowser/data/database.sqlite (image default); migrateFrom imports the renamed v1 BoltDB on first start.
+    migrateFrom: /home/filebrowser/data/database.db.old
   cacheDir: /home/filebrowser/data/tmp
   sources:
     - path: /media
