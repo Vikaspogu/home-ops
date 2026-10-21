@@ -58,7 +58,7 @@ controllers:
           HERMES_HOME: /opt/data
           PYTHONUNBUFFERED: "1"
           # renovate: datasource=git-refs depName=https://github.com/Vikaspogu/hermes-mobile branch=main
-          HERMES_PWA_REF: "e94a9458590ff85db7aaf50dcb1e4d7e0a8ff104"
+          HERMES_PWA_REF: "35e2aea5b6105d80faded361a164077f1d055749"
           GITEA_USER:
             valueFrom:
               secretKeyRef:
