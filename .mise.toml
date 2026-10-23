@@ -12,7 +12,7 @@ run = [
 ]
 
 [tools]
-"python" = "3.15.0"
+"python" = "3.15.1"
 "aqua:argoproj/argo-cd" = "3.5.6"
 "aqua:budimanjojo/talhelper" = "3.1.17"
 "aqua:cli/cli" = "2.102.0"
