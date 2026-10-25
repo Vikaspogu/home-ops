@@ -25,6 +25,7 @@ controllers:
           - --branch=master
           - --wait=86400 # 1 day
           - --root=/add-ons/
+          - --git-config-add=safe.directory=/add-ons
       app:
         image:
           repository: ghcr.io/home-operations/bazarr
