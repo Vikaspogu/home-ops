@@ -4,9 +4,10 @@ controllers:
     strategy: RollingUpdate
     containers:
       app:
+        # ponytail: temporary fork, threads blocked by Reddit on official 0.40.0; revert when upstream fixes (PR #603)
         image:
-          repository: ghcr.io/silvenga/redlib
-          tag: 0.40.0@sha256:26e947ce72681e3d91d5c6731ad2e3e3d06cbcaf86311ec9740f252e696f4697
+          repository: ghcr.io/xevxx/redlib
+          tag: latest@sha256:38965e8843e6f3a4cb8a08639d67d34257458c966ca1472b560af093fafb1fb5
         env:
           REDLIB_ROBOTS_DISABLE_INDEXING: "on"
           REDLIB_DEFAULT_THEME: "dracula"
