@@ -15,14 +15,13 @@ deschedulerPolicy:
         - name: LowNodeUtilization
           args:
             thresholds:
-            thresholds:
               cpu: 40
               memory: 65
               pods: 40
             targetThresholds:
-              cpu: 60
-              memory: 70
-              pods: 55
+              cpu: 75
+              memory: 80
+              pods: 70
         - name: RemoveFailedPods
           args:
             reasons:
