@@ -1,0 +1,64 @@
+# RBAC for Watchtower S1 (read-only boundary, D15/D24/D31).
+# Explicitly excluded: secrets, pods/exec, pods/attach, pods/portforward,
+# nodes/proxy, serviceaccounts/token.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: watchtower-read
+  namespace: sre-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: watchtower-read
+rules:
+  # core
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints", "events", "configmaps", "namespaces", "persistentvolumeclaims", "replicationcontrollers", "limitranges", "resourcequotas"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  # apps + batch
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "statefulsets", "daemonsets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "cronjobs"]
+    verbs: ["get", "list", "watch"]
+  # networking + storage
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses", "networkpolicies"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses", "volumeattachments"]
+    verbs: ["get", "list", "watch"]
+  # flux
+  - apiGroups: ["source.toolkit.fluxcd.io", "kustomize.toolkit.fluxcd.io", "helm.toolkit.fluxcd.io", "notification.toolkit.fluxcd.io"]
+    resources: ["gitrepositories", "ocirepositories", "helmrepositories", "buckets", "helmcharts", "kustomizations", "helmreleases", "receivers", "alerts", "providers"]
+    verbs: ["get", "list", "watch"]
+  # argo cd
+  - apiGroups: ["argoproj.io"]
+    resources: ["applications", "applicationsets", "appprojects"]
+    verbs: ["get", "list", "watch"]
+  # monitoring
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheusrules", "alerts", "alertmanagers", "podmonitors", "servicemonitors"]
+    verbs: ["get", "list", "watch"]
+  # self-subject access checks
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["selfsubjectaccessreviews"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: watchtower-read
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: watchtower-read
+subjects:
+  - kind: ServiceAccount
+    name: watchtower-read
+    namespace: sre-agent

@@ -6,6 +6,7 @@ resources:
   - ./namespace.yaml
   - ./externalsecret.yaml
   - ./http-route.yaml
+  - ./rbac.yaml
 components:
   - ../../volsync-system/volsync-replication
 

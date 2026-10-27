@@ -6,7 +6,8 @@ controllers:
     annotations:
       secret.reloader.stakater.com/reload: sre-agent-secret
     pod:
-      automountServiceAccountToken: false
+      serviceAccountName: watchtower-read
+      automountServiceAccountToken: true
       imagePullSecrets:
         - name: gitea-registry-secret
       securityContext:
@@ -21,7 +22,6 @@ controllers:
           TZ: America/New_York
           # The hub validates the Host header of /api requests; allow the ingress hostname.
           DPI_HUB_ALLOWED_HOSTS: "sre-agent.${CLUSTER_DOMAIN}"
-          SWEEP_INTERVAL_SECONDS: "900"
         envFrom:
           - secretRef:
               name: sre-agent-secret
@@ -54,6 +54,8 @@ controllers:
             memory: 1Gi
         securityContext:
           allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1000

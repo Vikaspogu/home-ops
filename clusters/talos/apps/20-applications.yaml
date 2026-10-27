@@ -709,7 +709,7 @@ applications:
     destination:
       namespace: sre-agent
     source:
-      path: components/sre/sre-agent
+      path: components/ai/sre-agent
       plugin:
         env:
           - name: STORAGE_CLASS
