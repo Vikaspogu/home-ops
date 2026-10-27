@@ -5,6 +5,7 @@ controllers:
     strategy: Recreate
     serviceAccount:
       name: watchtower-read
+    annotations:
       secret.reloader.stakater.com/reload: sre-agent-secret
     pod:
       automountServiceAccountToken: true
