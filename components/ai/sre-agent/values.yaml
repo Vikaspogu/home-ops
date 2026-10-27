@@ -3,10 +3,10 @@ controllers:
     replicas: 1
     # RWO claim: never two pods at once
     strategy: Recreate
-    annotations:
+    serviceAccount:
+      name: watchtower-read
       secret.reloader.stakater.com/reload: sre-agent-secret
     pod:
-      serviceAccountName: watchtower-read
       automountServiceAccountToken: true
       imagePullSecrets:
         - name: gitea-registry-secret
