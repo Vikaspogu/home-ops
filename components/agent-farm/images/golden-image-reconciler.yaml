@@ -109,6 +109,8 @@ spec:
     spec:
       backoffLimit: 1
       activeDeadlineSeconds: 300
+      # Self-cleans every finished job 1h after completion, so a failed run clears its KubeJobFailed alert on its own (the alert fires at 15m, the TTL delete resolves it) instead of lingering until manual cleanup; the job+pod survive an hour for log forensics.
+      ttlSecondsAfterFinished: 3600
       template:
         spec:
           restartPolicy: Never
