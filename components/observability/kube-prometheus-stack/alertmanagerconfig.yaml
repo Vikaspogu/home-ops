@@ -25,7 +25,14 @@ spec:
           - name: alertname
             value: Watchdog
             matchType: =
+      # ORDER MATTERS: ntfy continues to alert-manager; keep critical routes adjacent.
       - receiver: ntfy
+        continue: true
+        matchers:
+          - name: severity
+            value: critical
+            matchType: =
+      - receiver: alert-manager
         matchers:
           - name: severity
             value: critical
@@ -55,7 +62,7 @@ spec:
                 key: NTFY_PUBLISH_TOKEN
     - name: alert-manager
       webhookConfigs:
-        - url: http://sre-agent-api.sre-agent.svc.cluster.local:4780/v1/webhooks/alertmanager/job_01m60z9sz3wm2ekmm7v1yxfdn4
+        - url: http://sre-agent.sre-agent.svc.cluster.local:4780/v1/webhooks/alertmanager/job_01m60z9sz3wm2ekmm7v1yxfdn4
           sendResolved: true
           httpConfig:
             authorization:
