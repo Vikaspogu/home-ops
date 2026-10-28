@@ -69,6 +69,8 @@ service:
     ports:
       http:
         port: 4781
+      api:
+        port: 4780
 
 persistence:
   data:
