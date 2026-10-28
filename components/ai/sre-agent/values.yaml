@@ -23,6 +23,9 @@ controllers:
           TZ: America/New_York
           # The hub validates the Host header of /api requests; allow the ingress hostname.
           DPI_HUB_ALLOWED_HOSTS: "sre-agent.${CLUSTER_DOMAIN}"
+          # Backend must listen on all interfaces so Alertmanager can reach
+          # /v1/webhooks/alertmanager via the ClusterIP service (default is 127.0.0.1).
+          DPI_HOST: "0.0.0.0"
         envFrom:
           - secretRef:
               name: sre-agent-secret
