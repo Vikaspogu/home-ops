@@ -53,6 +53,8 @@ controllers:
           - serve
           - --config
           - /config/config.toml
+          - --host
+          - 0.0.0.0
         probes:
           readiness:
             enabled: true
