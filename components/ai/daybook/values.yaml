@@ -22,7 +22,7 @@ controllers:
           - daybook
           - token
           - --label
-          - vm-push
+          - vm
           - --config
           - /config/config.toml
         env:
