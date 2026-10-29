@@ -131,3 +131,34 @@ spec:
             helm:
               name: controllers.app.containers.app.image.repository
               tag: controllers.app.containers.app.image.tag
+    # ghcr.io app: semver tags, not the Gitea timestamp format covered by the
+    # spec-level commonUpdateSettings. Image is public on ghcr (anonymous pull).
+    - namePattern: "daybook"
+      writeBackConfig:
+        method: "git:secret:argo-system/git-creds"
+        gitConfig:
+          branch: main
+          writeBackTarget: "helmvalues:./values.yaml"
+      images:
+        - alias: daybook
+          imageName: "ghcr.io/Vikaspogu/daybook"
+          commonUpdateSettings:
+            updateStrategy: semver
+            allowTags: 'regexp:^v?[0-9]+\.[0-9]+\.[0-9]+$'
+            ignoreTags:
+              - latest
+          manifestTargets:
+            helm:
+              name: controllers.app.containers.app.image.repository
+              tag: controllers.app.containers.app.image.tag
+        - alias: daybook-ensure-token
+          imageName: "ghcr.io/Vikaspogu/daybook"
+          commonUpdateSettings:
+            updateStrategy: semver
+            allowTags: 'regexp:^v?[0-9]+\.[0-9]+\.[0-9]+$'
+            ignoreTags:
+              - latest
+          manifestTargets:
+            helm:
+              name: controllers.app.initContainers.ensure-token.image.repository
+              tag: controllers.app.initContainers.ensure-token.image.tag
