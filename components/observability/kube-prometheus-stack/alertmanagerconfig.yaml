@@ -25,18 +25,18 @@ spec:
           - name: alertname
             value: Watchdog
             matchType: =
-      # ORDER MATTERS: ntfy continues to alert-manager; keep critical routes adjacent.
+      # ORDER MATTERS: ntfy continues to alert-manager; keep critical/warning routes adjacent.
       - receiver: ntfy
         continue: true
         matchers:
           - name: severity
-            value: critical
-            matchType: =
+            value: critical|warning
+            matchType: =~
       - receiver: alert-manager
         matchers:
           - name: severity
-            value: critical
-            matchType: =
+            value: critical|warning
+            matchType: =~
   inhibitRules:
     - equal: ["alertname", "namespace"]
       sourceMatch:
