@@ -1,0 +1,19 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ai
+resources:
+  - ./configmap.yaml
+  - ./externalsecret.yaml
+  - ./http-route.yaml
+components:
+  - ../../volsync-system/volsync-replication
+
+helmCharts:
+  - name: app-template
+    releaseName: daybook
+    namespace: ai
+    repo: oci://ghcr.io/bjw-s-labs/helm
+    version: "5.3.0"
+    valuesFile: values.yaml

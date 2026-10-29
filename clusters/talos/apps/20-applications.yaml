@@ -750,6 +750,29 @@ applications:
     source:
       path: components/ai/searxng
 
+  # Cross-runtime agent work journal (ghcr.io/vikaspogu/daybook)
+  daybook:
+    annotations:
+      argocd.argoproj.io/sync-wave: "20"
+    destination:
+      namespace: ai
+    source:
+      path: components/ai/daybook
+      plugin:
+        env:
+          - name: STORAGE_CLASS
+            value: ceph-block
+          - name: VOLSYNC_STORAGE_CLASS
+            value: ceph-block-volsync
+          - name: VOLUME_SNAPSHOT_CLASS
+            value: csi-ceph-blockpool
+          - name: VOLSYNC_CAPACITY
+            value: 2Gi
+          - name: VOLSYNC_CACHE_CAPACITY
+            value: 2Gi
+          - name: VOLSYNC_SCHEDULE
+            value: "3 4,10,16,22 * * *"
+
   valetudopng:
     annotations:
       argocd.argoproj.io/sync-wave: "20"

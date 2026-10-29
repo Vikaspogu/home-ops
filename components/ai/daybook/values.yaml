@@ -1,0 +1,125 @@
+controllers:
+  app:
+    replicas: 1
+    # RWO claim: never two pods at once
+    strategy: Recreate
+    annotations:
+      configmap.reloader.stakater.com/reload: daybook-config
+      secret.reloader.stakater.com/reload: daybook-secret
+    pod:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+    initContainers:
+      # Ensure the push token from the secret store exists in the ledger.
+      # Idempotent: mint_token upserts by label.
+      ensure-token:
+        image:
+          repository: ghcr.io/vikaspogu/daybook
+          tag: v0.1.8
+        command:
+          - daybook
+          - token
+          - --label
+          - vm-push
+          - --config
+          - /config/config.toml
+        env:
+          DAYBOOK_TOKEN_VALUE:
+            valueFrom:
+                secretKeyRef:
+                    name: daybook-secret
+                    key: DAYBOOK_PUSH_TOKEN
+        resources:
+            requests:
+                cpu: 10m
+                memory: 32Mi
+            limits:
+                memory: 128Mi
+        securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            capabilities: { drop: ["ALL"] }
+    containers:
+      app:
+        image:
+          repository: ghcr.io/vikaspogu/daybook
+          tag: v0.1.8
+        args:
+          - serve
+          - --config
+          - /config/config.toml
+        probes:
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: 31457
+              periodSeconds: 15
+              timeoutSeconds: 5
+              failureThreshold: 3
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /api/health
+                port: 31457
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+        resources:
+            requests:
+                cpu: 50m
+                memory: 128Mi
+            limits:
+                memory: 512Mi
+        securityContext:
+            allowPrivilegeEscalation: false
+            capabilities: { drop: ["ALL"] }
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+
+service:
+  app:
+    controller: app
+    ports:
+      http:
+        port: 31457
+
+persistence:
+  data:
+    # Created by the volsync-replication component (name = Argo app name); holds the SQLite ledger.
+    existingClaim: daybook
+    advancedMounts:
+      app:
+        ensure-token:
+          - path: /data
+        app:
+          - path: /data
+  config:
+    type: configMap
+    name: daybook-config
+    advancedMounts:
+      app:
+        ensure-token:
+          - path: /config/config.toml
+            subPath: config.toml
+            readOnly: true
+        app:
+          - path: /config/config.toml
+            subPath: config.toml
+            readOnly: true
+  tmp:
+    enabled: true
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

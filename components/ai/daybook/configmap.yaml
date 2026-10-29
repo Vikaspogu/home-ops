@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: daybook-config
+data:
+    config.toml: |
+        [server]
+        port = 31457
+        db_path = "/data/ledger.db3"
