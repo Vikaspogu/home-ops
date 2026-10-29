@@ -1,15 +1,13 @@
 ---
 controllers:
   redlib:
-    annotations:
-      reloader.stakater.com/auto: "true"
     strategy: RollingUpdate
     containers:
       app:
-        # ponytail: temporary fork of upstream v0.40.0; Reddit 403-blocks thread endpoints, needs REDLIB_REDDIT_COOKIE session. Revert when upstream PR #603 (GraphQL comments) lands.
+        # ponytail: official image; Reddit 403-blocks thread/comment endpoints until upstream PR #603 (GraphQL comments) lands — update image once released.
         image:
-          repository: ghcr.io/nachtalb/redlib
-          tag: latest@sha256:e33539416421a755b48fb8eff2373663705b89fc4387e4151fea87ca5b0ee3bf
+          repository: quay.io/redlib/redlib
+          tag: latest@sha256:37f624d87ce6cdd90d945af3688fdf0c195a0251d3b5ba62047792e8be2390df
         env:
           REDLIB_ROBOTS_DISABLE_INDEXING: "on"
           REDLIB_DEFAULT_THEME: "dracula"
@@ -22,9 +20,6 @@ controllers:
           REDLIB_DEFAULT_AUTOPLAY_VIDEOS: "off"
           REDLIB_DEFAULT_DISABLE_VISIT_REDDIT_CONFIRMATION: "false"
           REDLIB_DEFAULT_SUBSCRIPTIONS: "selfhosted+todayilearned+ArtificialInteligence+LocalLLaMA+AI_Agents+AgentsOfAI+singularity+explainlikeimfive+MachineLearning+LLMDevs"
-        envFrom:
-          - secretRef:
-              name: redlib-secret
         probes:
           liveness: &probes
             enabled: true

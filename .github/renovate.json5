@@ -40,13 +40,6 @@
   "commitMessageExtra": "to {{newVersion}}",
   "commitMessageSuffix": "",
   "packageRules": [
-    {
-      // ponytail: temporary redlib fork for Reddit thread blocks; no automated digest updates from a personal fork
-      "description": ["Disable Renovate for temporary xevxx/redlib fork"],
-      "matchDatasources": ["docker"],
-      "matchPackageNames": ["ghcr.io/xevxx/redlib"],
-      "enabled": false
-    },
     // version pinning
     {
       "description": ["Pin browserless/chromium to v2.18.0"],
