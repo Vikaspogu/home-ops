@@ -28,6 +28,8 @@ controllers:
           DPI_HOST: "0.0.0.0"
           # prom_query tool: in-cluster Prometheus (kube-prometheus-stack).
           PROMETHEUS_URL: "http://prometheus-prometheus.observability.svc.cluster.local:9090"
+          # Default model for new jobs and sessions. Thinking level defaults to medium per job.
+          INFERENCE_HUB_MODEL: "azure/openai/gpt-6.1-sol"
         envFrom:
           - secretRef:
               name: sre-agent-secret
