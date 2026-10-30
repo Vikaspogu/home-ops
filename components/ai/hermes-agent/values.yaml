@@ -14,7 +14,7 @@ controllers:
       seed-config:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20261025165435-641218c-oci
+          tag: 20261030222926-30d1b72-oci
         command: ["hermes-seed-config"]
         envFrom:
         - secretRef:
@@ -36,7 +36,7 @@ controllers:
       plugins-install:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20261025165435-641218c-oci
+          tag: 20261030222926-30d1b72-oci
         command:
           - /bin/sh
           - -ec
@@ -91,7 +91,7 @@ controllers:
         restartPolicy: Always
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20261025165435-641218c-oci
+          tag: 20261030222926-30d1b72-oci
         command: ["python", "/usr/local/bin/hermes-mcp-tokens"]
         env:
           PYTHONUNBUFFERED: "1"
@@ -123,7 +123,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/agent-platform-hermes-agent
-          tag: 20261025165435-641218c-oci
+          tag: 20261030222926-30d1b72-oci
         probes:
           # Let startupProbe cover the variable 40s–2.5m cold start before liveness/readiness take over to avoid kill loops.
           startup:
