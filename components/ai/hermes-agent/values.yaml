@@ -58,7 +58,7 @@ controllers:
           HERMES_HOME: /opt/data
           PYTHONUNBUFFERED: "1"
           # renovate: datasource=git-refs depName=https://github.com/Vikaspogu/hermes-mobile branch=main
-          HERMES_PWA_REF: "0b5f6d0d7ab9bb361f48c8a4587b216eb248b730"
+          HERMES_PWA_REF: "9509f040b6017fbc6519d5a7a694534738c85b1d"
           GITEA_USER:
             valueFrom:
               secretKeyRef:
@@ -220,4 +220,7 @@ persistence:
         seed-config:
         - path: /opt/bootstrap/config.yaml
           subPath: config.yaml
+          readOnly: true
+        app:
+        - path: /opt/data/config
           readOnly: true
