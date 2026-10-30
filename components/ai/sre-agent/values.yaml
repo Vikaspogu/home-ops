@@ -26,6 +26,8 @@ controllers:
           # Backend must listen on all interfaces so Alertmanager can reach
           # /v1/webhooks/alertmanager via the ClusterIP service (default is 127.0.0.1).
           DPI_HOST: "0.0.0.0"
+          # prom_query tool: in-cluster Prometheus (kube-prometheus-stack).
+          PROMETHEUS_URL: "http://prometheus-prometheus.observability.svc.cluster.local:9090"
         envFrom:
           - secretRef:
               name: sre-agent-secret
