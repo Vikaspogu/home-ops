@@ -13,6 +13,7 @@ metadata:
     gethomepage.dev/group: Ingress
     gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/garage.png
     gethomepage.dev/name: "Garage S3"
+    gethomepage.dev/app: garage-s3
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}
@@ -38,6 +39,7 @@ metadata:
     gethomepage.dev/group: Ingress
     gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/garage.png
     gethomepage.dev/name: "Garage UI"
+    gethomepage.dev/app: garage-s3
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}

@@ -24,7 +24,7 @@ Preserve existing application URLs, widget integrations, secret placeholders, an
 
 ## Brand Commitments
 
-The user requested a unique, clean, fresh design and confirmed a dark, quiet, crisp viewing style. The user later requested a different background color scheme and Figtree typography.
+The user requested a unique, clean, fresh design and confirmed a dark, quiet, crisp viewing style. The user requested Figtree typography and later supplied a home-control dashboard reference for its near-black panels, icon tiles, and three-column layout.
 
 ## Evidence on Hand
 

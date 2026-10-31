@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-31T19:16:16.788369+00:00",
+  "generatedAt": "2026-10-31T20:09:09.305239+00:00",
   "title": "Design System: Home Ops Homepage",
   "extensions": {
     "motion": [
@@ -14,6 +14,10 @@
       {
         "name": "mobile",
         "value": "767px"
+      },
+      {
+        "name": "three-columns",
+        "value": "1280px"
       }
     ]
   },
@@ -22,9 +26,9 @@
       "name": "Service Card",
       "kind": "card",
       "refersTo": "service-card",
-      "description": "Compact service name and description, before optional native widget content.",
-      "html": "<article class=\"ds-service\"><a class=\"ds-service-title\" href=\"#service\"><span class=\"ds-service-name\">NAS</span><span class=\"ds-service-description\">Network storage</span></a></article>",
-      "css": ".ds-service{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--home-surface);color:var(--home-text);border:1px solid var(--home-border);border-radius:var(--home-radius);padding:8px;box-shadow:none;transition:background-color 160ms ease-out,border-color 160ms ease-out}.ds-service:hover{background:var(--home-hover);border-color:var(--home-muted)}.ds-service-title{display:flex;flex-direction:column;justify-content:center;min-height:48px;color:var(--home-text);text-decoration:none}.ds-service-name{font-size:.875rem;font-weight:600;overflow-wrap:anywhere}.ds-service-description{margin-top:3px;color:var(--home-muted);font-size:.75rem;font-weight:400}.ds-service-title:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px;}@media(prefers-reduced-motion:reduce){.ds-service{transition:none}}"
+      "description": "Service title with its inset icon tile and secondary description. The example omits native service artwork and optional widget content.",
+      "html": "<article class=\"ds-service\"><a class=\"ds-service-title\" href=\"#service\"><span class=\"ds-service-icon\" aria-hidden=\"true\"></span><span class=\"ds-service-text\"><span class=\"ds-service-name\">NAS</span><span class=\"ds-service-description\">Network storage</span></span></a></article>",
+      "css": ".ds-service{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--home-surface);color:var(--home-text);border:1px solid var(--home-border);border-radius:var(--home-radius);padding:12px;box-shadow:none;transition:background-color 160ms ease-out,border-color 160ms ease-out}.ds-service:hover{background:var(--home-hover);border-color:var(--home-muted)}.ds-service-title{display:flex;align-items:center;min-height:60px;color:var(--home-text);text-decoration:none}.ds-service-name{font-size:.875rem;font-weight:600;overflow-wrap:anywhere}.ds-service-description{margin-top:3px;color:var(--home-muted);font-size:.75rem;font-weight:400}.ds-service-title:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px;}@media(prefers-reduced-motion:reduce){.ds-service{transition:none}}.ds-service-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:48px;height:48px;margin-right:8px;border-radius:14px;background:var(--home-icon)}.ds-service-icon>img,.ds-service-icon>div{max-width:28px;max-height:28px}.ds-service-text{display:flex;flex-direction:column;min-width:0}"
     },
     {
       "name": "Search Input",
@@ -37,28 +41,28 @@
     {
       "name": "Group Button",
       "kind": "button",
-      "description": "Native group heading button with a trailing divider and shared keyboard focus.",
+      "description": "Native column heading with collapse behavior and shared keyboard focus.",
       "html": "<button class=\"ds-group\" type=\"button\" aria-expanded=\"true\">Observability</button>",
-      "css": ".ds-group{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;align-items:center;width:100%;gap:12px;min-height:36px;background:transparent;border:0;color:var(--home-text);font-size:1.0625rem;font-weight:600;letter-spacing:-.015em;text-align:left}.ds-group::after{content:\"\";height:1px;background:var(--home-border);flex:1}.ds-group:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px;}"
+      "css": ".ds-group{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;align-items:center;width:100%;gap:12px;min-height:44px;background:transparent;border:0;color:var(--home-text);font-size:1.5rem;font-weight:650;letter-spacing:-.025em;text-align:left}.ds-group:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px;}"
     }
   ],
   "narrative": {
-    "northStar": "The Quiet Directory",
-    "overview": "This system covers Homepage only, not the infrastructure repository. It records the approved O1 Directory implemented in `components/default/homepage/configmap.yaml`, running on Homepage v2.7.0 as pinned in `values.yaml`.\n\nIndigo surfaces, Figtree typography, and fine borders support daily application launching and status checks. Native Homepage controls and widget states remain part of the interface.",
+    "northStar": "The Quiet Control Surface",
+    "overview": "This system covers Homepage only. The user supplied a home-control dashboard reference with a near-black canvas, rounded panels, inset icon tiles, compact status badges, and three parallel content columns. The implementation adapts that visual language to existing application links and native Homepage widgets.\n\nFigtree remains the interface font. Actual widget states retain their native meanings and colors.",
     "keyCharacteristics": [
-      "Dark, quiet, crisp.",
-      "Compact application cards with clear names and secondary descriptions.",
-      "Amber keyboard focus and restrained surface changes on hover."
+      "Near-black canvas and rounded panels.",
+      "Three desktop columns with a wider application directory.",
+      "Inset icon tiles, wrapping labels, and cyan keyboard focus."
     ],
     "rules": [],
     "dos": [
-      "Do retain native widget loading, highlight, and expandable error states.",
-      "Do keep the shared amber focus treatment on keyboard controls.",
-      "Do preserve compact names, secondary descriptions, and wrapping content on narrow screens."
+      "Do keep the three desktop columns distinct while preserving all content on narrower screens.",
+      "Do retain native widget loading, status, and expandable error states.",
+      "Do keep Figtree, inset icon tiles, wrapping names, and cyan keyboard focus consistent."
     ],
     "donts": [
-      "Don't replace real service status with static healthy labels.",
-      "Don't introduce a replacement application or custom JavaScript for this Homepage system."
+      "Don't invent service health, camera feeds, or home-control actions to imitate the reference.",
+      "Don't remove status text in favor of color alone."
     ]
   }
 }
