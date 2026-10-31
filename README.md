@@ -27,15 +27,7 @@ scripts/                 Bootstrap, validation, and contract-test scripts
 Taskfile.yaml            Task entry point
 ```
 
-Application components normally contain:
-
-```text
-components/<namespace>/<app>/
-  kustomization.yaml
-  values.yaml
-  http-route.yaml        when ingress is required
-  externalsecret.yaml    when secrets are required
-```
+Application components follow the file pattern documented in [AGENTS.md](AGENTS.md): `kustomization.yaml`, `values.yaml`, an `HTTPRoute` when ingress is required, and an `ExternalSecret` when credentials are required.
 
 Persistent applications also reference the shared VolSync component and declare storage capacity through the Argo CD plugin environment.
 

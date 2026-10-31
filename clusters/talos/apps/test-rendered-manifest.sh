@@ -4,7 +4,8 @@ set -Eeuo pipefail
 readonly ROOT_DIR="$(git rev-parse --show-toplevel)"
 readonly APPS_COMPONENT="${ROOT_DIR}/clusters/talos/apps"
 readonly manifest="$(mktemp)"
-trap 'rm -f -- "${manifest}"' EXIT
+readonly component_refs="$(mktemp)"
+trap 'rm -f -- "${manifest}" "${component_refs}"' EXIT
 
 fail() {
   printf 'FAIL: %s\n' "$1" >&2
@@ -41,4 +42,21 @@ volsync_count="$(yq ea -r "${volsync_apps} | length" "${manifest}")"
 
 [[ "$(yq ea -r 'select(.kind == "Application" and .metadata.name == "kubechecks") | .spec.source.plugin.name' "${manifest}")" == "setenv-cmp-plugin-v1.0" ]] || fail "Kubechecks must use the cluster variable substitution plugin"
 
-printf 'PASS: rendered Argo Applications include sync policy and staggered VolSync schedules\n'
+# Orphan check: every components/<ns>/<app> dir must be registered in clusters/talos/apps, referenced by a parent kustomization, or bootstrap-only below (prevents undeployed components accruing Renovate updates).
+bootstrap_only_components=(components/argo-system/root-application)
+registered_paths="$(yq ea -r 'select(.kind == "Application") | .spec.source.path // ""' "${manifest}" | sort -u)"
+while IFS= read -r kustomization; do
+  base_dir="$(dirname "${kustomization}")"
+  yq ea -r '.resources[]?, .components[]?' "${kustomization}" | while IFS= read -r ref; do
+    [[ -d "${base_dir}/${ref}" ]] && realpath -m --relative-to="${ROOT_DIR}" "${base_dir}/${ref}" >>"${component_refs}" || true
+  done
+done < <(find "${ROOT_DIR}" -name kustomization.yaml -not -path "${ROOT_DIR}/archive/*" -print)
+while IFS= read -r component_dir; do
+  grep -qxF "${component_dir}" <(
+    printf '%s\n' "${registered_paths}"
+    cat "${component_refs}"
+    printf '%s\n' "${bootstrap_only_components[@]}"
+  ) || fail "orphaned component directory: ${component_dir} (register it in clusters/talos/apps, reference it from a parent kustomization, or delete it)"
+done < <(find "${ROOT_DIR}/components" -mindepth 2 -maxdepth 2 -type d -printf 'components/%P\n' | sort)
+
+printf 'PASS: rendered Argo Applications include sync policy and staggered VolSync schedules; no orphaned component directories\n'

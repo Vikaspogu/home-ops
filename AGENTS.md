@@ -46,7 +46,7 @@ helmCharts:
     releaseName: <app-name>
     namespace: default
     repo: oci://ghcr.io/bjw-s-labs/helm
-    version: "4.6.2"          # bjw-s app-template version
+    version: "5.3.0"          # bjw-s app-template version
     valuesFile: values.yaml
 ```
 
@@ -137,7 +137,7 @@ spec:
 
 - **Kubernetes**: Talos Linux
 - **GitOps**: ArgoCD with sync-waves for ordering
-- **Helm**: bjw-s app-template v4.6.2 for all apps
+- **Helm**: bjw-s app-template v5.3.0 for all apps
 - **Ingress**: Gateway API with HTTPRoute (not Ingress objects)
 - **Secrets**: ExternalSecrets Operator + 1Password Connect
 - **Storage**: Rook-Ceph (ceph-block StorageClass), Longhorn (secondary)
@@ -153,7 +153,7 @@ spec:
 - All apps deploy to `default` namespace unless they have a dedicated namespace
 - YAML anchor `&app` on metadata.name for DRY label references
 - Environment variables like `${CLUSTER_DOMAIN}`, `${GATEWAY_NAME}`, `${GATEWAY_NAMESPACE}` are substituted by ArgoCD plugin
-- VolSync plugin env vars: `STORAGE_CLASS=ceph-block`, `VOLUME_SNAPSHOT_CLASS=csi-ceph-blockpool`, `VOLSYNC_CAPACITY=<size>`
+- VolSync plugin env vars: `STORAGE_CLASS=ceph-block`, `VOLSYNC_STORAGE_CLASS=ceph-block-volsync`, `VOLUME_SNAPSHOT_CLASS=csi-ceph-blockpool`, `VOLSYNC_CAPACITY=<size>`, `VOLSYNC_CACHE_CAPACITY=<size>`, `VOLSYNC_SCHEDULE=<unique cron per app>`
 - Commit messages use conventional format: `(fix):`, `(feat):`, `(chore):`
 - Containers should set `readOnlyRootFilesystem: true` and drop all capabilities when possible
 - Always set both resource requests and memory limits
