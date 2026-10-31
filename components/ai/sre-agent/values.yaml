@@ -18,7 +18,7 @@ controllers:
       app:
         image:
           repository: gitea.a113.casa/vpogu/durable-sre-agent
-          tag: 20261030201822-55fd1b5-oci
+          tag: 20261031221405-ae733f1-oci
         env:
           TZ: America/New_York
           # The hub validates the Host header of /api requests; allow the ingress hostname.
