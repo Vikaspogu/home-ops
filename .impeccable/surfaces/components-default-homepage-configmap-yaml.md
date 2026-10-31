@@ -5,27 +5,18 @@ primary_target: "components/default/homepage/configmap.yaml"
 related_targets: ["components/default/homepage/values.yaml"]
 ---
 
-# Homepage control surface
+# Homepage Quiet Precision
 
-Mode: Operate. The homelab owner launches URLs and checks service status. The latest user-supplied home-control dashboard screenshot supersedes the earlier O1 composition and palette. Preserve Figtree and use near-black panels, rounded corners, inset icon tiles, compact status labels, and three desktop columns. The private reference image stays outside the repository.
+Mode: Operate. The owner opens application URLs and checks homelab status. The explicit Quiet Precision / Dark Obsidian prompt supersedes the earlier reference rendition. Preserve native Homepage discovery, links, widgets, credentials, errors, search, collapse, and keyboard navigation.
 
-Direction contract:
-- THESIS: A quiet control surface keeps applications and real service status together.
-- OWN-WORLD: Near-black surfaces, rounded cards, inset icon tiles, Figtree, and cyan keyboard focus.
-- STORY: Find an application, check its status, then open the destination.
-- FIRST VIEWPORT: Identity, weather, search, and status above infrastructure, applications, and media columns.
-- FORM: Explicit user reference overrides the original O1 seed 9e964f1f. Use Homepage native links and widgets, not invented home-control features.
+Direction: obsidian gradient surfaces with inset highlights, compact Figtree labels, JetBrains Mono numeric telemetry, small section kickers, and inset icon tiles. Pod running states tint emerald. Missing, partial, down, and API error states tint rose. Native widget highlights retain good/warn/danger meanings. No invented climate, security, power, or presence data.
 
-Implementation: three desktop columns at 1280px and above, with a wider two-column application directory in the center. Monitoring and media widgets occupy the side columns. On smaller screens, application links come first and groups stack vertically. Existing links, bookmarks, widget credentials, and error states remain intact.
+Composition: three equal desktop section columns with a 340px minimum at 1144px. Application launchers come first on smaller screens with two tiles per row from 360px. At 320px, use one column. Tile titles ellipsize visually while their full native text remains accessible. Monitoring widgets keep room for their readings. The native mobile Quick Launch button becomes a 60px glass dock with 110px plus safe-area clearance below the page.
 
-Discovery corrections: disable Homepage discovery for Syncthing without removing its route. Replace the SRE icon's confirmed 404 URL with mdi-robot-outline. Correct route-to-pod mappings for Argo CD, Home Assistant Code, Garage API/UI, InfluxDB, Prometheus, Alertmanager, and Rook Ceph. Mark the NAS external because it has no Kubernetes pods. The user's screenshots identify these entries as Not found.
+Platform adaptations: unavailable applications stay visible for recovery, and source order stays stable for keyboard users. Homepage has no HA entity model or semantic device controls. Do not fabricate presence pills, three-button action rows, device-state sorting, or counts. Unknown pod state stays neutral. No custom JavaScript or replacement frontend is introduced.
 
-Evidence:
-- [Homepage v2.7.0 status API](https://github.com/gethomepage/homepage/blob/v2.7.0/src/pages/api/kubernetes/status/%5B...service%5D.js#L21) defaults to app.kubernetes.io/name equal to the discovered app name. Zero matching pods produces Not found. Running is a pod-phase result, not an HTTP endpoint health check.
-- [Resource discovery](https://github.com/gethomepage/homepage/blob/v2.7.0/src/utils/kubernetes/resource-helpers.js#L90) supports explicit app, external, and pod-selector annotations.
-- Helm-enabled Kustomize renders reproduced missing matches before the annotation fixes and matched the backend workload labels/selectors afterward.
-- [Rook v1.21.1 mgr controller](https://github.com/rook/rook/blob/v1.21.1/pkg/operator/ceph/cluster/mgr/mgr.go#L374) selects manager pods with app=rook-ceph-mgr.
+Verification: local Homepage v2.7.0 with sanitized fixtures and mocked pod/widget responses. Checks passed at 1600, 1144, 1139, 1124, 900, 430, 390, and 320px without horizontal overflow or page errors. Verified real status-derived tint selectors, telemetry font, and mobile Quick Launch search. ConfigMap rendering and embedded YAML pass. Live cluster health remains unverified.
 
-Verification: local Homepage v2.7.0 runs with sanitized URL fixtures and mocked status/widget responses. Desktop, tablet, and mobile checks cover three-column placement, widths 1600/1280/900/390/320, native Running and Not found labels, Syncthing removal, SRE icon, external NAS behavior, Quick Launch, collapse controls, and keyboard focus. All passed without horizontal overflow or script errors. Text and focus colors pass contrast checks.
+Screenshots: `.impeccable/mocks/obsidian-desktop.png` and `.impeccable/mocks/obsidian-mobile.png`. Values and statuses are simulated. Fonts load via Google Fonts with local fallbacks. Recheck native selectors when upgrading the pinned Homepage version.
 
-Screenshots: `.impeccable/mocks/control-surface-desktop.png` and `.impeccable/mocks/control-surface-mobile.png`. These use simulated data and do not establish live health. No durable kubeconfig was available for a live check. Figtree loads through Google Fonts with a system fallback. Custom CSS requires a browser check when upgrading the pinned Homepage version.
+Review follow-up: a focused check reproduced scrollbar-edge overflow by reducing the content width by 17px. Raising the desktop breakpoint to 1144px cleared it. The native dock resolves as a button named Quick Launch in the Chromium accessibility tree. Native selectors and CSS :has() are intentional dependencies of the pinned Homepage surface, with native state labels retained as fallback.

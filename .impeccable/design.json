@@ -1,68 +1,130 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-31T20:09:09.305239+00:00",
+  "generatedAt": "2026-10-31T20:41:41.658479+00:00",
   "title": "Design System: Home Ops Homepage",
   "extensions": {
+    "surfaces": [
+      {
+        "name": "home-surface",
+        "value": "linear-gradient(180deg, rgba(24, 29, 40, 0.88), rgba(16, 20, 28, 0.92))",
+        "purpose": "Native service cards, bookmarks, search, and resource panels."
+      },
+      {
+        "name": "running-panel",
+        "value": "linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(16, 20, 28, 0.92))",
+        "purpose": "Cards whose native Kubernetes status is running."
+      },
+      {
+        "name": "alert-panel",
+        "value": "linear-gradient(135deg, rgba(244, 63, 94, 0.16), rgba(16, 20, 28, 0.92))",
+        "purpose": "Cards reporting down, not found, partial, or Error."
+      }
+    ],
+    "shadows": [
+      {
+        "name": "panel-highlight",
+        "value": "inset 0 1px 0 rgba(255, 255, 255, 0.04)",
+        "purpose": "Subtle top edge on cards and bookmarks."
+      },
+      {
+        "name": "mobile-dock",
+        "value": "0 8px 24px rgba(0, 0, 0, 0.24)",
+        "purpose": "Separation beneath the mobile Quick Launch dock."
+      }
+    ],
     "motion": [
       {
         "name": "card-hover",
-        "value": "background-color 160ms ease-out, border-color 160ms ease-out",
-        "purpose": "Service card and bookmark hover feedback. Disabled with reduced motion."
+        "value": "background-color 160ms ease-out, border-color 160ms ease-out, filter 160ms ease-out",
+        "purpose": "Native card hover feedback. Disabled with reduced motion."
       }
     ],
     "breakpoints": [
       {
-        "name": "mobile",
+        "name": "single-launch-column",
+        "value": "359px"
+      },
+      {
+        "name": "mobile-dock",
+        "value": "639px"
+      },
+      {
+        "name": "mobile-gutters",
         "value": "767px"
       },
       {
         "name": "three-columns",
-        "value": "1280px"
+        "value": "1144px"
       }
-    ]
+    ],
+    "numerals": {
+      "value": "tabular-nums",
+      "purpose": "All native telemetry regions and Kubernetes state use JetBrains Mono."
+    }
   },
   "components": [
     {
       "name": "Service Card",
       "kind": "card",
       "refersTo": "service-card",
-      "description": "Service title with its inset icon tile and secondary description. The example omits native service artwork and optional widget content.",
+      "description": "Compact neutral launcher with an inset icon and one-line name. Native artwork and optional widget content are omitted.",
       "html": "<article class=\"ds-service\"><a class=\"ds-service-title\" href=\"#service\"><span class=\"ds-service-icon\" aria-hidden=\"true\"></span><span class=\"ds-service-text\"><span class=\"ds-service-name\">NAS</span><span class=\"ds-service-description\">Network storage</span></span></a></article>",
-      "css": ".ds-service{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;background:var(--home-surface);color:var(--home-text);border:1px solid var(--home-border);border-radius:var(--home-radius);padding:12px;box-shadow:none;transition:background-color 160ms ease-out,border-color 160ms ease-out}.ds-service:hover{background:var(--home-hover);border-color:var(--home-muted)}.ds-service-title{display:flex;align-items:center;min-height:60px;color:var(--home-text);text-decoration:none}.ds-service-name{font-size:.875rem;font-weight:600;overflow-wrap:anywhere}.ds-service-description{margin-top:3px;color:var(--home-muted);font-size:.75rem;font-weight:400}.ds-service-title:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px;}@media(prefers-reduced-motion:reduce){.ds-service{transition:none}}.ds-service-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:48px;height:48px;margin-right:8px;border-radius:14px;background:var(--home-icon)}.ds-service-icon>img,.ds-service-icon>div{max-width:28px;max-height:28px}.ds-service-text{display:flex;flex-direction:column;min-width:0}"
+      "css": ".ds-service{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-feature-settings:\"cv02\",\"cv03\",\"cv04\",\"cv11\";background:var(--home-surface);border:1px solid var(--home-border);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);color:var(--home-text);border-radius:var(--home-radius);padding:12px 14px;transition:background-color 160ms ease-out,border-color 160ms ease-out,filter 160ms ease-out}.ds-service:hover{filter:brightness(1.12);background:var(--home-hover);border-color:var(--home-muted)}.ds-service-title{display:flex;align-items:center;min-height:42px;color:var(--home-text);text-decoration:none}.ds-service-name{font-size:.875rem;font-weight:700;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ds-service-description{margin-top:3px;color:var(--home-muted);font-size:.75rem;font-weight:500}.ds-service-title:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px}.ds-service-icon{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:38px;height:38px;margin-right:8px;border-radius:12px;background:var(--home-icon)}.ds-service-text{display:flex;flex-direction:column;min-width:0}@media(prefers-reduced-motion:reduce){.ds-service{transition:none}}"
     },
     {
       "name": "Search Input",
       "kind": "input",
       "refersTo": "search-input",
-      "description": "Native search field surface and keyboard focus treatment.",
+      "description": "Native search field with the shared gradient surface and cyan focus.",
       "html": "<input class=\"ds-search\" type=\"search\" aria-label=\"Search\" placeholder=\"Search\u2026\">",
-      "css": ".ds-search{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;width:100%;min-height:48px;background:var(--home-surface);color:var(--home-text);border:1px solid var(--home-border);border-radius:var(--home-radius);font-size:.875rem;box-shadow:none}.ds-search::placeholder{color:var(--home-muted);opacity:1}.ds-search:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px;}"
+      "css": ".ds-search{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-feature-settings:\"cv02\",\"cv03\",\"cv04\",\"cv11\";background:var(--home-surface);border:1px solid var(--home-border);width:100%;min-height:48px;color:var(--home-text);border-radius:var(--home-radius);font-size:.875rem;box-shadow:none}.ds-search::placeholder{color:var(--home-muted);opacity:1}.ds-search:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px}"
     },
     {
       "name": "Group Button",
       "kind": "button",
-      "description": "Native column heading with collapse behavior and shared keyboard focus.",
+      "description": "Native collapse heading with compact uppercase kicker typography.",
       "html": "<button class=\"ds-group\" type=\"button\" aria-expanded=\"true\">Observability</button>",
-      "css": ".ds-group{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;display:flex;align-items:center;width:100%;gap:12px;min-height:44px;background:transparent;border:0;color:var(--home-text);font-size:1.5rem;font-weight:650;letter-spacing:-.025em;text-align:left}.ds-group:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px;}"
+      "css": ".ds-group{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-feature-settings:\"cv02\",\"cv03\",\"cv04\",\"cv11\";display:flex;align-items:center;width:100%;gap:12px;min-height:44px;background:transparent;border:0;color:var(--home-muted);font-size:.6875rem;font-weight:700;letter-spacing:.10em;text-transform:uppercase;text-align:left}.ds-group:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px}"
+    },
+    {
+      "name": "Running Status",
+      "kind": "chip",
+      "description": "Native pod phase text. Running does not establish URL health.",
+      "html": "<span class=\"ds-status\">Running</span>",
+      "css": ".ds-status{display:inline-block;font-family:var(--home-mono);font-variant-numeric:tabular-nums;font-size:.625rem;font-weight:600;color:#34d399;border:1px solid var(--home-border);border-radius:999px;background:transparent}"
+    },
+    {
+      "name": "Mobile Quick Launch",
+      "kind": "button",
+      "description": "The existing native search trigger uses a glass dock on small screens.",
+      "html": "<button class=\"ds-dock\" type=\"button\"><svg aria-hidden=\"true\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"10\" cy=\"10\" r=\"6\"/><path d=\"m15 15 6 6\"/></svg>Quick Launch</button>",
+      "css": ".ds-dock{font-family:\"Figtree\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif;font-feature-settings:\"cv02\",\"cv03\",\"cv04\",\"cv11\";display:flex;align-items:center;justify-content:center;gap:10px;width:180px;height:60px;border-radius:22px;background:rgba(15,19,28,.88);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(20px);color:var(--home-text);box-shadow:0 8px 24px rgba(0,0,0,.24);font-size:14px;font-weight:700}.ds-dock:focus-visible{outline:2px solid var(--home-accent);outline-offset:-2px}"
     }
   ],
   "narrative": {
-    "northStar": "The Quiet Control Surface",
-    "overview": "This system covers Homepage only. The user supplied a home-control dashboard reference with a near-black canvas, rounded panels, inset icon tiles, compact status badges, and three parallel content columns. The implementation adapts that visual language to existing application links and native Homepage widgets.\n\nFigtree remains the interface font. Actual widget states retain their native meanings and colors.",
+    "northStar": "Quiet Precision / Dark Obsidian",
+    "overview": "A dark operational launcher pairs compact application tiles with real Homepage telemetry. Tactile gradients and inset highlights give each target a clear boundary. Semantic color reflects reported state, while idle services remain quiet.",
     "keyCharacteristics": [
-      "Near-black canvas and rounded panels.",
-      "Three desktop columns with a wider application directory.",
-      "Inset icon tiles, wrapping labels, and cyan keyboard focus."
+      "Obsidian canvas, fine borders, and inset surface highlights.",
+      "Figtree labels with steady JetBrains Mono telemetry.",
+      "Two-up mobile launch tiles and three balanced desktop sections."
     ],
-    "rules": [],
+    "rules": [
+      {
+        "section": "Colors",
+        "name": "The Reported State Rule",
+        "body": "Emerald identifies native Kubernetes Running status. Rose identifies Down, Not found, Partial, or Error. These states tint the card, border, and icon badge. Native widget good, warn, and danger highlights use emerald, amber, and rose respectively. Pod state does not establish URL health."
+      }
+    ],
     "dos": [
-      "Do keep the three desktop columns distinct while preserving all content on narrower screens.",
-      "Do retain native widget loading, status, and expandable error states.",
-      "Do keep Figtree, inset icon tiles, wrapping names, and cyan keyboard focus consistent."
+      "Do use real reported state for semantic tinting and retain its text label.",
+      "Do keep numeric telemetry monospace and tabular.",
+      "Do preserve native links, widget content, errors, and keyboard access."
     ],
     "donts": [
-      "Don't invent service health, camera feeds, or home-control actions to imitate the reference.",
-      "Don't remove status text in favor of color alone."
+      "Don't invent presence, device controls, or sensor values.",
+      "Don't hide unavailable services or claim URL health from pod state.",
+      "Don't let the mobile dock cover the final content row."
     ]
   }
 }

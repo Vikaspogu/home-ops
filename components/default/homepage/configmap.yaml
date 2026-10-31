@@ -153,30 +153,32 @@ data:
         username: {{HOMEPAGE_VAR_UNIFI_USER}}
         password: {{HOMEPAGE_VAR_UNIFI_PASSWORD}}
   docker.yaml: ""
-  # THESIS: A quiet control surface keeps applications and real service status together.
-  # OWN-WORLD: Near-black surfaces, rounded cards, inset icon tiles, Figtree, and cyan keyboard focus.
+  # THESIS: Quiet Precision makes launch targets tactile and real status immediately legible.
+  # OWN-WORLD: Obsidian gradients, inset highlights, Figtree labels, JetBrains Mono telemetry, and semantic state tints.
   # STORY: Find an application, check its status, then open the destination.
-  # FIRST VIEWPORT: Identity and search above three columns for infrastructure, applications, and media.
-  # FORM: User-pinned home dashboard reference supersedes O1 (seed 9e964f1f), using native Homepage links and widgets.
+  # FIRST VIEWPORT: Compact identity and telemetry above search, two-up mobile launch tiles, and three balanced desktop sections.
+  # FORM: User-pinned Quiet Precision / Dark Obsidian specification, adapted to native Homepage capabilities.
   custom.css: |
-    @import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap");
 
     :root {
-      --home-bg: #101216;
-      --home-surface: #171a22;
-      --home-hover: #202633;
-      --home-border: #303642;
-      --home-text: #edf0f6;
-      --home-muted: #adb7c8;
-      --home-accent: #39bdf1;
-      --home-icon: #242b37;
-      --home-radius: 20px;
+      --home-bg: #0b0e14;
+      --home-surface: linear-gradient(180deg, rgba(24, 29, 40, 0.88), rgba(16, 20, 28, 0.92));
+      --home-hover: #1c2330;
+      --home-border: rgba(255, 255, 255, 0.06);
+      --home-text: #f8fafc;
+      --home-muted: #94a3b8;
+      --home-accent: #38bdf8;
+      --home-icon: rgba(148, 163, 184, 0.10);
+      --home-radius: 18px;
+      --home-mono: "JetBrains Mono", ui-monospace, monospace;
     }
 
     html:root, html body, html #__next, #page_wrapper {
       background-color: var(--home-bg);
       color: var(--home-text);
       font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
 
     #inner_wrapper > div {
@@ -190,14 +192,14 @@ data:
 
     #information-widgets {
       padding-top: 32px;
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       border: 0;
     }
 
     #widgets-wrap {
       display: grid;
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: 16px;
+      gap: 10px;
       align-items: center;
     }
 
@@ -228,8 +230,9 @@ data:
 
     .information-widget-greeting span {
       color: var(--home-text);
-      font-size: 1.75rem;
-      font-weight: 650;
+      font-size: 1.625rem;
+      line-height: 1.1;
+      font-weight: 800;
       letter-spacing: -0.03em;
     }
 
@@ -276,7 +279,7 @@ data:
     }
 
     #layout-groups, #services, #bookmarks {
-      gap: 28px;
+      gap: 20px;
     }
 
     .services-group, .bookmark-group {
@@ -285,10 +288,11 @@ data:
     }
 
     .service-group-name, .bookmark-group-name {
-      color: var(--home-text);
-      font-size: 1.5rem;
-      font-weight: 650;
-      letter-spacing: -0.025em;
+      color: #94a3b8;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
     }
 
     .services-group > button, .bookmark-group > button {
@@ -297,8 +301,8 @@ data:
     }
 
     .services-list, .bookmarks-list {
-      column-gap: 12px;
-      row-gap: 4px;
+      column-gap: 10px;
+      row-gap: 10px;
     }
 
     .service, .bookmark {
@@ -309,23 +313,26 @@ data:
       background: var(--home-surface);
       border: 1px solid var(--home-border);
       border-radius: var(--home-radius);
-      box-shadow: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
       color: var(--home-text);
-      transition: background-color 160ms ease-out, border-color 160ms ease-out;
+      transition: background-color 160ms ease-out, border-color 160ms ease-out, filter 160ms ease-out;
     }
 
     .service-card {
-      padding: 12px;
+      padding: 12px 14px;
+      margin-bottom: 0;
+      height: 100%;
     }
 
     .service-card:hover, .bookmark > a:hover {
+      filter: brightness(1.12);
       background: var(--home-hover);
       border-color: var(--home-muted);
       color: var(--home-text);
     }
 
     .service-title {
-      min-height: 60px;
+      min-height: 42px;
       align-items: center;
     }
 
@@ -336,28 +343,34 @@ data:
     .service-name {
       color: var(--home-text);
       font-size: 0.875rem;
-      font-weight: 600;
-      overflow-wrap: anywhere;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .service-description, .bookmark-description {
       margin-top: 3px;
       color: var(--home-muted);
       font-size: 0.75rem;
-      font-weight: 400;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .service-icon {
-      width: 48px;
-      height: 48px;
+      width: 38px;
+      height: 38px;
       margin-right: 8px;
-      border-radius: 14px;
+      border-radius: 12px;
       background: var(--home-icon);
     }
 
     .service-icon > img, .service-icon > div {
-      max-width: 28px;
-      max-height: 28px;
+      max-width: 24px;
+      max-height: 24px;
     }
 
     .service-tags {
@@ -383,7 +396,8 @@ data:
 
     .service-block-value {
       font-size: 1.125rem;
-      font-weight: 650;
+      font-weight: 600;
+      font-family: var(--home-mono);
       font-variant-numeric: tabular-nums;
       overflow-wrap: anywhere;
     }
@@ -418,13 +432,15 @@ data:
 
     .k8s-status {
       border: 1px solid var(--home-border);
-      border-radius: 6px;
+      border-radius: 999px;
       background: transparent;
     }
 
     .k8s-status > div {
       font-size: 0.625rem;
-      letter-spacing: 0.04em;
+      font-family: var(--home-mono);
+      font-weight: 600;
+      letter-spacing: 0;
     }
 
     .service-card summary {
@@ -440,11 +456,15 @@ data:
       padding: 24px 32px;
     }
 
-    @media (min-width: 1280px) {
+    @media (min-width: 1144px) {
       #layout-groups {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr);
+        grid-template-columns: repeat(3, minmax(340px, 1fr));
         align-items: start;
+      }
+
+      #layout-groups > .services-group .services-list {
+        grid-template-columns: minmax(0, 1fr);
       }
 
       #layout-groups > .bookmark-group {
@@ -469,7 +489,7 @@ data:
       }
 
       #information-widgets {
-        padding-top: 24px;
+        padding-top: 18px;
         margin-bottom: 24px;
       }
 
@@ -508,6 +528,148 @@ data:
 
       #footer {
         padding: 24px 16px;
+      }
+    }
+
+
+    .information-widget-datetime, .information-widget-openmeteo,
+    .information-widget-resources, .information-widget-unifi_console,
+    .service-block-value, .k8s-status {
+      font-family: var(--home-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .service-title-text {
+      min-height: 42px;
+    }
+
+    .service-name {
+      padding: 0;
+    }
+
+    .service:has(.k8s-status) .service-title {
+      position: relative;
+    }
+
+    .service:has(.k8s-status) .service-title-text {
+      padding-bottom: 20px;
+    }
+
+    .service:has(.k8s-status) .service-description {
+      display: none;
+    }
+
+    .service:has(.k8s-status) .service-tags {
+      position: absolute;
+      top: 18px;
+      bottom: auto;
+      left: 46px;
+      right: 0;
+      margin: 0;
+      justify-content: flex-start;
+      pointer-events: none;
+    }
+
+    .service-app {
+      min-width: 44px;
+      min-height: 26px;
+      pointer-events: auto;
+    }
+
+    .service-block[data-highlight-level="warn"] {
+      background: rgba(245, 158, 11, 0.20);
+      color: #fbbf24;
+    }
+
+    .service-block[data-highlight-level="danger"] {
+      background: rgba(244, 63, 94, 0.20);
+      color: #fb7185;
+    }
+
+    .service-block[data-highlight-level="good"] {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+    }
+
+    .service-block[data-highlight-level] .service-block-label {
+      color: inherit;
+    }
+
+    .service-card:has(.k8s-status[title="running"]) {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(16, 20, 28, 0.92));
+      border-color: rgba(52, 211, 153, 0.30);
+    }
+
+    .service-card:has(.k8s-status[title="running"]) .service-icon {
+      background: rgba(16, 185, 129, 0.18);
+    }
+
+    .k8s-status[title="running"] > div {
+      color: #34d399;
+    }
+
+    .service-card:has(.k8s-status:is([title="down"], [title="not found"], [title="partial"], [title="error" i])) {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.16), rgba(16, 20, 28, 0.92));
+      border-color: rgba(251, 113, 133, 0.36);
+    }
+
+    .service-card:has(.k8s-status:is([title="down"], [title="not found"], [title="partial"], [title="error" i])) .service-icon {
+      background: rgba(244, 63, 94, 0.20);
+    }
+
+    .k8s-status:is([title="down"], [title="not found"], [title="partial"], [title="error" i]) > div {
+      color: #fb7185;
+    }
+
+    #widgets-wrap > .information-widget-resources {
+      border-radius: 22px;
+      padding: 18px 20px;
+    }
+
+    #widgets-wrap .information-widget-search input {
+      background: var(--home-surface);
+    }
+
+    @media (max-width: 1143px) {
+      .services-group:first-child .services-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 639px) {
+      #inner_wrapper {
+        padding-bottom: calc(110px + env(safe-area-inset-bottom));
+      }
+
+      #page_wrapper button.fixed.bottom-4 {
+        left: 50%;
+        right: auto;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        width: 180px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-radius: 22px;
+        background: rgba(15, 19, 28, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+        color: var(--home-text);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+      }
+
+      #page_wrapper button.fixed.bottom-4::after {
+        content: "Quick Launch";
+        font-size: 14px;
+        font-weight: 700;
+      }
+    }
+
+    @media (max-width: 359px) {
+      .services-group:first-child .services-list {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
 

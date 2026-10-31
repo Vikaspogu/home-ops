@@ -1,51 +1,59 @@
 ---
 name: Home Ops Homepage
-description: A near-black homelab control surface with grouped app links and service
-  status.
+description: Quiet Precision / Dark Obsidian for application launch and operational status.
 colors:
-  home-bg: '#101216'
-  home-surface: '#171a22'
-  home-hover: '#202633'
-  home-border: '#303642'
-  home-text: '#edf0f6'
-  home-muted: '#adb7c8'
-  home-accent: '#39bdf1'
-  home-icon: '#242b37'
+  home-bg: '#0b0e14'
+  home-hover: '#1c2330'
+  home-border: 'rgba(255, 255, 255, 0.06)'
+  home-text: '#f8fafc'
+  home-muted: '#94a3b8'
+  home-accent: '#38bdf8'
+  home-icon: 'rgba(148, 163, 184, 0.10)'
+  secure: '#34d399'
+  warning: '#fbbf24'
+  alert: '#fb7185'
+surfaces:
+  home-surface: 'linear-gradient(180deg, rgba(24, 29, 40, 0.88), rgba(16, 20, 28, 0.92))'
 typography:
   headline:
     fontFamily: '"Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
-    fontSize: 1.75rem
-    fontWeight: 650
+    fontSize: 1.625rem
+    fontWeight: 800
+    lineHeight: 1.1
     letterSpacing: -0.03em
+    fontFeature: '"cv02", "cv03", "cv04", "cv11"'
   title:
-    fontSize: 1.5rem
-    fontWeight: 650
-    letterSpacing: -0.025em
-  body:
     fontSize: 0.875rem
-    fontWeight: 600
+    fontWeight: 700
+    letterSpacing: -0.015em
   description:
     fontSize: 0.75rem
-    fontWeight: 400
+    fontWeight: 500
   metric:
+    fontFamily: '"JetBrains Mono", ui-monospace, monospace'
     fontSize: 1.125rem
-    fontWeight: 650
-  label:
+    fontWeight: 600
+  kicker:
     fontSize: 0.6875rem
-    fontWeight: 400
+    fontWeight: 700
+    letterSpacing: 0.10em
+  status:
+    fontFamily: '"JetBrains Mono", ui-monospace, monospace'
+    fontSize: 0.625rem
+    fontWeight: 600
 rounded:
-  home-radius: 20px
-  icon-radius: 14px
+  home-radius: 18px
+  icon-radius: 12px
+  dock-radius: 22px
+  pill-radius: 999px
 spacing:
-  card-padding: 12px
-  grid-gap: 12px
-  widget-gap: 16px
-  group-gap: 28px
+  card-padding: 12px 14px
+  grid-gap: 10px
+  group-gap: 20px
   page-gutter: 32px
   mobile-gutter: 16px
 components:
   service-card:
-    backgroundColor: '{colors.home-surface}'
     textColor: '{colors.home-text}'
     rounded: '{rounded.home-radius}'
     padding: '{spacing.card-padding}'
@@ -55,80 +63,83 @@ components:
   icon-tile:
     backgroundColor: '{colors.home-icon}'
     rounded: '{rounded.icon-radius}'
-    width: 48px
-    height: 48px
+    width: 38px
+    height: 38px
   search-input:
-    backgroundColor: '{colors.home-surface}'
     textColor: '{colors.home-text}'
     rounded: '{rounded.home-radius}'
+    height: 48px
 ---
 
 # Design System: Home Ops Homepage
 
 ## Overview
 
-**Creative North Star: "The Quiet Control Surface"**
+**Creative North Star: "Quiet Precision / Dark Obsidian"**
 
-This system covers Homepage only. The user supplied a home-control dashboard reference with a near-black canvas, rounded panels, inset icon tiles, compact status badges, and three parallel content columns. The implementation adapts that visual language to existing application links and native Homepage widgets.
-
-Figtree remains the interface font. Actual widget states retain their native meanings and colors.
+A dark operational launcher pairs compact application tiles with real Homepage telemetry. Tactile gradients and inset highlights give each target a clear boundary. Semantic color reflects reported state, while idle services remain quiet.
 
 **Key Characteristics:**
-- Near-black canvas and rounded panels.
-- Three desktop columns with a wider application directory.
-- Inset icon tiles, wrapping labels, and cyan keyboard focus.
+- Obsidian canvas, fine borders, and inset surface highlights.
+- Figtree labels with steady JetBrains Mono telemetry.
+- Two-up mobile launch tiles and three balanced desktop sections.
 
 ## Colors
 
-The near-black canvas (`home-bg`) and dark panels (`home-surface`) form the main layers. Hover surfaces (`home-hover`) and fine borders (`home-border`) define interactions. Primary text (`home-text`) is near-white, secondary text (`home-muted`) is a cool neutral, and cyan (`home-accent`) marks keyboard focus. Inset icon tiles use `home-icon`.
+The canvas uses `home-bg`, primary labels use `home-text`, and secondary labels use `home-muted`. Cyan `home-accent` provides visible keyboard focus. Neutral icon badges use `home-icon`.
 
-Native success, warning, and error colors remain visible alongside text labels. A decorative border must not imply a healthy service.
+**The Reported State Rule.** Emerald identifies native Kubernetes Running status. Rose identifies Down, Not found, Partial, or Error. These states tint the card, border, and icon badge. Native widget good, warn, and danger highlights use emerald, amber, and rose respectively. Pod state does not establish URL health.
 
 ## Typography
 
-Figtree loads through Google Fonts with swap display and a system-font fallback. The greeting remains the largest heading. Column headings use the title role, service names use the body role, and measurements use the metric role with tabular numerals. Names and labels wrap rather than disappearing behind ellipses.
+Figtree loads weights 400 through 800 with the configured character variants. JetBrains Mono loads weights 500 and 600 for date, weather, resource readings, network readings, widget values, and Kubernetes status. These regions use tabular numerals.
+
+The page title uses the headline role. Section headings are compact uppercase kickers, card names use the title role, and secondary descriptions use the description role. Card names stay on one line with ellipsis. Widget labels can wrap; measurements remain legible within their card.
 
 ## Layout
 
-Content is limited to 1600px with 32px desktop gutters. Identity, date, weather, full-width search, and status widgets sit above the content.
+Content is limited to 1600px with desktop gutters from `page-gutter`. Identity, date, weather, full-width search, and native resource widgets precede the service groups.
 
-At 1280px and wider, three columns place Observability on the left, Ingress in a wider center column, and Media on the right. The column ratio is 1:1.7:1. Infrastructure and media widgets stack vertically. The application directory uses two columns. Git bookmarks span the width below these groups.
+At 1144px and wider, three equal columns have a minimum width (340px) and group gaps from `group-gap`. Observability sits left, Ingress center, and Media right. Each section stacks its cards. Git bookmarks span the width below.
 
-Below that breakpoint, groups stack vertically using native Homepage grids, with the application directory first so launch links remain easy to reach. At 767px and narrower, gutters shrink to 16px and service cards become a single column. Date and weather each use half of the header width. All links and service widgets remain available.
+Below that breakpoint, groups stack with Ingress first. Launch tiles use two columns from 360px through 1143px, then one column below 360px. At 767px and narrower, gutters use `mobile-gutter` and date and weather each take half the header width. Below 640px, the native Quick Launch button becomes a centered glass dock. Bottom padding reserves 110px plus the safe-area inset.
 
 ## Elevation & Depth
 
-Panels use a fine border and tonal separation without shadows. Hover changes background and border color over 160ms with ease-out easing. Reduced-motion preferences disable animations and transitions inside the page.
+Idle panels use a vertical gradient from translucent dark slate to deeper carbon with a fine border. A subtle top-edge inset highlight supplies depth. Hover brightens cards over 160ms. Neutral cards also use `home-hover` and a brighter border, while state cards retain their semantic gradients and borders. The mobile dock adds translucent glass, blur (20px), and a soft shadow. Reduced-motion preferences disable page animations and transitions.
 
 ## Shapes
 
-Panels and search share the main rounded token. Service icons sit in inset tiles with rounded corners (14px), a fixed size (48px), and artwork bounded to 28px. Native Kubernetes status badges have gently rounded corners (6px).
+Cards and search use `home-radius`. Icon badges use `icon-radius` with artwork bounded to 24px. Kubernetes badges are pills. The resource summary and mobile dock use `dock-radius`.
 
 ## Components
 
-### Application and Status Cards
+### Service Tiles
 
-Cards use the service-card tokens and a title row with a minimum height (60px). An icon tile precedes a wrapping service name and secondary description. Native Kubernetes status stays beside the title. Widget measurements sit below a fine divider with larger values and quieter labels.
+A compact title row pairs a fixed icon badge with the service name and secondary description. Its minimum inner height (42px) plus vertical card padding produces a minimum tile height (66px) before borders. Widget cards grow to fit their measurements. Where Kubernetes status is present, its pill replaces the description beneath the title. The status control retains its native interaction.
 
-### Group Buttons
+### Section Buttons and Search
 
-Native group heading buttons keep their collapse behavior, a minimum height (44px), and title typography.
+Native collapse buttons keep a minimum height (44px). The full-width search field keeps a minimum height (48px). Links, buttons, inputs, and error summaries receive a cyan focus-visible outline (2px) with an inward offset (-2px).
 
-### Search and Keyboard Focus
+### Mobile Quick Launch
 
-The native search input remains full-width with a minimum height (48px). Native type-to-search Quick Launch and its mobile button remain available. Links, buttons, inputs, and error summaries receive a cyan focus-visible outline (2px) with an inward offset (-2px).
+The native Quick Launch trigger becomes a centered glass button with a visible label, width (180px), and height (60px). It retains the existing search dialog and keyboard behavior.
 
-### Error and Loading States
+### Telemetry and Errors
 
-Native loading placeholders, status text, highlights, and expandable API errors remain intact. Error summary text uses the primary text color. No static healthy labels replace real status. Native Running and Not found labels describe Kubernetes pod status, not HTTP endpoint health. External services such as NAS do not show a Kubernetes badge. Preview data is mocked and does not establish live health.
+Widget measurements use the metric role above quieter labels. Native loading placeholders, reported status, and expandable API errors remain available. External services have no Kubernetes badge. Missing data remains visible for diagnosis rather than being hidden or replaced by a healthy label. Static layout order does not imply live activity sorting.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep the three desktop columns distinct while preserving all content on narrower screens.
-- **Do** retain native widget loading, status, and expandable error states.
-- **Do** keep Figtree, inset icon tiles, wrapping names, and cyan keyboard focus consistent.
+- **Do** use real reported state for semantic tinting and retain its text label.
+- **Do** keep numeric telemetry monospace and tabular.
+- **Do** preserve native links, widget content, errors, and keyboard access.
 
 ### Don't:
-- **Don't** invent service health, camera feeds, or home-control actions to imitate the reference.
-- **Don't** remove status text in favor of color alone.
+- **Don't** invent presence, device controls, or sensor values.
+- **Don't** hide unavailable services or claim URL health from pod state.
+- **Don't** let the mobile dock cover the final content row.
+
+Enhanced state surfaces use CSS :has(), supported by Chromium 105+, Firefox 121+, and Safari 15.4+. Older browsers retain native labels and base card styling. The Quick Launch label comes from CSS generated content and was verified in the Chromium accessibility tree. Its selector follows the pinned Homepage version.
