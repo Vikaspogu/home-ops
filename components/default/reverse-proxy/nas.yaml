@@ -35,6 +35,8 @@ metadata:
     gethomepage.dev/group: Ingress
     gethomepage.dev/icon: synology-dsm.png
     gethomepage.dev/name: Synology NAS
+    gethomepage.dev/description: NAS outside Kubernetes
+    gethomepage.dev/external: "true"
     external-dns.kubernetes.io/target: "external.${CLUSTER_DOMAIN}"
 spec:
   parentRefs:

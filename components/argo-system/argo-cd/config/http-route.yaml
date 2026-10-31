@@ -7,6 +7,7 @@ metadata:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Ingress
     gethomepage.dev/icon: https://cdn.jsdelivr.net/gh/selfhst/icons/png/argo-cd.png
+    gethomepage.dev/app: argocd-server
 spec:
   parentRefs:
     - name: ${GATEWAY_NAME}

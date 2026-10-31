@@ -14,7 +14,7 @@ data:
     title: Home Ops
     description: Applications, infrastructure, and media at home.
     theme: dark
-    color: indigo
+    color: slate
     headerStyle: clean
     cardStyle: hairline
     fullWidth: true
@@ -24,16 +24,17 @@ data:
     quicklaunch:
       searchDescriptions: true
       mobileButtonPosition: bottom-right
+    # Keep Ingress first for mobile; desktop CSS places the first two groups in columns 2 and 1.
     layout:
-      Observability:
-        style: row
-        columns: 5
       Ingress:
         style: row
-        columns: 4
+        columns: 2
+      Observability:
+        style: row
+        columns: 1
       Media:
         style: row
-        columns: 4
+        columns: 1
       Git:
         style: row
         columns: 2
@@ -152,23 +153,24 @@ data:
         username: {{HOMEPAGE_VAR_UNIFI_USER}}
         password: {{HOMEPAGE_VAR_UNIFI_PASSWORD}}
   docker.yaml: ""
-  # THESIS: A quiet directory keeps applications and real service status together.
-  # OWN-WORLD: Indigo surfaces, Figtree type, fine borders, and amber keyboard focus.
-  # STORY: Check infrastructure, scan application names, then open the destination.
-  # FIRST VIEWPORT: Compact identity and weather, full-width search, status strip, then service groups.
-  # FORM: Approved O1 directory, stacked full-width groups, seed 9e964f1f, .impeccable/mocks/directory.png.
+  # THESIS: A quiet control surface keeps applications and real service status together.
+  # OWN-WORLD: Near-black surfaces, rounded cards, inset icon tiles, Figtree, and cyan keyboard focus.
+  # STORY: Find an application, check its status, then open the destination.
+  # FIRST VIEWPORT: Identity and search above three columns for infrastructure, applications, and media.
+  # FORM: User-pinned home dashboard reference supersedes O1 (seed 9e964f1f), using native Homepage links and widgets.
   custom.css: |
     @import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap");
 
     :root {
-      --home-bg: #111526;
-      --home-surface: #1c2439;
-      --home-hover: #27344d;
-      --home-border: #3a4b69;
-      --home-text: #edf1ff;
-      --home-muted: #b2bfd7;
-      --home-accent: #f1c787;
-      --home-radius: 12px;
+      --home-bg: #101216;
+      --home-surface: #171a22;
+      --home-hover: #202633;
+      --home-border: #303642;
+      --home-text: #edf0f6;
+      --home-muted: #adb7c8;
+      --home-accent: #39bdf1;
+      --home-icon: #242b37;
+      --home-radius: 20px;
     }
 
     html:root, html body, html #__next, #page_wrapper {
@@ -284,21 +286,14 @@ data:
 
     .service-group-name, .bookmark-group-name {
       color: var(--home-text);
-      font-size: 1.0625rem;
-      font-weight: 600;
-      letter-spacing: -0.015em;
+      font-size: 1.5rem;
+      font-weight: 650;
+      letter-spacing: -0.025em;
     }
 
     .services-group > button, .bookmark-group > button {
       gap: 12px;
-      min-height: 36px;
-    }
-
-    .services-group > button::after, .bookmark-group > button::after {
-      content: "";
-      height: 1px;
-      background: var(--home-border);
-      flex: 1;
+      min-height: 44px;
     }
 
     .services-list, .bookmarks-list {
@@ -320,7 +315,7 @@ data:
     }
 
     .service-card {
-      padding: 8px;
+      padding: 12px;
     }
 
     .service-card:hover, .bookmark > a:hover {
@@ -330,7 +325,7 @@ data:
     }
 
     .service-title {
-      min-height: 48px;
+      min-height: 60px;
       align-items: center;
     }
 
@@ -353,7 +348,16 @@ data:
     }
 
     .service-icon {
-      width: 40px;
+      width: 48px;
+      height: 48px;
+      margin-right: 8px;
+      border-radius: 14px;
+      background: var(--home-icon);
+    }
+
+    .service-icon > img, .service-icon > div {
+      max-width: 28px;
+      max-height: 28px;
     }
 
     .service-tags {
@@ -378,8 +382,8 @@ data:
     }
 
     .service-block-value {
-      font-size: 0.875rem;
-      font-weight: 500;
+      font-size: 1.125rem;
+      font-weight: 650;
       font-variant-numeric: tabular-nums;
       overflow-wrap: anywhere;
     }
@@ -400,13 +404,27 @@ data:
     }
 
     .bookmark-icon {
-      background: transparent;
+      width: 40px;
+      margin-right: 4px;
+      border-radius: 12px;
+      background: var(--home-icon);
     }
 
     .bookmark-name {
       color: var(--home-text);
       font-size: 0.8125rem;
       font-weight: 500;
+    }
+
+    .k8s-status {
+      border: 1px solid var(--home-border);
+      border-radius: 6px;
+      background: transparent;
+    }
+
+    .k8s-status > div {
+      font-size: 0.625rem;
+      letter-spacing: 0.04em;
     }
 
     .service-card summary {
@@ -420,6 +438,28 @@ data:
 
     #footer {
       padding: 24px 32px;
+    }
+
+    @media (min-width: 1280px) {
+      #layout-groups {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr);
+        align-items: start;
+      }
+
+      #layout-groups > .bookmark-group {
+        grid-column: 1 / -1;
+      }
+
+      #layout-groups > .services-group:first-child {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      #layout-groups > .services-group:nth-child(2) {
+        grid-column: 1;
+        grid-row: 1;
+      }
     }
 
     @media (max-width: 767px) {
