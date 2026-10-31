@@ -24,7 +24,7 @@ Preserve existing application URLs, widget integrations, secret placeholders, an
 
 ## Brand Commitments
 
-The user requested a unique, clean, fresh design and confirmed a dark, quiet, crisp viewing style. The user requested Figtree typography and later supplied a home-control dashboard reference for its near-black panels, icon tiles, and three-column layout.
+The user requested a unique, clean, fresh design and confirmed a dark, quiet, crisp viewing style. The latest user brief pins Quiet Precision / Dark Obsidian: Figtree UI, JetBrains Mono telemetry, tactile gradient panels, semantic status tints, compact mobile tiles, a glass Quick Launch dock, and balanced desktop columns.
 
 ## Evidence on Hand
 
