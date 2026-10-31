@@ -1,6 +1,7 @@
-# RBAC for Watchtower S1 (read-only boundary, D15/D24/D31).
-# Explicitly excluded: secrets, pods/exec, pods/attach, pods/portforward,
-# nodes/proxy, serviceaccounts/token.
+# RBAC for Watchtower:
+# 1. watchtower-read: default pod ServiceAccount (strictly read-only; no secrets, pods/exec, or write verbs).
+# 2. watchtower-act: operator-approved action card identity (mounted read-only at /run/watchtower-write/token;
+#    has no ClusterRole, and all permissions are Role-scoped to rook-ceph and observability only).
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -33,6 +34,9 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["storageclasses", "volumeattachments"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["ceph.rook.io"]
+    resources: ["cephclusters", "cephblockpools", "cephfilesystems", "cephobjectstores", "cephclients", "cephnfses", "cephrbdmirrors"]
+    verbs: ["get", "list", "watch"]
   # flux
   - apiGroups: ["source.toolkit.fluxcd.io", "kustomize.toolkit.fluxcd.io", "helm.toolkit.fluxcd.io", "notification.toolkit.fluxcd.io"]
     resources: ["gitrepositories", "ocirepositories", "helmrepositories", "buckets", "helmcharts", "kustomizations", "helmreleases", "receivers", "alerts", "providers"]
@@ -61,4 +65,85 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: watchtower-read
+    namespace: sre-agent
+---
+# Operator-approved execution identity (used only by POST /incidents/:id/cards/:cardId/approve).
+# Kubernetes projected serviceAccountToken volumes always mint tokens for pod.spec.serviceAccountName
+# (watchtower-read), so a dedicated service-account-token Secret is required to provide a separate
+# identity inside the same pod without granting watchtower-read token-minting or Secret-read RBAC.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: watchtower-act
+  namespace: sre-agent
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: watchtower-act-token
+  namespace: sre-agent
+  annotations:
+    kubernetes.io/service-account.name: watchtower-act
+type: kubernetes.io/service-account-token
+---
+# Namespace-scoped pods/exec in rook-ceph (for operator-approved rook-ceph-tools commands).
+# Security note: Kubernetes RBAC cannot restrict pods/exec via resourceNames because rook-ceph-tools is a
+# Deployment with a dynamic pod hash suffix, so at the API-server layer watchtower-act can exec into any pod
+# in rook-ceph. Restricting exec targets to deploy/rook-ceph-tools and ceph/rados/rbd binaries is enforced at
+# the application layer (KUBECTL_EXEC_ROOK_TOOLS in durable-sre-agent), while deployment lookup is pinned to
+# resourceNames: ["rook-ceph-tools"] and watchtower-act has no ClusterRole.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: watchtower-act-ceph-exec
+  namespace: rook-ceph
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: ["rook-ceph-tools"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: watchtower-act-ceph-exec
+  namespace: rook-ceph
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: watchtower-act-ceph-exec
+subjects:
+  - kind: ServiceAccount
+    name: watchtower-act
+    namespace: sre-agent
+---
+# Namespace-scoped pod restart in observability (no pod-template patch or scale-to-zero).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: watchtower-act-workload
+  namespace: observability
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: watchtower-act-workload
+  namespace: observability
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: watchtower-act-workload
+subjects:
+  - kind: ServiceAccount
+    name: watchtower-act
     namespace: sre-agent

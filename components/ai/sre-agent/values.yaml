@@ -90,3 +90,15 @@ persistence:
     type: emptyDir
     globalMounts:
       - path: /tmp
+  # Kubelet tmpfs-backed Secret mount (readOnly, mode 0400) so /run/watchtower-write/token
+  # is never written to node disk and remains available across in-place container restarts.
+  write-token:
+    enabled: true
+    type: secret
+    name: watchtower-act-token
+    defaultMode: 256
+    advancedMounts:
+      app:
+        app:
+          - path: /run/watchtower-write
+            readOnly: true
