@@ -11,30 +11,32 @@ data:
     mode: cluster
     gateway: true
   settings.yaml: |
-    title: k8s Homelab Dashboard
-    background:
-      image: https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapercave.com%2Fwp%2Fwp5320845.jpg&f=1&nofb=1&ipt=53f7d5e1c810478d338de39a54e3cf32484354d092fc05e9b0aea3216f428c53
-      blur: sm
-      saturate: 50
-      brightness: 50
-      opacity: 50
+    title: Home Ops
+    description: Applications, infrastructure, and media at home.
     theme: dark
-    color: slate
-    headerStyle: boxedWidgets
+    color: indigo
+    headerStyle: clean
+    cardStyle: hairline
+    fullWidth: true
+    useEqualHeights: true
+    statusStyle: basic
     target: _blank
+    quicklaunch:
+      searchDescriptions: true
+      mobileButtonPosition: bottom-right
     layout:
       Observability:
         style: row
-        columns: 3
-        icon: mdi-server
+        columns: 5
       Ingress:
         style: row
         columns: 4
-        icon: mdi-chart-line
       Media:
         style: row
-        columns: 3
-        icon: mdi-play-circle
+        columns: 4
+      Git:
+        style: row
+        columns: 2
   bookmarks.yaml: |
     - Git:
         - kubesearch:
@@ -48,7 +50,7 @@ data:
         - Unifi:
             href: https://{{HOMEPAGE_VAR_UNIFI_IP}}
             icon: unifi.png
-            description: Unifi
+            description: Network management
             widget:
               type: unifi
               url: https://{{HOMEPAGE_VAR_UNIFI_IP}}
@@ -57,7 +59,7 @@ data:
         - Cloudflared:
             href: https://dash.cloudflare.com
             icon: cloudflare-zero-trust.png
-            description: Cloudflared Tunnel
+            description: Cloudflare tunnel
             widget:
               type: cloudflared
               accountid: "{{HOMEPAGE_VAR_CLOUDFLARED_ACCOUNTID}}"
@@ -66,6 +68,7 @@ data:
         - NAS:
             href: https://nas.{{HOMEPAGE_VAR_DOMAIN_NAME}}
             icon: synology-dsm.png
+            description: Network storage
             widget:
               type: diskstation
               url: {{HOMEPAGE_VAR_NAS_IP}}
@@ -74,12 +77,14 @@ data:
         - Kopia:
             href: https://kopia.{{HOMEPAGE_VAR_DOMAIN_NAME}}
             icon: kopia.png
+            description: Backup snapshots
             widget:
               type: kopia
               url: http://kopia.volsync-system.svc.cluster.local:80
         - Scrutiny:
             href: https://scrutiny.{{HOMEPAGE_VAR_DOMAIN_NAME}}
             icon: scrutiny.png
+            description: Disk health
             widget:
               type: scrutiny
               url: http://scrutiny.observability.svc.cluster.local:8080
@@ -87,6 +92,7 @@ data:
       - qBittorrent:
           href: https://qb.${CLUSTER_DOMAIN}
           icon: qbittorrent.png
+          description: Torrents
           widget:
             type: qbittorrent
             url: http://qbittorrent.downloads.svc.cluster.local:8080
@@ -95,6 +101,7 @@ data:
       - Sabnzbd:
           href: https://sabnzbd.${CLUSTER_DOMAIN}
           icon: sabnzbd.png
+          description: Usenet downloads
           widget:
             type: sabnzbd
             url: http://sabnzbd.downloads.svc.cluster.local
@@ -102,6 +109,7 @@ data:
       - Radarr:
           href: https://radarr.${CLUSTER_DOMAIN}
           icon: radarr.png
+          description: Movie library
           widget:
             type: radarr
             url: http://radarr.default.svc.cluster.local
@@ -109,11 +117,15 @@ data:
       - Sonarr:
           href: https://sonarr.${CLUSTER_DOMAIN}
           icon: sonarr.png
+          description: TV library
           widget:
             type: sonarr
             url: http://sonarr.default.svc.cluster.local
             key: {{HOMEPAGE_VAR_SONARR_API_KEY}}
   widgets.yaml: |
+    - greeting:
+        text_size: 2xl
+        text: Home Ops
     - resources:
         backend: kubernetes
         cpu: true
@@ -123,11 +135,8 @@ data:
         provider: ["duckduckgo"]
         focus: false
         target: _blank
-    - greeting:
-        text_size: xl
-        text: "Welcome!"
     - datetime:
-        text_size: l
+        text_size: sm
         format:
           dateStyle: long
           timeStyle: short
@@ -143,3 +152,328 @@ data:
         username: {{HOMEPAGE_VAR_UNIFI_USER}}
         password: {{HOMEPAGE_VAR_UNIFI_PASSWORD}}
   docker.yaml: ""
+  # THESIS: A quiet directory keeps applications and real service status together.
+  # OWN-WORLD: Indigo surfaces, Figtree type, fine borders, and amber keyboard focus.
+  # STORY: Check infrastructure, scan application names, then open the destination.
+  # FIRST VIEWPORT: Compact identity and weather, full-width search, status strip, then service groups.
+  # FORM: Approved O1 directory, stacked full-width groups, seed 9e964f1f, .impeccable/mocks/directory.png.
+  custom.css: |
+    @import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400..700&display=swap");
+
+    :root {
+      --home-bg: #111526;
+      --home-surface: #1c2439;
+      --home-hover: #27344d;
+      --home-border: #3a4b69;
+      --home-text: #edf1ff;
+      --home-muted: #b2bfd7;
+      --home-accent: #f1c787;
+      --home-radius: 12px;
+    }
+
+    html:root, html body, html #__next, #page_wrapper {
+      background-color: var(--home-bg);
+      color: var(--home-text);
+      font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    #inner_wrapper > div {
+      max-width: 1600px;
+    }
+
+    #information-widgets, #layout-groups, #services, #bookmarks {
+      margin: 0 32px;
+      padding: 0;
+    }
+
+    #information-widgets {
+      padding-top: 32px;
+      margin-bottom: 32px;
+      border: 0;
+    }
+
+    #widgets-wrap {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 16px;
+      align-items: center;
+    }
+
+    #information-widgets-right {
+      display: contents;
+    }
+
+    #widgets-wrap .widget-container {
+      grid-column: span 6;
+      order: 2;
+      min-width: 0;
+      margin: 0;
+    }
+
+    #widgets-wrap > .widget-container:not(.information-widget-greeting) {
+      background: var(--home-surface);
+      border: 1px solid var(--home-border);
+      border-radius: var(--home-radius);
+      padding: 14px 16px;
+      align-self: stretch;
+      justify-content: center;
+    }
+
+    #widgets-wrap .information-widget-greeting {
+      order: 0;
+      grid-column: span 6;
+    }
+
+    .information-widget-greeting span {
+      color: var(--home-text);
+      font-size: 1.75rem;
+      font-weight: 650;
+      letter-spacing: -0.03em;
+    }
+
+    #widgets-wrap .information-widget-datetime,
+    #widgets-wrap .information-widget-openmeteo,
+    #widgets-wrap .information-widget-openmeteo-location-button {
+      order: 0;
+      grid-column: span 3;
+      min-width: 0;
+    }
+
+    .information-widget-datetime span {
+      color: var(--home-muted);
+      font-size: 0.8125rem;
+      overflow-wrap: anywhere;
+    }
+
+    #widgets-wrap .information-widget-search {
+      order: 1;
+      grid-column: 1 / -1;
+      margin: 0;
+      min-width: 0;
+    }
+
+    .information-widget-search > div {
+      margin: 0;
+      height: auto;
+      min-width: 0;
+    }
+
+    .information-widget-search input {
+      min-height: 48px;
+      background: var(--home-surface);
+      color: var(--home-text);
+      border: 1px solid var(--home-border);
+      border-radius: var(--home-radius);
+      font-size: 0.875rem;
+      box-shadow: none;
+    }
+
+    .information-widget-search input::placeholder {
+      color: var(--home-muted);
+      opacity: 1;
+    }
+
+    #layout-groups, #services, #bookmarks {
+      gap: 28px;
+    }
+
+    .services-group, .bookmark-group {
+      min-width: 0;
+      padding: 0;
+    }
+
+    .service-group-name, .bookmark-group-name {
+      color: var(--home-text);
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+    }
+
+    .services-group > button, .bookmark-group > button {
+      gap: 12px;
+      min-height: 36px;
+    }
+
+    .services-group > button::after, .bookmark-group > button::after {
+      content: "";
+      height: 1px;
+      background: var(--home-border);
+      flex: 1;
+    }
+
+    .services-list, .bookmarks-list {
+      column-gap: 12px;
+      row-gap: 4px;
+    }
+
+    .service, .bookmark {
+      min-width: 0;
+    }
+
+    .service-card, .bookmark > a {
+      background: var(--home-surface);
+      border: 1px solid var(--home-border);
+      border-radius: var(--home-radius);
+      box-shadow: none;
+      color: var(--home-text);
+      transition: background-color 160ms ease-out, border-color 160ms ease-out;
+    }
+
+    .service-card {
+      padding: 8px;
+    }
+
+    .service-card:hover, .bookmark > a:hover {
+      background: var(--home-hover);
+      border-color: var(--home-muted);
+      color: var(--home-text);
+    }
+
+    .service-title {
+      min-height: 48px;
+      align-items: center;
+    }
+
+    .service-title-text, .service-name {
+      min-width: 0;
+    }
+
+    .service-name {
+      color: var(--home-text);
+      font-size: 0.875rem;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .service-description, .bookmark-description {
+      margin-top: 3px;
+      color: var(--home-muted);
+      font-size: 0.75rem;
+      font-weight: 400;
+    }
+
+    .service-icon {
+      width: 40px;
+    }
+
+    .service-tags {
+      position: static;
+      flex-shrink: 0;
+      margin: 0 2px 0 4px;
+    }
+
+    .service-container {
+      border-top: 1px solid var(--home-border);
+      margin-top: 6px;
+      padding-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .service-block:not([data-highlight-level]) {
+      background: transparent;
+    }
+
+    .service-block {
+      min-width: 0;
+    }
+
+    .service-block-value {
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    .service-block-label {
+      color: var(--home-muted);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      opacity: 1;
+      overflow-wrap: anywhere;
+    }
+
+    .bookmark > a {
+      padding: 8px;
+      min-height: 56px;
+    }
+
+    .bookmark-icon {
+      background: transparent;
+    }
+
+    .bookmark-name {
+      color: var(--home-text);
+      font-size: 0.8125rem;
+      font-weight: 500;
+    }
+
+    .service-card summary {
+      color: var(--home-text);
+    }
+
+    #page_wrapper :is(a, button, input, summary):focus-visible {
+      outline: 2px solid var(--home-accent);
+      outline-offset: -2px;
+    }
+
+    #footer {
+      padding: 24px 32px;
+    }
+
+    @media (max-width: 767px) {
+      #information-widgets, #layout-groups, #services, #bookmarks {
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+
+      #information-widgets {
+        padding-top: 24px;
+        margin-bottom: 24px;
+      }
+
+      #widgets-wrap {
+        gap: 12px;
+      }
+
+      #widgets-wrap .information-widget-greeting {
+        grid-column: 1 / -1;
+      }
+
+      #widgets-wrap .widget-container,
+      #widgets-wrap .information-widget-search {
+        grid-column: 1 / -1;
+      }
+
+      #widgets-wrap .information-widget-datetime,
+      #widgets-wrap .information-widget-openmeteo,
+      #widgets-wrap .information-widget-openmeteo-location-button {
+        grid-column: span 6;
+      }
+
+      .information-widget-datetime span {
+        text-align: left;
+      }
+
+      .bookmark-text {
+        flex-wrap: wrap;
+      }
+
+      .bookmark-description {
+        width: 100%;
+        padding-left: 12px;
+        padding-top: 0;
+      }
+
+      #footer {
+        padding: 24px 16px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #page_wrapper *, #page_wrapper *::before, #page_wrapper *::after {
+        animation: none;
+        transition: none;
+      }
+    }
