@@ -4,10 +4,10 @@ controllers:
     strategy: RollingUpdate
     containers:
       app:
-        # ponytail: official image; Reddit 403-blocks thread/comment endpoints until upstream PR #603 (GraphQL comments) lands — update image once released.
+        # ponytail: Nachtalb fork; upstream v0.40.0 gets 403 on all anonymous requests and has no fix. Fork's browser TLS fingerprint works without a cookie; add REDLIB_REDDIT_COOKIE only if blocks return.
         image:
-          repository: quay.io/redlib/redlib
-          tag: latest@sha256:37f624d87ce6cdd90d945af3688fdf0c195a0251d3b5ba62047792e8be2390df
+          repository: ghcr.io/nachtalb/redlib
+          tag: latest@sha256:70b30e004ee699055113644976897adbca62aa6ba97bb5f8acb787793b9e58fb
         env:
           REDLIB_ROBOTS_DISABLE_INDEXING: "on"
           REDLIB_DEFAULT_THEME: "dracula"
