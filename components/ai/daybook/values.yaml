@@ -49,6 +49,17 @@ controllers:
         image:
           repository: ghcr.io/vikaspogu/daybook
           tag: v0.1.28
+        env:
+          DAYBOOK_INSIGHTS_BASE_URL:
+            valueFrom:
+                secretKeyRef:
+                    name: daybook-secret
+                    key: DAYBOOK_INSIGHTS_BASE_URL
+          DAYBOOK_INSIGHTS_API_KEY:
+            valueFrom:
+                secretKeyRef:
+                    name: daybook-secret
+                    key: DAYBOOK_INSIGHTS_API_KEY
         args:
           - serve
           - --config

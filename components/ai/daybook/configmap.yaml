@@ -8,3 +8,8 @@ data:
         [server]
         port = 31457
         db_path = "/data/ledger.db3"
+
+        # Insights AI card. base_url/api_key come from env (daybook-secret, inference-hub item).
+        # Non-reasoning instruct model, same as hindsight reflect.
+        [insights]
+        model = "nvidia/qwen/qwen3-next-80b-a3b-instruct"
