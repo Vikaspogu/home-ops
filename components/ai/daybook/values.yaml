@@ -17,7 +17,7 @@ controllers:
       ensure-token:
         image:
           repository: ghcr.io/vikaspogu/daybook
-          tag: v0.1.28
+          tag: v0.1.29
         command:
           - daybook
           - token
@@ -48,7 +48,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/vikaspogu/daybook
-          tag: v0.1.28
+          tag: v0.1.29
         env:
           DAYBOOK_INSIGHTS_BASE_URL:
             valueFrom:
