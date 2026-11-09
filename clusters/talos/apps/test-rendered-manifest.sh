@@ -17,6 +17,9 @@ kustomize build --enable-helm "${APPS_COMPONENT}" >"${manifest}"
 application_count="$(yq ea -r '[select(.kind == "Application")] | length' "${manifest}")"
 [[ "${application_count}" -gt 0 ]] || fail "no Argo Applications rendered"
 
+[[ "$(yq ea -r '[select(.kind == "Application" and .spec.source.path != null and .spec.source.helm == null and .spec.source.plugin.name != "setenv-cmp-plugin-v1.0")] | length' "${manifest}")" == "0" ]] ||
+  fail "every path-rendered Argo Application must explicitly use the cluster variable substitution plugin"
+
 [[ "$(yq ea -r '[select(.kind == "Application" and .spec.syncPolicy.automated.allowEmpty == true)] | length' "${manifest}")" == "${application_count}" ]] ||
   fail "every Argo Application must allow an empty automated sync"
 [[ "$(yq ea -r '[select(.kind == "Application" and .spec.syncPolicy.retry.limit != null)] | length' "${manifest}")" == "${application_count}" ]] ||

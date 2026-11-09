@@ -19,6 +19,8 @@ default:
     source:
       repoURL: https://github.com/Vikaspogu/home-ops.git
       targetRevision: HEAD
+      plugin:
+        name: setenv-cmp-plugin-v1.0
     syncPolicyRetry:
       limit: 10
       backoff:
