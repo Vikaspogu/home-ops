@@ -20,6 +20,11 @@ api:
     HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "2" # extraction: 2 GPU slots, queues on its own cap
     HINDSIGHT_API_CONSOLIDATION_LLM_MAX_CONCURRENT: "2"
     HINDSIGHT_API_MENTAL_MODEL_REFRESH_LLM_MAX_CONCURRENT: "2"
+    # Background batch extraction/consolidation can exceed the 120s default on big
+    # batches even with continuous batching. Raise only these; interactive reflect
+    # stays at its own 30s on the hosted hub.
+    HINDSIGHT_API_RETAIN_LLM_TIMEOUT: "600"
+    HINDSIGHT_API_CONSOLIDATION_LLM_TIMEOUT: "600"
     # Reflect on the hosted inference hub (OpenAI-compatible), same creds pattern as embeddings. Non-reasoning instruct variant: reasoning models overshoot the per-call read timeout.
     HINDSIGHT_API_REFLECT_LLM_PROVIDER: "openai"
     HINDSIGHT_API_REFLECT_LLM_MODEL: "nvidia/qwen/qwen3-next-80b-a3b-instruct"
