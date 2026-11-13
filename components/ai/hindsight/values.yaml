@@ -10,11 +10,12 @@ podAnnotations:
 api:
   env:
     TZ: America/New_York
-    # Extraction/consolidation/mental-model-refresh LLM: Ollama on spark. Interactive reflect is split off to the hosted hub below.
-    HINDSIGHT_API_LLM_PROVIDER: "ollama"
-    HINDSIGHT_API_LLM_MODEL: "qwen3.6:35b-a3b-q8_0"
-    HINDSIGHT_API_LLM_BASE_URL: "http://spark.a113.internal:11434"
-    HINDSIGHT_API_LLM_OLLAMA_NUM_CTX: "65536" # hindsight requires >=64K ctx
+    # Extraction/consolidation/mental-model-refresh LLM: vLLM on spark (continuous batching).
+    # Ollama hardcodes qwen35moe to 1 slot, so its backlog serialized into ~120s timeouts.
+    # Interactive reflect stays on the hosted hub below.
+    HINDSIGHT_API_LLM_PROVIDER: "openai"
+    HINDSIGHT_API_LLM_MODEL: "nvidia/Qwen3.6-35B-A3B-NVFP4"
+    HINDSIGHT_API_LLM_BASE_URL: "http://spark.a113.internal:8000/v1"
     HINDSIGHT_API_LLM_MAX_CONCURRENT: "8" # global room; per-op caps below reserve slots for reflect
     HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "2" # extraction: 2 GPU slots, queues on its own cap
     HINDSIGHT_API_CONSOLIDATION_LLM_MAX_CONCURRENT: "2"
