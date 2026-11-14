@@ -17,7 +17,7 @@ api:
     HINDSIGHT_API_LLM_MODEL: "nvidia/Qwen3.6-35B-A3B-NVFP4"
     HINDSIGHT_API_LLM_BASE_URL: "http://spark.a113.internal:8000/v1"
     HINDSIGHT_API_LLM_MAX_CONCURRENT: "8" # global room; per-op caps below reserve slots for reflect
-    HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "2" # extraction: 2 GPU slots, queues on its own cap
+    HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "4" # MTP doubled engine headroom; 4 slots to drain the backlog faster
     HINDSIGHT_API_CONSOLIDATION_LLM_MAX_CONCURRENT: "2"
     HINDSIGHT_API_MENTAL_MODEL_REFRESH_LLM_MAX_CONCURRENT: "2"
     # Background batch extraction/consolidation can exceed the 120s default on big
