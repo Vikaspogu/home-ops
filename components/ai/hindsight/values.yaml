@@ -33,6 +33,9 @@ api:
     # ~99 big backlog batches died on the default 3600s task wall-clock cap.
     # 4h covers the largest old documents while the backlog drains.
     HINDSIGHT_API_RETAIN_WALL_TIMEOUT: "14400"
+    # Mental-model refresh kept dying at the 300s default while the retain
+    # backlog saturated the GPU. 30min covers slow periods.
+    HINDSIGHT_API_MENTAL_MODEL_REFRESH_WALL_TIMEOUT: "1800"
     # Reflect on the hosted inference hub (OpenAI-compatible), same creds pattern as embeddings. Non-reasoning instruct variant: reasoning models overshoot the per-call read timeout.
     HINDSIGHT_API_REFLECT_LLM_PROVIDER: "openai"
     HINDSIGHT_API_REFLECT_LLM_MODEL: "nvidia/qwen/qwen3-next-80b-a3b-instruct"
