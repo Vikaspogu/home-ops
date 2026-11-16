@@ -30,9 +30,15 @@ api:
     # EXTRA_BODY merges into the vLLM payload (openai_compatible_llm.py).
     # qwen-check smoke extraction passes with thinking off.
     HINDSIGHT_API_RETAIN_LLM_EXTRA_BODY: '{"chat_template_kwargs":{"enable_thinking":false}}'
+    # 2026-11-15: consolidation calls took 400-620s each with thinking on and held
+    # 8 of 10 worker slots, starving retains. Same decision with thinking off: 16 vs 1122 tokens.
+    HINDSIGHT_API_CONSOLIDATION_LLM_EXTRA_BODY: '{"chat_template_kwargs":{"enable_thinking":false}}'
+    HINDSIGHT_API_MENTAL_MODEL_REFRESH_LLM_EXTRA_BODY: '{"chat_template_kwargs":{"enable_thinking":false}}'
     # ~99 big backlog batches died on the default 3600s task wall-clock cap.
     # 4h covers the largest old documents while the backlog drains.
     HINDSIGHT_API_RETAIN_WALL_TIMEOUT: "14400"
+    # Redact secrets/PII before storing in new banks (raw chunks otherwise keep them verbatim).
+    HINDSIGHT_API_DEFAULT_BANK_TEMPLATE: '{"version":"1","bank":{"memory_defense":{"enabled":true,"rules":[{"on":"sensitive_data","action":"redact"}]}}}'
     # Mental-model refresh kept dying at the 300s default while the retain
     # backlog saturated the GPU. 30min covers slow periods.
     HINDSIGHT_API_MENTAL_MODEL_REFRESH_WALL_TIMEOUT: "1800"
