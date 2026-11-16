@@ -86,12 +86,10 @@ data:
       protect_first_n: 0
       hygiene_hard_message_limit: 500
     stt:
-      enabled: true
-      provider: openai
-      openai:
-        model: Systran/faster-whisper-large-v3
-        base_url: http://spark.a113.internal:8300/v1
-        api_key: no-key-required
+      # Unused, and Spark whisper is gone. Hermes enables STT when the key is missing,
+      # and the PVC merge keeps removed keys, so disable it and null the old endpoint.
+      enabled: false
+      openai: null
     tts:
       provider: openai
       speed: 1.0
