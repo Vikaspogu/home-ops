@@ -20,6 +20,9 @@ api:
     HINDSIGHT_API_RETAIN_LLM_MAX_CONCURRENT: "4" # MTP doubled engine headroom; 4 slots to drain the backlog faster
     HINDSIGHT_API_CONSOLIDATION_LLM_MAX_CONCURRENT: "2"
     HINDSIGHT_API_MENTAL_MODEL_REFRESH_LLM_MAX_CONCURRENT: "2"
+    # Consolidation tasks held 9/10 worker slots while waiting on their 2 LLM slots,
+    # so retains sat pending. Reserve worker slots to match the retain LLM cap.
+    HINDSIGHT_API_WORKER_RETAIN_RESERVED_SLOTS: "4"
     # Background batch extraction/consolidation can exceed the 120s default on big
     # batches even with continuous batching. Raise only these; interactive reflect
     # stays at its own 30s on the hosted hub.
