@@ -13,7 +13,7 @@ controllers:
       app:
         image:
           repository: nodered/node-red
-          tag: 5.0.9
+          tag: 5.0.10
         env:
           TZ: "America/New_York"
           NODE_RED_ENABLE_PROJECTS: "true"
