@@ -138,6 +138,12 @@ alloy:
           label_structured_data = true
           labels                = { job = "syslog" }
         }
+        listener {
+          address               = "0.0.0.0:1514"
+          protocol              = "udp"
+          label_structured_data = true
+          labels                = { job = "syslog" }
+        }
 
         relabel_rules = loki.relabel.syslog.rules
         forward_to    = [loki.write.default.receiver]
@@ -206,6 +212,10 @@ alloy:
       port: 4318
       targetPort: 4318
       protocol: TCP
+    - name: syslog-udp
+      port: 1514
+      targetPort: 1514
+      protocol: UDP
   mounts:
     varlog: true
     extra:
@@ -305,7 +315,11 @@ extraObjects:
         app.kubernetes.io/name: alloy
         app.kubernetes.io/instance: alloy
       ports:
-        - name: syslog
+        - name: syslog-tcp
           port: 1514
           targetPort: 1514
           protocol: TCP
+        - name: syslog-udp
+          port: 1514
+          targetPort: 1514
+          protocol: UDP
