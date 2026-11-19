@@ -10,6 +10,7 @@ spec:
     allowTags: 'regexp:^[0-9]{14}-[a-f0-9]{7}-oci$'
     ignoreTags:
       - latest
+      - 20261118234455-3de94f3-oci
   writeBackConfig:
     method: "git:secret:argo-system/git-creds"
     gitConfig:
