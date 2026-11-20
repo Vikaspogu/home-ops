@@ -3,6 +3,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  # ExternalDNS 0.24 requires its CRD first; controller upgrades follow in PR #2576.
+  - ./dnsendpoint-crd.yaml
   - ./externalsecret.yaml
 
 helmCharts:

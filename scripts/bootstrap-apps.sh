@@ -104,13 +104,11 @@ function apply_sops_secrets() {
     done
 }
 
-# Bootstrap Gateway API, Prometheus, External Secrets, and External DNS CRDs before dependent ArgoCD apps; operators manage later updates.
+# Bootstrap Gateway API, Prometheus, and External Secrets CRDs; cloudflare-dns manages its CRD before the tunnel app.
 function apply_crds() {
     log debug "Applying bootstrap CRDs"
 
     local -r crds=(
-        # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
-        https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.19.0/config/crd/standard/dnsendpoints.externaldns.k8s.io.yaml
         # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
         https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/experimental-install.yaml
         # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
