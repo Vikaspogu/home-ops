@@ -47,4 +47,19 @@ kustomize build --enable-helm "${COMPONENT_DIR}" >"${manifest}"
 [[ "$(yq ea -r '[select(.kind == "Role" and .metadata.name == "watchtower-act-workload" and .metadata.namespace == "observability" and (.rules | length) == 1 and (.rules[0].resources | length) == 1 and .rules[0].resources[0] == "pods" and (.rules[0].verbs | length) == 3 and ([.rules[0].verbs[] | select(. != "get" and . != "list" and . != "delete")] | length) == 0)] | length' "${manifest}")" == "1" ]] \
   || fail "Role watchtower-act-workload must preserve namespace observability and only grant get/list/delete on pods"
 
+[[ "$(yq ea -r '[select(.kind == "ServiceAccount" and .metadata.name == "t3-sre-reader" and .metadata.namespace == "sre-agent")] | length' "${manifest}")" == "1" ]] \
+  || fail "ServiceAccount t3-sre-reader must exist in namespace sre-agent"
+
+[[ "$(yq ea -r '[select(.kind == "ClusterRoleBinding" and .metadata.name == "t3-sre-reader" and .roleRef.kind == "ClusterRole" and .roleRef.name == "watchtower-read" and (.subjects | length) == 1 and .subjects[0].kind == "ServiceAccount" and .subjects[0].name == "t3-sre-reader" and .subjects[0].namespace == "sre-agent")] | length' "${manifest}")" == "1" ]] \
+  || fail "ClusterRoleBinding t3-sre-reader must bind only t3-sre-reader to ClusterRole watchtower-read"
+
+[[ "$(yq ea -r '[select(.kind == "Secret" and .metadata.name == "t3-sre-reader-token" and .metadata.namespace == "sre-agent" and .type == "kubernetes.io/service-account-token" and .metadata.annotations."kubernetes.io/service-account.name" == "t3-sre-reader")] | length' "${manifest}")" == "1" ]] \
+  || fail "Secret t3-sre-reader-token must be a service-account-token for t3-sre-reader in sre-agent"
+
+[[ "$(yq ea -r '[select(.kind == "Deployment") | .spec.template.spec.volumes[]? | select(.secret.secretName == "t3-sre-reader-token" or (.projected.sources[]?.secret.name == "t3-sre-reader-token"))] | length' "${manifest}")" == "0" ]] \
+  || fail "Secret t3-sre-reader-token must not be mounted into any Deployment (direct or projected volume)"
+
+[[ "$(yq ea -r '[select(.kind == "Deployment") | .spec.template.spec.containers[]? | select((.env[]?.valueFrom.secretKeyRef.name == "t3-sre-reader-token") or (.envFrom[]?.secretRef.name == "t3-sre-reader-token"))] | length' "${manifest}")" == "0" ]] \
+  || fail "Secret t3-sre-reader-token must not be referenced via env or envFrom"
+
 printf 'PASS: rendered sre-agent manifests preserve cross-namespace RBAC and read-only write-token Secret mount\n'

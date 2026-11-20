@@ -147,3 +147,36 @@ subjects:
   - kind: ServiceAccount
     name: watchtower-act
     namespace: sre-agent
+---
+# Identity for the T3 Code "SRE" scheduled-task thread running on the VM.
+# Dedicated ServiceAccount (audit attribution + independent revocation from the in-cluster pod),
+# bound to the same strictly read-only watchtower-read ClusterRole (no secrets, pods/exec, writes).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: t3-sre-reader
+  namespace: sre-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: t3-sre-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: watchtower-read
+subjects:
+  - kind: ServiceAccount
+    name: t3-sre-reader
+    namespace: sre-agent
+---
+# Long-lived token exported into a mode-600 kubeconfig on the VM; never mounted into any pod.
+# Revoke the VM's cluster access by deleting this Secret.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: t3-sre-reader-token
+  namespace: sre-agent
+  annotations:
+    kubernetes.io/service-account.name: t3-sre-reader
+type: kubernetes.io/service-account-token
