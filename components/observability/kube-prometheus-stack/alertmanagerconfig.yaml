@@ -62,11 +62,8 @@ spec:
                 key: NTFY_PUBLISH_TOKEN
     - name: alert-manager
       webhookConfigs:
-        - url: http://sre-agent.sre-agent.svc.cluster.local:4780/v1/webhooks/alertmanager/job_01m60z9sz3wm2ekmm7v1yxfdn4
+        # T3 scheduled task f0de4c8c-0087-40f0-bc72-275e9510a69d; URL is in 1Password item t3-code.
+        - urlSecret:
+            name: t3-alert-webhook
+            key: url
           sendResolved: true
-          httpConfig:
-            authorization:
-              type: Bearer
-              credentials:
-                name: alertmanager-secret
-                key: SRE_ALERT_MANAGER_TOKEN
