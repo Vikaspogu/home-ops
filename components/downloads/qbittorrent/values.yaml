@@ -53,8 +53,11 @@ controllers:
           WIREGUARD_ENDPOINT_PORT: 51820
           VPN_PORT_FORWARDING: on
           VPN_PORT_FORWARDING_PROVIDER: protonvpn
-          FIREWALL_INPUT_PORTS: &port 8080
+          FIREWALL_INPUT_PORTS: "8080,8888"
           FIREWALL_OUTBOUND_SUBNETS: 10.96.0.0/16,10.69.0.0/16
+          HTTPPROXY: "on"
+          HTTPPROXY_LISTENING_ADDRESS: ":8888"
+          HTTPPROXY_LOG: "off"
         envFrom:
           - secretRef:
               name: qbittorrent-secret
@@ -91,7 +94,7 @@ controllers:
         nameOverride: qbittorrent
         env:
           UMASK: "002"
-          QBT_WEBUI_PORT: 8080
+          QBT_WEBUI_PORT: &port 8080
           QBT_BitTorrent__Session__Interface: wg0
           QBT_BitTorrent__Session__InterfaceAddress: 0.0.0.0
           QBT_BitTorrent__Session__InterfaceName: wg0
@@ -136,6 +139,8 @@ service:
     ports:
       http:
         port: *port
+      proxy:
+        port: 8888
 
 persistence:
   config:
