@@ -4,7 +4,7 @@ controllers:
     strategy: RollingUpdate
     containers:
       app:
-        # ponytail: Nachtalb fork; upstream v0.40.0 gets 403 on all anonymous requests and has no fix. Fork's browser TLS fingerprint works without a cookie; add REDLIB_REDDIT_COOKIE only if blocks return.
+        # ponytail: Nachtalb fork; Reddit blocks this cluster's direct anonymous requests, so route through qBittorrent's Gluetun proxy.
         image:
           repository: ghcr.io/nachtalb/redlib
           tag: latest@sha256:37a6d73271029d9a2071c4c8ff9a258d64e14379863dbc8a3cf30a038e5f23d2
@@ -20,6 +20,8 @@ controllers:
           REDLIB_DEFAULT_AUTOPLAY_VIDEOS: "off"
           REDLIB_DEFAULT_DISABLE_VISIT_REDDIT_CONFIRMATION: "false"
           REDLIB_DEFAULT_SUBSCRIPTIONS: "selfhosted+todayilearned+ArtificialInteligence+LocalLLaMA+AI_Agents+AgentsOfAI+singularity+explainlikeimfive+MachineLearning+LLMDevs"
+          ALL_PROXY: "http://qbittorrent.downloads.svc.cluster.local:8888"
+          NO_PROXY: "localhost,127.0.0.1,.cluster.local,10.69.0.0/16,10.96.0.0/16"
         probes:
           liveness: &probes
             enabled: true
