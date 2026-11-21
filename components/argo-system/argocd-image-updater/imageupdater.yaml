@@ -119,19 +119,6 @@ spec:
           manifestTargets:
             kustomize:
               name: "docker://gitea.${CLUSTER_DOMAIN}/vpogu/agent-farm-ubuntu"
-    - namePattern: "sre-agent"
-      writeBackConfig:
-        method: "git:secret:argo-system/git-creds"
-        gitConfig:
-          branch: main
-          writeBackTarget: "helmvalues:./values.yaml"
-      images:
-        - alias: sre-agent
-          imageName: "gitea.${CLUSTER_DOMAIN}/vpogu/durable-sre-agent"
-          manifestTargets:
-            helm:
-              name: controllers.app.containers.app.image.repository
-              tag: controllers.app.containers.app.image.tag
     # ghcr.io app: semver tags, not the Gitea timestamp format covered by the
     # spec-level commonUpdateSettings. Image is public on ghcr (anonymous pull).
     - namePattern: "daybook"
