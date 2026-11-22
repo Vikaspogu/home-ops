@@ -7,7 +7,7 @@ controllers:
         # ponytail: Nachtalb fork; upstream v0.40.0 gets 403 on all anonymous requests and has no fix. Fork's browser TLS fingerprint works without a cookie; add REDLIB_REDDIT_COOKIE only if blocks return.
         image:
           repository: ghcr.io/nachtalb/redlib
-          tag: latest@sha256:37a6d73271029d9a2071c4c8ff9a258d64e14379863dbc8a3cf30a038e5f23d2
+          tag: latest@sha256:c8a318cb1256457f03d0166cf2720b705f1b7cb79dfe9e546e50e58611fe3831
         env:
           REDLIB_ROBOTS_DISABLE_INDEXING: "on"
           REDLIB_DEFAULT_THEME: "dracula"
