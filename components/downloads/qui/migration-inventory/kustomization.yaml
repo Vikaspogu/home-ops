@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: downloads
+resources:
+  - ./networkpolicy.yaml
+  - ./synthetic-job.yaml
+configMapGenerator:
+  - name: qui-migration-synthetic-scripts
+    files:
+      - inventory.py
+      - synthetic.py
