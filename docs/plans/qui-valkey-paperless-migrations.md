@@ -340,3 +340,20 @@ Staged implementation review round 1: correctness LGTM; security LGTM with nits;
 
 
 Staged review round 2: added explicit real-entry-point checks for refused/unreachable network errors (exit 1 before SQLite), plus permission-denial errno acceptance; host checks pass without exception-message sentinel leakage. Writer now requires a reader-success marker before exit 0. Correctness text had no issues but its terminal verdict was rejected by the harness, so no commit was made. Rejected the unused-inventory.py finding because the synthetic reader executes that exact file in both a real subprocess and runpy negative-path checks. Policy-before-synthetic-Job enforcement lag remains a safe synthetic-only failure with a new reviewed identity required after diagnosis. No active live Job is included; script/template changes must change its future Job identity, and static IPs retain the explicit immediate pre-launch validation gate. A complete third staged review is required before commit.
+
+
+### Verified execution: synthetic stage, 2026-11-23
+
+[PR #2602](https://github.com/Vikaspogu/home-ops/pull/2602) merged as `a384e1378f88d0466954e7c96f4b3eed42cb6811` at about 20:54:35 UTC. All three GitHub checks passed, no review objections/threads were unresolved, exact-head squash used `17a54a89ee340a9f7bdb5930ac1588c4fa4b11d4`. Main's reviewed files matched that head after merge.
+
+Argo CD reconciled that exact squash commit. `qui-migration-synthetic-v1` completed at 20:57:14 UTC; reader and writer each exited 0 at 20:57:11 UTC. Live pod inspection confirmed the pinned image, UID/GID 1000, no token/env credentials, no production PVC/NFS/host mounts and the dedicated deny-all selector. Result:
+
+```json
+{"synthetic_validation":"passed","python":"3.15.2","sqlite":"3.53.4","kernel_read_only":true,"wal_row_visible":true,"fixture_unchanged_during_idle_reader":true,"concurrent_snapshots":41,"final_rows_per_table":21,"failure_exit_codes_verified":[1,2,3],"network_error_contract_verified":true}
+```
+
+Qui returned to Synced/Healthy at the squash commit; HTTP /health returned 200. Production pod UID `fa4fbaf3-2a09-49a3-ba14-69e4d56547da` remained Ready with zero restarts and no Qui Warning events. Existing Envoy/root degradation and onstar2mqtt drift remained baseline. Five Talos nodes were Ready. This proves the synthetic read-only/WAL test only, not backup restore or upgrade completion.
+
+The live-tested ConfigMap's inventory.py exactly matched repository content, SHA256 `7fb27d2a77cf1ea90de8a50464e65fec45d8a7543e2bd885956254b2c751f683`. The next change keeps that script and image unchanged and introduces only the bounded read-only live inventory Job/ConfigMap. The existing qui-inventory deny-all policy already reconciled. The completed synthetic Job, its now-unused policy/ConfigMap and synthetic-only source files can be removed through that same scoped GitOps change; this result and source commit preserve the evidence. No production PVC is deleted.
+
+Current job-owned worktree remains `/tmp/home-ops-qui-migration-20261123-q2xwdmz0`; active continuation branch is `eff/qui-live-inventory-20261123`, based on the exact squash commit. Before merging its PR, recheck the unchanged script hash, current Qui affinity labels/node/readiness, canary Service IPs and ready endpoints, no additive policy allowances, no concurrent inventory/backup mover and the VolSync schedule (`25 5,11,17,23 * * *` UTC at inspection). Last completed backup was 17:52:12 UTC; this is not permission to overlap the next backup window. A moved/restarting Qui pod or active backup holds launch. If safe mounting fails, never force-detach or add fsGroup/write permissions. All three upgrade PRs and the protected recovery prerequisites remain pending.
