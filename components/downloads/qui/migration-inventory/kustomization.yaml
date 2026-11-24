@@ -3,9 +3,8 @@ kind: Kustomization
 namespace: downloads
 resources:
   - ./networkpolicy.yaml
-  - ./synthetic-job.yaml
+  - ./job.yaml
 configMapGenerator:
-  - name: qui-migration-synthetic-scripts
+  - name: qui-migration-inventory-scripts
     files:
       - inventory.py
-      - synthetic.py
