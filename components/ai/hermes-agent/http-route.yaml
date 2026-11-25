@@ -25,3 +25,30 @@ spec:
     - backendRefs:
         - name: *app
           port: 9119
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hermes-agent-webapp
+  labels:
+    app.kubernetes.io/instance: hermes-agent
+    app.kubernetes.io/name: hermes-agent
+  annotations:
+    external-dns.kubernetes.io/target: "external.${CLUSTER_DOMAIN}"
+spec:
+  parentRefs:
+    - name: ${GATEWAY_EXTERNAL}
+      namespace: ${GATEWAY_NAMESPACE}
+      sectionName: https
+  hostnames: ["hermes-webapp.${CLUSTER_DOMAIN}"]
+  rules:
+    - matches:
+        - path:
+            type: Exact
+            value: /api/ws
+        - path:
+            type: Exact
+            value: /api/webapp/socket-ticket
+      backendRefs:
+        - name: hermes-agent
+          port: 9120

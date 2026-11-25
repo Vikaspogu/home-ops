@@ -158,6 +158,10 @@ controllers:
           PATH: /usr/local/bin:/opt/hermes/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
           HOME: /opt/data
           HERMES_HOME: /opt/data
+          POD_IP:
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
           XDG_CONFIG_HOME: /opt/data/.config
           XDG_DATA_HOME: /opt/data/.local/share
           XDG_CACHE_HOME: /opt/data/.cache
@@ -194,6 +198,8 @@ service:
     ports:
       dashboard:
         port: *dashboardPort
+      webapp:
+        port: 9120
       # api_server platform — consumed by hermes-companion only (NetworkPolicy scopes it).
       api:
         port: 8642

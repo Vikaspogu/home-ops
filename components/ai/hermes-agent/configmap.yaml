@@ -249,6 +249,12 @@ data:
           client_secret: "${TREK_OAUTH_CLIENT_SECRET}"
     web:
       search_backend: ihub
+    webapp:
+      enabled: true
+      # ArgoCD envsub preserves the inner POD_IP for Hermes to expand at runtime.
+      host: ${POD_IP-${POD_IP}}
+      port: 9120
+      public_url: https://hermes-webapp.${CLUSTER_DOMAIN}
     gateway:
       # Upstream default "pair" DMs strangers a pairing code; "decline" sends one polite refusal then goes silent.
       unauthorized_dm_behavior: decline
