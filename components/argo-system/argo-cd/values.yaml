@@ -319,6 +319,8 @@ repoServer:
         - mountPath: /ksops-generator
           name: ksops-generator
 notifications:
+  clusterRoleRules:
+    enabled: true
   metrics:
     enabled: true
     serviceMonitor: *service-monitor
